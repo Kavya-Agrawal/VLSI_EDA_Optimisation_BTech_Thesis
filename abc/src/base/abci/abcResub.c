@@ -32,6 +32,12 @@ ABC_NAMESPACE_IMPL_START
 #define ABC_RS_DIV1_MAX    150   // the max number of divisors to consider
 #define ABC_RS_DIV2_MAX    500   // the max number of pair-wise divisors to consider
 
+// SYNAPSE ML co-processor hooks (implemented in src/ext_ml/mlCmd.c).
+// These are no-ops unless ML guidance is enabled at runtime via "ml_config -e",
+// so stock ABC behaviour is byte-for-byte unchanged by default.
+extern int  Ml_HookResubActive();
+extern void Ml_HookResubRerank( void * pNtk, void * pRoot, void * vDivs );
+
 typedef struct Abc_ManRes_t_ Abc_ManRes_t;
 struct Abc_ManRes_t_
 {
@@ -2028,6 +2034,16 @@ p->timeRes1 += Abc_Clock() - clk;
 
     // get the one level divisors
     Abc_ManResubDivsS( p, Required );
+
+    // SYNAPSE: reorder the *validated* single-node unate divisor candidates by
+    // learned payoff so the promising ones are attempted first. This is safe --
+    // Abc_ManResubDivs1() still independently checks every candidate; only the
+    // order of attempts changes (which valid resub is found first).
+    if ( Ml_HookResubActive() )
+    {
+        Ml_HookResubRerank( pRoot->pNtk, pRoot, p->vDivs1UP );
+        Ml_HookResubRerank( pRoot->pNtk, pRoot, p->vDivs1UN );
+    }
 
 //    if ( Vec_PtrSize(vLeaves) >= 6 )
 //        Abc_ManResubDumpInstance( p->vDivs, Vec_PtrSize(vLeaves), p->nDivs, p->nWords );

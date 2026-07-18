@@ -58,6 +58,12 @@ abc/abc
 abc/abc.exe
 abc/*.o
 abc/*.a
+abc/**/*.o
+abc/**/*.d
+
+# SYNAPSE (ext_ml) source must NOT be caught by the generic 'models/' ignore
+!abc/src/ext_ml/python/models/
+!abc/src/ext_ml/python/models/**
 
 # Large third-party tools (clone separately)
 OpenROAD/
