@@ -1,0 +1,9 @@
+numpy
+matplotlib
+torch
+gym
+torch
+torchvision
+google 
+tensorboard
+tqdm

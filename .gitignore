@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+venv/
+.venv/
+env/
+ENV/
+myenv/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs and temp
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+
+# ML artifacts
+*.pt
+*.pth
+*.ckpt
+models/
+checkpoints/
+save_models/
+tb_log/
+
+# Large macro-placement datasets (clone separately if needed)
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/Testcases/
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/ExperimentalData/
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/Flows/
+macroPlace/macro-place-challenge-2026/benchmarks/raw/
+macroPlace/macro-place-challenge-2026/results/
+macroPlace/Macro_Placement_ML_for_EDA/dataset/
+
+# Allow selected processed benchmarks
+!macroPlace/macro-place-challenge-2026/benchmarks/processed/
+!macroPlace/macro-place-challenge-2026/benchmarks/processed/public/
+!macroPlace/macro-place-challenge-2026/benchmarks/processed/public/*.pt
+
+# ABC build outputs
+abc/abc
+abc/abc.exe
+abc/*.o
+abc/*.a
+
+# Large third-party tools (clone separately)
+OpenROAD/
