@@ -5,12 +5,21 @@
 > support a B.Tech Project (BTP) on applying ML to chip-design flows
 > (placement, routing, logic synthesis, timing/power, LLM-for-RTL, etc.).
 
-**Last updated:** 2026-07-18
+**Last updated:** 2026-07-19
+
+> **OpenROAD deep-dive:** see [`openroad/README.md`](openroad/README.md) (branch
+> `docs/openroad-ml-landscape`) and model code branches
+> `feature/openroad-timing-gnn`, `feature/openroad-rl-gatesize`,
+> `feature/openroad-congestion-cnn`.
 
 ---
 
 ## 0. How to use this document
 
+- 📝 **New:** every downloaded paper now has a **plain-English summary** (a `.md` file next to
+  its PDF) explaining it in ~2 minutes: *TL;DR → problem → key idea → how it works → results →
+  why it matters → glossary*. **Start at [`papers/PAPER_SUMMARIES.md`](papers/PAPER_SUMMARIES.md)**
+  for a guided, ordered index of all **26 papers**.
 - Each domain section lists **open-source repos you can `git clone`** (with a one-line
   "why it matters" + license + language) followed by the **key papers**.
 - Papers marked **[PDF]** have been downloaded into `papers/<domain>/` for offline reading.
@@ -57,14 +66,17 @@ These are the tools the whole ecosystem builds on. You will almost certainly nee
 | [NVlabs/AutoDMP](https://github.com/NVlabs/AutoDMP) | **AutoDMP** (ISPD'23) | DREAMPlace + multi-objective Bayesian optimization (MOTPE) autotuning of macro placement. GPU. | Py/CUDA | BSD-3 |
 | [Thinklab-SJTU/EDA-AI](https://github.com/Thinklab-SJTU/EDA-AI) | DeepPlace / PRNet (NeurIPS'21,'22) | Joint learning of placement + routing; policy-gradient placement + generative routing. | Py | — |
 
-### Key papers  (downloaded → `papers/placement/`)
-- **MaskPlace: Fast Chip Placement via Reinforced Visual Representation Learning** — Lai, Mu, Luo. NeurIPS 2022 (Spotlight). [arXiv 2211.13382] **[PDF]**
+### Key papers  (downloaded → `papers/placement/`, each with a 📝 `.md` summary)
+- **Chip Placement with Deep Reinforcement Learning** — Mirhoseini et al. Google 2020 → Nature 2021. [arXiv 2004.10746] **[PDF]** *(the origin of the field)*
+- **MaskPlace: Fast Chip Placement via Reinforced Visual Representation Learning** — Lai, Mu, Luo. NeurIPS 2022 (Spotlight). [arXiv 2211.13382] **[PDF]** *(your base)*
 - **ChiPFormer: Transferable Chip Placement via Offline Decision Transformer** — Lai et al. ICML 2023. [arXiv 2306.14744] **[PDF]**
-- **Reinforcement Learning Policy as Macro Regulator Rather than Macro Placer** — NeurIPS 2024. [arXiv 2412.07822] **[PDF]**
+- **Macro Placement by Wire-Mask-Guided Black-Box Optimization** — Shi et al. NeurIPS 2023. [arXiv 2306.16844] **[PDF]**
+- **Reinforcement Learning Policy as Macro Regulator Rather than Macro Placer** — NeurIPS 2024. [arXiv 2412.07167] **[PDF]**
 - **Chip Placement with Diffusion Models** — ICML 2025. [arXiv 2407.12282] **[PDF]**
+- **AutoDMP: Automated DREAMPlace-based Macro Placement** — Agnesina et al. ISPD 2023 (not on arXiv; ACM/public mirror). **[PDF]**
+- **On Joint Learning for Solving Placement and Routing in Chip Design (DeepPlace/DeepPR)** — NeurIPS 2021. [arXiv 2111.00234] **[PDF]**
+- **Delving into Macro Placement with Reinforcement Learning** — Jiang et al. ISPD 2022. [arXiv 2109.02587] **[PDF]**
 - **A Graph Placement Methodology for Fast Chip Design (AlphaChip)** — Mirhoseini et al. Nature 2021. [nature link — see index]
-- **AutoDMP: Automated DREAMPlace-based Macro Placement** — Agnesina et al. ISPD 2023. [arXiv 2302.01415] **[PDF]**
-- **On Joint Learning for Solving Placement and Routing in Chip Design (DeepPlace)** — NeurIPS 2021. **[PDF]**
 
 ---
 
@@ -77,10 +89,10 @@ These are the tools the whole ecosystem builds on. You will almost certainly nee
 | [OSCC-Project/iPCL-R](https://github.com/OSCC-Project/iPCL-R) | **iPCL-R** | Pre-training foundation model treating routing patterns as sequences (LLM-style). DEF output. | Py | — |
 | [Thinklab-SJTU/EDA-AI (PRNet/DSBRouter)](https://github.com/Thinklab-SJTU/EDA-AI) | Generative routing | End-to-end learned global routing. | Py | — |
 
-### Key papers
+### Key papers  (downloaded → `papers/routing/`, with a 📝 `.md` summary)
+- **A Deep Reinforcement Learning Approach for Global Routing** — Liao et al. J. Mech. Design 2019. [arXiv 1906.08809] **[PDF]**
 - **Dr. Guide: AI-Guided Detailed Routing** — Wang, Lau, Ho, Young, Wong. MLCAD 2025.
 - **AiDRC: Accelerating Detailed Routing by AI-Driven DRV Prediction and Checking** — TODAES 2025. (ResNet + crisscross attention; 16×/293× speedups.)
-- **A Deep Reinforcement Learning Approach for Global Routing** — J. Mech. Design 2019. [arXiv 1906.08809] **[PDF]**
 - **RouteNet: Routability Prediction for Mixed-Size Designs Using CNN** — ICCAD 2018. (Classic; DRC-hotspot CNN.)
 
 ---
@@ -96,11 +108,13 @@ These are the tools the whole ecosystem builds on. You will almost certainly nee
 | [berkeley-abc/abc](https://github.com/berkeley-abc/abc) | ABC engine | The synthesis tool everything drives. `abc_py` gives Python bindings. | C | MIT-like |
 | [krzhu/abc_py](https://github.com/krzhu/abc_py) | Python bindings for ABC | Needed for the RL loops above. | C++/Py | — |
 
-### Key papers  (downloaded → `papers/logic_synthesis/`)
+### Key papers  (downloaded → `papers/logic_synthesis/`, each with a 📝 `.md` summary)
 - **DRiLLS: Deep Reinforcement Learning for Logic Synthesis** — Hosny et al. ASPDAC 2020. [arXiv 1911.04021] **[PDF]**
+- **OpenABC-D: A Large-Scale Dataset for ML-Guided IC Synthesis** — 2021. [arXiv 2110.11292] **[PDF]**
+- **Rethinking Reinforcement Learning based Logic Synthesis** — Wang et al. (Huawei) 2022. [arXiv 2205.07614] **[PDF]** *(myth-busting; read before over-engineering RL)*
+- **Logic Synthesis Meets Machine Learning: Trading Exactness for Generalization** — IWLS 2020. [arXiv 2012.02530] **[PDF]**
 - **Retrieval-Guided Reinforcement Learning for Boolean Circuit Minimization (ABC-RL)** — ICLR 2024. [OpenReview 0t1O8ziRZp]
 - **Area-Driven FPGA Logic Synthesis Using Reinforcement Learning** — ASPDAC 2023.
-- **OpenABC-D: A Large-Scale Dataset for ML-Guided IC Synthesis** — 2021. [arXiv 2110.11292] **[PDF]**
 
 ---
 
@@ -115,12 +129,13 @@ These are the tools the whole ecosystem builds on. You will almost certainly nee
 | [circuitnet/CircuitNet](https://github.com/circuitnet/CircuitNet) | **CircuitNet 1.0/2.0/N14/N28** | 20K+ samples for congestion, DRC, IR-drop, net-delay prediction. Image (CNN) + graph (GNN) features. The go-to ML-EDA dataset. | BSD-3 |
 | [NVlabs/CircuitOps](https://github.com/NVlabs/CircuitOps) | Labeled Property Graphs | Netlist→graph IR for GNN-based EDA ML, integrated w/ OpenROAD. | — |
 
-### Key papers
-- **CircuitNet: An Open-Source Dataset for ML Applications in EDA** — TCAD 2023.
-- **CircuitNet 2.0: Advanced Dataset for Realistic Chip Design** — ICLR/2023.
-- **A Timing Engine Inspired GNN Model for Pre-Routing Slack Prediction** — DAC 2022. (Basis of net-delay GNN.)
-- **RouteNet** (see routing) — congestion/DRC CNN.
+### Key papers  (downloaded → `papers/timing_power_routability/`, each with a 📝 `.md` summary)
+- **CircuitNet: An Open-Source Dataset for ML Applications in EDA** — TCAD 2023. [arXiv 2208.01040] **[PDF]** *(the go-to dataset)*
+- **Net2: A Graph Attention Network for Pre-Placement Net Length Estimation** — Xie et al. ASPDAC 2021. [arXiv 2011.13522] **[PDF]**
 - **PGR-DRC: Pre-Global-Routing DRC Violation Prediction Using Unsupervised Learning** — 2025. [arXiv 2507.13355] **[PDF]**
+- **CircuitNet 2.0: Advanced Dataset for Realistic Chip Design** — 2023.
+- **A Timing Engine Inspired GNN Model for Pre-Routing Slack Prediction** — DAC 2022 (github.com/TimingPredict). (Basis of net-delay GNN.)
+- **RouteNet** (see routing) — congestion/DRC CNN.
 
 ---
 
@@ -133,11 +148,14 @@ These are the tools the whole ecosystem builds on. You will almost certainly nee
 | [NVlabs/verilog-eval](https://github.com/NVlabs/verilog-eval) | **VerilogEval** | The standard benchmark for LLM Verilog generation. | — |
 | [hkust-zhiyao/RTLLM](https://github.com/hkust-zhiyao/RTLLM) | **RTLLM** | Open benchmark of RTL design problems. | — |
 
-### Key papers  (downloaded → `papers/llm_for_eda/`)
+### Key papers  (downloaded → `papers/llm_for_eda/`, each with a 📝 `.md` summary)
+- **Benchmarking LLMs for Automated Verilog RTL Code Generation (VeriGen)** — Thakur et al. DATE 2023. [arXiv 2212.11140] **[PDF]**
+- **VerilogEval: Evaluating LLMs for Verilog Code Generation** — Liu et al. (NVIDIA) ICCAD 2023. [arXiv 2309.07544] **[PDF]** *(the standard benchmark)*
 - **RTLCoder: Fully Open-Source and Efficient LLM-Assisted RTL Code Generation** — TCAD 2025. [arXiv 2312.08617] **[PDF]**
+- **RTLLM: An Open-Source Benchmark for Design RTL Generation** — Lu et al. ASPDAC 2024. [arXiv 2308.05345] **[PDF]**
 - **ChipNeMo: Domain-Adapted LLMs for Chip Design** — NVIDIA 2023. [arXiv 2311.00176] **[PDF]**
-- **ChatEDA: An LLM-Powered Autonomous Agent for EDA** — MLCAD 2023.
-- **Benchmarking LLMs for Automated Verilog RTL Code Generation** — DATE 2023.
+- **ChatEDA: An LLM-Powered Autonomous Agent for EDA** — MLCAD 2023. [arXiv 2308.10204] **[PDF]**
+- **MAGE: A Multi-Agent Engine for Automated RTL Code Generation** — 2024. [arXiv 2412.07822] **[PDF]**
 
 ---
 
@@ -159,7 +177,7 @@ These are the tools the whole ecosystem builds on. You will almost certainly nee
 | [Thinklab-SJTU/awesome-ai4eda](https://github.com/Thinklab-SJTU/awesome-ai4eda) | Problem-oriented list w/ code links (DeepPlace, PRNet, etc.). |
 | [OSCC-Project/awesome-AIEDA-works](https://github.com/OSCC-Project/awesome-AIEDA-works) | Structured: placement, routing, timing/power, DRC, datasets, foundation models. |
 
-### Survey papers (downloaded → `papers/surveys/`)
+### Survey papers (downloaded → `papers/surveys/`, each with a 📝 `.md` summary — read these first)
 - **Machine Learning for EDA: A Survey** — TODAES 2021. [arXiv 2102.03357] **[PDF]**
 - **Towards ML for Placement and Routing in Chip Design: A Methodological Overview** — 2022. [arXiv 2202.13564] **[PDF]**
 - **A Survey of GNNs for EDA** — MLCAD 2021.
@@ -176,4 +194,4 @@ These are the tools the whole ecosystem builds on. You will almost certainly nee
 
 ---
 
-*Generated as part of BTP research setup. Repo/paper links verified 2026-07-18.*
+*Generated as part of BTP research setup. Repo/paper links verified 2026-07-18. Paper collection expanded to 26 papers, each with a plain-English summary — see [`papers/PAPER_SUMMARIES.md`](papers/PAPER_SUMMARIES.md).*
