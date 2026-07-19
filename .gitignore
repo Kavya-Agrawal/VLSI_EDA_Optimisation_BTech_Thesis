@@ -47,6 +47,10 @@ tb_log/
 !abc/src/ext_poly/python/models/**
 !openroad_ml/**/models/
 !openroad_ml/**/models/**
+# Re-ignore bytecode under those trees (negation above would otherwise keep them)
+openroad_ml/**/__pycache__/
+openroad_ml/**/models/__pycache__/
+**/__pycache__/
 
 # Large macro-placement datasets (clone separately if needed)
 macroPlace/macro-place-challenge-2026/external/MacroPlacement/Testcases/
