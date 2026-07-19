@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 def test_env_and_policy():
     import torch
-    from env.sizing_env import MockSizingEnv
+    from gym_env.sizing_env import MockSizingEnv
     from models.policy import PolicyConfig, SizingActorCritic
 
     env = MockSizingEnv(n_inst=24, max_steps=3, seed=2)

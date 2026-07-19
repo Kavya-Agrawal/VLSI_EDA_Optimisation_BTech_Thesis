@@ -20,7 +20,7 @@ Contest C.
 openroad_ml/rl_gatesize/
   README.md
   requirements.txt
-  env/             # gym-like sizing environment
+  gym_env/         # mock STA sizing environment (avoids root .gitignore env/)
   models/          # GNN actor-critic
   train/           # PPO-style trainer
   openroad_api/    # swapMaster + STA hooks
