@@ -18,6 +18,11 @@ docs/
 .vscode/
 
 src/ext*
+# POLYPHONY / SYNAPSE extension modules are first-class in this fork.
+!src/ext_poly
+!src/ext_poly/**
+!src/ext_ml
+!src/ext_ml/**
 src/xxx/
 src/aig/au/
 src/aig/ssm/

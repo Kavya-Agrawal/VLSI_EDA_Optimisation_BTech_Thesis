@@ -40,6 +40,12 @@ checkpoints/
 save_models/
 tb_log/
 
+# Keep SYNAPSE / POLYPHONY Python model *source* (not weight files)
+!abc/src/ext_ml/python/models/
+!abc/src/ext_ml/python/models/**
+!abc/src/ext_poly/python/models/
+!abc/src/ext_poly/python/models/**
+
 # Large macro-placement datasets (clone separately if needed)
 macroPlace/macro-place-challenge-2026/external/MacroPlacement/Testcases/
 macroPlace/macro-place-challenge-2026/external/MacroPlacement/ExperimentalData/

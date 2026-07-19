@@ -1,0 +1,4 @@
+# CPU fine for demo/smoke; GPU for real GFlowNet training
+numpy>=1.24
+torch>=2.1
+onnx>=1.15
