@@ -40,6 +40,14 @@ checkpoints/
 save_models/
 tb_log/
 
+# Keep in-repo model source trees (PyTorch packages named models/)
+!abc/src/ext_ml/python/models/
+!abc/src/ext_ml/python/models/**
+!abc/src/ext_poly/python/models/
+!abc/src/ext_poly/python/models/**
+!openroad_ml/**/models/
+!openroad_ml/**/models/**
+
 # Large macro-placement datasets (clone separately if needed)
 macroPlace/macro-place-challenge-2026/external/MacroPlacement/Testcases/
 macroPlace/macro-place-challenge-2026/external/MacroPlacement/ExperimentalData/
@@ -59,5 +67,10 @@ abc/abc.exe
 abc/*.o
 abc/*.a
 
-# Large third-party tools (clone separately)
-OpenROAD/
+# Large third-party OpenROAD clones (root only).
+# NOTE: bare "OpenROAD/" also matches ml_for_eda_research/openroad/ on
+# Windows (case-insensitive), so keep the negation below.
+/OpenROAD/
+openroad_repos/
+!ml_for_eda_research/openroad/
+!ml_for_eda_research/openroad/**
