@@ -1,0 +1,285 @@
+\chapter{Technology-Independent Optimization}
+\label{ch:opt}
+
+This chapter describes the AIG restructuring passes that shrink area (AND-node
+count) and depth (levels) \emph{before} any technology mapping. Every pass shares
+the same shape: a lightweight \emph{driver} walks the network node-by-node, an
+\emph{engine} proposes a local replacement, and a \emph{gain rule} accepts the
+move only when it pays off. The passes differ in how they enumerate the local
+neighborhood (cuts, cones, supergates) and how they synthesize a candidate
+(precomputed subgraphs, factoring, resubstitution, or SAT).
+
+\glance{Balance retimes AND-trees for depth; \cmd{rewrite}/\cmd{drw} swap in
+precomputed 4-input subgraphs; \cmd{refactor} re-factors a reconvergent cone;
+\cmd{resub} reconnects a node to existing divisors; \cmd{mfs} uses SAT and
+don't-cares. All are DAG-aware: a move is kept only if the MFFC freed exceeds the
+new nodes added (hash-shared nodes counted as free).}
+
+\section{Balance}
+\label{sec:opt-balance}
+
+Balancing does not change functionality or (much) area; it re-associates
+multi-input AND/EXOR trees so that late-arriving inputs sit near the root,
+minimizing depth. Two independent implementations exist.
+
+\paragraph{Classic AIG (\cmd{balance}).}
+The driver \id{Abc\_NtkBalance} (\file{src/base/abci/abcBalance.c}) rebuilds the
+network from the COs down. For each node, \id{Abc\_NodeBalanceCone} collects the
+maximal ``implication supergate'' --- the transitive AND-cone that stops at a
+complemented edge, a PI, or (when neither \id{fDuplicate} nor \id{fSelective} is
+set) a node with more than one fanout; the recursion also hard-caps the supergate
+at $10000$ literals. \id{Abc\_NodeBalance\_rec} then sorts the leaves by
+decreasing level and repeatedly pops the two lowest-level operands and ANDs them,
+producing a near-balanced tree. Two heuristics inject a \emph{sharing bias}:
+
+\begin{itemize}
+\item \id{Abc\_NodeBalanceFindLeft} finds the left-most operand of the same level
+as the last one, defining the legal range of partners (only when
+\id{fUpdateLevel} is on; otherwise the bound is $0$).
+\item \id{Abc\_NodeBalancePermute} scans that range and, via
+\id{Abc\_AigAndLookup}, prefers a partner whose AND already exists in the
+structural hash, reusing a node instead of creating one.
+\end{itemize}
+
+\paragraph{GIA (\cmd{\&b}).}
+\id{Gia\_ManBalance} (\file{src/aig/gia/giaBalAig.c}) is the scalable twin used in
+\cmd{\&} recipes. \id{Gia\_ManSuperCollect} gathers AND and XOR supergates,
+capping each at $50$ collected literals (\id{Vec\_IntSize(p->vSuper) > 50}), then
+\id{Gia\_ManSimplifyAnd}/\id{Gia\_ManSimplifyXor} fold constants and duplicates.
+\id{Gia\_ManBalanceGate} sorts operands by level and combines the two lowest.
+To bias toward sharing without quadratic cost, \id{Gia\_ManPrepareLastTwo} only
+inspects a \emph{lookback window of the last 8 operands}
+(\id{Stop = Abc\_MaxInt(Stop, nSize - 9)}) when hunting for a hash-shareable pair.
+
+\paragraph{Area balancing (\cmd{\&b -a}).}
+\id{Gia\_ManAreaBalance} $\rightarrow$ \id{Dam\_ManAreaBalanceInt} runs a global
+divisor-extraction loop (\id{Dam\_Man\_t}) that repeatedly pulls the most frequent
+two-input pair out of all supergates. A priority queue ranks divisors by
+occurrence count plus a small tie-breaker $0.005 \times$ slack, where the slack
+computed by \id{Dam\_ManDivSlack} is clamped to $100$. The loop stops after
+\id{nNewNodesMax} extractions or once the top priority drops below $2$.
+
+\section{Rewrite (\texorpdfstring{\cmd{rewrite}}{rewrite})}
+\label{sec:opt-rewrite}
+
+DAG-aware rewriting replaces 4-input cones with equivalent, smaller precomputed
+subgraphs. Driver \id{Abc\_NtkRewrite} (\file{src/base/abci/abcRewrite.c}) sets up
+a cut manager and visits each node once; engine \id{Rwr\_NodeRewrite}
+(\file{src/opt/rwr/rwrEva.c}) does the work.
+
+\paragraph{Cuts.}
+\id{Abc\_NtkStartCutManForRewrite} fixes the cut parameters
+(\file{src/base/abci/abcRewrite.c}):
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+\id{nVarsMax} (cut size $k$)          & 4 \\
+\id{nKeepMax} (max cuts kept / node)  & 250 \\
+\id{fTruth} (compute truth tables)    & 1 \\
+\id{fFilter} (filter dominated cuts)  & 1 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\id{Rwr\_NodeRewrite} considers \emph{only} the 4-input cuts
+(\id{pCut->nLeaves < 4} are skipped). The 16-bit truth table of each cut is
+NPN-canonized through precomputed permutation/phase tables (\id{p->pPerms},
+\id{p->pPhases}) into one of the \textbf{222} NPN classes of 4-variable functions
+(\id{p->vClasses->nSize == 222}; the function table \id{pTable} spans
+\id{nFuncs = 1<<16 = 65536} entries, set in \file{src/opt/rwr/rwrMan.c}). Each
+class points to a small forest of precomputed replacement subgraphs
+(\id{Rwr\_Node\_t}, decomposition graphs).
+
+\paragraph{Gain rule.}
+For each candidate the MFFC of the root is labeled
+(\id{Abc\_NodeMffcLabelAig}, giving \id{nNodesSaved}) and \id{Rwr\_CutEvaluate}
+computes, per subgraph, how many \emph{new} nodes would be added via
+\id{Dec\_GraphToNetworkCount} --- crucially, nodes that already exist in the
+structural hash are reused and counted as free. The gain is
+
+\[
+\text{gain} = \text{nNodesSaved (MFFC freed)} - \text{nNodesAdded (new nodes)} .
+\]
+
+The move is accepted when \id{nGain > 0}, or when \id{nGain == 0} and zero-cost
+replacements are enabled (\cmd{rewrite -z}, the \id{fUseZeros} flag). Nodes that
+are persistent or have more than $1000$ fanouts are skipped; a cut is also
+dropped if more than two of its leaves are singly-fanout nodes.
+
+\section{DAR rewriting (\texorpdfstring{\cmd{drw} / \cmd{dc2}}{drw / dc2})}
+\label{sec:opt-dar}
+
+\id{Dar\_ManRewrite} (\file{src/opt/dar/darCore.c}) is the AIG-package twin of
+\cmd{rewrite} used inside \cmd{dc2} and exposed as \cmd{drw}. It is faster because
+it enumerates cuts on the fly and stores its own subgraph library
+(\id{Dar\_LibPrepare}). Defaults come from \id{Dar\_ManDefaultRwrParams}:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Field} & \textbf{Default} & \textbf{Meaning} \\
+\midrule
+\id{nCutsMax}  & 8 & max cuts computed per node \\
+\id{nSubgMax}  & 5 & max subgraphs tried (a ``magic number'') \\
+\id{nMinSaved} & 1 & min nodes saved to accept \\
+\id{fUpdateLevel} & 0 & keep depth bounded by required time \\
+\id{fUseZeros} & 0 & allow zero-gain moves (sets \id{nMinSaved=0}) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three-leaf cuts are padded to four (\id{pCut->pLeaves[nLeaves++] = 0}) before
+\id{Dar\_LibEval}. A replacement is accepted only when
+\id{p->GainBest >= nMinSaved}; \id{Dar\_LibBuildBest} then constructs it and
+\id{Aig\_ObjReplace} splices it in.
+
+\section{Refactor (\texorpdfstring{\cmd{refactor}}{refactor})}
+\label{sec:opt-refactor}
+
+Refactoring works on larger, single-output cones than rewriting. Driver
+\id{Abc\_NtkRefactor} (\file{src/base/abci/abcRefactor.c}) computes a
+\emph{reconvergence-driven cut} with \id{Abc\_NodeFindCut}
+(\file{src/base/abci/abcReconv.c}), which greedily grows a leaf set that captures
+reconvergent paths. Engine \id{Abc\_NodeRefactor} builds the cone truth table
+(\id{Abc\_NodeConeTruth}), turns it into a fresh factored form with
+\id{Kit\_TruthToGraph} (ISOP-based factoring), and measures the swap.
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Role} \\
+\midrule
+\id{nNodeSizeMax} (\cmd{-N}) & 10 & max leaves of the refactored cut \\
+\id{nConeSizeMax} (\cmd{-C}) & 16 & max support of the containing cone \\
+\id{nMinSaved} (\cmd{-M})    & 1  & min nodes saved to accept \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The cut manager is started as
+\id{Abc\_NtkManCutStart(nNodeSizeMax, nConeSizeMax, 2, 1000)}. A constant cone is
+always accepted (returning \id{Dec\_GraphCreateConst0/1}). Otherwise the factored
+form is rejected when \id{Dec\_GraphToNetworkCount} returns $-1$ (does not fit
+under the required level) or when
+$\text{nNodesSaved} - \text{nNodesAdded} < \text{nMinSaved}$. With \cmd{-z}
+(\id{fUseZeros}) the threshold drops to $0$; with \cmd{-d} (\id{fUseDcs})
+don't-cares from the containing cone are exploited.
+
+\section{Resubstitution (\texorpdfstring{\cmd{resub}}{resub})}
+\label{sec:opt-resub}
+
+Resubstitution tries to re-express a node using signals (\emph{divisors}) that
+already exist elsewhere in the window, deleting the node's MFFC. Driver
+\id{Abc\_NtkResubstitute} (\file{src/base/abci/abcResub.c}) collects a window and
+its divisors; engine \id{Abc\_ManResubEval} evaluates candidates. Divisor storage
+is bounded by two compile-time caps:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Constant} & \textbf{Value} & \textbf{Meaning} \\
+\midrule
+\id{ABC\_RS\_DIV1\_MAX} & 150 & max single-node divisors considered \\
+\id{ABC\_RS\_DIV2\_MAX} & 500 & max pair-wise divisors considered \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Fixed try order (first success wins).}
+\id{Abc\_ManResubEval} attempts progressively larger reconnections and returns as
+soon as one is valid, so cheap moves are always preferred:
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Step} & \textbf{Routine} & \textbf{Result / gain} \\
+\midrule
+constant     & \id{Abc\_ManResubQuit}  & tie to const, gain \id{nMffc} \\
+0-node       & \id{Abc\_ManResubDivs0} & equal divisor exists, gain \id{nMffc} \\
+1-node       & \id{Abc\_ManResubDivs1} & one new gate, gain \id{nMffc}$-1$ \\
+2-node       & \id{Abc\_ManResubDivs12}, \id{Abc\_ManResubDivs2} & gain \id{nMffc}$-2$ \\
+3-node       & \id{Abc\_ManResubDivs3} & gain \id{nMffc}$-3$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The search depth is gated by \cmd{-N} (\id{nNodesMax}, the max nodes to add,
+range $0$--$3$, default $1$): with \id{nSteps==k} the loop stops after the
+$k$-node stage. The window/cut size is \cmd{-K} (\id{nCutsMax}, range $4$--$16$,
+default $8$); \cmd{-M} sets \id{nMinSaved} and \cmd{-F} enables observability
+don't-cares over \id{nLevelsOdc} levels. The window resub helpers live in
+\pkg{src/opt/res}.
+
+\section{Don't-care / SAT-based (\texorpdfstring{\cmd{mfs}}{mfs})}
+\label{sec:opt-mfs}
+
+The strongest (and slowest) passes build a care-set/don't-care window around a
+node and use a SAT solver plus interpolation to find a smaller function. Driver
+\id{Abc\_NtkMfs} (\file{src/opt/mfs/mfsCore.c}) computes a window
+(\id{Abc\_MfsComputeRoots}), formulates a miter, and calls
+\id{Abc\_NtkMfsSolveSatResub} / \id{Abc\_NtkMfsInterplate}. Because it reasons
+about the exact local don't-cares (not just structural cuts), it removes fanins
+and nodes that structural methods miss --- at higher runtime cost. Defaults
+(\id{Abc\_NtkMfsParsDefault}):
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Field} & \textbf{Default} & \textbf{Meaning} \\
+\midrule
+\id{nWinTfoLevs}  & 2    & TFO levels included in the window \\
+\id{nFanoutsMax}  & 30   & fanout cap when growing the window \\
+\id{nDepthMax}    & 20   & max node level to process \\
+\id{nWinMax}      & 300  & max window size (nodes) \\
+\id{nGrowthLevel} & 0    & allowed level growth \\
+\id{nBTLimit}     & 5000 & SAT conflict limit per call \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The mapped-network counterpart lives in \pkg{src/opt/sfm} (\id{Sfm\_ParSetDefault}
+in \file{src/opt/sfm/sfmCore.c}) and uses the same window/SAT budgets
+(\id{nTfoLevMax=2}, \id{nFanoutMax=30}, \id{nDepthMax=20}, \id{nWinSizeMax=300},
+\id{nBTLimit=5000}).
+
+\section{Cut enumeration utility}
+\label{sec:opt-cut}
+
+Several passes above rest on the $k$-feasible cut package in \pkg{src/opt/cut}.
+\id{Cut\_ManStart} allocates a manager from a \id{Cut\_Params\_t}
+(\id{nVarsMax}, \id{nKeepMax}, \id{fTruth}, \id{fFilter}, \ldots); cuts are merged
+bottom-up in \id{cutNode.c} and truth tables maintained in \id{cutTruth.c}. The
+cut size is bounded by \id{CUT\_SIZE\_MIN = 3} and \id{CUT\_SIZE\_MAX = 12}
+(\file{src/opt/cut/cut.h}); the \cmd{cut} command exposes it via \cmd{-K}. The AIG
+package embeds its own faster cut computation (\file{src/opt/dar/darCore.c},
+\id{Dar\_ManComputeCuts}).
+
+\section{Summary}
+\label{sec:opt-summary}
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}llllX@{}}
+\toprule
+\textbf{Pass} & \textbf{Command} & \textbf{Driver} & \textbf{Engine} & \textbf{Key constants} \\
+\midrule
+Balance (AIG) & \cmd{balance} & \file{abcBalance.c} & \id{Abc\_NodeBalance\_rec} & supergate cap 10000 \\
+Balance (GIA) & \cmd{\&b} & \file{giaBalAig.c} & \id{Gia\_ManBalanceGate} & supergate cap 50; lookback 8; slack $\le$100 \\
+Rewrite & \cmd{rewrite} & \file{abcRewrite.c} & \id{Rwr\_NodeRewrite} & 4-input cuts; 222 classes; keep 250; fanout$>$1000 skip \\
+DAR rewrite & \cmd{drw}/\cmd{dc2} & \file{darCore.c} & \id{Dar\_ManRewrite} & nCutsMax 8; nSubgMax 5; nMinSaved 1 \\
+Refactor & \cmd{refactor} & \file{abcRefactor.c} & \id{Abc\_NodeRefactor} & node 10; cone 16; nMinSaved 1 \\
+Resub & \cmd{resub} & \file{abcResub.c} & \id{Abc\_ManResubEval} & 150 divs; 500 pairs; K$=$8; N$=$0..3 \\
+Don't-care & \cmd{mfs} & \file{mfsCore.c} & \id{Abc\_NtkMfs} & win 300; TFO 2; BT 5000 \\
+\bottomrule
+\end{tabularx}
+\caption{Technology-independent optimization passes at a glance.}
+\label{tab:opt-summary}
+\end{table}
+
+None of these passes is used alone. Scripts such as \cmd{resyn2},
+\cmd{resyn2rs}, and \cmd{compress2} sequence balance/rewrite/refactor/resub into
+robust recipes that iterate to a fixed point; these are cataloged in
+Chapter~\ref{ch:recipes}.

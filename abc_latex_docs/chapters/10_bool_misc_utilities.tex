@@ -1,0 +1,247 @@
+\chapter{Support Layers: Boolean Kit, Utilities, and BDDs}
+\label{ch:util}
+
+\glance{This chapter documents the ``glue everyone uses.'' The single most
+important package is the resizable-array library \pkg{src/misc/vec}: almost
+every ABC data structure is built out of \id{Vec\_Int\_t}, \id{Vec\_Ptr\_t},
+and friends, and once their handful of macros are memorized the rest of the
+codebase becomes readable. Around it sit the memory managers, hash tables, and
+name managers of \pkg{src/misc}, the truth-table / decomposition Boolean kit of
+\pkg{src/bool}, and the legacy but still-present CUDD BDD package under
+\pkg{src/bdd}. All of these are infrastructure: they are consumed by the AIG,
+mapping, and verification engines rather than being commands in their own
+right.}
+
+\section{The vector library (\pkg{src/misc/vec})}
+
+Every resizable container in ABC follows one pattern: a struct holding a
+capacity, a size, and a flat C array, plus a family of \texttt{static inline}
+functions and iterator macros named after the type. The headers are self
+contained (each is a single \file{vec*.h}); there is no \texttt{.c} file. The
+core layout is uniform, e.g. from \file{src/misc/vec/vecInt.h}:
+
+\begin{lstlisting}[style=abccode]
+typedef struct Vec_Int_t_       Vec_Int_t;
+struct Vec_Int_t_
+{
+    int              nCap;    // allocated capacity
+    int              nSize;   // number of live entries
+    int *            pArray;  // the flat data array
+};
+\end{lstlisting}
+
+\subsection{The core vector types}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Type} & \textbf{Header} & \textbf{Element / purpose} \\
+\midrule
+\id{Vec\_Int\_t} & \file{vecInt.h} & array of \texttt{int}; the workhorse (IDs, literals, maps) \\
+\id{Vec\_Ptr\_t} & \file{vecPtr.h} & array of \texttt{void *}; holds objects, sub-vectors, strings \\
+\id{Vec\_Wec\_t} & \file{vecWec.h} & ``vector of \id{Vec\_Int\_t}'' (a jagged 2-D int array) \\
+\id{Vec\_Str\_t} & \file{vecStr.h} & array of \texttt{char}; byte buffers and strings \\
+\id{Vec\_Flt\_t} & \file{vecFlt.h} & array of \texttt{float}; delays, areas, weights \\
+\id{Vec\_Bit\_t} & \file{vecBit.h} & packed bit-vector (bits stored in \texttt{int}s) \\
+\id{Vec\_Wrd\_t} & \file{vecWrd.h} & array of \texttt{word} (64-bit); truth tables, signatures \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Related headers in the same package round out the family: \file{vecVec.h}
+(vector of \id{Vec\_Ptr\_t}), \file{vecQue.h} (priority queue), \file{vecMem.h}
+(arena of fixed-size words), \file{vecHsh.h} / \file{vecHash.h} (hashed
+vectors), \file{vecSet.h} (set of records), and \file{vecAtt.h} (attribute
+manager).
+
+\subsection{The ten things you must know}
+
+Learn the small set below and roughly ninety percent of the source becomes
+transparent, because every other \id{Vec\_*} type exposes the same names with a
+different prefix.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+\textbf{Name} & \textbf{What it does} \\
+\midrule
+\id{Vec\_IntAlloc(cap)}          & allocate an empty vector with initial capacity \\
+\id{Vec\_IntStart(n)}            & allocate a vector of \texttt{n} zeroed entries \\
+\id{Vec\_IntFree(v)}             & free the array and the header \\
+\id{Vec\_IntSize(v)}             & current number of entries (\texttt{nSize}) \\
+\id{Vec\_IntEntry(v,i)}          & read entry \texttt{i} (asserts \texttt{i} in range) \\
+\id{Vec\_IntWriteEntry(v,i,x)}   & overwrite entry \texttt{i} \\
+\id{Vec\_IntPush(v,x)}           & append \texttt{x}, growing (doubling) if needed \\
+\id{Vec\_IntPushUnique(v,x)}     & append only if not already present \\
+\id{Vec\_IntForEachEntry(v,x,i)} & iterate: binds \texttt{x} and index \texttt{i} \\
+\id{Vec\_PtrForEachEntry(T,v,p,i)} & iterate a \id{Vec\_Ptr\_t}, casting each entry to type \texttt{T} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Note the one asymmetry worth remembering: the pointer iterator takes an extra
+leading \emph{type} argument for the cast, whereas the integer iterator does
+not. Both are ordinary \texttt{for}-loop macros, so \texttt{break} and
+\texttt{continue} work as expected. A typical usage pattern:
+
+\begin{lstlisting}[style=abccode]
+Vec_Int_t * vFanins = Vec_IntAlloc( 16 );
+Vec_IntPush( vFanins, 5 );
+Vec_IntPush( vFanins, 12 );
+int i, Entry, Sum = 0;
+Vec_IntForEachEntry( vFanins, Entry, i )
+    Sum += Entry;                 // i and Entry are bound each pass
+printf( "%d entries, sum=%d\n", Vec_IntSize(vFanins), Sum );
+Vec_IntFree( vFanins );
+\end{lstlisting}
+
+The iterator family is large and regular: \id{Vec\_IntForEachEntryStart},
+\id{...Stop}, \id{...Reverse}, \id{...Two}, \id{...Double}, and
+\id{Vec\_WecForEachLevel} (to walk the inner vectors of a \id{Vec\_Wec\_t}) all
+follow the same shape.
+
+\section{Memory, hashing, and names (\pkg{src/misc})}
+
+These packages provide the object stores and symbol tables that the network
+data structures are built on.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Package} & \textbf{Key type} & \textbf{Purpose} \\
+\midrule
+\pkg{misc/util} & (macros) & portability layer \file{abc\_global.h}: namespaces, \texttt{word}, and the \id{ABC\_ALLOC} allocator macros (below) \\
+\pkg{misc/mem}  & \id{Mem\_Fixed\_t}, \id{Mem\_Flex\_t}, \id{Mem\_Step\_t} & fast custom allocators for many same-size (or variable-size) objects; avoids per-object \texttt{malloc} \\
+\pkg{misc/st}   & \id{st\_\_table} & classic hash table; used for the command and alias tables of the interpreter \\
+\pkg{misc/hash} & \id{Hash\_Int\_t}, \id{Hash\_Ptr\_t} & newer typed hash maps (\file{hashInt.h}, \file{hashPtr.h}, \file{hashFlt.h}, \file{hashGen.h}) \\
+\pkg{misc/nm}   & \id{Nm\_Man\_t} & the network name manager: maps object IDs to/from names (used by \id{Abc\_Ntk\_t}) \\
+\pkg{misc/util} & \id{Abc\_Nam\_t} & lightweight string$\leftrightarrow$integer interning (\file{utilNam.h}); \id{Abc\_NamStrFindOrAdd} \\
+\pkg{misc/extra}& (functions) & grab-bag of reusable utilities in \file{extra.h} (bit tricks, file I/O helpers, truth-table helpers) \\
+\pkg{misc/tim}  & \id{Tim\_Man\_t} & hierarchy / timing manager: arrival and required times across boxes, used by technology mapping \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{The allocator macros}
+
+Nearly all heap allocation in ABC goes through four macros defined in
+\file{src/misc/util/abc\_global.h}. They are thin, type-checked wrappers over
+the C library:
+
+\begin{lstlisting}[style=abccode]
+#define ABC_ALLOC(type, num)   ((type *) malloc(sizeof(type) * (size_t)(num)))
+#define ABC_CALLOC(type, num)  ((type *) calloc((size_t)(num), sizeof(type)))
+#define ABC_FREE(obj)          ((obj) ? (free((char *)(obj)), (obj) = 0) : 0)
+#define ABC_REALLOC(type, obj, num) /* realloc, or malloc when obj == NULL */
+\end{lstlisting}
+
+\id{ABC\_ALLOC} takes a type and a count (not a byte size), returning a
+correctly cast pointer; \id{ABC\_FREE} frees the pointer \emph{and} sets it to
+\texttt{0}, which is why ABC code rarely double-frees. There is also
+\id{ABC\_FALLOC} (allocate and fill with \texttt{0xff}). For hot inner loops
+where millions of identical objects are created, the \pkg{misc/mem} managers
+(\id{Mem\_FixedStart} / \id{Mem\_FixedEntryFetch}) are used instead of raw
+\id{ABC\_ALLOC} to amortize allocation cost.
+
+\section{The Boolean function kit (\pkg{src/bool})}
+
+This directory holds the small-function manipulation code: truth tables,
+irredundant sum-of-products (ISOP), factored forms, bi-decomposition, and NPN
+canonization. These routines operate on \emph{local} functions (typically
+$\le 16$ inputs) and feed the rewriting, resubstitution, and mapping engines.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Package} & \textbf{Key type / entry} & \textbf{Purpose} \\
+\midrule
+\pkg{bool/kit}  & \id{Kit\_TruthIsop} & the ``computation kit'' (\file{kit.h}): truth-table ops, cofactoring, and ISOP / SOP computation \\
+\pkg{bool/lucky}& (functions) & semi-canonical (NPN) form computation; canonizes truth tables for rewrite/library lookup \\
+\pkg{bool/bdc}  & \id{Bdc\_Man\_t}, \id{Bdc\_Fun\_t} & bi-decomposition of a truth table into an AIG; exposed by the \cmd{bidec} command \\
+\pkg{bool/dec}  & \id{Dec\_Graph\_t}, \id{Dec\_Node\_t} & factored-form decomposition graph used by \cmd{refactor} \\
+\pkg{bool/deco} & \id{Dec\_Graph\_t} & a simple decomposition tree/node structure and its APIs (\file{deco.h}) \\
+\pkg{opt/dau}   & (functions) & DAG-aware truth-table utilities (``DAG-aware unmapping''); note this lives under \pkg{opt}, not \pkg{bool} \\
+\pkg{bool/rpo}  & (functions) & read-polarity-once (RPO) factoring (\file{rpo.h}) \\
+\pkg{bool/rsb}  & (functions) & truth-table based resubstitution (\file{rsb.h}) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\glance{The \pkg{dau} package requested with the ``bool'' group actually lives
+at \file{src/opt/dau}, not \file{src/bool/dau}; its header \file{dau.h} is
+titled ``DAG-aware unmapping.''}
+
+The canonical ISOP entry point is declared in \file{src/bool/kit/kit.h}:
+
+\begin{lstlisting}[style=abccode]
+// compute an irredundant SOP into vMemory; returns cost / polarity info
+extern int Kit_TruthIsop( unsigned * puTruth, int nVars,
+                          Vec_Int_t * vMemory, int fTryBoth );
+\end{lstlisting}
+
+Note how even here the output cover is returned in a \id{Vec\_Int\_t}: the
+vector library is the lingua franca between packages. A \id{Dec\_Graph\_t} from
+\pkg{bool/dec} is likewise the currency between factoring and the AIG
+constructor used by \cmd{refactor}.
+
+\section{Binary Decision Diagrams (\pkg{src/bdd})}
+
+ABC embeds the Colorado University Decision Diagram package (CUDD) plus several
+companion libraries. BDDs predate the AIG/SAT-centric flow and are today
+\emph{largely legacy}: they are used where a canonical functional
+representation is convenient rather than as the main engine.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Package} & \textbf{Key type} & \textbf{Purpose} \\
+\midrule
+\pkg{bdd/cudd} & \id{DdManager}, \id{DdNode} & the CUDD BDD/ZDD package: unique table, reordering, apply operations \\
+\pkg{bdd/dsd}  & (functions) & disjoint-support decomposition of BDDs \\
+\pkg{bdd/reo}  & (functions) & BDD variable reordering engine \\
+\pkg{bdd/mtr}  & (functions) & multiway variable grouping tree (reordering support) \\
+\pkg{bdd/epd}  & (functions) & extended-precision floating point (for large BDD counts) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The two exported CUDD types are the manager and the node (\file{cudd.h}):
+
+\begin{lstlisting}[style=abccode]
+typedef struct DdManager DdManager;   // owns the unique/computed tables
+struct DdNode {                       // one BDD/ADD node
+    DdHalfWord index;
+    DdHalfWord ref;                   // reference count
+    DdNode *   next;                  // unique-table chain
+    /* value / then / else ... */
+};
+\end{lstlisting}
+
+BDDs surface in a few places: \cmd{collapse} builds a global BDD for each output
+(a network whose node functionality is BDD-based), and BDDs back some
+don't-care and functional-decomposition computations. For anything at scale the
+modern flow prefers AIGs and SAT, so most users touch BDDs only through these
+commands.
+
+\section{Summary: I need X, use package Y}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}X l@{}}
+\toprule
+\textbf{I need to\ldots} & \textbf{Use} \\
+\midrule
+store a growable list of ints / pointers / bytes & \pkg{misc/vec} (\id{Vec\_Int\_t}, \id{Vec\_Ptr\_t}, \id{Vec\_Str\_t}) \\
+store a jagged 2-D int array & \pkg{misc/vec} (\id{Vec\_Wec\_t}) \\
+allocate / free heap memory & \id{ABC\_ALLOC} / \id{ABC\_FREE} (\file{misc/util/abc\_global.h}) \\
+allocate millions of same-size objects fast & \pkg{misc/mem} (\id{Mem\_Fixed\_t}) \\
+map a string to an integer id and back & \pkg{misc/nm} (\id{Nm\_Man\_t}) or \id{Abc\_Nam\_t} \\
+a general hash table & \pkg{misc/st} or \pkg{misc/hash} \\
+propagate arrival/required times through boxes & \pkg{misc/tim} (\id{Tim\_Man\_t}) \\
+manipulate a small truth table / compute an SOP & \pkg{bool/kit} (\id{Kit\_TruthIsop}) \\
+canonize a function to NPN form & \pkg{bool/lucky} \\
+bi-decompose a function into an AIG & \pkg{bool/bdc} / \cmd{bidec} \\
+build a factored form for refactoring & \pkg{bool/dec} (\id{Dec\_Graph\_t}) \\
+a canonical BDD of a function & \pkg{bdd/cudd} / \cmd{collapse} \\
+\bottomrule
+\end{tabularx}
+\end{center}

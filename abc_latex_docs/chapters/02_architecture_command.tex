@@ -1,0 +1,406 @@
+\chapter{Architecture, the Frame, and the Command System}
+\label{ch:arch}
+
+ABC is, at its core, a single-threaded interactive shell wrapped around a large
+library of logic-synthesis and verification engines. Everything the user types
+is a \emph{command}; every command is a C function that reads and mutates one
+shared global state object, the \emph{frame}. This chapter explains how the
+program starts, what the frame holds, how the command dispatcher works, and the
+universal wrapper$\to$driver$\to$engine pattern that every algorithm in the
+codebase follows. It closes with a short tour of the build system.
+
+\glance{\id{main()} in \file{src/base/main/main.c} calls \id{Abc_RealMain()}
+(\file{src/base/main/mainReal.c}), which grabs the singleton frame from
+\id{Abc_FrameGetGlobalFrame()}, sources \file{abc.rc}, and then feeds every line
+to \id{Cmd\_CommandExecute()}. That function splits on \texttt{;}, expands
+aliases, looks the command up in \id{pAbc->tCommands}, and dispatches to an
+\id{Abc\_CommandXxx(pAbc, argc, argv)} wrapper. Each wrapper parses flags, calls
+a driver such as \id{Abc\_NtkRewrite()}, which in turn calls an engine such as
+\id{Rwr\_NodeRewrite()}. To find any command, grep \file{src/base/abci/abc.c}
+for its string next to \id{Cmd\_CommandAdd}.}
+
+\section{Startup and the REPL}
+\label{sec:startup}
+
+The entry point is deliberately tiny. \file{src/base/main/main.c} contains only
+a namespace-aware forwarder:
+
+\begin{lstlisting}[style=abccode]
+int main(int argc, char *argv[])
+{
+   return ABC_NAMESPACE_PREFIX Abc_RealMain(argc, argv);
+}
+\end{lstlisting}
+
+All the real work lives in \id{Abc\_RealMain()} in
+\file{src/base/main/mainReal.c}. Its first meaningful act is to obtain the global
+frame and record the binary name:
+
+\begin{lstlisting}[style=abccode]
+// get global frame (singleton pattern)
+// will be initialized on first call
+pAbc = Abc_FrameGetGlobalFrame();
+pAbc->sBinary = argv[0];
+\end{lstlisting}
+
+It then parses options with \id{Extra\_UtilGetopt} (option string
+\texttt{"dm:l:c:q:C:Q:S:hf:F:o:st:T:xb"}) to choose an execution mode, sources
+the resource file via \id{Abc\_UtilsSource()}, and either runs a batch string or
+enters the interactive read-eval loop. The mode is selected by the
+\id{fBatch} enum in \id{Abc\_RealMain()}:
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Flag} & \textbf{Mode} & \textbf{Effect} \\
+\midrule
+(none)     & \id{INTERACTIVE}                  & Print hello line + recent history, then loop on \id{stdin}. \\
+\texttt{-c}  & \id{BATCH}                        & Run the command string, then quit. \\
+\texttt{-q}  & \id{BATCH\_QUIET}                 & Like \texttt{-c} but do not echo the command line. \\
+\texttt{-C}  & \id{BATCH\_THEN\_INTERACTIVE}     & Run the command string, then drop to interactive. \\
+\texttt{-Q}  & \id{BATCH\_QUIET\_THEN\_INTERACTIVE} & Quiet variant of \texttt{-C}. \\
+\texttt{-f}  & \id{BATCH}                        & Turns into \cmd{source <file>}: run a script, then quit. \\
+\texttt{-F}  & \id{BATCH}                        & As \texttt{-f} but \cmd{source -x} (echo each line). \\
+\texttt{-S}  & \id{BATCH\_SMT}                   & Read an SMT-LIB problem from \id{stdin} (\id{Wlc\_StdinProcessSmt}). \\
+\texttt{-s}  & ---                               & Suppress sourcing of \file{abc.rc} (\id{fInitSource=0}). \\
+\texttt{-o}  & ---                               & Final \cmd{write} to the named output file. \\
+\texttt{-b}  & ---                               & Bridge mode: read a GIA from \id{stdin} via \id{Gia\_ManFromBridge}. \\
+\bottomrule
+\end{tabularx}
+\caption{Command-line modes handled in \id{Abc\_RealMain()}.}
+\end{table}
+
+Multiple \texttt{-c}/\texttt{-q} arguments are concatenated with \texttt{" ; "}
+into one \id{Vec\_Str\_t} before execution, so \texttt{-c a -c b} is equivalent
+to \texttt{-c "a ; b"}. The interactive loop is simply:
+
+\begin{lstlisting}[style=abccode]
+while ( !feof(stdin) ) {
+    sCommand = Abc_UtilsGetUsersInput( pAbc );
+    sCommand = CmdHistorySubstitution( pAbc, sCommand, &did_subst );
+    if ( sCommand == NULL ) break;
+    fStatus = Cmd_CommandExecute( pAbc, sCommand );
+    if ( fStatus == -1 || fStatus == -2 )   // quit / quit -s
+        break;
+}
+\end{lstlisting}
+
+\subsection{The singleton frame}
+
+\id{Abc\_FrameGetGlobalFrame()} in \file{src/base/main/mainFrame.c} implements a
+lazy singleton: the first call allocates the frame with \id{Abc\_FrameAllocate()}
+and initializes all packages with \id{Abc\_FrameInit()}; later calls return the
+same pointer:
+
+\begin{lstlisting}[style=abccode]
+static Abc_Frame_t * s_GlobalFrame = NULL;
+Abc_Frame_t * Abc_FrameGetGlobalFrame()
+{
+    if ( s_GlobalFrame == 0 ) {
+        s_GlobalFrame = Abc_FrameAllocate();
+        Abc_FrameInit( s_GlobalFrame );
+    }
+    return s_GlobalFrame;
+}
+\end{lstlisting}
+
+\id{Abc\_FrameInit()} (in \file{src/base/main/mainInit.c}) is the master
+registration point. It calls \id{Cmd\_Init()} first (so the command tables
+exist) and then each package's \id{Xxx\_Init(pAbc)} routine---\id{Io\_Init},
+\id{Abc\_Init}, \id{If\_Init}, \id{Map\_Init}, \id{Scl\_Init}, \id{Wlc\_Init},
+and so on---each of which registers its own commands. Dynamically loaded
+plug-ins register through a linked list of \id{Abc\_FrameInitializer\_t} nodes
+added by \id{Abc\_FrameAddInitializer()}.
+
+\subsection{Sourcing \texttt{abc.rc}}
+
+Unless \texttt{-s} is given, startup calls \id{Abc\_UtilsSource()}
+(\file{src/base/main/mainUtils.c}), which searches the current, parent, and
+grandparent directories for \file{abc.rc} and executes it with \cmd{source}.
+The same logic is exposed interactively as the \cmd{abcrc} command. The
+\file{abc.rc} file is an ordinary script: it mostly defines \emph{aliases}
+(for example \cmd{resyn2}, \cmd{compress2}) that expand into command sequences,
+which is why running ABC from a directory without \file{abc.rc} produces
+``unknown command'' errors for those convenience names.
+
+\section{The Frame: \texttt{Abc\_Frame\_t\_}}
+\label{sec:frame}
+
+The frame is defined as \id{struct Abc\_Frame\_t\_} in
+\file{src/base/main/mainInt.h}. It is the single mutable state object handed to
+every command as \id{pAbc}. It bundles the command/alias/flag tables, the
+``current'' networks in ABC's several intermediate representations, mapping
+libraries, verification results, and I/O streams. Selected fields:
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Purpose} \\
+\midrule
+\id{sVersion}, \id{sBinary}      & \id{char *}        & Version string and argv[0]. \\
+\id{tCommands}                   & \id{st\_\_table *} & Name $\to$ \id{Abc\_Command} lookup table. \\
+\id{tAliases}                    & \id{st\_\_table *} & Name $\to$ \id{Abc\_Alias} table (from \file{abc.rc}). \\
+\id{tFlags}                      & \id{st\_\_table *} & \cmd{set}/\cmd{unset} string variables. \\
+\id{aHistory}                    & \id{Vec\_Ptr\_t *} & Command history buffer. \\
+\id{pNtkCur}                     & \id{Abc\_Ntk\_t *} & The current network (main IR). \\
+\id{pNtkBackup}, \id{nSteps}     & \id{Abc\_Ntk\_t *}, \id{int} & Undo/recall support. \\
+\id{pGia}, \id{pGia2}            & \id{Gia\_Man\_t *} & Current lightweight AIG (the ``\&'' commands). \\
+\id{pLibLut}                     & \id{void *[ABC\_LUT\_LIBS]} & Current LUT libraries for FPGA mapping. \\
+\id{pLibScl}                     & \id{void *}        & Current Liberty (standard-cell) library. \\
+\id{pLibGen}, \id{pLibGen2}      & \id{void *}        & Current genlib library. \\
+\id{pLibSuper}                   & \id{void *}        & Current supergate library. \\
+\id{vStore}                      & \id{Vec\_Ptr\_t *} & Networks stashed for structural choices. \\
+\id{pCex}, \id{pCex2}, \id{vCexVec} & \id{Abc\_Cex\_t *}, \id{Vec\_Ptr\_t *} & Counter-example(s) from verification. \\
+\id{Status}, \id{nFrames}        & \id{int}           & Verification result and BMC depth. \\
+\id{Out}, \id{Err}, \id{Hst}     & \id{FILE *}        & Output, error, and history streams. \\
+\id{TimeCommand}, \id{TimeTotal} & \id{double}        & Runtime measurement for \cmd{time}. \\
+\id{fBatchMode}, \id{fBridgeMode}, \id{fSource}, \id{fAutoexac} & \id{int} & Mode flags. \\
+\bottomrule
+\end{tabularx}
+\caption{Important fields of \id{Abc\_Frame\_t\_} (\file{src/base/main/mainInt.h}).}
+\end{table}
+
+Two observations matter for reading the rest of the codebase. First, ABC keeps
+\emph{multiple} coexisting representations: \id{pNtkCur} is the general-purpose
+\id{Abc\_Ntk\_t}, while \id{pGia} is a compact \id{Gia\_Man\_t} used by the newer
+``\&'' commands. A command chooses which one it operates on. Second, most
+external code never touches the struct directly; it goes through accessor
+functions in \file{src/base/main/mainFrame.c} such as \id{Abc\_FrameReadNtk()},
+\id{Abc\_FrameSetCurrentNetwork()}, \id{Abc\_FrameReadLibScl()}, and
+\id{Abc\_FrameSetCex()}. Many of these read the file-scope \id{s\_GlobalFrame}
+directly, reinforcing that there is exactly one frame per process.
+
+\section{The Command System}
+\label{sec:cmd}
+
+The command package lives in \pkg{src/base/cmd}. Its public API (\file{cmd.h})
+is small: \id{Cmd\_Init}/\id{Cmd\_End}, \id{Cmd\_CommandAdd},
+\id{Cmd\_CommandExecute}, plus flag and history helpers.
+
+\subsection{Registration}
+
+\id{Cmd\_Init()} (\file{src/base/cmd/cmd.c}) creates the three
+\id{st\_\_table}s and registers the built-in ``Basic'' and ``Various'' commands.
+Registration everywhere uses \id{Cmd\_CommandAdd()} (\file{src/base/cmd/cmdApi.c}):
+
+\begin{lstlisting}[style=abccode]
+void Cmd_CommandAdd( Abc_Frame_t * pAbc, const char * sGroup,
+                     const char * sName, Cmd_CommandFuncType pFunc, int fChanges )
+{
+    // ... deletes any prior definition (warns on redefine) ...
+    pCommand = ABC_ALLOC( Abc_Command, 1 );
+    pCommand->sName   = Extra_UtilStrsav( sName );
+    pCommand->sGroup  = Extra_UtilStrsav( sGroup );
+    pCommand->pFunc   = pFunc;
+    pCommand->fChange = fChanges;          // 1 => network changes, enable backup
+    st__insert( pAbc->tCommands, pCommand->sName, (char *)pCommand );
+}
+\end{lstlisting}
+
+The \id{sGroup} argument only affects how \cmd{help} groups the listing; the
+\id{fChanges} flag tells the dispatcher whether to snapshot the current network
+for \cmd{undo}. The signature \id{Cmd\_CommandFuncType} is
+\id{int (*)(Abc\_Frame\_t*, int, char**)}---the familiar \id{argc}/\id{argv}
+contract, per command.
+
+\subsection{Execution pipeline}
+
+\id{Cmd\_CommandExecute()} (\file{src/base/cmd/cmdApi.c}) is the heart of the
+REPL. For one input line it loops, peeling off one \texttt{;}-separated command
+at a time:
+
+\begin{lstlisting}[style=abccode]
+if ( !pAbc->fAutoexac && !pAbc->fSource )
+    Cmd_HistoryAddCommand(pAbc, sCommand);
+sCommandNext = sCommand;
+do {
+    if ( sCommandNext[0] == '#' && Cmd_CommandHandleSpecial(pAbc, sCommandNext) )
+        break;
+    sCommandNext = CmdSplitLine( pAbc, sCommandNext, &argc, &argv );
+    loop = 0;
+    fStatus = CmdApplyAlias( pAbc, &argc, &argv, &loop );
+    if ( fStatus == 0 )
+        fStatus = CmdCommandDispatch( pAbc, &argc, &argv );
+    CmdFreeArgv( argc, argv );
+} while ( fStatus == 0 && *sCommandNext != '\0' );
+\end{lstlisting}
+
+The pipeline is four stages, all defined in \file{src/base/cmd/cmdUtils.c}
+except where noted:
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Stage} & \textbf{Function} & \textbf{What it does} \\
+\midrule
+Split   & \id{CmdSplitLine}       & Tokenizes one command, honoring \texttt{'} and \texttt{"} quotes; stops at \texttt{;} or \texttt{\#} and returns the remainder of the line. \\
+Alias   & \id{CmdApplyAlias}      & If \id{argv[0]} is in \id{tAliases}, substitutes the alias body (recursively, bounded to 200 iterations) and history-substitutes each token. \\
+Dispatch& \id{CmdCommandDispatch} & Looks up \id{argv[0]} in \id{tCommands} and calls its \id{pFunc}; times the call into \id{TimeCommand}. \\
+Special & \id{Cmd\_CommandHandleSpecial} & Handles \texttt{\#PS}, \texttt{\#CEC}, \texttt{\#ASSERT} test directives (\file{cmdApi.c}). \\
+\bottomrule
+\end{tabularx}
+\caption{The \id{Cmd\_CommandExecute} pipeline.}
+\end{table}
+
+\id{CmdCommandDispatch()} contains two useful conveniences. If the word is not a
+known command but is a single token containing a ``.'', ABC assumes it is a file
+name and silently prepends \cmd{read}. And if the command's \id{fChange} flag is
+set and the \texttt{backup} flag is enabled, it duplicates \id{pNtkCur} first so
+\cmd{undo} works:
+
+\begin{lstlisting}[style=abccode]
+if ( ! st__lookup( pAbc->tCommands, argv[0], (char **)&pCommand ) ) {
+    if ( argc == 1 && strstr( argv[0], "." ) ) {   // looks like a file
+        argv2 = CmdAddToArgv( argc, argv );        // prepend "read"
+        // ...
+    } else {
+        fprintf( pAbc->Err, "** cmd error: unknown command '%s'\n", argv[0] );
+        return 1;
+    }
+}
+pFunc  = (int (*)(Abc_Frame_t *, int, char **))pCommand->pFunc;
+fError = (*pFunc)( pAbc, argc, argv );
+\end{lstlisting}
+
+Return-value conventions ripple up to \id{Abc\_RealMain()}: \texttt{0} success,
+positive an error (abort a script), \texttt{-1} means \cmd{quit}, and \texttt{-2}
+means \cmd{quit -s} (free memory then exit).
+
+\subsection{Aliases}
+
+Aliases are managed in \file{src/base/cmd/cmdAlias.c}. \id{CmdCommandAliasAdd()}
+stores an \id{Abc\_Alias} (name plus an \id{argc}/\id{argv} body) in
+\id{tAliases}; the \cmd{alias} command is its front end. During execution,
+\id{CmdApplyAlias()} rewrites the argument vector in place, shifting arguments to
+splice in the alias body, and recursively re-parses the result so that an alias
+may itself invoke aliases and multi-command sequences. This is exactly how the
+one-word \cmd{resyn2} in \file{abc.rc} unfolds into a long \cmd{balance};
+\cmd{rewrite}; \ldots sequence.
+
+\section{The Universal Pattern: Wrapper $\to$ Driver $\to$ Engine}
+\label{sec:pattern}
+
+Almost every algorithm in ABC is exposed the same way, across three layers:
+
+\begin{enumerate}
+\item \textbf{CLI wrapper} --- \id{Abc\_CommandXxx()} in
+      \file{src/base/abci/abc.c}. Parses flags, validates the current network,
+      calls the driver, installs the result, and prints usage.
+\item \textbf{Driver} --- \id{Abc\_NtkXxx()} in a dedicated
+      \file{src/base/abci/abcXxx.c}. Walks the network, sets up managers, and
+      calls the engine node-by-node.
+\item \textbf{Engine} --- the actual algorithm in \pkg{src/opt},
+      \pkg{src/map}, \pkg{src/proof}, or \pkg{src/aig}.
+\end{enumerate}
+
+\subsection{Worked example: \texttt{rewrite}}
+
+The command is registered in \file{src/base/abci/abc.c} in the ``Synthesis''
+group, with \id{fChanges = 1}:
+
+\begin{lstlisting}[style=abccode]
+Cmd_CommandAdd( pAbc, "Synthesis", "rewrite", Abc_CommandRewrite, 1 );
+\end{lstlisting}
+
+The wrapper \id{Abc\_CommandRewrite()} parses \texttt{-lzvwh}, checks that the
+current network is a strashed AIG, duplicates it for safety, then calls the
+driver:
+
+\begin{lstlisting}[style=abccode]
+pDup = Abc_NtkDup( pNtk );
+RetValue = Abc_NtkRewrite( pNtk, fUpdateLevel, fUseZeros,
+                           fVerbose, fVeryVerbose, fPlaceEnable );
+if ( RetValue == -1 )
+    Abc_FrameReplaceCurrentNetwork( pAbc, pDup );   // restore on failure
+\end{lstlisting}
+
+The driver \id{Abc\_NtkRewrite()} lives in
+\file{src/base/abci/abcRewrite.c}; it builds the rewriting and cut managers and,
+for each node, calls the engine \id{Rwr\_NodeRewrite()} in
+\file{src/opt/rwr/rwrEva.c}:
+
+\begin{lstlisting}[style=abccode]
+nGain = Rwr_NodeRewrite( pManRwr, pManCut, pNode,
+                         fUpdateLevel, fUseZeros, fPlaceEnable );
+\end{lstlisting}
+
+So the full chain is
+\id{Abc\_CommandRewrite} (\file{abc.c}) $\to$
+\id{Abc\_NtkRewrite} (\file{abcRewrite.c}) $\to$
+\id{Rwr\_NodeRewrite} (\file{rwrEva.c}), spanning the wrapper, driver, and
+engine (\pkg{opt/rwr}) layers respectively.
+
+\subsection{The 60-second recipe for finding any command}
+
+To locate the implementation of any command---say \cmd{\&syn2} or \cmd{dch}:
+
+\begin{enumerate}
+\item Grep for the command string next to \id{Cmd\_CommandAdd} in the relevant
+      driver file (usually \file{src/base/abci/abc.c}, or \file{abcs.c} /
+      package \id{Xxx\_Init} for ``\&'' commands). This gives the wrapper name.
+\item Jump to the \id{Abc\_CommandXxx()} wrapper; read its \texttt{usage:} block
+      for flags and the one call into an \id{Abc\_NtkXxx()} / \id{Gia\_ManXxx()}
+      driver.
+\item Open that driver in \file{src/base/abci/abcXxx.c}; the engine call names
+      the real package under \pkg{src/opt}, \pkg{src/map}, or \pkg{src/proof}.
+\end{enumerate}
+
+Because ``\&'' commands operate on \id{pAbc->pGia} rather than \id{pNtkCur},
+their wrappers are grouped separately but follow the identical pattern.
+
+\section{Build System}
+\label{sec:build}
+
+ABC builds with a single top-level \file{Makefile} (POSIX/GNU make) and an
+optional CMake wrapper; on Windows it is typically built with MSVC project files,
+while under WSL2 the plain \cmd{make} flow is easiest. The Makefile aggregates
+sources from a long \id{MODULES} list; every module contributes a
+\file{module.make} fragment that appends its files to \id{SRC}:
+
+\begin{lstlisting}[style=abcshell]
+include $(patsubst %, $(ABCSRC)/%/module.make, $(MODULES))
+\end{lstlisting}
+
+Crucially, \id{MODULES} begins with \texttt{\$(wildcard src/ext*)}, so any
+directory named \file{src/ext*} is auto-included---this is the drop-in mechanism
+for external extensions. Key targets and flags:
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+\textbf{Target / flag} & \textbf{Effect} \\
+\midrule
+\cmd{make} (\cmd{make abc}) & Build the \file{abc} binary (default target). \\
+\cmd{make libabc.a}         & Build a static library (excludes \file{src/base/main/main.o}). \\
+\cmd{make ABC\_USE\_PIC=1 libabc.so} & Build a position-independent shared library. \\
+\texttt{ABC\_USE\_NO\_READLINE=1} & Compile without \texttt{libreadline} (no line editing). \\
+\texttt{ABC\_USE\_NO\_PTHREADS=1} & Compile without pthreads. \\
+\texttt{ABC\_USE\_NO\_CUDD}       & Omit the bundled CUDD BDD package (otherwise on, adds \texttt{-DABC\_USE\_CUDD=1}). \\
+\texttt{ABC\_USE\_NAMESPACE=xxx}  & Compile as C++ inside namespace \texttt{xxx} (implies \texttt{CC=g++ -fpermissive -x c++}). \\
+\texttt{ABC\_USE\_PIC=1}          & Add \texttt{-fPIC} for shared-library builds. \\
+\bottomrule
+\end{tabularx}
+\caption{Common build targets and toggles from \file{Makefile} and \file{README.md}.}
+\end{table}
+
+The static library enables embedding ABC in another program: as the
+\file{README.md} notes, \id{Abc\_Start()} and \id{Abc\_Stop()} start and stop the
+framework, and \file{src/demo.c} shows DAG-aware rewriting driven entirely
+through library APIs. By default the build compiles as C with \texttt{gcc}; it
+can also be compiled as C++ (\texttt{CC=g++}), optionally wrapped in a namespace
+via \texttt{ABC\_NAMESPACE}, which is why nearly every source file is bracketed
+by \id{ABC\_NAMESPACE\_IMPL\_START}/\id{\_END} macros.
+
+\section{Where to Look Next}
+
+With the frame and command plumbing understood, the natural next step is the
+main intermediate representation \id{Abc\_Ntk\_t} and its objects
+(\pkg{src/base/abc}), followed by the lightweight AIG \id{Gia\_Man\_t}
+(\pkg{src/aig/gia}) used by the ``\&'' commands. The synthesis engines under
+\pkg{src/opt} and the mappers under \pkg{src/map} all plug into the
+wrapper$\to$driver$\to$engine pattern described here, so any of them can be read
+starting from its \id{Abc\_CommandXxx} wrapper in \file{src/base/abci/abc.c}.

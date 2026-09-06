@@ -1,0 +1,315 @@
+\chapter{Technology Mapping}
+\label{ch:map}
+
+Technology mapping turns a technology-independent AIG into a network of
+implementable cells: $K$-input lookup tables (LUTs) for FPGAs, or gates drawn
+from a standard-cell library for ASICs. ABC's mappers all share the same
+skeleton --- enumerate small \emph{cuts} at every node, evaluate each cut's cost
+under the target technology, and select one cut per node by dynamic programming
+over several passes that trade delay against area --- but they differ in the
+target and in the cost model. The flagship is the priority-cut FPGA mapper in
+\pkg{src/map/if}, driving the commands \cmd{if} (logic-network flow) and
+\cmd{\&if} (GIA flow).
+
+\glance{The \cmd{if} mapper keeps at most \id{nCutsMax} priority cuts per node
+(default \textbf{8}, switch \cmd{-C}), each cut a K-feasible set of leaves with
+K = LUT size (switch \cmd{-K}). One node's cuts are formed by merging the cut
+sets of its two fanins. Cuts are ranked lexicographically by a mode-dependent
+key (delay-first vs.\ area-first); the winner becomes \id{CutBest}. Mapping runs
+a fixed schedule of rounds: delay $\to$ area-flow $\to$ exact-area recovery.}
+
+\section{The priority-cut FPGA mapper: \pkg{src/map/if}}
+
+\subsection{Data model}
+
+Four structures in \file{src/map/if/if.h} carry the mapper. \id{If_Man_t} is the
+manager (objects, memory managers, truth-table tables, timing). \id{If_Obj_t} is
+a node; besides fanins (\id{pFanin0}/\id{pFanin1}), level, and reference counts
+it embeds its own best cut \id{CutBest} and a pointer \id{pCutSet} to the working
+cut set. \id{If_Par_t} holds every user parameter. A \id{If_Set_t} is a set of
+cut pointers (\id{ppCuts}) with a running count \id{nCuts} bounded by
+\id{nCutsMax}.
+
+The priority cut itself is compact --- a flexible array of leaf IDs preceded by
+its cost fields:
+
+\begin{lstlisting}[style=abccode]
+struct If_Cut_t_
+{
+    float     Area;        // area (or area-flow) of the cut
+    float     Edge;        // the edge flow
+    float     Power;       // the power flow
+    float     Delay;       // delay of the cut
+    word      Config;      // configuration string
+    int       iCutFunc;    // TT ID of the cut
+    ...
+    unsigned  Cost    : 12; // user's cost (<= IF_COST_MAX)
+    unsigned  fCompl  :  1; // complemented attribute
+    unsigned  fUser   :  1; // using the user's area and delay
+    unsigned  fUseless:  1; // cannot be used in the mapping
+    unsigned  fAndCut :  1; // matched with AND gate
+    unsigned  nLimit  :  8; // the maximum number of leaves (= LUT size)
+    unsigned  nLeaves :  8; // the number of leaves
+    unsigned  decDelay: 16; // pin-to-pin decomposition delay
+    int       pLeaves[0];
+};
+\end{lstlisting}
+
+\id{nLimit} is set to \id{pPars->nLutSize} by \id{If_CutSetup}, so it \emph{is}
+the LUT size K. \id{uSign} (a 32-bit one-hot-per-leaf-ID hash) enables fast
+K-feasibility and containment pre-tests.
+
+\subsection{Defaults from \id{If_ManSetDefaultPars}}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+Field & Default & Meaning \\
+\midrule
+\id{nLutSize}    & $-1$ & LUT size K; if unset, taken from LUT library \id{LutMax} (\cmd{-K}) \\
+\id{nCutsMax}    & $8$  & priority cuts kept per node (\cmd{-C}) \\
+\id{nFlowIters}  & $1$  & area-flow recovery rounds (\cmd{-F}) \\
+\id{nAreaIters}  & $2$  & exact-area recovery rounds (\cmd{-A}) \\
+\id{DelayTarget} & $-1$ & required-time target (auto) \\
+\id{Epsilon}     & $0.005$ & float comparison tolerance \\
+\id{fPreprocess} & $1$  & run the delay preprocessing rounds \\
+\id{fArea}       & $0$  & pure area mode off \\
+\id{fExpRed}     & $1$  & expand/reduce best cuts between rounds \\
+\id{fEdge}       & $1$  & use edge (fanin-count) flow in ranking \\
+\bottomrule
+\end{tabularx}
+\caption{Selected defaults set by \id{If_ManSetDefaultPars} (\file{src/map/if/ifCore.c}). \id{nLutSize} has no built-in default: \cmd{if} requires either \cmd{-K} or a loaded LUT library.}
+\end{table}
+
+\subsection{The round schedule: \id{If_ManPerformMapping}}
+
+\id{If_ManPerformMapping} sets up the CI cut sets and cut memory, derives a
+reverse topological order, then calls \id{If_ManPerformMappingComb}, which runs
+the fixed sequence of passes below. Each pass is one call to
+\id{If_ManPerformMappingRound} with a \emph{Mode} (delay $=0$, area-flow $=1$,
+exact-area $=2$).
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+Pass (label) & Mode & Guard & Purpose \\
+\midrule
+``Delay''   & 0 & \id{fPreprocess \&\& !fArea} & first delay-optimal pass (\id{fFirst}) \\
+``Delay-2'' & 0 & \id{fFancy}=1 & second delay pass, alternate sort \\
+``Area''    & 0 & \id{fArea}=1 & delay-mode pass under area sort \\
+``Flow''    & 1 & $\times$ \id{nFlowIters} & area-flow recovery \\
+``Area''    & 2 & $\times$ \id{nAreaIters} & exact (ref/deref) area recovery \\
+\bottomrule
+\end{tabularx}
+\caption{Round schedule in \id{If_ManPerformMappingComb}. After each area pass, if \id{fExpRed} is set, \id{If_ManImproveMapping} (\file{src/map/if/ifReduce.c}) expands/reduces cuts. \id{FinalDelay}/\id{FinalArea} are read back from \id{RequiredGlo}/\id{AreaGlo}.}
+\end{table}
+
+\id{If_ManPerformMappingRound} chooses the sort mode for the pass --- area
+(\id{SortMode}=1) whenever \emph{Mode} is nonzero or \id{fArea} is set, the
+``fancy'' delay variant (\id{SortMode}=2) when \id{fFancy} is set, otherwise
+delay (\id{SortMode}=0) --- then visits every AND node in topological order,
+calling \id{If_ObjPerformMappingAnd}, and \id{If_ObjPerformMappingChoice} for
+representative nodes of a choice class (\id{pObj->fRepr}). It finishes by calling
+\id{If_ManComputeRequired} to propagate required times for the next pass.
+
+\subsection{Per-node dynamic programming: \id{If_ObjPerformMappingAnd}}
+
+For one AND node, the mapper first refreshes the fanout estimate \id{EstRefs}
+(exactly \id{nRefs} in delay mode; the blend $(2\cdot\id{EstRefs}+\id{nRefs})/3$
+in the area modes), and in an area mode dereferences the currently selected best
+cut so that recomputed areas are measured against the rest of the mapping. It
+then enumerates the cross-product of the two fanins' cut sets:
+
+\begin{lstlisting}[style=abccode]
+If_ObjForEachCut( pObj->pFanin0, pCut0, i )
+If_ObjForEachCut( pObj->pFanin1, pCut1, k )
+{
+    pCut = pCutSet->ppCuts[pCutSet->nCuts];
+    // K-feasibility pre-test using the leaf-ID signatures
+    if ( If_WordCountOnes(pCut0->uSign | pCut1->uSign) > p->pPars->nLutSize )
+        continue;
+    ...
+    if ( !If_CutMergeOrdered( p, pCut0, pCut1, pCut ) )   // ordered union of leaves
+        continue;
+    ...
+    if ( !p->pPars->fSkipCutFilter && If_CutFilter( pCutSet, pCut, fSave0 ) )
+        continue;                                         // dominated / dominating
+    ...
+    pCut->Delay = If_CutDelay( p, pObj, pCut );
+    if ( Mode && pCut->Delay > pObj->Required + p->fEpsilon && pCutSet->nCuts > 0 )
+        continue;                                         // violates required time
+    pCut->Area = (Mode == 2)? If_CutAreaDerefed(p,pCut) : If_CutAreaFlow(p,pCut);
+    If_CutSort( p, pCutSet, pCut );                       // insert by priority
+}
+\end{lstlisting}
+
+The union of leaves is built by \id{If_CutMergeOrdered} (a sorted merge that
+fails once more than \id{nLimit}$=$K distinct leaves appear); \id{If_CutMerge} is
+the unordered variant used when truth-table permutations are tracked
+(\id{fUseTtPerm}). \id{If_CutFilter} drops any new cut whose leaves contain, or
+are contained by, an existing cut. Truth tables and any user cost callbacks
+(\id{pFuncCost}, \id{pFuncCell}) run before ranking. After the loop the best cut
+is \id{ppCuts[0]}, copied into \id{CutBest}; a trivial single-leaf cut is
+appended, and in the area modes the chosen cut is re-referenced.
+
+\subsection{Cut ranking: \id{If_ManSortCompare} / \id{If_CutSort}}
+
+\id{If_CutSort} does an incremental insertion sort that keeps at most
+\id{nCutsMax} cuts, always holding the best cut at index~0. The ordering key is
+the lexicographic comparator \id{If_ManSortCompare}, whose field priority
+depends on \id{SortMode}:
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\id{SortMode} & Meaning & Lexicographic key (first difference wins) \\
+\midrule
+$0$ & delay      & \id{Delay}, \id{nLeaves}, \id{Area}, \id{Edge}, \id{Power}, \id{fUseless} \\
+$1$ & area (flow/exact) & \id{Area}, \id{Edge}, \id{Power}, \id{nLeaves}, \id{fUseless} \\
+$2$ & delay (fancy/old) & \id{Delay}, \id{fUseless}, \id{Area}, \id{Edge}, \id{Power}, \id{nLeaves} \\
+\bottomrule
+\end{tabularx}
+\caption{Cut comparison order in \id{If_ManSortCompare} (\file{src/map/if/ifCut.c}), regular (non-power) branch. All floats are compared with tolerance \id{fEpsilon}. In delay mode a faster cut always wins and ties break toward fewer leaves; in area mode the cheaper cut wins first.}
+\end{table}
+
+Area-flow (\id{If_CutAreaFlow}) charges the cut's own LUT area
+(\id{If_CutLutArea}, from \id{pLutLib->pLutAreas[nLeaves]} or $1.0$ for a unit
+library) plus, for each leaf, the leaf's best-cut area amortised by its
+\id{EstRefs}. The exact-area passes instead use \id{If_CutAreaDerefed}, which
+reference-counts the actual cone (\id{If_CutAreaRef}/\id{If_CutAreaDeref}) to get
+true shared area.
+
+\subsection{Commands \cmd{if} and \cmd{\&if}}
+
+\cmd{if} (\id{Abc_CommandIf}, \file{src/base/abci/abc.c}) maps a logic network;
+\cmd{\&if} (\id{Abc_CommandAbc9If}) maps the current GIA via
+\id{Gia_ManPerformMapping} in \file{src/aig/gia/giaIf.c}, which fills an
+\id{If_Par_t}, builds an \id{If_Man_t}, and calls \id{If_ManPerformMapping}. Both
+require a LUT size: either \cmd{-K num} or a LUT library
+(\id{If_LibLut_t}, loaded with \cmd{read\_lut}); giving \cmd{-K} disables the
+library. \cmd{-C num} sets the priority-cut count.
+
+\section{Structural choices sharpen mapping}
+
+Because \id{If_Obj_t} carries an equivalence pointer \id{pEquiv} and
+\id{If_ObjPerformMappingChoice} folds all class members' cuts into one node's cut
+set, \cmd{if} can map over an AIG that carries \emph{structural choices}. Choices
+are alternative, functionally equivalent subgraphs (typically produced by DCH,
+\cmd{dch}; see Chapter~\ref{ch:proof}); mapping across them lets the DP pick the
+structure that yields the best cut, usually improving both depth and area
+without changing functionality. When choices are present ABC disables
+expand/reduce (\id{fExpRed}=0) for correctness.
+
+\section{Standard-cell mapping: \pkg{src/map/mapper} and \pkg{src/map/amap}}
+
+For ASIC targets ABC offers two structural mappers over a genlib library. Both
+consume the same \id{Mio_Library_t} but optimise differently.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\cmd{map} & Delay-oriented mapper in \pkg{src/map/mapper} (manager
+\id{Map_Man_t}, i.e.\ \id{Map_ManStruct_t_} in \file{mapperInt.h}). Uses a
+precomputed \emph{supergate} library (\id{Map_SuperLib_t}) and 6-input cuts with
+N-canonical matching, then recovers area (\id{fAreaRecovery}). Entry
+\id{Abc_CommandMap}. \\
+\addlinespace
+\cmd{amap} & Area-oriented mapper in \pkg{src/map/amap} (manager
+\id{Amap_Man_t}). Matches library gates directly against cut functions and
+prioritises area; supports AND/XOR/MUX decomposition of the subject graph. Entry
+\id{Abc_CommandAmap}. \\
+\bottomrule
+\end{tabularx}
+\caption{The two classic standard-cell mappers. \cmd{map} leads with arrival-time (delay), \cmd{amap} leads with area.}
+\end{table}
+
+\section{Reading libraries: \pkg{src/map/mio} and \pkg{src/map/super}}
+
+Genlib libraries are parsed by \pkg{src/map/mio} into a \id{Mio_Library_t}
+(\id{Mio_LibraryStruct_t_} in \file{mioInt.h}): a linked list of
+\id{Mio_Gate_t}, each with area \id{dArea}, a Boolean formula \id{pForm}, a truth
+table, and a list of \id{Mio_Pin_t} pin timings. The reader is registered as
+both \cmd{read\_genlib} and \cmd{read\_library} (\id{Mio_CommandReadGenlib},
+\file{src/map/mio/mio.c}). \pkg{src/map/super} precomputes \emph{supergates} ---
+small gate clusters treated as single library entries --- via \cmd{super} /
+\cmd{super2}; the result is loaded by \cmd{read\_super}
+(\id{Map_CommandReadLibrary}) for the \cmd{map} flow.
+
+\section{Liberty and gate sizing: \pkg{src/map/scl}}
+
+\pkg{src/map/scl} handles real Liberty (\texttt{.lib}) data. \cmd{read\_lib}
+(calling \id{Abc_SclReadLiberty}) parses a Liberty file into an \id{SC_Lib}
+(struct \id{SC_Lib_} in \file{sclLib.h}), a set of \id{SC_Cell} entries each
+holding \id{SC_Pin} timing/capacitance tables; same-function cells are linked
+into area-ordered rings (\id{pNext}/\id{pPrev}/\id{pRepr}) for sizing. \cmd{stime}
+runs static timing on the mapped netlist. The physically-aware flows operate on
+an already-mapped design: \cmd{buffer} inserts buffering,
+\cmd{upsize}/\cmd{dnsize} (and \cmd{minsize}/\cmd{maxsize}) resize gates along
+the critical path against the Liberty timing model.
+
+\section{Other mappers}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\pkg{src/map/mpm}  & A configurable priority-cut technology mapper (an alternative/experimental \cmd{if}-style engine). \\
+\pkg{src/map/fpga} & The older LUT mapper that predates \pkg{if}; historically the \cmd{fpga} command (registration currently disabled in \file{abc.c}). \\
+\pkg{src/map/cov}  & Mapping a network into SOPs/ESOPs (sum-of-products covering). \\
+\pkg{src/map/emap} & A multi-output gate (standard-cell) mapper, command \cmd{emap}. \\
+\bottomrule
+\end{tabularx}
+\caption{Secondary mapping packages under \pkg{src/map}.}
+\end{table}
+
+\section{Summary}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lllXl@{}}
+\toprule
+Mapper & Command & Target & File & Key struct \\
+\midrule
+Priority-cut LUT & \cmd{if}, \cmd{\&if} & FPGA LUTs & \file{src/map/if}, \file{src/aig/gia/giaIf.c} & \id{If_Man_t} \\
+Delay std-cell   & \cmd{map}   & std cells & \file{src/map/mapper} & \id{Map_Man_t} \\
+Area std-cell    & \cmd{amap}  & std cells & \file{src/map/amap}   & \id{Amap_Man_t} \\
+Genlib reader    & \cmd{read\_genlib}/\cmd{read\_library} & library & \file{src/map/mio} & \id{Mio_Library_t} \\
+Supergates       & \cmd{super}, \cmd{read\_super} & library & \file{src/map/super} & \id{Map_SuperLib_t} \\
+Liberty / sizing & \cmd{read\_lib}, \cmd{buffer}, \cmd{upsize}/\cmd{dnsize} & std cells & \file{src/map/scl} & \id{SC_Lib} \\
+Configurable     & --- & LUT/cells & \file{src/map/mpm} & \id{Mpm_Man_t} \\
+Multi-output     & \cmd{emap}  & std cells & \file{src/map/emap} & --- \\
+SOP/ESOP cover   & ---         & SOP/ESOP  & \file{src/map/cov} & --- \\
+\bottomrule
+\end{tabularx}
+\caption{The ABC mapping packages at a glance.}
+\end{table}
+
+\subsection{REPL: LUT mapping}
+
+\begin{lstlisting}[style=abcshell]
+abc 01> read i10.aig
+abc 02> strash
+abc 03> dch            # build structural choices (optional, improves mapping)
+abc 04> if -K 6 -C 12  # 6-LUT mapping, keep 12 priority cuts per node
+abc 05> print_stats    # reports LUT count and depth
+\end{lstlisting}
+
+\subsection{REPL: standard-cell mapping}
+
+\begin{lstlisting}[style=abcshell]
+abc 01> read_genlib mcnc.genlib   # or read_library
+abc 02> read i10.aig
+abc 03> strash
+abc 04> map                       # delay-oriented standard-cell mapping
+abc 05> print_gates               # gate usage / area report
+\end{lstlisting}

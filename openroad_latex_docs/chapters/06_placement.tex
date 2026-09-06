@@ -1,0 +1,104 @@
+\chapter{Placement}
+\label{ch:place}
+
+\glance{Placement assigns $(x,y)$ to every instance. OpenROAD splits it into
+pin placement (\pkg{src/ppl}), global placement (\pkg{src/gpl} / RePlAce),
+macro placement (\pkg{src/mpl}), detailed/legalization (\pkg{src/dpl} /
+Opendp), and optional partitioning (\pkg{src/par} / TritonPart).}
+
+\section{Pin placement: \pkg{src/ppl}}
+
+\id{ppl::IOPlacer} assigns top-level ports to sites on the die boundary.
+
+\begin{lstlisting}[style=ortcl]
+place_pins -hor_layers metal3 -ver_layers metal2
+place_pin  -pin_name clk -layer metal3 -location {10 0} -pin_size {1 1}
+\end{lstlisting}
+
+Constraints (\cmd{set\_io\_pin\_constraint}, \cmd{exclude\_io\_pin\_region},
+pin groups) control which edges/layers may host pins. A simulated-annealing
+mode and \cmd{write\_pin\_placement} round-trip are available.
+
+\section{Global placement: \pkg{src/gpl} (RePlAce)}
+
+\id{gpl::Replace} is an analytic placer based on the ePlace / RePlAce family:
+it models density as an electrostatic field and solves the nonlinear
+force-equilibrium equations with \textbf{Nesterov's method}. Features:
+
+\begin{itemize}
+  \item Mixed-size (stdcells + macros) placement.
+  \item \cmd{-timing\_driven}: virtually call the resizer, reweight critical
+        nets by slack, and iterate.
+  \item \cmd{-routability\_driven}: use RUDY congestion estimates and inflate
+        cells in hotspots until a target RC metric is met.
+\end{itemize}
+
+\begin{lstlisting}[style=ortcl]
+global_placement -density 0.7 -timing_driven -routability_driven
+\end{lstlisting}
+
+Key options: \cmd{-density}, \cmd{-init\_density\_penalty},
+\cmd{-initial\_place\_max\_iter}, and the \cmd{-timing\_driven\_*} /
+\cmd{-routability\_*} families documented in \file{src/gpl/README.md}.
+
+\section{Macro placement: \pkg{src/mpl}}
+
+\id{mpl::MacroPlacer} (Hier-RTLMP) places hard macros. The primary command is
+\cmd{rtl\_macro\_placer}: it builds a physical hierarchy by clustering the
+netlist (using \pkg{src/par}), then places macros with simulated annealing,
+respecting halos, guidance regions, and blocked channels.
+
+\begin{lstlisting}[style=ortcl]
+rtl_macro_placer
+place_macro -macro_name RAM0 -location {100 200} -orientation R0
+\end{lstlisting}
+
+Supporting commands: \cmd{set\_macro\_halo}, \cmd{set\_macro\_guidance},
+\cmd{block\_channels}, \cmd{write\_macro\_placement}.
+
+\section{Detailed placement / legalization: \pkg{src/dpl}}
+
+\id{dpl::Opendp} snaps instances onto legal row/site positions and removes
+overlaps (re-legalizes after resizing/buffering too). Default engine: a
+\textbf{negotiation-based legalizer} (NBLG); legacy diamond search via
+\cmd{-use\_diamond\_legalizer}.
+
+\begin{lstlisting}[style=ortcl]
+detailed_placement -max_displacement 500
+check_placement -verbose
+filler_placement FILLCELL*
+\end{lstlisting}
+
+Supports mixed cell heights (1$\times$--4$\times$), fence regions, fragmented
+rows, and placement padding.
+
+\section{Partitioning: \pkg{src/par} (TritonPart)}
+
+\id{par::PartitionMgr} is a multilevel hypergraph partitioner
+(coarsen~$\rightarrow$ partition~$\rightarrow$ refine) used by mpl and as a
+standalone tool:
+
+\begin{lstlisting}[style=ortcl]
+triton_part_design -num_parts 4 -balance_constraint 2
+triton_part_hypergraph -hypergraph_file des.hgr -num_parts 5
+\end{lstlisting}
+
+Optional timing-aware mode propagates slack into the cut objective.
+
+\section{Summary}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+\textbf{Sub-step} & \textbf{Module} & \textbf{Command} & \textbf{Algorithm} \\
+\midrule
+I/O pins   & \pkg{ppl} & \cmd{place\_pins} & assignment / SA \\
+Global     & \pkg{gpl} & \cmd{global\_placement} & ePlace / Nesterov \\
+Macros     & \pkg{mpl} & \cmd{rtl\_macro\_placer} & hierarchical SA \\
+Legalize   & \pkg{dpl} & \cmd{detailed\_placement} & NBLG / diamond \\
+Partition  & \pkg{par} & \cmd{triton\_part\_*} & multilevel min-cut \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,168 @@
+\chapter{Application Architecture and the Module Framework}
+\label{ch:arch}
+
+\glance{OpenROAD is one C++ binary built from $\sim$35 modules under \file{src/}.
+A single owner object, \id{ord::OpenRoad}, constructs every module once, injects
+the shared services (the OpenDB database, the OpenSTA timer, and the
+\id{utl::Logger}) into each, and exposes their commands through a Tcl/Python
+(SWIG) layer. Read \file{src/OpenRoad.cc} once and you have the map of the whole
+tool.}
+
+\section{Entry point}
+
+The binary starts in \file{src/Main.cc}: it parses command-line flags
+(\cmd{-gui}, \cmd{-python}, \cmd{-exit}, \cmd{-metrics}, \cmd{-threads},
+\cmd{-log}), creates the Tcl interpreter, constructs the application object, and
+either runs an interactive shell or sources a script. The application object is
+defined in \file{include/ord/OpenRoad.hh} and implemented in
+\file{src/OpenRoad.cc}.
+
+\id{ord::OpenRoad} is a process-wide singleton reached through the static
+\id{OpenRoad::openRoad()}. It owns a pointer to every module and to the three
+shared services, and hands them out through accessors such as \id{getDb()},
+\id{getSta()}, and \id{getLogger()}.
+
+\section{The three shared services}
+
+Everything in OpenROAD is built on three objects that are created first and
+passed to every module:
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Service} & \textbf{Type} & \textbf{Role} \\
+\midrule
+Database & \id{odb::dbDatabase} & the shared design + technology data (Ch.~\ref{ch:odb}) \\
+Timer    & \id{sta::dbSta}      & static timing analysis (Ch.~\ref{ch:timing}) \\
+Logger   & \id{utl::Logger}     & unified logging, metrics, debug (\pkg{src/utl}) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Module construction and dependency injection}
+
+\id{OpenRoad::init()} builds the whole tool. It creates the services, then
+constructs each module, \emph{passing in the services and any sibling modules it
+depends on}. This one function is the dependency graph of OpenROAD:
+
+\begin{lstlisting}[style=orcode]
+logger_    = new utl::Logger(log_filename, metrics_filename);
+db_->setLogger(logger_);
+sta_       = new sta::dbSta(tcl_interp, db_, logger_);
+stt_builder_ = new stt::SteinerTreeBuilder(logger_);
+opendp_    = new dpl::Opendp(db_, logger_);
+global_router_ = new grt::GlobalRouter(logger_, service_registry_,
+                                       stt_builder_, db_, sta_,
+                                       antenna_checker_, opendp_);
+resizer_   = new rsz::Resizer(logger_, db_, sta_, stt_builder_,
+                              global_router_, opendp_, estimate_parasitics_);
+tritonCts_ = new cts::TritonCTS(logger_, db_, getDbNetwork(), sta_,
+                                stt_builder_, resizer_, estimate_parasitics_);
+\end{lstlisting}
+
+Note how, e.g., the resizer receives the timer, the Steiner builder, the global
+router, and the detailed placer --- it \emph{uses} all of them. Table
+\ref{tab:modclass} lists the module classes as constructed.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Class} & \textbf{Module} & \textbf{Stage} \\
+\midrule
+\id{ppl::IOPlacer}          & \pkg{src/ppl} & pin placement \\
+\id{dpl::Opendp}            & \pkg{src/dpl} & detailed placement \\
+\id{gpl::Replace}           & \pkg{src/gpl} & global placement \\
+\id{mpl::MacroPlacer}       & \pkg{src/mpl} & macro placement \\
+\id{par::PartitionMgr}      & \pkg{src/par} & partitioning \\
+\id{cts::TritonCTS}         & \pkg{src/cts} & clock tree \\
+\id{grt::GlobalRouter}      & \pkg{src/grt} & global route \\
+\id{drt::TritonRoute}       & \pkg{src/drt} & detailed route \\
+\id{ant::AntennaChecker}    & \pkg{src/ant} & antenna check \\
+\id{rsz::Resizer}           & \pkg{src/rsz} & timing repair \\
+\id{stt::SteinerTreeBuilder}& \pkg{src/stt} & Steiner trees \\
+\id{est::EstimateParasitics}& \pkg{src/est} & RC estimation \\
+\id{rcx::Ext}               & \pkg{src/rcx} & extraction \\
+\id{pdn::PdnGen}            & \pkg{src/pdn} & power grid \\
+\id{psm::PDNSim}            & \pkg{src/psm} & IR drop \\
+\id{tap::Tapcell}           & \pkg{src/tap} & tap/endcap \\
+\id{syn::Synthesis}         & \pkg{src/syn} & synthesis \\
+\id{rmp::Restructure}       & \pkg{src/rmp} & ABC restructure \\
+\id{cgt::ClockGating}       & \pkg{src/cgt} & clock gating \\
+\id{dft::Dft}               & \pkg{src/dft} & scan/DFT \\
+\id{fin::Finale}            & \pkg{src/fin} & metal fill \\
+\id{dst::Distributed}       & \pkg{src/dst} & distributed compute \\
+\id{ram::RamGen}            & \pkg{src/ram} & RAM generation \\
+\bottomrule
+\end{tabularx}
+\caption{Module classes, as constructed in \id{OpenRoad::init()}.}
+\label{tab:modclass}
+\end{table}
+
+\section{The per-module pattern}
+
+Every module under \file{src/} has the same shape, so learning one teaches all:
+
+\begin{itemize}
+  \item \textbf{Public header} in \file{src/<mod>/include/<mod>/} defining the
+        module's main class (e.g. \id{gpl::Replace}).
+  \item \textbf{Implementation} in \file{src/<mod>/src/}.
+  \item \textbf{A factory} \id{Make<Mod>.*} (e.g. \file{gpl/MakeReplace.h}) that
+        \id{OpenRoad} calls to build the module and register its commands.
+  \item \textbf{A SWIG interface} \file{<Mod>.i} and a \textbf{Tcl file}
+        \file{<Mod>.tcl} that define the user commands and call into the C++ class.
+  \item \textbf{A README.md} documenting every Tcl command and its options.
+\end{itemize}
+
+The template module \pkg{src/exa} (``example'') exists precisely as the
+copy-me starting point for a new tool; \pkg{src/tst} holds shared test scaffolding.
+
+\section{Commands: Tcl and Python via SWIG}
+
+Tcl is the primary interface; Python is secondary. The top-level wrappers are
+\file{src/OpenRoad.i}, \file{src/OpenRoad.tcl}, and the Python variants
+\file{src/OpenRoad-py.i} / \file{src/Design.i}. Each module's \file{*.i} is
+compiled by SWIG into Tcl and Python bindings; the hand-written \file{*.tcl}
+adds argument parsing and calls the SWIG-wrapped C++ methods.
+
+The Python-facing convenience classes live in \file{src/Design.cc},
+\file{src/Tech.cc}, and \file{src/Timing.cc} (the \id{Design}, \id{Tech}, and
+\id{Timing} objects used in \cmd{openroad -python}).
+
+\paragraph{Finding a command's code.} Grep the command name in the module's
+\file{*.tcl} (Tcl argument handling) and \file{*.i} (SWIG binding); both point
+into the module's C++ class. The \id{ord::} namespace also provides helpers such
+as \id{ord::get\_db} and \id{ord::get\_db\_block}.
+
+\section{Logging and metrics: \pkg{src/utl}}
+
+All output goes through \id{utl::Logger} (never raw \id{printf}/\id{cout}). Each
+message carries a \emph{tool ID} and a numeric code, giving stable identifiers
+like \texttt{CTS-0001} that the \cmd{man} command can explain.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Call} & \textbf{Use} \\
+\midrule
+\id{report()} & always-printed user output \\
+\id{info(tool, id, ...)} & informational message with stable ID \\
+\id{warn(tool, id, ...)} & warning \\
+\id{error(tool, id, ...)} & recoverable error (throws) \\
+\id{critical(tool, id, ...)} & fatal error (aborts) \\
+\id{metric(name, value)} & emit a JSON metric (\cmd{-metrics}) \\
+\id{debug(tool, group, ...)} & gated debug stream \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\pkg{src/utl} also provides the \cmd{man} help command, the \cmd{tee} output
+redirect, and an optional Prometheus metrics endpoint
+(\id{utl::startPrometheusEndpoint}).
+
+\glance{To add a tool: copy \pkg{src/exa}, define your class + \id{Make} factory,
+add a \file{.i}/\file{.tcl} command pair, construct it in \id{OpenRoad::init()},
+and log through \id{utl::Logger}. That is the entire contract.}

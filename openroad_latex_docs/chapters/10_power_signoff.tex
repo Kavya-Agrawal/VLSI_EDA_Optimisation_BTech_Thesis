@@ -1,0 +1,75 @@
+\chapter{Power Delivery and IR-Drop Analysis}
+\label{ch:power}
+
+\glance{PdnGen (\pkg{src/pdn}) synthesizes the power/ground grid (rings,
+stripes, follow-pin rails, vias). PDNSim (\pkg{src/psm}) then solves the
+resistive mesh for static IR drop and optional electromigration checks.
+Power numbers come from OpenSTA \cmd{report\_power}.}
+
+\section{Power grid generation: \pkg{src/pdn}}
+
+\id{pdn::PdnGen} builds the PDN declaratively, then materializes it:
+
+\begin{lstlisting}[style=ortcl]
+add_global_connection -net VDD -pin_pattern {^VDD$} -power
+add_global_connection -net VSS -pin_pattern {^VSS$} -ground
+global_connect
+
+define_pdn_grid -name main -pins {metal7}
+add_pdn_ring   -grid main -layer {metal6 metal7} -widths 5.0 -spacings 3.0
+add_pdn_stripe -grid main -layer metal1 -followpins
+add_pdn_stripe -grid main -layer metal4 -width 0.48 -pitch 56.0
+add_pdn_connect -grid main -layers {metal1 metal4}
+add_pdn_connect -grid main -layers {metal4 metal7}
+pdngen
+\end{lstlisting}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Command} & \textbf{Role} \\
+\midrule
+\cmd{define\_pdn\_grid} & name a grid (core or \cmd{-macro}) \\
+\cmd{add\_pdn\_ring} & rings around the core/macro \\
+\cmd{add\_pdn\_stripe} & straps; \cmd{-followpins} = stdcell rails \\
+\cmd{add\_pdn\_connect} & via stacks between layers \\
+\cmd{pdngen} & emit special wires into odb \\
+\cmd{add\_global\_connection}/\cmd{global\_connect} & tie instance PG pins to nets \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Macro-specific grids (\cmd{define\_pdn\_grid -macro}) and power-switch
+insertion are also supported for multi-voltage designs.
+
+\section{IR-drop analysis: \pkg{src/psm}}
+
+\id{psm::PDNSim} models the PG network as a resistive mesh, injects
+per-instance current (from power estimates), and solves $G\,v = i$:
+
+\begin{lstlisting}[style=ortcl]
+analyze_power_grid -net VDD
+check_power_grid -net VDD
+write_pg_spice -net VDD pg.sp
+\end{lstlisting}
+
+Reports worst IR drop, current density, and floating stripes; \cmd{-enable\_em}
+adds electromigration checks. \cmd{set\_pdnsim\_net\_voltage} sets the source
+voltage.
+
+\section{Summary}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+\textbf{Step} & \textbf{Module} & \textbf{Command} & \textbf{Output} \\
+\midrule
+Connect PG pins & \pkg{odb}/\pkg{pdn} & \cmd{global\_connect} & net connectivity \\
+Build grid      & \pkg{pdn} & \cmd{pdngen} & special wires/vias \\
+Analyze IR      & \pkg{psm} & \cmd{analyze\_power\_grid} & voltage / EM map \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,212 @@
+\chapter{Input/Output and Design Frontends}
+\label{ch:io}
+
+\glance{This chapter documents how designs enter and leave ABC. The \pkg{base/io}
+package registers the \cmd{read\_*}/\cmd{write\_*} command family and dispatches on
+file extension to a matching parser or writer. Readers build an \id{Abc\_Ntk\_t}
+(usually a \id{NETLIST} or \id{LOGIC} network); \cmd{strash} then converts it into a
+structurally hashed AIG (\id{STRASH}), while AIGER reads produce an AIG directly. A
+second family of \emph{word-level} and \emph{hierarchical} frontends
+(\pkg{base/wlc}, \pkg{base/wln}, \pkg{base/cba}, \pkg{base/bac}, \pkg{base/acb},
+\pkg{base/pla}) parses richer netlists that are later ``blasted'' down to
+AIG/GIA for optimization.}
+
+\section{The \pkg{base/io} package}
+
+All generic I/O commands are registered in \file{src/base/io/io.c} (function
+\id{Io\_Init}) under the category \texttt{"I/O"}. The generic dispatchers
+\cmd{read} and \cmd{write} inspect the file extension via
+\id{Io\_ReadFileType} (in \file{src/base/io/ioUtil.c}) and forward to the
+format-specific reader/writer; the dedicated \cmd{read\_*}/\cmd{write\_*}
+commands select a format explicitly.
+
+\begin{lstlisting}[style=abccode,caption={Extension dispatch (\file{src/base/io/ioUtil.c}).}]
+Io_FileType_t Io_ReadFileType( char * pFileName )
+{
+    char * pExt = Extra_FileNameExtension( pFileName );
+    if ( !strcmp( pExt, "aig" ) )   return IO_FILE_AIGER;
+    if ( !strcmp( pExt, "blif" ) )  return IO_FILE_BLIF;
+    if ( !strcmp( pExt, "bench" ) ) return IO_FILE_BENCH;
+    if ( !strcmp( pExt, "pla" ) )   return IO_FILE_PLA;
+    if ( !strcmp( pExt, "v" ) )     return IO_FILE_VERILOG;
+    /* ... baf, bblif, mv, eqn, dot, gml, cnf, smv, edif, list ... */
+    return IO_FILE_UNKNOWN;
+}
+\end{lstlisting}
+
+\section{Supported formats}
+
+The table lists the main netlist/graph formats, their default extension, and the
+read/write commands (with short aliases defined in \file{abc.rc}). Reader and
+writer implementations live under \file{src/base/io/}.
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\linewidth}{@{}l l X X@{}}
+\toprule
+\textbf{Format (ext.)} & \textbf{Read cmd (alias)} & \textbf{Write cmd (alias)} & \textbf{Source files} \\
+\midrule
+BLIF \file{.blif}          & \cmd{read\_blif} (\cmd{rl})  & \cmd{write\_blif} (\cmd{wl})  & \file{ioReadBlif.c}, \file{ioWriteBlif.c} \\
+BLIF-MV \file{.mv}         & \cmd{read\_blif\_mv}         & \cmd{write\_blif\_mv}         & \file{ioReadBlifMv.c}, \file{ioWriteBlifMv.c} \\
+AIGER binary \file{.aig}   & \cmd{read\_aiger} (\cmd{ra}) & \cmd{write\_aiger} (\cmd{wa}) & \file{ioReadAiger.c}, \file{ioWriteAiger.c} \\
+BENCH \file{.bench}        & \cmd{read\_bench} (\cmd{rb}) & \cmd{write\_bench} (\cmd{wb}) & \file{ioReadBench.c}, \file{ioWriteBench.c} \\
+PLA \file{.pla}            & \cmd{read\_pla} (\cmd{rp})   & \cmd{write\_pla} (\cmd{wp})   & \file{ioReadPla.c}, \file{ioWritePla.c} \\
+Verilog (structural) \file{.v} & \cmd{read\_verilog} (\cmd{rv}) & \cmd{write\_verilog} (\cmd{wv}) & \file{ioReadVerilog.c}, \file{ioWriteVerilog.c} \\
+EQN \file{.eqn}            & \cmd{read\_eqn}              & \cmd{write\_eqn}              & \file{ioReadEqn.c}, \file{ioWriteEqn.c} \\
+Truth table                & \cmd{read\_truth} (\cmd{rt}) & \cmd{write\_truth}            & \file{io.c} \\
+DOT \file{.dot}            & ---                          & \cmd{write\_dot}              & \file{ioWriteDot.c} \\
+BAF \file{.baf}            & \cmd{read\_baf}              & \cmd{write\_baf}              & \file{ioReadBaf.c}, \file{ioWriteBaf.c} \\
+CNF \file{.cnf}            & \cmd{read\_cnf}              & \cmd{write\_cnf} (\cmd{wc})   & \file{ioWriteCnf.c} \\
+SMV \file{.smv}            & ---                          & \cmd{write\_smv}             & \file{ioWriteSmv.c} \\
+GML \file{.gml}            & ---                          & \cmd{write\_gml}            & \file{ioWriteGml.c} \\
+\bottomrule
+\end{tabularx}
+\caption{Netlist/graph formats and their I/O commands. Commands are registered in
+\file{src/base/io/io.c}; aliases come from \file{abc.rc}.}
+\end{table}
+
+\noindent Notes on the format set:
+\begin{itemize}
+  \item \cmd{read} handles a few extensions by delegating to non-I/O commands:
+        \file{.genlib}$\rightarrow$\cmd{read\_genlib}, \file{.lib}$\rightarrow$\cmd{read\_lib},
+        \file{.scl}$\rightarrow$\cmd{read\_scl}, \file{.c}/\file{.script}$\rightarrow$\cmd{source}.
+  \item The \cmd{\&}-prefixed variants (e.g.\ \cmd{\&read\_mm}, \cmd{\&write\_cnf},
+        \cmd{\&write\_truths}) operate on the GIA (\id{Gia\_Man\_t}) manager rather
+        than \id{Abc\_Ntk\_t}.
+  \item ABC's AIGER support centers on the compact \emph{binary} \file{.aig}
+        format written by \id{Io\_WriteAiger}.
+\end{itemize}
+
+\section{The read pipeline}
+
+For non-AIG formats, \id{Io\_ReadNetlist} (in \file{src/base/io/ioUtil.c}) opens the
+file, selects a parser by \id{Io\_FileType\_t}, and returns a freshly built
+network. BLIF, BENCH, EQN, PLA, and Verilog parsers construct a netlist-style
+\id{Abc\_Ntk\_t}; for example \file{ioReadBlif.c} allocates
+\id{ABC\_NTK\_NETLIST} with \id{ABC\_FUNC\_SOP}. The user then runs \cmd{strash}
+(\cmd{st}) to convert to a structurally hashed AIG (\id{ABC\_NTK\_STRASH},
+\id{ABC\_FUNC\_AIG}) before AIG-based optimization.
+
+\begin{lstlisting}[style=abccode,caption={Parser selection in \id{Io\_ReadNetlist} (\file{src/base/io/ioUtil.c}).}]
+if ( FileType == IO_FILE_AIGER || FileType == IO_FILE_BAF || FileType == IO_FILE_BBLIF ) {
+    if ( FileType == IO_FILE_AIGER ) pNtk = Io_ReadAiger( pFileName, fCheck ); /* builds AIG directly */
+    ...
+    return pNtk;
+}
+if ( FileType == IO_FILE_BLIF )   pNtk = Io_ReadBlifMv( pFileName, 0, fCheck );
+else if ( FileType == IO_FILE_BENCH )   pNtk = Io_ReadBench( pFileName, fCheck );
+else if ( FileType == IO_FILE_EQN )     pNtk = Io_ReadEqn( pFileName, fCheck );
+else if ( FileType == IO_FILE_PLA )     pNtk = Io_ReadPla( pFileName, 0, 0, 0, 0, fCheck );
+else if ( FileType == IO_FILE_VERILOG ) pNtk = Io_ReadVerilog( pFileName, fCheck );
+\end{lstlisting}
+
+\noindent The AIGER path is special: \file{ioReadAiger.c} calls
+\id{Abc\_NtkAlloc(ABC\_NTK\_STRASH, ABC\_FUNC\_AIG, 1)} and builds the AIG directly,
+so \cmd{read\_aiger} skips the netlist$\rightarrow$\cmd{strash} step.
+
+\subsection*{Post-read checking}
+Whether the resulting network is validated depends on the \id{check} flag set in
+\file{abc.rc} (\texttt{set check}, which ``checks intermediate networks''; the
+commented \texttt{unset checkread} would disable checks after reading). Per read
+command the check can be toggled with \texttt{-c}. \id{Io\_ReadNetlist} also
+rejects designs with combinational cycles when hierarchy (black/white boxes) is
+present.
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+\textbf{\cmd{read} flag} & \textbf{Effect (from usage in \file{io.c})} \\
+\midrule
+\texttt{-m} & toggle reading \emph{mapped} Verilog (requires a loaded gate library) \\
+\texttt{-c} & toggle the network check performed after reading \\
+\texttt{-b} & toggle reading barrier buffers \\
+\texttt{-g} & read and flatten directly into the \cmd{\&}-space (GIA) \\
+\bottomrule
+\end{tabularx}
+\caption{Options of the generic \cmd{read} command.}
+\end{table}
+
+\section{Verilog: structural only}
+
+ABC's built-in Verilog reader (\file{src/base/io/ioReadVerilog.c}, which calls the
+parser in \pkg{base/ver}) accepts \emph{structural} Verilog only: module
+instantiations, primitive gates, and assignments that describe a gate-level
+netlist. It is not a full RTL elaborator---behavioral constructs, arithmetic
+operators on multi-bit words, and general \texttt{always} blocks are out of scope.
+For richer, word-level input use the frontends in the next section (or an external
+tool such as Yosys, reachable via \cmd{\%yosys}).
+
+\section{Word-level and hierarchical frontends}
+
+These packages hold higher-level representations of a design. Each parses its own
+inputs (often word-level Verilog, BLIF, or SMT) into a dedicated network type,
+then provides a \texttt{blast} operation that bit-blasts the word-level netlist
+down to an AIG/GIA for the core optimization engines. Their commands use distinct
+prefixes so they do not collide with the generic \cmd{read\_*}/\cmd{write\_*}
+family; commands are registered in each package's \texttt{*Com.c} file.
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\linewidth}{@{}l l l X@{}}
+\toprule
+\textbf{Package} & \textbf{Network type} & \textbf{Cmd prefix} & \textbf{Read / blast commands} \\
+\midrule
+\pkg{base/wlc} & \id{Wlc\_Ntk\_t} & \cmd{\%}  & \cmd{\%read}, \cmd{\%write}, \cmd{\%blast}, \cmd{\%ps} \\
+\pkg{base/wln} & \id{Wln\_Ntk\_t} & \cmd{\%}  & \cmd{\%yosys}, \cmd{\%hierarchy}, \cmd{\%collapse}, \cmd{\%print} \\
+\pkg{base/cba} & \id{Cba\_Ntk\_t} & \cmd{:}   & \cmd{:read}, \cmd{:write}, \cmd{:blast}, \cmd{:ps} \\
+\pkg{base/bac} & \id{Bac\_Ntk\_t} & \cmd{@\_} & \cmd{@\_read}, \cmd{@\_write}, \cmd{@\_ps}, \cmd{@\_cec} \\
+\pkg{base/acb} & \id{Acb\_Ntk\_t} & \cmd{@}   & \cmd{@read}, \cmd{@write}, \cmd{@blast}, \cmd{@ps} \\
+\pkg{base/pla} & \id{Pla\_Man\_t}  & \cmd{|}   & \cmd{|read}, \cmd{|write}, \cmd{|ps}, \cmd{|merge} \\
+\pkg{base/ver} & (parser helpers) & ---       & Verilog tokenizer/parser used by \cmd{read\_verilog} \\
+\bottomrule
+\end{tabularx}
+\caption{Word-level and hierarchical frontends. Prefixes and commands verified in
+\file{wlcCom.c}, \file{wlnCom.c}, \file{cbaCom.c}, \file{bacCom.c}, \file{acbCom.c},
+\file{plaCom.c}; \pkg{base/ver} supplies the Verilog parsing core.}
+\end{table}
+
+\noindent Details:
+\begin{itemize}
+  \item \pkg{base/wlc} --- the mature word-level package (\id{Wlc\_Ntk\_t}). It
+        reads word-level Verilog and SMT (\file{wlcReadVer.c},
+        \file{wlcReadSmt.c}) and bit-blasts with \cmd{\%blast}
+        (\file{wlcBlast.c}); it also drives word-level abstraction
+        (\cmd{\%abs}, \cmd{\%pdra}) and simulation.
+  \item \pkg{base/wln} --- a companion word-level layer (\id{Wln\_Ntk\_t}) with a
+        Yosys bridge (\cmd{\%yosys}) and hierarchy/collapse utilities; it shares
+        the \cmd{\%} prefix with \pkg{base/wlc}.
+  \item \pkg{base/cba} and \pkg{base/bac} --- ``new word level'' hierarchical
+        netlists (\id{Cba\_Ntk\_t}, \id{Bac\_Ntk\_t}) with their own Verilog/BLIF
+        readers/writers and \texttt{blast}/collapse (\cmd{clp}) support.
+  \item \pkg{base/acb} --- ``new word level'' network (\id{Acb\_Ntk\_t}) focused on
+        engineering-change-order and function manipulation, also with
+        \cmd{@blast}.
+  \item \pkg{base/pla} --- two-level SOP/PLA package (\id{Pla\_Man\_t}) for PLA
+        reading, writing, and merging.
+\end{itemize}
+
+\section{Example session}
+
+A typical flow reads a design, structurally hashes it, and writes it back in a
+different format. Aliases (\cmd{r}, \cmd{st}, \cmd{ps}, \cmd{wa}, \cmd{wl}) are from
+\file{abc.rc}.
+
+\begin{lstlisting}[style=abcshell]
+abc 01> read design.blif      # dispatch on .blif -> Io_ReadBlifMv, builds a NETLIST
+abc 02> strash                # convert to a structurally hashed AIG (STRASH)
+abc 03> print_stats           # report PI/PO/AND/latch counts
+abc 04> write_aiger out.aig   # emit compact binary AIGER
+abc 05> read_aiger out.aig    # AIGER reader builds the AIG directly (no strash)
+abc 06> write_verilog out.v   # structural Verilog netlist
+\end{lstlisting}
+
+\noindent For a word-level design, the \pkg{base/wlc} frontend is used instead and
+bit-blasted before the same AIG engines run:
+
+\begin{lstlisting}[style=abcshell]
+abc 01> %read design.v        # parse word-level Verilog into a Wlc_Ntk_t
+abc 02> %ps                   # print word-level statistics
+abc 03> %blast                # bit-blast to an AIG/GIA in the &-space
+abc 04> &ps                   # inspect the resulting GIA
+\end{lstlisting}

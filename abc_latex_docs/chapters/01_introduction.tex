@@ -1,0 +1,130 @@
+\chapter{Introduction and Mental Model}
+\label{ch:intro}
+
+\glance{ABC is a \emph{command shell} wrapped around \emph{graph data structures}
+for Boolean logic. One global object (the \emph{frame}) holds the current design
+in one of two forms --- the classic network \id{Abc\_Ntk\_t} and the modern
+\id{Gia\_Man\_t}. Every command reads that design, rewrites it, and puts it back.
+Learn the frame, the two graphs, and command dispatch first; everything else is
+an algorithm plugged into that skeleton.}
+
+\section{What ABC is}
+
+ABC (``A System for Sequential Logic Synthesis and Formal Verification'') is a
+logic-level EDA tool from UC Berkeley (Alan Mishchenko et al.). It takes a Boolean
+circuit --- gates, LUTs, or an And-Inverter Graph (AIG) --- and makes it
+\emph{smaller}, \emph{shallower}, or \emph{mapped to a technology}, and it can
+\emph{prove} that two circuits are equivalent.
+
+ABC operates \textbf{above} physical design. In a typical flow an RTL frontend
+(e.g.\ Yosys) produces a netlist, ABC optimizes and maps it, and a physical tool
+such as OpenROAD places and routes the result. Knowledge of ABC transfers
+directly to the \cmd{abc} pass scripts used inside Yosys.
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Problem} & \textbf{Typical command} & \textbf{Chapter} \\
+\midrule
+Too many gates / too deep      & \cmd{resyn2}, \cmd{\&syn2}, \cmd{rewrite}, \cmd{balance} & \ref{ch:opt} \\
+Map to FPGA LUTs               & \cmd{if -K 6}, \cmd{\&if -K 6}                            & \ref{ch:map} \\
+Map to standard cells          & \cmd{map}, \cmd{amap}                                     & \ref{ch:map} \\
+Are two designs equal?         & \cmd{cec}, \cmd{\&cec}, \cmd{fraig}                       & \ref{ch:proof} \\
+Sequential property proof      & \cmd{pdr}, BMC                                            & \ref{ch:proof} \\
+Read / write a format          & \cmd{read\_*}, \cmd{write\_*}                             & \ref{ch:io} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{The one picture that matters}
+
+\begin{lstlisting}[style=abcshell]
+                    +--------------------------------------+
+                    |         Abc_Frame_t (global)         |
+                    |  command table . aliases . libraries |
+                    +------------------+-------------------+
+                                       |
+              +------------------------+------------------------+
+              v                                                 v
+       pNtkCur : Abc_Ntk_t                              pGia : Gia_Man_t
+       "classic world"                                  "ABC9 / & world"
+       rewrite, resyn2, if, map                         &syn2, &if, &b, &fraig
+              |                                                 |
+              +---------------------- &get / &put --------------+
+                                       |
+                                       v
+                     read -> strash -> optimize -> map -> verify -> write
+\end{lstlisting}
+
+Two design representations live in the \emph{same process} and are toggled by the
+bridge commands \cmd{\&get} (classic\,$\rightarrow$\,GIA) and \cmd{\&put}
+(GIA\,$\rightarrow$\,classic). Table~\ref{tab:twoworlds} summarizes the split;
+Chapters~\ref{ch:data} and~\ref{ch:aig} give the full detail.
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+ & \textbf{Classic \id{Abc\_Ntk\_t}} & \textbf{GIA \id{Gia\_Man\_t}} \\
+\midrule
+Commands   & \cmd{rewrite}, \cmd{resyn2}, \cmd{if} & \cmd{\&b}, \cmd{\&syn2}, \cmd{\&if} \\
+Node storage & object structs + ID vectors & one dense array, fanins as offsets \\
+Scale        & up to \(\sim\)1M nodes & many-million-node designs \\
+Held in frame & \id{pNtkCur} & \id{pGia} \\
+Header       & \file{src/base/abc/abc.h} & \file{src/aig/gia/gia.h} \\
+\bottomrule
+\end{tabularx}
+\caption{The two coexisting representations.}
+\label{tab:twoworlds}
+\end{table}
+
+\section{The core idea behind almost every optimizer}
+
+Nearly every optimization pass in ABC is a \textbf{greedy local rewrite} with
+hand-tuned limits:
+
+\begin{enumerate}
+  \item Look at a \emph{local} piece of the graph (a node plus a small cut or cone).
+  \item Try a \emph{functionally equivalent} replacement using fewer nodes or less depth.
+  \item Accept it if the \emph{gain} is positive (greedy).
+  \item Repeat over all nodes, usually inside a fixed recipe such as \cmd{resyn2}.
+\end{enumerate}
+
+Structural hashing keeps the AIG compact and lets rewrites \emph{reuse} existing
+logic. Recipes like \cmd{resyn2} are not monolithic C algorithms --- they are
+alias chains defined in \file{abc.rc} (Chapter~\ref{ch:recipes}).
+
+\section{A first session}
+
+\begin{lstlisting}[style=abcshell]
+# batch mode: optimize and map i10 to 6-input LUTs
+./abc -c "read i10.aig; strash; resyn2; if -K 6; print_stats; write_blif out.blif"
+
+# the modern GIA path
+./abc -c "read i10.aig; &get; &syn2; &if -K 6; &ps; &put; write_blif out.blif"
+\end{lstlisting}
+
+The metrics printed by \cmd{print\_stats} (alias \cmd{ps}) that you watch
+constantly: \texttt{and} (AND-node count, an area proxy) and \texttt{lev} (logic
+levels, a depth proxy).
+
+\section{How to read this manual}
+
+\begin{itemize}
+  \item \textbf{Chapters \ref{ch:intro}--\ref{ch:data}} give the skeleton:
+        architecture, command dispatch, and data structures. Read these first.
+  \item \textbf{Chapters \ref{ch:aig}--\ref{ch:io}} cover the graph managers and
+        how designs enter and leave ABC.
+  \item \textbf{Chapters \ref{ch:opt}--\ref{ch:sat}} are the algorithms:
+        optimization, mapping, verification, and the SAT engines they call.
+  \item \textbf{Chapters \ref{ch:util}--\ref{ch:recipes}} cover the support
+        libraries, scripts, and how to embed or extend ABC.
+\end{itemize}
+
+Throughout, \file{monospace blue} is a source path, \cmd{bold monospace} is a
+shell command, \id{monospace} is a C identifier, and \pkg{teal} is a package
+directory. All paths are relative to the ABC clone at \file{hardware\_eda/abc}.
+
+\glance{Do \textbf{not} start reading in \pkg{sat/} or \pkg{bdd/} --- those are
+engines ABC \emph{calls}, not the story. Always start from a command you can type,
+then grep its name in \file{src/base/abci/abc.c} and follow the function pointer.}

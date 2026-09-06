@@ -1,0 +1,83 @@
+\chapter{Logic Synthesis, Restructuring, and DFT}
+\label{ch:logic}
+
+\glance{OpenROAD can elaborate and map SystemVerilog itself (\pkg{src/syn}),
+locally resynthesize critical cones via ABC (\pkg{src/rmp} + \pkg{src/cut}),
+and insert scan chains (\pkg{src/dft}). The embedded ABC at \file{src/abc} is
+\emph{out of scope} here --- see the separate ABC reference; this chapter only
+covers how OpenROAD hands logic to ABC and stitches the result back.}
+
+\section{Integrated synthesis: \pkg{src/syn}}
+
+\id{syn::Synthesis} elaborates SystemVerilog (via slang) and maps to gates:
+
+\begin{lstlisting}[style=ortcl]
+sv_elaborate top.sv -top top_module   ;# slang options accepted
+synthesize                            ;# map to stdcells -> odb
+\end{lstlisting}
+
+Limitations (per the module README): no latch mapping, always flattens, and
+macro instance names may be lost. For a full RTL-to-GDSII flow most users
+still rely on Yosys in ORFS (Ch.~\ref{ch:gui}); \pkg{src/syn} is the in-binary
+path.
+
+\section{Logic cuts: \pkg{src/cut}}
+
+\pkg{src/cut} has \textbf{no user commands}. It is a library used by
+\pkg{src/rmp}: it extracts a cloud of logic via the OpenSTA timing engine and
+passes it to ABC (BLIF or a direct network), then reads the result back into
+odb (including constants via tie cells).
+
+\section{Restructure via ABC: \pkg{src/rmp}}
+
+\id{rmp::Restructure} is the bridge to Berkeley ABC for \emph{local}
+resynthesis:
+
+\begin{enumerate}
+  \item Select a timing-critical or area region (slack / depth thresholds).
+  \item Extract it through \pkg{src/cut} and hand it to the embedded ABC.
+  \item Run area or delay recipes; pick the best result.
+  \item Stitch the mapped netlist back into odb (tie cells for constants).
+\end{enumerate}
+
+\begin{lstlisting}[style=ortcl]
+restructure -liberty_file tech.lib -target delay \
+            -slack_threshold 0 -depth_threshold 16 \
+            -tielo_port TIELO/Y -tiehi_port TIEHI/Y
+\end{lstlisting}
+
+\cmd{-target area|delay} chooses the objective. ABC's own rewrite/mapping
+algorithms are documented in the ABC manual, not here.
+
+\section{Design for test: \pkg{src/dft}}
+
+\id{dft::Dft} inserts scan infrastructure:
+
+\begin{lstlisting}[style=ortcl]
+set_dft_config -max_length 100 -clock_mixing no_mix
+scan_replace          ;# swap flops for scan-equivalent cells
+preview_dft           ;# dry-run the chain plan
+insert_dft            ;# stitch scan chains, add SE/SI/SO ports
+\end{lstlisting}
+
+Elements added: scan-in / scan-out / scan-enable ports, scan cells, and one or
+more shift-register chains. \cmd{-clock\_mixing} controls whether flops of
+different clocks may share a chain.
+
+\section{Summary}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+\textbf{Module} & \textbf{Command} & \textbf{Purpose} & \textbf{External} \\
+\midrule
+\pkg{syn} & \cmd{sv\_elaborate}, \cmd{synthesize} & SV $\rightarrow$ gates in odb & slang \\
+\pkg{cut} & (none) & extract logic cones for ABC & --- \\
+\pkg{rmp} & \cmd{restructure} & local ABC resynthesis & ABC \\
+\pkg{dft} & \cmd{scan\_replace}, \cmd{insert\_dft} & scan insertion & --- \\
+\pkg{cgt} & \cmd{clock\_gating} & ICG insertion (Ch.~\ref{ch:cts}) & ABC proof \\
+\bottomrule
+\end{tabularx}
+\end{table}

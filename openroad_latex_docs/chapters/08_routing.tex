@@ -1,0 +1,82 @@
+\chapter{Routing, Antenna Repair, and Fill}
+\label{ch:route}
+
+\glance{Routing has two phases: \textbf{global} (\pkg{src/grt} / FastRoute)
+produces coarse \emph{guides}; \textbf{detailed} (\pkg{src/drt} / TritonRoute)
+turns guides into DRC-clean wires and vias in odb. Antenna checking
+(\pkg{src/ant}) and metal fill (\pkg{src/fin}) finish the layout.}
+
+\section{Global routing: \pkg{src/grt}}
+
+\id{grt::GlobalRouter} (FastRoute-based) partitions the die into GCells,
+builds a congestion map, and routes nets over that coarse grid. Output is a
+set of \textbf{routing guides} (not exact geometry), iterated with
+rip-up-and-reroute to relieve overflow.
+
+\begin{lstlisting}[style=ortcl]
+set_routing_layers -signal metal2-metal6 -clock metal5-metal6
+global_route -congestion_iterations 50 -guide_file route.guide
+\end{lstlisting}
+
+Useful options: \cmd{-allow\_congestion}, \cmd{-critical\_nets\_percentage},
+\cmd{-start\_incremental}/\cmd{-end\_incremental}, \cmd{-use\_cugr}. Layer
+capacity is tuned with \cmd{set\_global\_routing\_layer\_adjustment}. Guides
+feed the detailed router (and \cmd{estimate\_parasitics -global\_routing}).
+
+\section{Detailed routing: \pkg{src/drt} (TritonRoute)}
+
+\id{drt::TritonRoute} builds DRC-correct wires inside the guides:
+
+\begin{enumerate}
+  \item Pin-access analysis (legal via/access points on each pin).
+  \item Track assignment.
+  \item Initial detailed route, then iterative search-and-repair against a DRC
+        engine until violations converge to zero.
+\end{enumerate}
+
+\begin{lstlisting}[style=ortcl]
+detailed_route -output_drc drc.rpt \
+               -bottom_routing_layer metal2 \
+               -top_routing_layer metal6
+\end{lstlisting}
+
+Supports distributed execution (\cmd{-distributed}, remote host/port) via
+\pkg{src/dst}. Real wires/vias are written as \id{dbWire}/\id{dbVia} on each
+\id{dbNet}.
+
+\section{Antenna check and repair: \pkg{src/ant}}
+
+\id{ant::AntennaChecker} evaluates process-antenna ratios (PAR/CAR per LEF/DEF
+Appendix~C).
+
+\begin{lstlisting}[style=ortcl]
+check_antennas -verbose
+# repair via diode insertion / layer jumping is typically done by
+# repair_design after global_route, or a dedicated repair_antennas flow
+\end{lstlisting}
+
+\section{Metal fill: \pkg{src/fin} (Finale)}
+
+\id{fin::Finale} inserts floating metal fill to meet density rules while
+obeying DRC, driven by a JSON rule file:
+
+\begin{lstlisting}[style=ortcl]
+density_fill -rules fill.json
+\end{lstlisting}
+
+\section{Summary}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+\textbf{Step} & \textbf{Module} & \textbf{Command} & \textbf{DB output} \\
+\midrule
+Global route & \pkg{grt} & \cmd{global\_route} & routing guides \\
+Detailed     & \pkg{drt} & \cmd{detailed\_route} & \id{dbWire}/\id{dbVia} \\
+Antenna      & \pkg{ant} & \cmd{check\_antennas} & report (+ diode fixes) \\
+Fill         & \pkg{fin} & \cmd{density\_fill} & fill shapes \\
+\bottomrule
+\end{tabularx}
+\end{table}

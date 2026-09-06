@@ -1,0 +1,60 @@
+% ============================================================
+%  OpenROAD: A Concise Reference to the Entire Codebase
+%  ----------------------------------------------------------
+%  Build:  latexmk -pdf main.tex
+%     or:  pdflatex main.tex  (run 2-3 times for the TOC)
+%
+%  Integrator file. Each chapter lives in chapters/ and is
+%  pulled in with \input below. A missing chapter file only
+%  drops that chapter; the rest still compile.
+% ============================================================
+\documentclass[11pt,oneside]{report}
+
+\input{preamble}
+
+\title{\Huge\textbf{OpenROAD}\\[0.4em]
+       \LARGE A Concise Reference to the Entire Codebase\\[0.6em]
+       \large An Open-Source RTL-to-GDSII Physical Design Flow}
+\author{Generated engineering reference \\ \small The-OpenROAD-Project source tree}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+This manual is a \textbf{concise, complete engineering reference} to the OpenROAD
+application codebase (the RTL-to-GDSII place-and-route engine). It is written to
+be read once front-to-back, then used as a lookup reference. Every chapter maps
+onto part of the \file{src/} tree --- naming the real modules, C++ classes,
+key functions, and Tcl commands --- and explains how data flows through the
+shared OpenDB database and OpenSTA timer rather than restating code
+line-by-line. The embedded \pkg{src/abc} copy of Berkeley ABC is intentionally
+\emph{not} covered here; it is documented separately in the ABC reference manual.
+After this manual you can locate, read, and modify any stage of the flow.
+\end{abstract}
+
+\tableofcontents
+
+% ---- Part I: Foundations -----------------------------------
+\input{chapters/01_introduction}
+\input{chapters/02_architecture_framework}
+\input{chapters/03_opendb}
+\input{chapters/04_timing_parasitics}
+
+% ---- Part II: Front end of the flow ------------------------
+\input{chapters/05_floorplan}
+\input{chapters/06_placement}
+\input{chapters/07_cts}
+
+% ---- Part III: Back end of the flow ------------------------
+\input{chapters/08_routing}
+\input{chapters/09_resizing}
+\input{chapters/10_power_signoff}
+\input{chapters/11_logic_synthesis_dft}
+
+% ---- Part IV: Tooling & practice ---------------------------
+\input{chapters/12_gui_flow}
+
+\end{document}

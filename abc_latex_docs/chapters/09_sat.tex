@@ -1,0 +1,256 @@
+\chapter{SAT Solvers and CNF}
+\label{ch:sat}
+
+SAT solving in ABC is plumbing, not the headline. The interesting algorithms live
+in combinational equivalence checking (\cmd{cec}), FRAIG-based sweeping,
+resubstitution (\cmd{mfs}), property-directed reachability (\cmd{pdr}), and
+bounded model checking (\cmd{bmc}). Each of those decides Boolean questions by
+encoding a slice of the circuit into CNF and handing it to a Conflict-Driven
+Clause-Learning (CDCL) engine. This chapter documents \emph{which} engines ship
+with ABC, the C~API the rest of the codebase actually calls, and how an AIG
+becomes clauses. It is a reference to the interfaces, not a tutorial on CDCL.
+
+\glance{The workhorse is the MiniSat-1.14--derived C solver in \pkg{src/sat/bsat}
+(type \id{sat_solver}). A dozen other solvers are bundled under \pkg{src/sat} for
+experiments, but \id{sat_solver} is what FRAIG/CEC/MFS/PDR/BMC use by default.
+Circuits are turned into CNF by \pkg{src/sat/cnf} (\id{Cnf_Derive} /
+\id{Cnf_DeriveSimple}), producing a \id{Cnf_Dat_t}. Literals are the standard
+\texttt{2*var + complement} encoding. All solvers are wrapped in the
+\id{ABC\_NAMESPACE} macros so their symbols never clash.}
+
+\section{The primary solver: \id{sat_solver}}
+
+The default engine is declared in \file{src/sat/bsat/satSolver.h} and implemented
+in \file{src/sat/bsat/satSolver.c}. Its header opens with the MiniSat~2005
+copyright by Niklas S\"orensson, ``Modified to compile with MS Visual Studio 6.0
+by Alan Mishchenko'': it is a heavily extended C rewrite of MiniSat~1.14. The
+opaque type is \id{sat_solver}:
+
+\begin{lstlisting}[style=abccode]
+struct sat_solver_t;
+typedef struct sat_solver_t sat_solver;
+
+extern sat_solver* sat_solver_new(void);
+extern void        sat_solver_delete(sat_solver* s);
+extern int         sat_solver_addclause(sat_solver* s, lit* begin, lit* end);
+extern int         sat_solver_solve(sat_solver* s, lit* begin, lit* end,
+                       ABC_INT64_T nConfLimit, ABC_INT64_T nInsLimit,
+                       ABC_INT64_T nConfLimitGlobal, ABC_INT64_T nInsLimitGlobal);
+\end{lstlisting}
+
+\subsection{Literal encoding}
+
+Variables are non-negative integers; a \emph{literal} packs a variable and a
+sign into one \id{int}. \file{src/sat/bsat/satVec.h} defines the local encoding,
+while \file{src/misc/util/abc_global.h} provides the equivalent ABC-wide helpers
+used throughout the code base.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Helper} & \textbf{Source} & \textbf{Meaning} \\
+\midrule
+\id{toLit(v)}          & \file{satVec.h} & \texttt{v+v} --- positive literal of var \id{v} \\
+\id{toLitCond(v,c)}    & \file{satVec.h} & \texttt{v+v+(c!=0)} --- signed literal \\
+\id{lit_neg(l)}        & \file{satVec.h} & \texttt{l\^{}1} --- flip polarity \\
+\id{lit_var(l)}        & \file{satVec.h} & \texttt{l>>1} --- recover variable \\
+\id{Abc_Var2Lit(v,c)}  & \file{abc_global.h} & \texttt{v+v+c} --- same encoding, ABC-wide \\
+\id{Abc_Lit2Var(l)}    & \file{abc_global.h} & \texttt{l>>1} \\
+\id{Abc_LitIsCompl(l)} & \file{abc_global.h} & \texttt{l\&1} --- is the literal complemented \\
+\bottomrule
+\end{tabularx}
+\caption{Literal packing: bit~0 is the sign, the rest is the variable index.}
+\end{table}
+
+The truth values are \id{l_True} ($1$), \id{l_False} ($-1$), and \id{l_Undef}
+($0$); the type alias is \id{typedef int lit}.
+
+\subsection{Minimal usage pattern}
+
+The lifecycle is: create the solver, declare variables, add clauses (arrays of
+literals given as \texttt{begin}/\texttt{end} pointers), solve under optional
+assumptions, then read the model. \id{sat_solver_solve} returns \id{l_True} when
+satisfiable and \id{l_False} when unsatisfiable.
+
+\begin{lstlisting}[style=abccode]
+sat_solver * s = sat_solver_new();
+sat_solver_setnvars( s, 3 );            // vars 0,1,2
+lit Lits[2];
+// clause (x0 OR ~x1)
+Lits[0] = toLitCond(0, 0);
+Lits[1] = toLitCond(1, 1);
+sat_solver_addclause( s, Lits, Lits + 2 );
+int status = sat_solver_solve( s, NULL, NULL, 0, 0, 0, 0 );
+if ( status == l_True )
+    int v0 = sat_solver_var_value( s, 0 ); // read model bit
+sat_solver_delete( s );
+\end{lstlisting}
+
+\subsection{Notable API groups}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Area} & \textbf{Representative functions (\file{satSolver.h})} \\
+\midrule
+Lifecycle      & \id{sat_solver_new}, \id{sat_solver_delete}, \id{sat_solver_restart} \\
+Variables      & \id{sat_solver_addvar}, \id{sat_solver_setnvars}, \id{sat_solver_nvars} \\
+Clauses        & \id{sat_solver_addclause}, \id{sat_solver_clause_new}, \id{sat_solver_simplify} \\
+Solving        & \id{sat_solver_solve}, \id{sat_solver_solve_lexsat}, \id{sat_solver_set_resource_limits} \\
+Incremental    & \id{sat_solver_push}, \id{sat_solver_pop}, \id{sat_solver_bookmark}, \id{sat_solver_rollback} \\
+Model / final  & \id{sat_solver_var_value}, \id{Sat_SolverGetModel}, \id{sat_solver_final} \\
+Gate clauses   & \id{sat_solver_add_and}, \id{sat_solver_add_xor}, \id{sat_solver_add_mux}, \id{sat_solver_add_buffer} \\
+Proof / DIMACS & \id{Sat_SolverWriteDimacs}, \id{sat_solver_store_write}, \id{Sat_SolverTraceStart} \\
+\bottomrule
+\end{tabularx}
+\caption{The \id{sat_solver} surface used by the rest of ABC.}
+\end{table}
+
+The inline \id{sat_solver_add_and} / \id{sat_solver_add_xor} /
+\id{sat_solver_add_mux} helpers emit the Tseitin clause groups for individual
+gates directly, so callers that build a problem gate-by-gate need not go through
+the CNF package. Resource limits (\id{nConfLimit}, \id{nInsLimit}) let callers
+abort a hard query --- essential when SAT is only one step inside a larger
+verification loop.
+
+\section{Catalog of bundled solvers}
+
+Everything under \pkg{src/sat} except \pkg{cnf} and \pkg{bmc} is a SAT engine or
+solver interface. Only \pkg{bsat} is on the default path; the rest are kept for
+benchmarking and specialized flows. Each is wrapped in \id{ABC\_NAMESPACE\_*}
+guards to avoid symbol collisions between the (many) MiniSat descendants.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Package} & \textbf{Key file} & \textbf{Lineage / notes} \\
+\midrule
+\pkg{sat/bsat}    & \file{satSolver.h} & MiniSat-1.14--derived C; the \id{sat_solver} workhorse (default engine). \\
+\pkg{sat/bsat2}   & \file{Solver.h}, \file{SimpSolver.h} & MiniSat~2.2.0 C++ (with \file{ReleaseNotes-2.2.0.txt}); \file{AbcApi.cpp} wraps it for ABC. \\
+\pkg{sat/glucose}  & \file{AbcGlucose.h} & Glucose~3.0 by Gilles Audemard and Laurent Simon; LBD-based clause management. \\
+\pkg{sat/glucose2} & \file{AbcGlucose2.h} & Second Glucose~3.0 integration variant with its own ABC interface. \\
+\pkg{sat/kissat}   & \file{kissat.h} & Kissat by Armin Biere; modern C solver in the CaDiCaL/Lingeling family. \\
+\pkg{sat/cadical}  & \file{cadical.hpp} & CaDiCaL by Armin Biere; C++ CDCL solver with inprocessing. \\
+\pkg{sat/satoko}   & \file{satoko.h} & satoko by Bruno Schmitt; modern MiniSat-like C solver (BSD). \\
+\pkg{sat/xsat}     & \file{xsat.h} & xSAT by Bruno Schmitt; compact C SAT solver. \\
+\pkg{sat/msat}     & \file{msat.h} & Older C port of the original C++ MiniSat / Satzoo (2004). \\
+\pkg{sat/psat}     & \file{m114p.h} & C API (\id{M114p\_*}) to a MiniSat-1.14p proof-recording solver. \\
+\pkg{sat/lsat}     & \file{solver.h} & Minimal solver by N.~S\"orensson and K.~Claessen (2008). \\
+\pkg{sat/proof}    & \file{pr.h} & Resolution-proof recording / manipulation (not a solver). \\
+\pkg{sat/csat}     & \file{csat_apis.h} & Circuit-level SAT interface (gate-based \id{ABC\_AddGate} API). \\
+\bottomrule
+\end{tabularx}
+\caption{SAT engines and interfaces bundled under \pkg{src/sat}.}
+\end{table}
+
+\section{Turning a circuit into CNF: \pkg{src/sat/cnf}}
+
+A SAT solver consumes clauses, but ABC's designs are AIGs. The \pkg{src/sat/cnf}
+package bridges the two. Its central data structure, declared in
+\file{src/sat/cnf/cnf.h}, is \id{Cnf_Dat_t}:
+
+\begin{lstlisting}[style=abccode]
+struct Cnf_Dat_t_
+{
+    Aig_Man_t *  pMan;       // AIG the CNF was computed for
+    int          nVars;      // number of variables
+    int          nClauses;   // number of clauses
+    int          nLiterals;  // number of literals
+    int **       pClauses;    // the clauses (pClauses[i]..pClauses[i+1])
+    int *        pVarNums;   // CNF variable per AIG node ID (-1 if unused)
+    Vec_Int_t *  vMapping;   // mapping of internal nodes
+};
+\end{lstlisting}
+
+Clauses are stored contiguously: \id{pClauses[i]} through \id{pClauses[i+1]}
+delimit clause~$i$, iterated with the \id{Cnf_CnfForClause} macro. The
+\id{pVarNums} array records which CNF variable each AIG object maps to, so callers
+can connect solver variables back to circuit nodes.
+
+\subsection{Two derivation strategies}
+
+ABC does not emit three clauses per AND node naively. \id{Cnf_Derive}
+(\file{src/sat/cnf/cnfCore.c}, ``Converts AIG into the SAT solver'') first runs a
+lightweight \emph{technology mapping} step that clusters the AIG into small
+$k$-feasible cuts, computes each cut's local function, and emits compact CNF for
+those gates --- fewer variables and clauses than a per-node Tseitin encoding.
+When speed of encoding matters more than clause count, \id{Cnf_DeriveSimple}
+(\file{src/sat/cnf/cnfWrite.c}) applies a straightforward Tseitin translation,
+two/three clauses per AND node.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Function} & \textbf{Role} \\
+\midrule
+\id{Cnf_Derive}            & Mapping-based CNF over the AIG (fewer vars/clauses). \\
+\id{Cnf_DeriveSimple}      & Direct Tseitin CNF, one small group per node. \\
+\id{Cnf_DeriveFast}        & Fast structural derivation (\file{cnfFast.c}). \\
+\id{Cnf_DataWriteIntoSolver} & Load a \id{Cnf_Dat_t} straight into a \id{sat_solver}. \\
+\id{Cnf_DataLift}          & Renumber variables (for time-frame copies). \\
+\id{Cnf_DataFree}          & Release the \id{Cnf_Dat_t}. \\
+\bottomrule
+\end{tabularx}
+\caption{Core entry points in \pkg{src/sat/cnf} (declared in \file{cnf.h}).}
+\end{table}
+
+\id{Cnf_DataWriteIntoSolver} is the glue that hands the derived clauses to the
+default engine, and \id{Cnf_DataLift} shifts variable numbers so several unrolled
+copies of the same circuit can coexist in one solver --- exactly what bounded
+model checking needs.
+
+\section{Bounded model checking: \pkg{src/sat/bmc}}
+
+BMC asks whether a safety property can be violated within $k$ clock cycles. The
+recipe is to \emph{unroll} the sequential circuit over $k$ time frames, wire each
+frame's next-state outputs to the following frame's state inputs, derive CNF for
+the unrolled AIG, and check satisfiability of ``bad output asserted in some
+frame.'' A SAT model is a concrete counterexample trace; UNSAT proves the
+property holds up to depth~$k$.
+
+The package offers several engines, declared in \file{src/sat/bmc/bmc.h}:
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lll@{}}
+\toprule
+\textbf{Command} & \textbf{Source} & \textbf{Entry point} \\
+\midrule
+\cmd{bmc}  & \file{bmcBmc.c}  & \id{Saig_ManBmcSimple} \\
+\cmd{bmc2} & \file{bmcBmc2.c} & \id{Saig_BmcPerform} \\
+\cmd{bmc3} & \file{bmcBmc3.c} & \id{Saig_ManBmcScalable} \\
+---        & \file{bmcBmcAnd.c} & \id{Gia_ManBmcPerform} \\
+\bottomrule
+\end{tabularx}
+\caption{BMC engines and the commands that expose them
+(\id{Abc_CommandBmc}, \id{Abc_CommandBmc2}, \id{Abc_CommandBmc3} in
+\file{src/base/abci/abc.c}).}
+\end{table}
+
+\id{Saig_ManBmcSimple} in \file{src/sat/bmc/bmcBmc.c} is the clearest reference
+implementation: it cofactors the AIG over the requested number of frames,
+allocates a \id{sat_solver}, and loads the unrolled CNF before solving. The newer
+\cmd{bmc3} engine (\id{Saig_ManBmcScalable}) drives the flow through a parameter
+block (\id{Saig_ParBmc_t}) and can optionally use the satoko engine, reflecting
+BMC's role as the biggest consumer of raw SAT throughput in ABC.
+
+\section{A note on namespaces}
+
+Because ABC bundles many independently authored MiniSat descendants, every solver
+header is bracketed by \id{ABC\_NAMESPACE\_HEADER\_START} /
+\id{ABC\_NAMESPACE\_HEADER\_END} (and the implementation files by the matching
+\id{IMPL} macros), defined in \file{src/misc/util/abc_namespaces.h}. When compiled
+as C++ with a namespace configured, these expand to
+\texttt{namespace ABC\_NAMESPACE \{~\dots~\}}; otherwise they fall back to
+\texttt{extern "C"} or nothing. This is what lets \id{Solver}, \id{lit}, and
+\id{clause} from a dozen different solvers coexist in one binary without symbol
+clashes.

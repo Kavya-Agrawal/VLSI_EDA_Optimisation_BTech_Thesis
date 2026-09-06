@@ -1,0 +1,80 @@
+\chapter{Timing Optimization: The Resizer}
+\label{ch:rsz}
+
+\glance{The resizer (\pkg{src/rsz}, \id{rsz::Resizer}) is OpenROAD's timing-
+closure engine. It sizes gates, inserts/removes buffers, clones loads, and
+swaps pins --- always driven by OpenSTA slack and by wire RC from
+estimation or extraction. It is invoked after placement, after CTS, and after
+global route.}
+
+\section{Where it sits}
+
+\begin{lstlisting}[style=ortcl]
+# typical call sites in a flow
+estimate_parasitics -placement
+repair_design
+repair_timing -setup
+
+clock_tree_synthesis
+repair_timing -setup -hold
+
+global_route
+estimate_parasitics -global_routing
+repair_timing -setup -hold
+\end{lstlisting}
+
+\id{OpenRoad::init()} wires the resizer to the DB, STA, Steiner builder,
+global router, detailed placer, and parasitic estimator --- it is the biggest
+consumer of the STA API.
+
+\section{Command family}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Command} & \textbf{Purpose} \\
+\midrule
+\cmd{set\_dont\_use} / \cmd{set\_dont\_touch} & exclude cells / protect instances \\
+\cmd{buffer\_ports} & buffer primary inputs/outputs \\
+\cmd{remove\_buffers} & strip synth buffers before re-optimizing \\
+\cmd{repair\_design} & fix max slew / max cap / max fanout / long wires \\
+\cmd{repair\_tie\_fanout} & clone tie-hi/lo drivers per load \\
+\cmd{repair\_timing} & main setup/hold closure (buffers, sizing, pin swap) \\
+\cmd{repair\_clock\_nets} / \cmd{repair\_clock\_inverters} & post-CTS clock fixups \\
+\cmd{report\_design\_area} / \cmd{report\_floating\_nets} & diagnostics \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{lstlisting}[style=ortcl]
+set_wire_rc -signal -layer metal3
+estimate_parasitics -placement
+remove_buffers
+repair_design
+repair_timing -setup -hold -repair_tns
+\end{lstlisting}
+
+\cmd{repair\_timing} options of note: \cmd{-setup}, \cmd{-hold},
+\cmd{-skip\_pin\_swap}, \cmd{-repair\_tns}, and percent-end-point targets.
+Hold fixing inserts delay buffers; setup fixing upsizes / inserts along the
+Steiner topology of critical nets.
+
+\section{Algorithms (conceptual)}
+
+\begin{itemize}
+  \item \textbf{Gate sizing:} swap a cell for a stronger/weaker Liberty
+        equivalent (respecting \cmd{dont\_use}).
+  \item \textbf{Buffer insertion:} break long Steiner segments to meet slew/cap
+        and improve delay.
+  \item \textbf{Load splitting / cloning:} duplicate drivers for high fanout.
+  \item \textbf{Pin swapping:} permute logically equivalent pins for slack.
+\end{itemize}
+
+All decisions are driven by STA arrival/required times under the currently
+annotated parasitics (Ch.~\ref{ch:timing}).
+
+\glance{\cmd{repair\_design} fixes electrical design-rule violations;
+\cmd{repair\_timing} closes setup/hold. Call estimation (or extraction) before
+either, or the resizer is optimizing the wrong RC.}

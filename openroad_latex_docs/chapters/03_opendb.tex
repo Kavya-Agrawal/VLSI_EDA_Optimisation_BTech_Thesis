@@ -1,0 +1,127 @@
+\chapter{OpenDB: The Shared Design Database}
+\label{ch:odb}
+
+\glance{OpenDB (\pkg{src/odb}, namespace \id{odb}) is the single in-memory data
+model every OpenROAD module reads and writes. It mirrors LEF/DEF: a
+\emph{technology + library} side (\id{dbTech}, \id{dbLib}, \id{dbMaster}) and a
+\emph{design} side (\id{dbChip} $\rightarrow$ \id{dbBlock} with \id{dbInst},
+\id{dbNet}, \id{dbITerm}, \id{dbBTerm}, wires). Distances are integers in
+\textbf{nanometers}; every object has a stable 32-bit OID and the whole database
+serializes losslessly via \cmd{write\_db}/\cmd{read\_db}.}
+
+\section{What OpenDB is}
+
+OpenDB was originally the Athena/Nefelus database, open-sourced for OpenROAD. It
+is written in C++ with STL-style iterators and is fast enough to be used
+directly --- tools operate on it in place rather than copying into private
+structures. All public classes are declared in one header,
+\file{src/odb/include/odb/db.h}; return types are in \file{odb/dbTypes.h}. There
+is \emph{no} global state: a \id{dbDatabase} is an object, so several can coexist.
+
+\section{The object hierarchy}
+
+\begin{lstlisting}[style=ortcl]
+dbDatabase
+ |- dbTech            technology: layers, vias, rules
+ |    \- dbTechLayer, dbTechVia
+ |- dbLib             cell library
+ |    \- dbMaster     a library cell  (LEF MACRO)
+ |         \- dbMTerm a master pin
+ |- dbChip
+      \- dbBlock      the design (may nest for hierarchy)
+           |- dbInst     placed instance of a dbMaster
+           |    \- dbITerm  instance pin (connects dbInst pin <-> dbNet)
+           |- dbNet      a signal net
+           |- dbBTerm    block port (top-level I/O)
+           |- dbRow, dbTrack, dbWire/dbSWire, dbVia,
+           |  dbBlockage, dbObstruction, dbRegion, dbGroup
+\end{lstlisting}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Class} & \textbf{Represents} \\
+\midrule
+\id{dbDatabase} & top container; owns tech, libs, chip \\
+\id{dbChip} / \id{dbBlock} & the design; block holds all design objects \\
+\id{dbInst} & a placed cell instance (has location + orientation) \\
+\id{dbITerm} & an instance terminal (pin) --- the \id{dbInst}$\leftrightarrow$\id{dbNet} link \\
+\id{dbNet} & a logical net; owns routing (\id{dbWire}) \\
+\id{dbBTerm} & a block/boundary terminal (top-level port) \\
+\id{dbMaster} & a library cell (LEF MACRO); \id{dbMTerm} = its pins \\
+\id{dbTech} / \id{dbTechLayer} & process technology and metal/via layers \\
+\id{dbRow} / \id{dbSite} & standard-cell placement rows and their site \\
+\id{dbWire} / \id{dbSWire} & signal / special (power) routing \\
+\id{dbBlockage} / \id{dbObstruction} & placement / routing blockages \\
+\bottomrule
+\end{tabularx}
+\caption{The most-used OpenDB classes. All derive from \id{dbObject}.}
+\end{table}
+
+Technology (\id{dbTech}, \id{dbLib}) is separated from design (\id{dbBlock}): you
+read a LEF once and reuse it across designs. Note the terminology shift ---
+OpenDB calls a library cell a \id{dbMaster} even though the LEF keyword is
+\texttt{MACRO}.
+
+\section{The base object model}
+
+Every class derives from \id{dbObject} and carries a 32-bit id
+(\id{dbObject::getId} / OID) that is \emph{preserved across save and restore}, so
+references should use OIDs, not raw pointers, when they must survive a
+\cmd{write\_db}. Collections are returned as \id{dbSet<T>} and traversed like STL
+ranges:
+
+\begin{lstlisting}[style=orcode]
+odb::dbBlock* block = db->getChip()->getBlock();
+for (odb::dbInst* inst : block->getInsts()) {
+  odb::dbMaster* master = inst->getMaster();
+  for (odb::dbITerm* iterm : inst->getITerms()) {
+    odb::dbNet* net = iterm->getNet();
+    // ... use master name, net name, placement, etc.
+  }
+}
+\end{lstlisting}
+
+\paragraph{Internals.} Each public class (e.g. \id{dbInst}) has a private twin
+(\id{\_dbInst}) holding the data fields; objects live in paged, resizable tables
+(\file{dbTable.hpp}, 128 objects/page) so iteration is a walk through contiguous
+memory and the OID is just a table index. This is why the database is compact and
+serializes byte-for-byte identically (useful for checkpoints/diffs).
+
+Routing is stored DEF-style as point-to-point traces of a given width inside a
+\id{dbWire}; you decode/encode it with the iterator-like \id{dbWireDecoder} /
+\id{dbWireEncoder}. There is no built-in region query, so geometric tools (router,
+extractor, DRC) build their own spatial structures --- which is why OpenROAD
+favors whole-chip batch operations.
+
+\section{Input and output}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Format} & \textbf{Tcl command} & \textbf{Implementation (\file{src/odb/src/})} \\
+\midrule
+LEF (tech+cells) & \cmd{read\_lef} & \file{lefin/} (reader), \file{lefout/} (writer) \\
+DEF (design)     & \cmd{read\_def} / \cmd{write\_def} & \file{defin/}, \file{defout/} \\
+Verilog netlist  & \cmd{read\_verilog} + \cmd{link\_design} & via \id{dbReadVerilog} / STA network \\
+OpenDB binary    & \cmd{read\_db} / \cmd{write\_db} & native serialization \\
+Abstract LEF     & \cmd{write\_abstract\_lef} & block $\rightarrow$ pins + obstructions \\
+CDL netlist      & \cmd{write\_cdl} & \file{cdl} \\
+\bottomrule
+\end{tabularx}
+\caption{OpenDB build/serialize paths. \cmd{read\_lef -tech}/\cmd{-library} select technology vs macros.}
+\end{table}
+
+Once a database exists (from LEF/DEF or Verilog), \cmd{write\_db} snapshots it so
+later runs skip re-parsing. OpenDB is also exposed to Python as the \id{odb}
+module (\id{odb.dbDatabase}, etc.), so scripts can walk and edit the design
+directly.
+
+\glance{Mental model for every later chapter: a stage \emph{reads} objects from
+the \id{dbBlock}, computes something, and \emph{writes} results back (new
+instances, wires, or updated locations). Master this header and the flow is just
+a sequence of DB transformations.}

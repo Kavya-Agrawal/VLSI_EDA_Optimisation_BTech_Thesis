@@ -1,0 +1,344 @@
+\chapter{The AIG Managers: GIA and Friends}
+\label{ch:aig}
+
+At the core of ABC every design is ultimately an \emph{And-Inverter Graph}
+(AIG): a DAG whose only nodes are two-input ANDs, with inversion carried on the
+edges. ABC ships several AIG implementations tuned for different jobs. The
+modern, scalable one is \pkg{aig/gia} (the \id{Gia_Man_t}, driven by the
+\cmd{\&}-commands); the mid-era pointer-based one is \pkg{aig/aig}
+(\id{Aig_Man_t}, used by DAR rewriting, DCH choices, and FRAIG); and
+\pkg{aig/hop} holds tiny local AIGs used for cut functions inside technology
+mapping and rewriting.
+
+\glance{\id{Gia_Man_t} stores nodes in one dense \id{Gia_Obj_t} array; fanins are
+\emph{relative} backward offsets (\id{iDiff0}/\id{iDiff1}) and a node is only
+two \texttt{unsigned} words plus a \id{Value} word. Literals encode
+\texttt{2*var + complement}. Structural hashing (\id{Gia_ManHashAnd}) dedups AND
+nodes on creation. Fanouts and levels are optional, computed on demand.}
+
+\section{GIA: the scalable AIG}
+
+\subsection{The node: \id{Gia_Obj_t}}
+
+A GIA object is defined in \file{src/aig/gia/gia.h} as two 32-bit bitfields plus
+a scratch word:
+
+\begin{lstlisting}[style=abccode]
+struct Gia_Obj_t_
+{
+    unsigned  iDiff0 : 29;  // the diff of the first fanin
+    unsigned  fCompl0:  1;  // the complemented attribute
+    unsigned  fMark0 :  1;  // first user-controlled mark
+    unsigned  fTerm  :  1;  // terminal node (CI/CO)
+
+    unsigned  iDiff1 : 29;  // the diff of the second fanin
+    unsigned  fCompl1:  1;  // the complemented attribute
+    unsigned  fMark1 :  1;  // second user-controlled mark
+    unsigned  fPhase :  1;  // value under 000 pattern
+
+    unsigned  Value;        // application-specific value
+};
+\end{lstlisting}
+
+The key trick is that fanins are stored as \emph{relative} offsets, not
+absolute IDs or pointers. If a node sits at index \id{Gia_ObjId(p,pObj)}, then
+fanin~0 is at index \texttt{id - iDiff0}: literally
+\id{Gia_ObjFanin0(pObj) = pObj - pObj->iDiff0}. Because fanins are always
+earlier in the array, the diff is a small positive number, the graph is
+topologically ordered by construction, and duplicating/renumbering keeps offsets
+valid. The whole manager is one dense array (\id{pObjs}), so a node costs only
+12 bytes.
+
+The \id{Value} field is scratch space reused by many passes; comments in the
+header note it holds the ``next node'' link during structural hashing and the
+copy during duplication. Node kind is decoded from the fields, not a type tag:
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Predicate & Condition & Meaning \\
+\midrule
+\id{Gia_ObjIsConst0} & \id{iDiff0==GIA\_NONE \&\& iDiff1==GIA\_NONE} & object 0, constant \\
+\id{Gia_ObjIsCi}     & \id{fTerm \&\& iDiff0==GIA\_NONE}             & CI (PI or LO) \\
+\id{Gia_ObjIsCo}     & \id{fTerm \&\& iDiff0!=GIA\_NONE}             & CO (PO or LI) \\
+\id{Gia_ObjIsAnd}    & \id{!fTerm \&\& iDiff0!=GIA\_NONE}            & internal AND \\
+\id{Gia_ObjIsXor}    & \id{Gia\_ObjIsAnd \&\& iDiff0<iDiff1}         & XOR node \\
+\id{Gia_ObjIsBuf}    & \id{iDiff0==iDiff1 \&\& iDiff0!=GIA\_NONE}    & buffer \\
+\bottomrule
+\end{tabular}
+\caption{Node classification is derived from \id{iDiff0}/\id{iDiff1}/\id{fTerm}
+(\id{GIA\_NONE} $=$ \texttt{0x1FFFFFFF}, the max 29-bit value).}
+\end{table}
+
+\subsection{The manager: \id{Gia_Man_t}}
+
+\id{Gia_Man_t} is a large struct in \file{src/aig/gia/gia.h}; the essential
+fields for understanding the data structure are:
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+Field & Type & Purpose \\
+\midrule
+\id{pObjs}   & \id{Gia_Obj_t *} & the dense array of all objects \\
+\id{nObjs}   & \id{int}         & number of objects in use \\
+\id{nObjsAlloc} & \id{int}      & allocated capacity of \id{pObjs} \\
+\id{vCis}    & \id{Vec_Int_t *} & IDs of combinational inputs (PIs $+$ LOs) \\
+\id{vCos}    & \id{Vec_Int_t *} & IDs of combinational outputs (POs $+$ LIs) \\
+\id{nRegs}   & \id{int}         & number of registers (flops) \\
+\id{vHTable} & \id{Vec_Int_t}   & structural-hash bucket table \\
+\id{vHash}   & \id{Vec_Int_t}   & hash chain links (one entry per object) \\
+\id{vRefs} / \id{pRefs} & \id{Vec_Int_t} / \id{int *} & reference (fanout) counts \\
+\id{vLevels} & \id{Vec_Int_t *} & per-node logic level \\
+\id{pMuxes}  & \id{unsigned *}  & control literals when MUX nodes are present \\
+\id{pReprs} / \id{pNexts} & \id{Gia_Rpr_t *} / \id{int *} & equivalence classes \\
+\id{pSibls}  & \id{int *}       & choice-node sibling links \\
+\id{pFanData} & \id{int *}      & optional explicit fanout database \\
+\id{vMapping} / \id{vMapping2} & \id{Vec_Int_t *} / \id{Vec_Wec_t *} & LUT mapping \\
+\id{Value} (per obj) & \id{unsigned} & scratch for copies/hash chains \\
+\bottomrule
+\end{tabularx}
+\caption{Selected \id{Gia_Man_t} fields. Most of the remaining $\sim$150 fields
+are attachments for specific engines (simulation, timing, abstraction, etc.).}
+\end{table}
+
+\subsection{Literals}
+
+GIA never passes bare node pointers between construction calls; it passes
+\emph{literals}. A literal packs a variable (object ID) with an inversion bit:
+\texttt{lit = 2*var + complement}. The helpers live in
+\file{src/misc/util/abc_global.h}:
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Helper & Definition \\
+\midrule
+\id{Abc_Var2Lit(Var,c)}  & \id{Var + Var + c} \\
+\id{Abc_Lit2Var(Lit)}    & \id{Lit >> 1} \\
+\id{Abc_LitIsCompl(Lit)} & \id{Lit \& 1} \\
+\id{Abc_LitNot(Lit)}     & \id{Lit \^{} 1} \\
+\bottomrule
+\end{tabular}
+\caption{Literal helpers shared across GIA and the SAT layer.}
+\end{table}
+
+\subsection{Creating and hashing nodes}
+
+New objects are appended to \id{pObjs} by the inline builders in
+\file{src/aig/gia/gia.h}: \id{Gia_ManAppendCi}, \id{Gia_ManAppendAnd},
+\id{Gia_ManAppendCo} (and \id{Gia_ManStart}/\id{Gia_ManStop} in
+\file{src/aig/gia/giaMan.c} allocate/free the manager). \id{Gia_ManAppendAnd}
+computes the two relative diffs, orders fanins, and returns the new node's
+literal:
+
+\begin{lstlisting}[style=abccode]
+static inline int Gia_ManAppendAnd( Gia_Man_t * p, int iLit0, int iLit1 )
+{
+    Gia_Obj_t * pObj = Gia_ManAppendObj( p );
+    if ( iLit0 < iLit1 ) {
+        pObj->iDiff0  = Gia_ObjId(p,pObj) - Abc_Lit2Var(iLit0);
+        pObj->fCompl0 = Abc_LitIsCompl(iLit0);
+        pObj->iDiff1  = Gia_ObjId(p,pObj) - Abc_Lit2Var(iLit1);
+        pObj->fCompl1 = Abc_LitIsCompl(iLit1);
+    } else { /* swapped */ }
+    return Gia_ObjId( p, pObj ) << 1;
+}
+\end{lstlisting}
+
+Most passes instead call the \emph{hashed} constructor \id{Gia_ManHashAnd} in
+\file{src/aig/gia/giaHash.c}, which folds constants, catches trivial cases, and
+looks the pair up in \id{vHTable} before creating a node. On a hit it returns
+the existing literal (incrementing \id{nHashHit}); on a miss it calls
+\id{Gia_ManAppendAnd}. This structural hashing (``strashing'') guarantees the
+AIG stays a maximally-shared canonical two-input form:
+
+\begin{lstlisting}[style=abccode]
+int Gia_ManHashAnd( Gia_Man_t * p, int iLit0, int iLit1 )
+{
+    if ( iLit0 < 2 ) return iLit0 ? iLit1 : 0;   // AND with const
+    if ( iLit1 < 2 ) return iLit1 ? iLit0 : 0;
+    if ( iLit0 == iLit1 )          return iLit1; // idempotent
+    if ( iLit0 == Abc_LitNot(iLit1) ) return 0;  // x & !x = 0
+    ...
+    int * pPlace = Gia_ManHashFind( p, iLit0, iLit1, -1 );
+    if ( *pPlace ) { p->nHashHit++;  return Abc_Var2Lit(*pPlace,0); }
+    p->nHashMiss++;
+    *pPlace = Abc_Lit2Var( Gia_ManAppendAnd(p, iLit0, iLit1) );
+    ...
+}
+\end{lstlisting}
+
+\subsection{Iterating the graph}
+
+Traversal is done with macros (defined near the end of
+\file{src/aig/gia/gia.h}) rather than fanout pointers. Because the array is
+topologically ordered, a forward scan visits every node after its fanins:
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Macro & Iterates \\
+\midrule
+\id{Gia_ManForEachObj(p,pObj,i)}  & every object, indices \texttt{0..nObjs-1} \\
+\id{Gia_ManForEachAnd(p,pObj,i)}  & internal AND nodes only \\
+\id{Gia_ManForEachCi(p,pObj,i)}   & combinational inputs (via \id{vCis}) \\
+\id{Gia_ManForEachCo(p,pObj,i)}   & combinational outputs (via \id{vCos}) \\
+\id{Gia_ManForEachPi/Po}          & true PIs / POs (excludes registers) \\
+\id{Gia_ManForEachRiRo}           & paired register inputs/outputs \\
+\bottomrule
+\end{tabularx}
+\caption{Common GIA iteration macros.}
+\end{table}
+
+Fanouts are \emph{not} stored by default. Passes that need them either build the
+optional \id{pFanData} database or, more commonly, work with \id{vRefs}
+(reference counts) plus \id{vLevels} (logic levels), both computed on demand.
+This is the deliberate trade that keeps GIA compact enough to scale to tens of
+millions of nodes.
+
+\section{GIA-native synthesis}
+
+The hardcoded \cmd{\&}-scripts live in \file{src/aig/gia/giaScript.c}. The
+headline routine is \id{Gia_ManAigSyn2}, which the \cmd{\&syn2} command wraps:
+its handler \id{Abc_CommandAbc9Syn2} (in \file{src/base/abci/abc.c}) parses
+options and calls
+\id{Gia_ManAigSyn2( pAbc->pGia, fOldAlgo, fCoarsen, fCutMin, nRelaxRatio, ... )}.
+Internally \cmd{\&syn2} interleaves \id{Gia_ManAreaBalance} with LUT mapping
+(\id{Jf_ManPerformMapping}/\id{Lf_ManPerformMapping}) and optional DSD balancing
+\-- an AIG-restructuring loop that operates directly on the \id{Gia_Man_t}.
+
+This contrasts with the classic combinational script \cmd{resyn2}, which is a
+plain command \emph{alias} (defined in \file{abc.rc}) over the old
+network/DAR operators:
+
+\begin{lstlisting}[style=abcshell]
+# from abc.rc -- classic AIG rewriting on Abc_Ntk_t / Aig_Man_t
+alias resyn2 "b; rw; rf; b; rw; rwz; b; rfz; rwz; b"
+# GIA-native equivalent operates in &-space
+abc 01> &get; &syn2; &put
+\end{lstlisting}
+
+The \cmd{\&get} / \cmd{\&put} pair is the bridge between the two worlds. Their
+handlers \id{Abc_CommandAbc9Get} and \id{Abc_CommandAbc9Put} (in
+\file{src/base/abci/abc.c}) convert the current \id{Abc_Ntk_t} into
+\id{pAbc->pGia} and back, so a design can be pulled into the scalable
+\cmd{\&}-engines, optimized, and returned to the classic flow.
+
+\section{Mid-era AIG: \id{Aig_Man_t}}
+
+\file{src/aig/aig/aig.h} defines the pointer-based AIG that predates GIA and is
+still used by DAR rewriting (\cmd{dc2}), DCH equivalence/choice computation, and
+FRAIG. Nodes carry explicit fanin \emph{pointers} and an object type enum
+(\id{AIG_OBJ_AND}, \id{AIG_OBJ_CI}, \dots), inversion is encoded in the low bit
+of the pointer:
+
+\begin{lstlisting}[style=abccode]
+struct Aig_Obj_t_  // 8 words
+{
+    union { Aig_Obj_t * pNext; int CioId; };
+    Aig_Obj_t *  pFanin0;         // fanin pointers (not offsets)
+    Aig_Obj_t *  pFanin1;
+    unsigned int Type   : 3;      // explicit object type
+    unsigned int fPhase : 1;
+    unsigned int fMarkA : 1, fMarkB : 1;
+    unsigned int nRefs  : 26;     // reference count
+    unsigned     Level  : 24;
+    int          TravId, Id;
+    union { void * pData; int iData; float dData; };
+};
+\end{lstlisting}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+Field & Type & Purpose \\
+\midrule
+\id{vCis} / \id{vCos} & \id{Vec_Ptr_t *} & input / output node pointers \\
+\id{vObjs}   & \id{Vec_Ptr_t *} & all nodes, indexed by \id{Id} (optional) \\
+\id{pConst1} & \id{Aig_Obj_t *} & the constant-1 node \\
+\id{pTable}  & \id{Aig_Obj_t **} & structural hash table (chained by \id{pNext}) \\
+\id{nObjs[]} & \id{int[]}       & per-type object counts \\
+\id{nRegs}   & \id{int}         & number of registers \\
+\id{pFanData} / \id{nFansAlloc} & \id{int *} / \id{int} & explicit fanout store \\
+\id{pReprs} / \id{pEquivs} & \id{Aig_Obj_t **} & representatives / choice lists \\
+\bottomrule
+\end{tabularx}
+\caption{Selected \id{Aig_Man_t} fields.}
+\end{table}
+
+Compared with GIA, \id{Aig_Man_t} trades memory for convenience: objects are
+$\sim$8 words, fanins are real pointers, a type tag is stored explicitly, and
+fanouts can be materialized. That makes local structural rewriting easy to
+express but limits scale, which is exactly why the newer engines were rebuilt on
+GIA.
+
+\section{Local AIGs and specialized packages}
+
+\subsection{\id{Hop_Man_t}: tiny function AIGs}
+
+\file{src/aig/hop/hop.h} defines a ``minimalistic'' AIG (\id{Hop_Man_t} /
+\id{Hop_Obj_t}). These are small, standalone AIGs used to represent the local
+Boolean function of a cut inside technology mapping (\cmd{if}) and rewriting.
+The node layout mirrors \id{Aig_Obj_t} (pointer fanins, \id{Type} enum,
+complemented-pointer inversion via \id{Hop_Not}/\id{Hop_IsComplement}) but is
+lighter (``6 words'') and reuses \id{nRefs} to hold the level.
+
+\subsection{\pkg{aig/saig}: sequential AIGs}
+
+\file{src/aig/saig/saig.h} adds sequential helpers on top of \id{Aig_Man_t},
+treating the last \id{nRegs} CIs/COs as latch outputs (LOs) and inputs (LIs).
+It provides accessors and iterators such as \id{Saig_ManRegNum},
+\id{Saig_ManLo}/\id{Saig_ManLi}, \id{Saig_ObjLoToLi}/\id{Saig_ObjLiToLo}, and
+the \id{Saig_ManForEachLiLo} macro, plus register-aware transforms like
+\id{Saig_ManDupOrpos} used by the sequential verification engines.
+
+\subsection{Older / niche AIG flavors}
+
+\begin{itemize}
+\item \pkg{aig/ivy} \-- an earlier AIG package (\file{src/aig/ivy/ivy.h}) with
+its own rewriting; largely superseded by DAR/GIA.
+\item \pkg{aig/miniaig} \-- a tiny self-contained reader/writer
+(\file{src/aig/miniaig/miniaig.h}, plus \id{minilut}/\id{ndr}) for embedding AIGs
+in external tools.
+\item \pkg{aig/ioa} \-- AIGER file input/output for the \id{Aig_Man_t} world
+(\file{src/aig/ioa/ioa.h}).
+\end{itemize}
+
+\section{Choosing a representation}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lXXX@{}}
+\toprule
+ & \id{Gia_Man_t} & \id{Aig_Man_t} & \id{Abc_Ntk_t} \\
+\midrule
+Node storage & dense array, relative offsets & heap objects, pointers & heap objects, pointers \\
+Node size    & 12 bytes ($2\times$32b $+$ \id{Value}) & $\sim$8 words & larger (names, general gates) \\
+Fanins       & \id{iDiff0}/\id{iDiff1} offsets & \id{pFanin0}/\id{pFanin1} & fanin vector \\
+Fanouts      & optional (\id{pFanData}) / refs & optional / explicit & always (fanin+fanout vectors) \\
+Node kinds   & 2-input AND (XOR/MUX/buf) & AND/EXOR $+$ type enum & arbitrary gates, LUTs, SOPs \\
+Scale        & tens of millions & millions & smaller, logic-level \\
+Typical use  & \cmd{\&}-flow: mapping, \cmd{\&dch}, \cmd{\&syn2} & DAR \cmd{dc2}, DCH, FRAIG & user-facing netlist, I/O, general logic \\
+\bottomrule
+\end{tabularx}
+\caption{GIA vs.\ \id{Aig_Man_t} vs.\ \id{Abc_Ntk_t}.}
+\end{table}
+
+The practical rule of thumb: \id{Abc_Ntk_t} is the general-purpose netlist the
+user sees; \id{Aig_Man_t} is the working AIG for pointer-friendly rewriting and
+choice-based engines; and \id{Gia_Man_t} is the compact, scalable AIG behind the
+\cmd{\&}-commands where memory footprint and raw size matter most. \cmd{\&get}
+and \cmd{\&put} move designs between the \id{Abc_Ntk_t} and \id{Gia_Man_t}
+worlds.

@@ -1,0 +1,349 @@
+\chapter{Core Data Structures: The Classic Network}
+\label{ch:data}
+
+\glance{The classic ABC design is an \id{Abc\_Ntk\_t} --- a flat array of
+\id{Abc\_Obj\_t} objects (PIs, POs, latches, nodes, \dots) connected by
+\emph{integer-ID} fanin/fanout edges resolved through \id{pNtk->vObjs}. A
+network has a \emph{type} (netlist / logic / strash) and a \emph{functionality}
+(SOP / BDD / AIG / map). The most important type is \textbf{STRASH}: a
+structurally hashed AIG of two-input AND gates with complemented edges, built by
+\cmd{strash} and required by \cmd{rewrite}, \cmd{refactor}, and \cmd{resyn2}.
+All definitions in this chapter live in \file{src/base/abc/abc.h} and its
+implementation files \file{abcNtk.c}, \file{abcObj.c}, and \file{abcAig.c}.}
+
+\section{The two central structs}
+
+Every design object is an \id{Abc\_Obj\_t} (declared as \id{struct Abc\_Obj\_t\_}
+in \file{src/base/abc/abc.h}). It is deliberately small (48/72 bytes on
+32/64-bit builds) because a real design holds millions of them.
+
+\begin{lstlisting}[style=abccode]
+struct Abc_Obj_t_     // 48/72 bytes (32-bits/64-bits)
+{
+    Abc_Ntk_t *   pNtk;          // the host network
+    Abc_Obj_t *   pNext;         // the next pointer in the hash table
+    int           Id;            // the object ID
+    unsigned      Type    :  4;  // the object type
+    unsigned      fMarkA  :  1;  // the multipurpose mark
+    unsigned      fMarkB  :  1;
+    unsigned      fMarkC  :  1;
+    unsigned      fPhase  :  1;  // phase of equivalent node
+    unsigned      fExor   :  1;  // AIG node is a root of EXOR
+    unsigned      fPersist:  1;  // persistant AIG node
+    unsigned      fCompl0 :  1;  // compl. attr. of the first fanin
+    unsigned      fCompl1 :  1;  // compl. attr. of the second fanin
+    unsigned      Level   : 20;  // the level of the node
+    Vec_Int_t     vFanins;       // the array of fanins  (object IDs)
+    Vec_Int_t     vFanouts;      // the array of fanouts (object IDs)
+    void *        pDataComp;
+    union { void * pData; int iData; };  // network-specific data
+    union { void * pTemp; Abc_Obj_t * pCopy; int iTemp; float dTemp; };
+};
+\end{lstlisting}
+
+The network itself, \id{struct Abc\_Ntk\_t\_}, owns the object arrays, the
+per-type counts, the name manager, and a \emph{functionality manager}
+(\id{pManFunc}) whose concrete type depends on \id{ntkFunc} (an AIG manager, a
+BDD manager, or a SOP memory manager).
+
+\begin{lstlisting}[style=abccode]
+struct Abc_Ntk_t_ {
+    Abc_NtkType_t ntkType;       // netlist / logic / strash
+    Abc_NtkFunc_t ntkFunc;       // sop / bdd / aig / map / ...
+    char *        pName;
+    Nm_Man_t *    pManName;      // stores object names
+    Vec_Ptr_t *   vObjs;         // ALL objects; index == Id
+    Vec_Ptr_t *   vPis, * vPos;  // primary inputs / outputs
+    Vec_Ptr_t *   vCis, * vCos;  // combinational in (PI,BO) / out (PO,BI)
+    Vec_Ptr_t *   vBoxes;        // latches and white/black boxes
+    int  nObjCounts[ABC_OBJ_NUMBER]; // live objects by type
+    int  nObjs;                  // number of live objects
+    Mem_Fixed_t * pMmObj;        // memory manager for objects
+    void *        pManFunc;      // AIG / BDD / SOP manager
+    /* ... timing, cuts, EXDC, attributes, traversal IDs ... */
+};
+\end{lstlisting}
+
+\section{Network type and functionality}
+
+\id{ntkType} and \id{ntkFunc} are orthogonal enums. Not every combination is
+legal; the header documents the supported grid (a strashed network is always an
+AIG, for instance).
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Constant} & \textbf{Value} & \textbf{Meaning} \\
+\midrule
+\id{ABC\_NTK\_NONE}    & 0 & unknown \\
+\id{ABC\_NTK\_NETLIST} & 1 & PIs/POs, latches, nodes, \emph{and nets} \\
+\id{ABC\_NTK\_LOGIC}   & 2 & PIs/POs, latches, nodes (no nets) \\
+\id{ABC\_NTK\_STRASH}  & 3 & structurally hashed AIG (2-input ANDs, c-attributes on edges) \\
+\id{ABC\_NTK\_OTHER}   & 4 & unused \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Constant} & \textbf{Value} & \textbf{Node functionality} \\
+\midrule
+\id{ABC\_FUNC\_SOP}      & 1 & sum-of-products (a string per node) \\
+\id{ABC\_FUNC\_BDD}      & 2 & binary decision diagrams (CUDD) \\
+\id{ABC\_FUNC\_AIG}      & 3 & and-inverter graphs \\
+\id{ABC\_FUNC\_MAP}      & 4 & standard-cell library gates \\
+\id{ABC\_FUNC\_BLIFMV}   & 5 & BLIF-MV node functions \\
+\id{ABC\_FUNC\_BLACKBOX} & 6 & black box (contents unknown) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The header supplies inline predicates for both axes, e.g.\ \id{Abc\_NtkIsStrash},
+\id{Abc\_NtkIsLogic}, \id{Abc\_NtkHasAig}, and combined ones like
+\id{Abc\_NtkIsSopLogic}. The value \id{ABC\_NTK\_STRASH} is the gateway to
+optimization: commands such as \cmd{rewrite} and \cmd{resyn2} assert an AIG, so a
+logic network must be converted with \cmd{strash} first.
+
+\section{Object types}
+
+Each object carries a 4-bit \id{Type} field drawn from \id{Abc\_ObjType\_t}.
+Predicates like \id{Abc\_ObjIsNode}, \id{Abc\_ObjIsCi}, \id{Abc\_ObjIsCo}, and
+\id{Abc\_ObjIsBox} classify objects; \id{Abc\_ObjIsCi} is true for PIs and box
+outputs, \id{Abc\_ObjIsCo} for POs and box inputs.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Constant} & \textbf{Val} & \textbf{Role} \\
+\midrule
+\id{ABC\_OBJ\_CONST1}   & 1  & constant-1 node (AIG only; always Id 0's peer) \\
+\id{ABC\_OBJ\_PI}       & 2  & primary input terminal \\
+\id{ABC\_OBJ\_PO}       & 3  & primary output terminal \\
+\id{ABC\_OBJ\_BI}       & 4  & box input terminal (a CO) \\
+\id{ABC\_OBJ\_BO}       & 5  & box output terminal (a CI) \\
+\id{ABC\_OBJ\_NET}      & 6  & net (netlist networks only) \\
+\id{ABC\_OBJ\_NODE}     & 7  & logic node / AIG AND gate \\
+\id{ABC\_OBJ\_LATCH}    & 8  & latch (a box) \\
+\id{ABC\_OBJ\_WHITEBOX} & 9  & box with known contents \\
+\id{ABC\_OBJ\_BLACKBOX} & 10 & box with unknown contents \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Latch initial values are a separate enum \id{Abc\_InitType\_t}
+(\id{ABC\_INIT\_ZERO}, \id{ABC\_INIT\_ONE}, \id{ABC\_INIT\_DC}), stored directly
+in the latch's \id{pData} field via helpers such as \id{Abc\_LatchSetInit0}.
+
+\section{Edges are integer IDs, not pointers}
+
+A fanin/fanout is stored as an \emph{integer object ID} inside the
+\id{vFanins}/\id{vFanouts} vectors, and resolved lazily against
+\id{pNtk->vObjs}. The inline accessors make this indirection invisible:
+
+\begin{lstlisting}[style=abccode]
+static inline Abc_Obj_t * Abc_ObjFanin( Abc_Obj_t * pObj, int i )
+    { return (Abc_Obj_t *)pObj->pNtk->vObjs->pArray[ pObj->vFanins.pArray[i] ]; }
+static inline int Abc_ObjFaninNum ( Abc_Obj_t * pObj ) { return pObj->vFanins.nSize;  }
+static inline int Abc_ObjFanoutNum( Abc_Obj_t * pObj ) { return pObj->vFanouts.nSize; }
+\end{lstlisting}
+
+Because edges are IDs, an object can be deleted (its \id{vObjs} slot set to
+\id{NULL}) without dangling pointers elsewhere; iteration macros skip the holes.
+The \id{Vec\_*} vector types used here are covered in the utilities chapter
+(\ref{ch:util}) and not detailed further.
+
+\subsection{Iteration macros}
+
+Traversal is done almost exclusively through macros so that \id{NULL} holes and
+type filters are handled uniformly. The essential ones:
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+\textbf{Macro} & \textbf{Iterates over} \\
+\midrule
+\id{Abc\_NtkForEachObj(pNtk,pObj,i)}      & every live object in \id{vObjs} \\
+\id{Abc\_NtkForEachNode(pNtk,pNode,i)}    & objects with \id{Type == NODE} \\
+\id{Abc\_AigForEachAnd(pNtk,pNode,i)}     & two-input AND gates of a strashed AIG \\
+\id{Abc\_NtkForEachPi / \dots ForEachPo}  & primary inputs / outputs \\
+\id{Abc\_NtkForEachCi / \dots ForEachCo}  & combinational inputs / outputs \\
+\id{Abc\_NtkForEachLatch(pNtk,pObj,i)}    & latches (walks \id{vBoxes}) \\
+\id{Abc\_ObjForEachFanin(pObj,pFanin,i)}  & fanins of one object \\
+\id{Abc\_ObjForEachFanout(pObj,pFanout,i)}& fanouts of one object \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Complemented edges: two encodings}
+
+ABC represents an inverter as an \emph{attribute on an edge}, never as a
+standalone node. There are two distinct encodings for the same idea.
+
+\paragraph{Stored bits (structural AIG edges).} An AND gate's two incoming edges
+carry complement bits \id{fCompl0} and \id{fCompl1} in the object itself. The
+combination of a fanin and its bit is the \emph{child}:
+
+\begin{lstlisting}[style=abccode]
+static inline int Abc_ObjFaninC0( Abc_Obj_t * p ) { return p->fCompl0; }
+static inline Abc_Obj_t * Abc_ObjChild0( Abc_Obj_t * p )
+    { return Abc_ObjNotCond( Abc_ObjFanin0(p), Abc_ObjFaninC0(p) ); }
+\end{lstlisting}
+
+\paragraph{Pointer tagging (in-flight edges).} While building or querying the
+AIG, an edge is passed around as an \id{Abc\_Obj\_t*} whose least-significant bit
+encodes complementation. Three one-line inlines manage the tag:
+
+\begin{lstlisting}[style=abccode]
+static inline int Abc_ObjIsComplement( Abc_Obj_t * p )
+    { return (int)((ABC_PTRUINT_T)p & (ABC_PTRUINT_T)01); }
+static inline Abc_Obj_t * Abc_ObjRegular( Abc_Obj_t * p )
+    { return (Abc_Obj_t *)((ABC_PTRUINT_T)p & ~(ABC_PTRUINT_T)01); }
+static inline Abc_Obj_t * Abc_ObjNot( Abc_Obj_t * p )
+    { return (Abc_Obj_t *)((ABC_PTRUINT_T)p ^  (ABC_PTRUINT_T)01); }
+\end{lstlisting}
+
+\id{Abc\_ObjNotCond(p,c)} flips the bit only when \id{c} is nonzero. Because the
+LSB is stolen, objects must be at least 2-byte aligned (they are). The tagged
+form is what \id{Abc\_AigAnd} and friends accept and return; the stored-bit form
+is what persists once a node is created.
+
+\section{Structural hashing (the AIG)}
+
+The strash manager \id{struct Abc\_Aig\_t\_} (in \file{src/base/abc/abcAig.c})
+is the \id{pManFunc} of a strashed network. Its heart is a chained hash table of
+AND gates:
+
+\begin{lstlisting}[style=abccode]
+struct Abc_Aig_t_ {
+    Abc_Ntk_t *  pNtkAig;    // the AIG network
+    Abc_Obj_t *  pConst1;    // the constant 1 object (not a node!)
+    Abc_Obj_t ** pBins;      // the table bins (chained by pObj->pNext)
+    int          nBins;      // size of the table
+    int          nEntries;   // total entries
+    /* ... incremental-update scratch vectors ... */
+};
+\end{lstlisting}
+
+The invariant, quoted from the file header, is that \emph{for each AND gate
+there is no other AND gate with the same children}, constants are propagated,
+and there are no single-input (buffer/inverter) nodes. Two AND gates are
+``the same'' when they have identical (fanin, complement) pairs. To make the key
+order-independent, the arguments are sorted by regular-object \id{Id} before
+hashing:
+
+\begin{lstlisting}[style=abccode]
+Abc_Obj_t * Abc_AigAnd( Abc_Aig_t * pMan, Abc_Obj_t * p0, Abc_Obj_t * p1 )
+{
+    Abc_Obj_t * pAnd;
+    if ( (pAnd = Abc_AigAndLookup( pMan, p0, p1 )) )  // reuse existing node
+        return pAnd;
+    return Abc_AigAndCreate( pMan, p0, p1 );          // else make a new one
+}
+\end{lstlisting}
+
+\id{Abc\_AigAndLookup} first collapses the trivial cases --- $x\wedge x = x$,
+$x\wedge\overline{x}=0$, and constant folding against \id{pConst1} --- then
+computes \id{Abc\_HashKey2} (which mixes both fanin IDs and both complement
+bits) and walks the bin's \id{pNext} chain looking for a child-for-child match.
+\id{Abc\_AigAndCreate} orders the arguments, allocates the node, sets its level
+as $1+\max(\text{fanin levels})$, marks EXOR/phase status, and links it into the
+front of its bin:
+
+\begin{lstlisting}[style=abccode]
+if ( Abc_ObjRegular(p0)->Id > Abc_ObjRegular(p1)->Id )  // canonical fanin order
+    pAnd = p0, p0 = p1, p1 = pAnd;
+pAnd = Abc_NtkCreateNode( pMan->pNtkAig );
+Abc_ObjAddFanin( pAnd, p0 );  Abc_ObjAddFanin( pAnd, p1 );
+pAnd->Level = 1 + Abc_MaxInt( Abc_ObjRegular(p0)->Level, Abc_ObjRegular(p1)->Level );
+Key = Abc_HashKey2( p0, p1, pMan->nBins );
+pAnd->pNext = pMan->pBins[Key];  pMan->pBins[Key] = pAnd;  pMan->nEntries++;
+\end{lstlisting}
+
+Because identical ANDs are shared rather than duplicated, every rewrite that
+recreates a subgraph automatically deduplicates it. This is the source of the
+node-count ``gain'' reported by optimization passes: re-hashing a sloppy AIG (for
+example during \id{Abc\_NtkDup}) can collapse it to fewer nodes, and ABC prints a
+warning when duplication alone reduces the node count. Boolean helpers
+\id{Abc\_AigOr}, \id{Abc\_AigXor}, and \id{Abc\_AigMux} are all expressed in
+terms of \id{Abc\_AigAnd} and pointer complementation.
+
+\section{Scratch fields for dataflow passes}
+
+The last two struct members exist purely so that passes can stash temporary
+per-object data without allocating side tables. They are unions, so a pass picks
+one interpretation at a time.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Field} & \textbf{Union} & \textbf{Typical use} \\
+\midrule
+\id{pCopy}   & with \id{pTemp/iTemp/dTemp} & maps an old object to its image in a new network \\
+\id{pData}   & with \id{iData}             & the node's function (SOP string, BDD, gate, latch init, equiv class) \\
+\id{iTemp}\,/\,\id{dTemp} & with \id{pTemp} & scratch int/float: simulation values, SAT variables \\
+\id{fMarkA/B/C} & bitfield                & visited flags for local traversals \\
+\id{Level}   & 20-bit field                & structural depth from the CIs \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\id{pCopy} is the workhorse of every ``build a fresh network'' pass: helpers
+such as \id{Abc\_ObjChild0Copy} read \id{Abc\_ObjFanin0(pObj)->pCopy} and
+re-apply the stored complement bit, which is exactly how \id{Abc\_NtkDup}
+reconstructs edges in the new network. Traversal IDs (\id{nTravIds},
+\id{vTravIds}) provide an $O(1)$ ``visited this pass'' test via
+\id{Abc\_NodeIsTravIdCurrent} without clearing marks between runs. Node levels
+are computed as one plus the maximum fanin level, either incrementally at
+construction time (as above) or in bulk by \id{Abc\_NtkLevel}
+(\file{src/base/abc/abcDfs.c}).
+
+\section{Object and network lifecycle}
+
+\subsection{Creating and deleting objects}
+
+\id{Abc\_ObjAlloc} (\file{src/base/abc/abcObj.c}) fetches zeroed memory from the
+network's fixed-size manager \id{pMmObj}, stamps \id{pNtk} and \id{Type}, and
+leaves \id{Id = -1}. \id{Abc\_NtkCreateObj} assigns the ID (its index in
+\id{vObjs}), pushes the object onto \id{vObjs}, bumps
+\id{nObjCounts[Type]} and \id{nObjs}, and files it into the right role array
+(\id{vPis}/\id{vCis} for a PI, \id{vBoxes} for a latch, etc.). The thin
+per-type wrappers \id{Abc\_NtkCreatePi}, \id{Abc\_NtkCreateNode},
+\id{Abc\_NtkCreateLatch}, \dots\ all funnel through it.
+
+\id{Abc\_NtkDeleteObj} reverses this: it strips the object's name, unhooks every
+fanin/fanout edge, sets its \id{vObjs} slot to \id{NULL} (leaving a hole),
+decrements the counters, and removes it from its role array.
+\id{Abc\_ObjRecycle} then frees the fanin/fanout arrays and returns the memory to
+\id{pMmObj}. Because deletion leaves holes, \id{Abc\_NtkObjNum} (live count)
+differs from \id{Abc\_NtkObjNumMax} (the size of \id{vObjs}).
+
+\subsection{Duplicating a network}
+
+Two routines in \file{src/base/abc/abcNtk.c} anchor most transformations:
+
+\begin{itemize}
+\item \id{Abc\_NtkStartFrom} allocates an empty network of the requested
+\id{Type}/\id{Func}, copies the name/spec, clears every \id{pCopy}, and clones
+just the CIs, COs, and boxes --- setting each source object's \id{pCopy} to its
+new counterpart. The interior is intentionally left empty for the caller to
+rebuild.
+\item \id{Abc\_NtkDup} calls \id{Abc\_NtkStartFrom} with the same type, then
+fills the interior. For a strashed network it walks the ANDs in order and calls
+\id{Abc\_AigAnd(\dots, Abc\_ObjChild0Copy(pObj), Abc\_ObjChild1Copy(pObj))},
+so the copy is re-hashed as it is built; for a logic/netlist network it dups the
+remaining objects and reconnects fanins through \id{pCopy}.
+\end{itemize}
+
+\begin{lstlisting}[style=abccode]
+// inside Abc_NtkDup, for a strashed network:
+Abc_AigForEachAnd( pNtk, pObj, i )
+    pObj->pCopy = Abc_AigAnd( (Abc_Aig_t *)pNtkNew->pManFunc,
+                              Abc_ObjChild0Copy(pObj), Abc_ObjChild1Copy(pObj) );
+Abc_NtkForEachCo( pNtk, pObj, i )
+    Abc_ObjAddFanin( pObj->pCopy, Abc_ObjChild0Copy(pObj) );
+\end{lstlisting}
+
+This \id{pCopy}-threading idiom --- clear copies, map terminals, rebuild
+interior, reconnect outputs --- recurs throughout ABC and is worth recognizing
+on sight.

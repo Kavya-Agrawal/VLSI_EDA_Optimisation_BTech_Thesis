@@ -1,0 +1,58 @@
+% ============================================================
+%  ABC: A Concise Reference to the Entire Codebase
+%  ----------------------------------------------------------
+%  Build:  latexmk -pdf main.tex
+%     or:  pdflatex main.tex  (run 2-3 times for the TOC)
+%
+%  This is the integrator file. Each chapter lives in its own
+%  file under chapters/ and is pulled in with \input below.
+%  A missing chapter file only drops that chapter; the rest
+%  still compile.
+% ============================================================
+\documentclass[11pt,oneside]{report}
+
+\input{preamble}
+
+\title{\Huge\textbf{ABC}\\[0.4em]
+       \LARGE A Concise Reference to the Entire Codebase\\[0.6em]
+       \large System for Sequential Logic Synthesis and Formal Verification}
+\author{Generated engineering reference \\ \small Berkeley ABC source tree}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+This manual is a \textbf{concise, complete engineering reference} to the Berkeley
+ABC codebase. It is written to be read front-to-back once and then used as a
+lookup reference. Every chapter maps directly onto a part of the \file{src/}
+tree, names the real files, structs, functions, and constants involved, and
+explains the data flow rather than restating line-by-line code. The goal: after
+this manual you can locate, read, and modify any part of ABC without getting
+lost in \(\sim\)2300 source files.
+\end{abstract}
+
+\tableofcontents
+
+% ---- Part I: Foundations -----------------------------------
+\input{chapters/01_introduction}
+\input{chapters/02_architecture_command}
+\input{chapters/03_data_structures}
+
+% ---- Part II: Graph representations ------------------------
+\input{chapters/04_aig_gia}
+\input{chapters/05_io_frontends}
+
+% ---- Part III: The algorithms ------------------------------
+\input{chapters/06_optimization}
+\input{chapters/07_mapping}
+\input{chapters/08_proof_verification}
+\input{chapters/09_sat}
+
+% ---- Part IV: Support layers & practice --------------------
+\input{chapters/10_bool_misc_utilities}
+\input{chapters/11_recipes_embedding}
+
+\end{document}

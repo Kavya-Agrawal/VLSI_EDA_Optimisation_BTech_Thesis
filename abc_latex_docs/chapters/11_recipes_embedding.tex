@@ -1,0 +1,312 @@
+\chapter{Recipes, Scripts, and Embedding ABC}
+\label{ch:recipes}
+
+This chapter is the practical companion to the algorithm chapters. It documents
+what actually ships in \file{abc.rc} (the resource file ABC auto-sources at
+startup), how to drive ABC from the REPL, a batch string, or a script file, and
+how to embed ABC as a static/shared library through the tiny public API in
+\file{src/demo.c}, \file{src/base/main/abcapis.h}, and
+\file{src/base/main/main.h}. Everything below is quoted verbatim from the source
+tree; the synthesis ``scripts'' are simply alias chains, not compiled code.
+
+\glance{An ABC synthesis \emph{script} such as \cmd{resyn2} is a named
+\cmd{alias} defined in \file{abc.rc} that expands to a semicolon-separated
+sequence of primitive commands (\cmd{balance}, \cmd{rewrite}, \cmd{refactor},
+\cmd{resub}, \dots). Because a recipe is just a fixed string of transforms with
+no search, choosing/ordering transforms for a given circuit is exactly the
+problem that reinforcement-learning-for-logic-synthesis research attacks.}
+
+\section{The resource file \texttt{abc.rc}}
+
+On startup ABC sources \file{abc.rc} from the current directory (or the
+executable's directory), so every alias and global flag below is available in an
+interactive session without any manual setup. The file has four parts: global
+parameters, external tool names, short aliases, and the synthesis scripts.
+
+\subsection{Global parameters and flags}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Directive in \file{abc.rc}} & \textbf{Effect} \\
+\midrule
+\cmd{set check}            & Check intermediate networks after each transform (on by default). \\
+\cmd{set checkfio}         & (Commented) warn when fanins/fanouts are duplicated. \\
+\cmd{unset checkread}      & (Commented) skip checking networks after reading from file. \\
+\cmd{set backup}           & (Commented) keep backup networks retrievable by \cmd{undo}/\cmd{recall}. \\
+\cmd{set savesteps 1}      & (Commented) maximum number of backup networks to save. \\
+\cmd{set progressbar}      & (Commented) display the progress bar. \\
+\cmd{set dotwin}/\cmd{dotunix} & Names of the \texttt{dot} binary used by graph visualization. \\
+\cmd{set siswin}/\cmd{sisunix}, \cmd{mvsis...}, \cmd{capo...}, \cmd{gnuplot...} & Names of external tools (SIS, MVSIS, Capo placer, gnuplot) invoked internally. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Related runtime flags you set the same way: \cmd{set autoexec ps}
+(alias \cmd{sa}) makes ABC print statistics after \emph{every} command, and the
+backup/undo machinery (\cmd{undo}, alias \cmd{u}) only stores states when
+\cmd{set backup} and \cmd{savesteps} are enabled.
+
+\section{Catalog of standard aliases}
+
+Aliases are pure textual shorthands (\cmd{alias r read}); they save typing in
+the REPL. The most used ones:
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Alias} & \textbf{Expansion} & \textbf{Purpose} \\
+\midrule
+\cmd{b}    & \cmd{balance}       & Rebalance the AIG for depth. \\
+\cmd{st}   & \cmd{strash}        & Structurally hash the network into an AIG. \\
+\cmd{rw}   & \cmd{rewrite}       & DAG-aware rewriting. \\
+\cmd{rwz}  & \cmd{rewrite -z}    & Rewriting with zero-cost replacement. \\
+\cmd{rf}   & \cmd{refactor}      & Refactoring of logic cones. \\
+\cmd{rfz}  & \cmd{refactor -z}   & Refactoring with zero-cost replacement. \\
+\cmd{re}   & \cmd{restructure}   & Restructuring. \\
+\cmd{rs}   & \cmd{resub}         & Resubstitution. \\
+\cmd{rsz}  & \cmd{resub -z}      & Resubstitution with zero-cost replacement. \\
+\cmd{f}    & \cmd{fraig}         & Functionally reduce (SAT-sweep) the AIG. \\
+\cmd{fs}   & \cmd{fraig\_sweep}  & FRAIG-based sweep. \\
+\cmd{fsto}/\cmd{fres} & \cmd{fraig\_store}/\cmd{fraig\_restore} & Push/pop networks in the FRAIG store (used by \cmd{choice}). \\
+\cmd{ps}   & \cmd{print\_stats}  & Print size/level statistics. \\
+\cmd{psb}  & \cmd{print\_stats -b} & Statistics in ``brief'' form. \\
+\cmd{r}/\cmd{w}   & \cmd{read}/\cmd{write} & Read/write a network (format from extension). \\
+\cmd{ra}/\cmd{wa} & \cmd{read\_aiger}/\cmd{write\_aiger} & AIGER I/O. \\
+\cmd{rv}/\cmd{wv} & \cmd{read\_verilog}/\cmd{write\_verilog} & (Structural) Verilog I/O. \\
+\cmd{rl}/\cmd{wl} & \cmd{read\_blif}/\cmd{write\_blif} & BLIF I/O. \\
+\cmd{cl}/\cmd{clp} & \cmd{cleanup}/\cmd{collapse} & Remove dangling nodes / collapse to two-level. \\
+\cmd{so}   & \cmd{source -x}     & Source a script file (see below). \\
+\cmd{q}    & \cmd{quit}          & Exit ABC. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent The full list also covers many \cmd{print\_*} helpers (\cmd{pfan},
+\cmd{pl}, \cmd{pio}, \cmd{pk}, \dots), reader variants (\cmd{rt} truth table,
+\cmd{rp} PLA, \cmd{rb} bench), and retiming shortcuts (\cmd{ret}, \cmd{r3},
+\cmd{r3f}, \cmd{r3b}, \cmd{dret}).
+
+\section{The synthesis scripts}
+
+These are the recipes practitioners (and RL agents) actually run. Each is a
+literal alias chain from \file{abc.rc}; the \cmd{-l} flag preserves level (delay)
+during optimization, \cmd{-z} enables zero-cost replacements, and \cmd{-K}/\cmd{-N}
+set cut size and node count for resubstitution.
+
+\begin{lstlisting}[style=abcshell]
+resyn       "b; rw; rwz; b; rwz; b"
+resyn2      "b; rw; rf; b; rw; rwz; b; rfz; rwz; b"
+resyn2a     "b; rw; b; rw; rwz; b; rwz; b"
+resyn3      "b; rs; rs -K 6; b; rsz; rsz -K 6; b; rsz -K 5; b"
+compress    "b -l; rw -l; rwz -l; b -l; rwz -l; b -l"
+compress2   "b -l; rw -l; rf -l; b -l; rw -l; rwz -l; b -l; rfz -l; rwz -l; b -l"
+choice      "fraig_store; resyn; fraig_store; resyn2; fraig_store; fraig_restore"
+choice2     "fraig_store; balance; fraig_store; resyn; fraig_store; resyn2; fraig_store; resyn2; fraig_store; fraig_restore"
+\end{lstlisting}
+
+\noindent The IWLS-paper resubstitution scripts and their level-preserving
+variants:
+
+\begin{lstlisting}[style=abcshell]
+src_rw      "st; rw -l; rwz -l; rwz -l"
+src_rs      "st; rs -K 6 -N 2 -l; rs -K 9 -N 2 -l; rs -K 12 -N 2 -l"
+src_rws     "st; rw -l; rs -K 6 -N 2 -l; rwz -l; rs -K 9 -N 2 -l; rwz -l; rs -K 12 -N 2 -l"
+resyn2rs    "b; rs -K 6; rw; rs -K 6 -N 2; rf; rs -K 8; b; rs -K 8 -N 2; rw; rs -K 10; rwz; rs -K 10 -N 2; b; rs -K 12; rfz; rs -K 12 -N 2; rwz; b"
+compress2rs "b -l; rs -K 6 -l; rw -l; rs -K 6 -N 2 -l; rf -l; rs -K 8 -l; b -l; rs -K 8 -N 2 -l; rw -l; rs -K 10 -l; rwz -l; rs -K 10 -N 2 -l; b -l; rs -K 12 -l; rfz -l; rs -K 12 -N 2 -l; rwz -l; b -l"
+\end{lstlisting}
+
+\noindent A few purpose-specific recipes round out the file:
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Script} & \textbf{Expansion / purpose} \\
+\midrule
+\cmd{rwsat}   & \cmd{st; rw -l; b -l; rw -l; rf -l} --- lightweight prep for SAT. \\
+\cmd{drwsat2} & \cmd{st; drw; b -l; drw; drf; ifraig -C 20; drw; b -l; drw; drf} --- ``dar''-based version. \\
+\cmd{share}   & \cmd{st; multi -m; sop; fx; resyn2} --- extract shared logic. \\
+\cmd{addinit}/\cmd{blif2aig} & Flop-init handling: \cmd{read\_init; undc; strash; zero} etc. \\
+\cmd{fix\_aig}  & \cmd{logic; undc; strash; zero} --- convert 1-valued/DC flops for an AIG. \\
+\cmd{fix\_blif} & \cmd{undc; strash; zero} --- same for a logic network from BLIF. \\
+\cmd{recadd3} & \cmd{st; rec\_add3; b; rec\_add3; dc2; rec\_add3; if -K 8; bidec; st; rec\_add3; dc2; rec\_add3; if -g -K 6; st; rec\_add3} --- ``lazy man's synthesis''. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent Note that \cmd{dc2} is itself a single built-in command (a combined
+balance/rewrite/refactor pass), not an alias --- it does not appear in
+\file{abc.rc} because it is compiled in; the recadd3 recipe simply calls it.
+
+\subsection{GIA scripts and the \texttt{\&}-world}
+
+Commands beginning with \cmd{\&} operate on the scalable GIA manager rather than
+the classic \id{Abc\_Ntk\_t}. \file{abc.rc} pairs each GIA recipe with helpers
+that shuttle a network between the two worlds: \cmd{\&get} imports the current
+network into GIA and \cmd{\&put} exports it back.
+
+\begin{lstlisting}[style=abcshell]
+&dc3        "&b; &jf -K 6; &b; &jf -K 4; &b"
+&dc4        "&b; &jf -K 7; &fx; &b; &jf -K 5; &fx; &b"
+&sw_        "&put; sweep; st; &get"
+&fx_        "&put; sweep; sop; fx; st; &get"
+&resyn2rs    "&put; resyn2rs; &get"
+&compress2rs "&put; compress2rs; &get"
+\end{lstlisting}
+
+\noindent Here \cmd{\&b} is GIA balancing and \cmd{\&jf} is GIA mapping/refactor
+with LUT size \cmd{-K}. The gate-level abstraction flows \cmd{v2p}/\cmd{g2p}
+(e.g. \cmd{\&vta\_gla; \&ps; \&gla\_derive; \&put; w 1.aig; pdr -v}) chain GIA
+abstraction into the \cmd{pdr} model checker.
+
+\section{Running ABC}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Mode} & \textbf{How} \\
+\midrule
+Interactive REPL & Launch \cmd{./abc}; type commands at the \texttt{abc\ 01>} prompt. \file{abc.rc} is auto-sourced first. \\
+Batch string     & \cmd{./abc -c "r i10.aig; b; ps; resyn2; ps; cec"} --- run a semicolon list, then exit. \\
+Script file      & \cmd{./abc -f script.abc}, or from inside: \cmd{source script.abc} (alias \cmd{so} = \cmd{source -x}). \\
+Auto-source      & \file{abc.rc} in the working/exe directory is read at startup, defining all aliases above. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent To measure a run, use \cmd{ps}/\cmd{print\_stats} to report I/O, latch,
+AND-node, and level counts, and \cmd{time} to report elapsed CPU time. A typical
+measurement loop (from the README) reads a benchmark, records the baseline, runs
+a script, and re-prints:
+
+\begin{lstlisting}[style=abcshell]
+abc 01> r i10.aig; b; ps; b; rw -l; rw -lz; b; rw -lz; b; ps; cec
+i10          : i/o =  257/  224  lat =    0  and =   2396  lev = 37
+i10          : i/o =  257/  224  lat =    0  and =   1851  lev = 35
+Networks are equivalent.
+\end{lstlisting}
+
+\noindent Benchmarks such as \file{i10.aig} ship in the repository root; AIGER
+(\cmd{ra}) and BLIF (\cmd{rl}) are the usual input formats, and \cmd{cec}
+combinationally verifies the optimized result against the original.
+
+\section{Embedding ABC as a library}
+
+The public embedding surface is deliberately small. \file{src/base/main/abcapis.h}
+declares the four core entry points; \file{src/demo.c} shows the whole usage
+pattern; \file{src/base/main/main.h} exposes the richer frame accessors.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{API} & \textbf{Role} \\
+\midrule
+\id{Abc\_Start()} / \id{Abc\_Stop()} & Start/stop the framework; call once around all ABC work. \\
+\id{Abc\_FrameGetGlobalFrame()} & Get the singleton \id{Abc\_Frame\_t~*} that holds the current network. \\
+\id{Cmd\_CommandExecute(pAbc, str)} & Execute any command string (same syntax as the REPL); returns nonzero on error. \\
+\id{Abc\_FrameReadNtk(p)} / \id{Abc\_FrameReadGia(p)} & Get the current \id{Abc\_Ntk\_t~*} / \id{Gia\_Man\_t~*} for direct in-memory access. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent The demo performs DAG-aware rewriting entirely by feeding command
+strings into \id{Cmd\_CommandExecute}; note the inlined \cmd{resyn}-style script
+passed as a single C string:
+
+\begin{lstlisting}[style=abccode]
+Abc_Frame_t * pAbc;
+char Command[1000];
+Abc_Start();
+pAbc = Abc_FrameGetGlobalFrame();
+
+sprintf( Command, "read %s", pFileName );
+if ( Cmd_CommandExecute( pAbc, Command ) ) { /* handle error */ }
+
+sprintf( Command, "balance; rewrite -l; rewrite -lz; balance; rewrite -lz; balance" );
+if ( Cmd_CommandExecute( pAbc, Command ) ) { /* handle error */ }
+
+sprintf( Command, "write_blif result.blif" );
+Cmd_CommandExecute( pAbc, Command );
+Abc_Stop();
+\end{lstlisting}
+
+\noindent \file{abcapis.h} additionally declares ``mini'' data-exchange
+functions for passing circuits without files --- \id{Abc\_NtkInputMiniAig} /
+\id{Abc\_NtkOutputMiniAig}, the GIA variants \id{Abc\_FrameGiaInputMiniAig} /
+\id{Abc\_FrameGiaOutputMiniAig}, mini-LUT and NDR I/O, and result accessors like
+\id{Abc\_FrameReadProbStatus} and \id{Abc\_FrameReadCex} for the verification
+status and counterexample. Everything is wrapped in
+\id{ABC\_NAMESPACE\_HEADER\_START/END} and exported with \id{ABC\_DLL}.
+
+\subsection{Build recipe}
+
+From the README: build the library, then compile and link the demo against it.
+
+\begin{lstlisting}[style=abcshell]
+# static library (main.o is excluded from libabc.a by the Makefile)
+make libabc.a
+
+# compile and link the demo
+gcc -Wall -g -c demo.c -o demo.o
+g++ -g -o demo demo.o libabc.a -lm -ldl -lreadline -lpthread
+
+# shared library instead:
+make ABC_USE_PIC=1 libabc.so
+\end{lstlisting}
+
+\noindent The \file{Makefile} builds \id{libabc.a} from every object except
+\file{src/base/main/main.c} (which contains ABC's own \id{main()}), so the
+library exposes \id{Abc\_Start}/\id{Abc\_Stop} for the host program to call.
+
+\section{Extending ABC with a new command}
+
+New commands are registered with \id{Cmd\_CommandAdd(pAbc, group, name, fn,
+fChanges)} in a package's init routine; the core registers hundreds this way in
+\file{src/base/abci/abc.c}:
+
+\begin{lstlisting}[style=abccode]
+Cmd_CommandAdd( pAbc, "Printing", "ps", Abc_CommandPrintStats, 0 );
+Cmd_CommandAdd( pAbc, "Printing", "print_stats", Abc_CommandPrintStats, 0 );
+\end{lstlisting}
+
+\noindent To add your own without patching upstream, drop a directory named
+\file{src/ext*} (e.g. \file{src/ext-mytool}) into the tree. The \file{Makefile}
+begins its module list with \verb|$(wildcard src/ext*)| and then
+\verb|include|s each module's \file{module.make}, so your \file{module.make}
+(which appends your \file{.c} files to \id{SRC}) is picked up automatically. Give
+that package an init function that calls \id{Cmd\_CommandAdd}, and register it in
+the startup path so the command appears in the REPL like any built-in.
+
+\section{Programmatic use from Python}
+
+There is no official Python binding in this tree. The common ecosystem approaches
+are: (a) drive the binary via \texttt{subprocess}, calling \cmd{./abc -c
+"\dots"} and parsing \cmd{print\_stats} output; or (b) build \id{libabc.so}
+(\cmd{make ABC\_USE\_PIC=1 libabc.so}) and call \id{Abc\_Start},
+\id{Cmd\_CommandExecute}, etc. through \texttt{ctypes}/\texttt{pybind11}. Wrappers
+such as \texttt{abc\_py} exist in the wider research community; specifics vary by
+project, so treat them as third-party.
+
+\section{Cookbook}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}Xl@{}}
+\toprule
+\textbf{Goal} & \textbf{One-line command} \\
+\midrule
+Read an AIGER file & \cmd{r design.aig} \\
+Structurally hash to an AIG & \cmd{st} \\
+Print size/level statistics & \cmd{ps} \\
+Standard area-oriented synthesis & \cmd{resyn2} \\
+Delay-preserving compression & \cmd{compress2} \\
+Strong resub-based compression & \cmd{compress2rs} \\
+Build structural choices & \cmd{choice2} \\
+GIA LUT-oriented recipe & \cmd{\&dc3} \\
+FPGA LUT mapping (size 6) & \cmd{if -K 6} \\
+Combinational equivalence check & \cmd{cec design.aig result.blif} \\
+Write result as BLIF & \cmd{write\_blif result.blif} \\
+Run a whole script from a file & \cmd{source script.abc} \\
+Batch run then exit & \cmd{./abc -c "r a.aig; resyn2; ps; cec"} \\
+\bottomrule
+\end{tabularx}
+\end{center}

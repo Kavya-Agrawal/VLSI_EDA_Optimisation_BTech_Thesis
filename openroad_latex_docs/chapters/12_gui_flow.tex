@@ -1,0 +1,122 @@
+\chapter{GUI, Distributed Execution, and Running the Flow}
+\label{ch:gui}
+
+\glance{Drive OpenROAD interactively with the Qt GUI (\pkg{src/gui}) or the
+browser viewer (\pkg{src/web}); scale heavy stages with the distributed
+framework (\pkg{src/dst}). The autonomous RTL-to-GDSII wrapper is
+\textbf{OpenROAD-flow-scripts} (ORFS). This chapter ties the earlier stages
+into a runnable flow and a command cheat-sheet.}
+
+\section{GUI: \pkg{src/gui}}
+
+\id{gui::Gui} is the Qt layout viewer. Launch with \cmd{openroad -gui} or
+\cmd{gui::show} from a Tcl session. It renders the odb design (instances,
+wires, special nets), exposes layer visibility, heatmaps (density, power, IR
+drop, congestion), selection/inspection, and a Tcl console --- every flow
+command works from inside the GUI. A \id{Renderer} plugin API lets modules
+draw overlays (grt/drt/est register this way).
+
+\section{Web viewer: \pkg{src/web}}
+
+\pkg{src/web} serves the layout as PNG tiles over WebSocket for browser-based
+zoom/pan without a native display:
+
+\begin{lstlisting}[style=ortcl]
+web_server -port 8080 -dir /path/to/web/assets
+save_image -web out.png          ;# headless-friendly
+\end{lstlisting}
+
+\section{Distributed compute: \pkg{src/dst}}
+
+\id{dst::Distributed} provides a load-balancer / worker TCP framework used to
+parallelize compute-heavy stages (notably detailed routing's
+\cmd{-distributed} mode). Workers and a balancer are started as separate
+OpenROAD processes and share a volume for intermediate data.
+
+\section{RAM generator: \pkg{src/ram}}
+
+\id{ram::RamGen} (experimental, DFFRAM-inspired) builds dense stdcell-based
+memory arrays when a foundry compiler is unavailable:
+
+\begin{lstlisting}[style=ortcl]
+generate_ram -width 32 -depth 128 -ports 1rw
+\end{lstlisting}
+
+Supports 1rw / 1rw1r / 1r1w / 2r1w; tested on sky130hd and Nangate45.
+
+\section{Running the OpenROAD binary}
+
+\begin{lstlisting}[style=ortcl]
+openroad                     # interactive Tcl
+openroad -gui                # with Qt GUI
+openroad -python script.py   # Python entry
+openroad -exit flow.tcl      # batch, exit when done
+openroad -metrics out.json -threads 8 flow.tcl
+\end{lstlisting}
+
+Example scripts live under \file{test/} (e.g.\ \file{gcd\_nangate45.tcl},
+\file{aes\_sky130hd.tcl}) and share a common \file{flow.tcl}.
+
+\section{OpenROAD-flow-scripts (ORFS)}
+
+ORFS (sibling repo \file{openroad\_repos/OpenROAD-flow-scripts}) is the
+Makefile-driven autonomous RTL-to-GDSII wrapper:
+
+\begin{enumerate}
+  \item \textbf{Yosys} synthesizes RTL $\rightarrow$ gate netlist (often
+        calling ABC).
+  \item \textbf{OpenROAD} runs the P\&R stages from earlier chapters.
+  \item Per-platform / per-design \file{config.mk} files under
+        \file{flow/platforms} and \file{flow/designs} set PDK, SDC, utilization,
+        etc.
+\end{enumerate}
+
+ORFS is where ``one command builds a chip''; lives; OpenROAD is the engine it
+calls.
+
+\section{Ecosystem (siblings in \file{openroad\_repos/})}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Repo} & \textbf{Role} \\
+\midrule
+OpenSTA & standalone timer (also vendored as \pkg{src/sta}) \\
+OpenROAD-MCP & Model Context Protocol server for AI tooling \\
+ORAssistant & RAG assistant over OpenROAD docs \\
+abc & Berkeley ABC (also embedded at \file{src/abc}; see ABC manual) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Command cheat-sheet}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+\textbf{Stage} & \textbf{Primary command(s)} & \textbf{Ch.} \\
+\midrule
+Read design     & \cmd{read\_lef}, \cmd{read\_verilog}, \cmd{link\_design}, \cmd{read\_liberty} & \ref{ch:odb}, \ref{ch:timing} \\
+Floorplan       & \cmd{initialize\_floorplan}, \cmd{make\_tracks}, \cmd{tapcell} & \ref{ch:floorplan} \\
+I/O pins        & \cmd{place\_pins} & \ref{ch:place} \\
+Macros          & \cmd{rtl\_macro\_placer} & \ref{ch:place} \\
+Global place    & \cmd{global\_placement} & \ref{ch:place} \\
+Legalize        & \cmd{detailed\_placement}, \cmd{filler\_placement} & \ref{ch:place} \\
+PDN             & \cmd{define\_pdn\_grid} \ldots \cmd{pdngen} & \ref{ch:power} \\
+Pre-CTS repair  & \cmd{estimate\_parasitics -placement}, \cmd{repair\_design}, \cmd{repair\_timing} & \ref{ch:rsz} \\
+CTS             & \cmd{clock\_tree\_synthesis} & \ref{ch:cts} \\
+Global route    & \cmd{global\_route} & \ref{ch:route} \\
+Post-GR repair  & \cmd{estimate\_parasitics -global\_routing}, \cmd{repair\_timing} & \ref{ch:rsz} \\
+Detailed route  & \cmd{detailed\_route} & \ref{ch:route} \\
+Extract / fill  & \cmd{extract\_parasitics}, \cmd{density\_fill} & \ref{ch:timing}, \ref{ch:route} \\
+IR drop         & \cmd{analyze\_power\_grid} & \ref{ch:power} \\
+Write out       & \cmd{write\_def}, \cmd{write\_db} & \ref{ch:odb} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\glance{To understand OpenROAD: master OpenDB + STA (Ch.~\ref{ch:odb},
+\ref{ch:timing}), then walk this cheat-sheet top to bottom. Every later
+module is ``read the DB, compute, write the DB.''}

@@ -1,0 +1,306 @@
+\chapter{Equivalence Checking and Formal Verification}
+\label{ch:proof}
+
+\glance{This chapter surveys the verification engines that live under \pkg{src/proof}: combinational equivalence checking (CEC), functional reduction (FRAIG), structural choice computation for mapping, and the sequential model-checking family (PDR, signal correspondence, interpolation, abstraction). All of them ultimately reduce a question about circuit behaviour to a sequence of SAT queries, and all of them report their verdict through a shared counter-example structure, \id{Abc_Cex_t}.}
+
+%===============================================================
+\section{The Miter: Reducing Equivalence to SAT}
+%===============================================================
+
+The unifying idea behind equivalence checking is the \emph{miter}. Given two
+circuits with matching inputs and outputs, ABC builds a new circuit that
+XOR-s the corresponding outputs of the two designs and OR-s the XORs into a
+single output. The two circuits are equivalent \emph{iff} that output can
+never be~1: a SAT solver that proves the output unsatisfiable establishes
+equivalence, while a satisfying assignment is a concrete input pattern on
+which the circuits differ (a counter-example).
+
+The classic network-level constructor is \id{Abc_NtkMiter} in
+\file{src/base/abci/abcMiter.c}:
+
+\begin{lstlisting}[style=abccode]
+// src/base/abci/abcMiter.c
+Abc_Ntk_t * Abc_NtkMiter( Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2,
+                          int fComb, int nPartSize,
+                          int fImplic, int fMulti );
+\end{lstlisting}
+
+Callers such as \file{src/base/abci/abcDar.c} build the miter and then ask
+whether it is constant~0:
+
+\begin{lstlisting}[style=abccode]
+// src/base/abci/abcDar.c (Abc_NtkDarCec path)
+pMiter   = Abc_NtkMiter( pNtk1, pNtk2, 0, 0, 0, 0 );
+RetValue = Abc_NtkMiterIsConstant( pMiter );
+\end{lstlisting}
+
+Modern GIA-based engines fold the miter directly into the solver: functions
+such as \id{Cec_ManVerifyTwo} in \file{src/proof/cec/cecCec.c} build an
+internal miter from two \id{Gia_Man_t} objects and call \id{Cec_ManVerify}.
+
+%===============================================================
+\section{Combinational Equivalence Checking (\pkg{src/proof/cec})}
+%===============================================================
+
+The \pkg{src/proof/cec} package performs combinational equivalence checking on
+And-Inverter Graphs. Rather than throwing the whole miter at a monolithic SAT
+call, it interleaves two complementary techniques, coordinated from
+\file{src/proof/cec/cecCore.c}:
+
+\begin{itemize}
+  \item \textbf{Random/guided simulation} groups nodes into candidate
+        equivalence classes (nodes that agree on all simulated patterns).
+        A satisfying pattern found by SAT is fed back as new simulation
+        stimulus, refining the classes.
+  \item \textbf{SAT sweeping} proves or disproves the candidate equivalences
+        node by node, from inputs to outputs, merging nodes that are proven
+        equal so the graph shrinks as the sweep proceeds.
+\end{itemize}
+
+Key entry points in \file{src/proof/cec/cecCore.c}:
+
+\begin{lstlisting}[style=abccode]
+// src/proof/cec/cecCore.c
+Gia_Man_t * Cec_ManSatSolving ( Gia_Man_t * pAig, Cec_ParSat_t * pPars,
+                                int f0Proved );
+int         Cec_ManSimulationOne( Gia_Man_t * pAig, Cec_ParSim_t * pPars );
+Gia_Man_t * Cec_ManSatSweeping ( Gia_Man_t * pAig, Cec_ParFra_t * pPars,
+                                 int fSilent );
+\end{lstlisting}
+
+Parameter defaults are set by helpers such as \id{Cec_ManSatSetDefaultParams}
+(conflict limit \id{nBTLimit}${=}100$, \id{nSatVarMax}${=}2000$) and
+\id{Cec_ManFraSetDefaultParams} (up to \id{nItersMax}${=}10$ SAT-sweeping
+iterations). The user-facing verdict routine is \id{Cec_ManVerify} in
+\file{src/proof/cec/cecCec.c}.
+
+\begin{table}[t]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Command} & \textbf{Purpose} \\
+\midrule
+\cmd{cec}   & Combinational equivalence check of two logic networks (network side). \\
+\cmd{\&cec} & Same check on the GIA (\id{Gia_Man_t}) representation of the \cmd{\&}-space. \\
+\cmd{dsat}  & SAT-solve the current network's miter/output directly. \\
+\bottomrule
+\end{tabularx}
+\caption{Combinational equivalence-checking commands.}
+\label{tab:cec-cmds}
+\end{table}
+
+%===============================================================
+\section{FRAIG: Functional Reduction (\pkg{src/proof/fra}, \pkg{src/proof/fraig})}
+%===============================================================
+
+A FRAIG (Functionally Reduced AIG) is an AIG in which no two nodes implement
+the same Boolean function. Ordinary structural hashing only merges nodes that
+are \emph{syntactically} identical; FRAIGing goes further by merging nodes that
+are \emph{functionally} identical even when their structure differs. The
+procedure combines the same two ingredients as CEC:
+
+\begin{enumerate}
+  \item Simulate to find \emph{candidate} equivalences (nodes agreeing on all
+        simulation vectors).
+  \item For each candidate, call SAT to \emph{prove} the two nodes equal; if
+        proven, merge them; if the SAT call returns a distinguishing pattern,
+        use it to refine the simulation classes.
+\end{enumerate}
+
+The central manager is \id{Fra_Man_t} (\file{src/proof/fra/fra.h}), which holds
+the starting manager \id{pManAig}, the resulting \id{pManFraig}, the candidate
+class structure \id{Fra_Cla_t}, the simulation manager \id{Fra_Sml_t}, and the
+\id{sat_solver}. The core drivers are declared alongside it:
+
+\begin{lstlisting}[style=abccode]
+// src/proof/fra/fra.h
+extern void        Fra_FraigSweep  ( Fra_Man_t * pManAig );
+extern Aig_Man_t * Fra_FraigPerform( Aig_Man_t * pManAig, Fra_Par_t * pPars );
+\end{lstlisting}
+
+The older \pkg{src/proof/fraig} package provides the original network-level
+FRAIG engine (files \file{fraigMan.c}, \file{fraigSat.c}, \file{fraigTable.c}),
+while \pkg{src/proof/fra} is the AIG-manager-based reimplementation.
+
+\begin{table}[t]
+\centering
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Command} & \textbf{Backend} & \textbf{Notes} \\
+\midrule
+\cmd{fraig}  & \id{Abc_NtkDarFraig} (\file{abcDar.c}) & FRAIG the current network. \\
+\cmd{ifraig} & incremental FRAIG & iterative/interpolating variant. \\
+\cmd{\&fraig}& GIA engine & FRAIG in the \cmd{\&}-space. \\
+\bottomrule
+\end{tabularx}
+\caption{FRAIG commands and their backends.}
+\label{tab:fraig-cmds}
+\end{table}
+
+%===============================================================
+\section{Structural Choices for Mapping (\pkg{src/proof/dch})}
+%===============================================================
+
+Technology mapping (Chapter~\ref{ch:map}) produces better results when the
+mapper can pick among several \emph{functionally equivalent} AIG structures for
+the same logic. The \pkg{src/proof/dch} package (``don't-care''-based choicing)
+computes these \emph{choices}: it takes one or more AIG snapshots, proves which
+nodes are functionally equivalent using simulation plus SAT (the same
+FRAIG-style loop), and records the alternatives as a choice AIG rather than
+collapsing them.
+
+The core routine is \id{Dch_ComputeChoices} in
+\file{src/proof/dch/dchCore.c}:
+
+\begin{lstlisting}[style=abccode]
+// src/proof/dch/dchCore.c
+Aig_Man_t * Dch_ComputeChoices( Aig_Man_t * pAig, Dch_Pars_t * pPars )
+{
+    Dch_Man_t * p = Dch_ManCreate( pAig, pPars );
+    p->ppClasses  = Dch_CreateCandEquivClasses( pAig, pPars->nWords,
+                                                pPars->fVerbose );
+    Dch_ManSweep( p );                 // prove candidates by SAT
+    ...
+    pResult = Dch_DeriveChoiceAig( pAig, pPars->fSkipRedSupp );
+    return pResult;
+}
+\end{lstlisting}
+
+Defaults from \id{Dch_ManSetDefaultParams} include \id{nWords}${=}8$ simulation
+words and \id{nBTLimit}${=}1000$ conflicts. The command \cmd{dch} produces a
+choice AIG that a subsequent \cmd{map}/\cmd{if} call can consume; this is the
+mechanism behind the \id{fraig\_store}/\id{fraig\_restore} choice scripts that
+accumulate several optimized snapshots before mapping.
+
+%===============================================================
+\section{Sequential Verification}
+%===============================================================
+
+Sequential (multi-cycle) properties require reasoning across time frames. ABC
+ships several complementary engines under \pkg{src/proof}, summarized in
+Table~\ref{tab:seq-engines}.
+
+\subsection{Property-Directed Reachability (\pkg{src/proof/pdr})}
+
+PDR (also known as IC3, after Aaron Bradley; ABC's implementation follows
+Niklas Een) proves safety properties by incrementally building an inductive
+sequence of clause sets, one per time frame, without unrolling the whole
+transition relation. The entry point is \id{Pdr_ManSolve} in
+\file{src/proof/pdr/pdrCore.c}, which drives \id{Pdr_ManSolveInt}. On failure
+it attaches a counter-example (via \id{pAig->pSeqModel} or the multi-output
+\id{vCexes}); on success it can dump an inductive invariant. The command is
+\cmd{pdr}.
+
+\subsection{Signal Correspondence (\pkg{src/proof/ssw})}
+
+Sequential SAT sweeping generalizes FRAIG across time frames: it finds pairs of
+flops/nodes that are equivalent under induction and merges them, shrinking the
+sequential circuit. The core is \id{Ssw_SignalCorrespondence} in
+\file{src/proof/ssw/sswCore.c} (with \id{Ssw_LatchCorrespondence} for the
+latch-only variant). These back the \cmd{scorr} and \cmd{lcorr} commands.
+
+\subsection{Interpolation (\pkg{src/proof/int}, \pkg{src/proof/int2})}
+
+Craig interpolation over-approximates reachable states from the proof of a
+bounded check, iterating until an inductive invariant is found or a
+counter-example appears. The classic engine is
+\id{Inter_ManPerformInterpolation} in \file{src/proof/int/intCore.c}; the newer
+rewrite is \id{Int2_ManPerformInterpolation} in \file{src/proof/int2/int2Core.c}.
+
+\subsection{Abstraction (\pkg{src/proof/abs})}
+
+When the full model is too large, abstraction hides most of the logic and
+refines it only as counter-examples demand. ABC provides gate-level
+abstraction, \id{Gia_ManPerformGla} in \file{src/proof/abs/absGla.c}
+(command \cmd{gla}), and variable time-frame abstraction, \id{Gia_VtaPerform}
+in \file{src/proof/abs/absVta.c} (command \cmd{vta}).
+
+Plain bounded model checking (BMC) is handled by the SAT layer under
+\pkg{src/sat} (see Chapter~\ref{ch:sat}).
+
+\begin{table}[t]
+\centering
+\begin{tabularx}{\linewidth}{@{}llX l@{}}
+\toprule
+\textbf{Task} & \textbf{Command} & \textbf{Package} & \textbf{Top function} \\
+\midrule
+Combinational EC (network) & \cmd{cec}    & \pkg{src/proof/cec} & \id{Cec_ManVerify} \\
+Combinational EC (GIA)      & \cmd{\&cec}  & \pkg{src/proof/cec} & \id{Cec_ManSatSweeping} \\
+Functional reduction        & \cmd{fraig}  & \pkg{src/proof/fra} & \id{Fra_FraigPerform} \\
+Structural choices          & \cmd{dch}    & \pkg{src/proof/dch} & \id{Dch_ComputeChoices} \\
+Property-directed reach.     & \cmd{pdr}    & \pkg{src/proof/pdr} & \id{Pdr_ManSolve} \\
+Signal correspondence        & \cmd{scorr}  & \pkg{src/proof/ssw} & \id{Ssw_SignalCorrespondence} \\
+Interpolation                & \cmd{int}    & \pkg{src/proof/int} & \id{Inter_ManPerformInterpolation} \\
+Gate-level abstraction       & \cmd{gla}    & \pkg{src/proof/abs} & \id{Gia_ManPerformGla} \\
+\bottomrule
+\end{tabularx}
+\caption{Verification engines: task, command, package, and top-level function.}
+\label{tab:seq-engines}
+\end{table}
+
+%===============================================================
+\section{Counter-Examples and Verdicts}
+%===============================================================
+
+Every disproof produces a concrete stimulus stored in the shared
+\id{Abc_Cex_t} structure (\file{src/misc/util/utilCex.h}):
+
+\begin{lstlisting}[style=abccode]
+// src/misc/util/utilCex.h
+struct Abc_Cex_t_
+{
+    int      iPo;      // failing PO (zero-based)
+    int      iFrame;   // failing time-frame (zero-based)
+    int      nRegs;    // number of registers in the miter
+    int      nPis;     // number of primary inputs
+    int      nBits;    // number of bits of data
+    unsigned pData[0]; // bits: nRegs + (iFrame+1)*nPis
+};
+\end{lstlisting}
+
+For combinational checks \id{iFrame} is~0; for sequential checks it records the
+cycle at which the property fails, and \id{pData} holds the input (and initial
+register) assignment reconstructed cycle by cycle. The active counter-example
+is cached on the global frame as \id{pCex} (\id{Abc_Frame_t_},
+\file{src/base/main/mainInt.h}), so downstream commands can inspect or simulate it.
+
+Engines report a three-valued verdict, conventionally:
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}clX@{}}
+\toprule
+\textbf{Value} & \textbf{Meaning} & \textbf{Interpretation} \\
+\midrule
+$1$  & proved     & property holds / circuits equivalent (UNSAT). \\
+$0$  & disproved  & counter-example found and stored in \id{pCex} (SAT). \\
+$-1$ & undecided  & resource limit hit before a conclusion. \\
+\bottomrule
+\end{tabularx}
+\caption{Verification return codes.}
+\label{tab:verdicts}
+\end{table}
+
+PDR follows exactly this convention in \id{Pdr_ManSolve}, mapping internal
+``unknown'' ($-2$) entries to undecided ($-1$) before returning.
+
+%===============================================================
+\section{Worked Example: An Equivalence Sanity Check}
+%===============================================================
+
+The following REPL session reads a design, snapshots it, optimizes the copy
+with \cmd{resyn2}, and confirms with \cmd{cec} that optimization preserved
+functionality:
+
+\begin{lstlisting}[style=abcshell]
+abc 01> read design.blif
+abc 02> strash
+abc 03> write_aiger a.aig
+abc 04> resyn2
+abc 05> write_aiger b.aig
+abc 06> cec a.aig b.aig
+Networks are equivalent.
+\end{lstlisting}
+
+If the two files differed, \cmd{cec} would instead print that the networks are
+NOT equivalent and store the distinguishing pattern in the frame's \id{pCex}.

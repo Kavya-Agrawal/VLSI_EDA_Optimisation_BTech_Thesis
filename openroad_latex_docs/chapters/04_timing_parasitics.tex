@@ -1,0 +1,108 @@
+\chapter{Timing Analysis and Parasitics}
+\label{ch:timing}
+
+\glance{OpenROAD's timing engine is OpenSTA, adapted to OpenDB by
+\pkg{src/dbSta}. Before routing, wire RC is \emph{estimated} from Steiner trees
+(\pkg{src/stt} + \pkg{src/est}); after detailed routing it is \emph{extracted}
+by OpenRCX (\pkg{src/rcx}) and back-annotated into STA. Every optimizer ---
+especially the resizer --- asks STA for slack and uses these parasitics.}
+
+\section{OpenSTA and the database bridge}
+
+OpenSTA (the Parallax/UCSD static timing analyzer) is vendored under
+\pkg{src/sta}. OpenROAD does not reimplement STA; it adapts OpenSTA to OpenDB
+through \pkg{src/dbSta}:
+
+\begin{itemize}
+  \item \id{sta::dbNetwork} maps OpenDB objects to STA's abstract netlist
+        (\id{dbInst}$\leftrightarrow$\id{Instance},
+        \id{dbNet}$\leftrightarrow$\id{Net},
+        \id{dbITerm}/\id{dbBTerm}$\leftrightarrow$\id{Pin}).
+  \item \id{sta::dbSta} is the OpenSTA engine wired to that network; it is
+        constructed once in \id{OpenRoad::init()} and shared by every module.
+\end{itemize}
+
+OpenSTA owns the timing graph, delay calculation, path search, and SDC
+handling. Its user commands are the familiar ones:
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Command} & \textbf{Purpose} \\
+\midrule
+\cmd{read\_liberty} & load a Liberty (.lib) timing library \\
+\cmd{read\_sdc} / \cmd{create\_clock} / \cmd{set\_input\_delay} & timing constraints \\
+\cmd{report\_checks} & path reports (setup/hold) \\
+\cmd{report\_wns} / \cmd{report\_tns} & worst / total negative slack \\
+\cmd{report\_power} & static/dynamic power estimate \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Engine internals are out of scope here --- see the standalone OpenSTA docs.
+
+\section{Parasitic estimation (pre-route): \pkg{src/est} + \pkg{src/stt}}
+
+Before wires exist, timing still needs RC. OpenROAD builds an estimated
+topology and applies per-unit R/C:
+
+\begin{enumerate}
+  \item \pkg{src/stt} (\id{stt::SteinerTreeBuilder}) builds a
+        \textbf{rectilinear Steiner tree} for each net from pin locations
+        (FLUTE / Prim--Dijkstra). \cmd{set\_routing\_alpha} trades wirelength
+        ($\alpha{=}0$) against path depth ($\alpha{=}1$); typical values
+        $0.4$--$0.8$.
+  \item \pkg{src/est} (\id{est::EstimateParasitics}) annotates that topology
+        with R/C from \cmd{set\_wire\_rc} (or from a LEF layer via
+        \cmd{-layer}).
+\end{enumerate}
+
+\begin{lstlisting}[style=ortcl]
+set_wire_rc -signal -layer metal3
+set_wire_rc -clock  -layer metal5
+estimate_parasitics -placement          ;# after placement
+# later, after global_route:
+estimate_parasitics -global_routing     ;# use GR topology/layers
+\end{lstlisting}
+
+\cmd{set\_layer\_rc} can override LEF R/C per layer or via;
+\cmd{report\_layer\_rc} dumps the values in use.
+
+\section{Parasitic extraction (post-route): \pkg{src/rcx}}
+
+After detailed routing, OpenRCX (\id{rcx::Ext}) extracts real parasitics from
+the geometry: coupling capacitance as a function of neighbour distance and
+over/under context, plus wire and via resistance. A once-per-process
+\emph{extraction rules} file (RC technology) is loaded with
+\cmd{set\_extraction\_rules\_file} / \cmd{define\_process\_corner}; then:
+
+\begin{lstlisting}[style=ortcl]
+define_process_corner -ext_model_index {0 typical} rcx_patterns.rules
+extract_parasitics
+write_spef design.spef          ;# optional SPEF dump
+\end{lstlisting}
+
+Extracted R/C is stored on OpenDB objects with pointers back to the wires and
+vias, and is visible to STA for signoff-quality timing.
+
+\section{Summary}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+\textbf{Task} & \textbf{Module} & \textbf{Key command} & \textbf{Class} \\
+\midrule
+STA engine         & \pkg{src/sta}+\pkg{dbSta} & \cmd{report\_checks} & \id{sta::dbSta} \\
+Steiner topology   & \pkg{src/stt} & \cmd{set\_routing\_alpha} & \id{stt::SteinerTreeBuilder} \\
+RC estimation      & \pkg{src/est} & \cmd{estimate\_parasitics} & \id{est::EstimateParasitics} \\
+RC extraction      & \pkg{src/rcx} & \cmd{extract\_parasitics} & \id{rcx::Ext} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\glance{Rule of thumb: \emph{before} route use \cmd{estimate\_parasitics};
+\emph{after} detailed route use \cmd{extract\_parasitics}. The resizer
+(Ch.~\ref{ch:rsz}) consumes whichever is currently annotated.}

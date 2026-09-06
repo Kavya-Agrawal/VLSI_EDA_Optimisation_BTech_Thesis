@@ -1,0 +1,94 @@
+\chapter{Floorplanning and Chip Setup}
+\label{ch:floorplan}
+
+\glance{Floorplanning turns a linked netlist into a physical canvas: die and
+core areas, standard-cell rows, routing tracks, well taps / endcaps, optionally
+an I/O pad ring or bump array, and power-intent domains from UPF. Modules:
+\pkg{src/ifp}, \pkg{src/tap}, \pkg{src/pad}, \pkg{src/upf}.}
+
+\section{Initialize floorplan: \pkg{src/ifp}}
+
+\id{ifp::InitFloorplan} creates the die/core geometry and the placement rows.
+Two mutually exclusive sizing styles:
+
+\begin{itemize}
+  \item \textbf{Utilization:} \cmd{-utilization}, \cmd{-aspect\_ratio},
+        \cmd{-core\_space} --- die/core sizes are derived from design area.
+  \item \textbf{Explicit:} \cmd{-die\_area} / \cmd{-core\_area} as rectangles
+        or rectilinear polygons (L/T shapes).
+\end{itemize}
+
+\begin{lstlisting}[style=ortcl]
+initialize_floorplan -utilization 40 -aspect_ratio 1.0 \
+    -core_space 2.0 -site FreePDK45_38x28_10R_NP_162NW_34O
+make_tracks            ;# create routing tracks on each metal layer
+\end{lstlisting}
+
+\cmd{-site} selects the single-height site whose rows are built; additional /
+flip sites support hybrid-row and multi-height designs. Rows are written into
+odb as \id{dbRow} objects; \cmd{make\_tracks} creates the preferred-direction
+routing tracks from the LEF technology.
+
+\section{Tapcells and endcaps: \pkg{src/tap}}
+
+\id{tap::Tapcell} inserts well-tap and endcap cells into the rows for latch-up
+prevention and DRC. The main command is \cmd{tapcell}:
+
+\begin{lstlisting}[style=ortcl]
+tapcell -distance 120 \
+        -tapcell_master TAPCELL_X1 \
+        -endcap_master  ENDCAP_XL
+\end{lstlisting}
+
+\cmd{-distance} sets the checkerboard spacing (microns). Extra masters
+(\cmd{-cnrcap\_*}, \cmd{-tap\_nwin*}, \ldots) handle corners and macro
+boundaries. \cmd{cut\_rows} trims rows around macros with a halo.
+
+\section{I/O pads and bumps: \pkg{src/pad} (ICeWall)}
+
+\pkg{src/pad} builds chip-level I/O: a pad ring around the die and/or a bump
+array for flip-chip. Representative commands:
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Command} & \textbf{Purpose} \\
+\midrule
+\cmd{make\_io\_sites} / \cmd{place\_pad} / \cmd{place\_pads} & build / place the padring \\
+\cmd{make\_io\_bump\_array} / \cmd{place\_bondpad} & bump / bond-pad arrays \\
+\cmd{place\_io\_terminals} & place terminals on padcell pins \\
+\cmd{connect\_by\_abutment} & abutting power/ground pad connections \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Power intent: \pkg{src/upf}}
+
+\pkg{src/upf} reads Unified Power Format into odb power-domain objects:
+
+\begin{lstlisting}[style=ortcl]
+read_upf -file design.upf
+write_upf design_out.upf
+\end{lstlisting}
+
+UPF describes power domains, supply nets, isolation / level-shifter cells, and
+related constraints that later stages (placement, PDN) must respect.
+
+\section{Summary}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+\textbf{Step} & \textbf{Module} & \textbf{Command} & \textbf{Writes to DB} \\
+\midrule
+Die/core/rows & \pkg{ifp} & \cmd{initialize\_floorplan} & die/core, \id{dbRow} \\
+Tracks        & \pkg{ifp} & \cmd{make\_tracks} & routing tracks \\
+Taps/endcaps  & \pkg{tap} & \cmd{tapcell} & tap/endcap \id{dbInst} \\
+I/O ring      & \pkg{pad} & \cmd{place\_pads}, \ldots & pad/bump instances \\
+Power intent  & \pkg{upf} & \cmd{read\_upf} & power domains \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,138 @@
+\chapter{Introduction and the RTL-to-GDSII Flow}
+\label{ch:intro}
+
+\glance{OpenROAD is a single C++ application that takes a gate-level netlist plus
+a technology (LEF/Liberty) and produces a routed layout (DEF/GDSII). All stages
+share \textbf{one in-memory database (OpenDB, \pkg{src/odb})} and \textbf{one
+timing engine (OpenSTA, via \pkg{src/dbSta})}. Each flow stage is a
+\emph{module} under \file{src/} that registers Tcl/Python commands. Learn the
+database, the timer, and the command/module framework first; every stage is an
+algorithm that reads and mutates the shared database.}
+
+\section{What OpenROAD is}
+
+OpenROAD (``Foundations and Realization of Open, Accessible Design'') is an
+open-source, no-human-in-the-loop \textbf{physical design} tool: it implements
+the RTL-to-GDSII backend of digital SoC design. It picks up after logic
+synthesis and drives a design through floorplanning, placement, clock-tree
+synthesis, routing, and signoff analysis.
+
+OpenROAD sits \emph{below} logic synthesis in the stack. A frontend (e.g.\
+Yosys, optionally invoking Berkeley ABC for logic optimization --- the same ABC
+embedded at \file{src/abc} and documented separately) produces a gate-level
+netlist; OpenROAD then realizes it as a manufacturable layout.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Stage} & \textbf{Module(s)} & \textbf{What it does} \\
+\midrule
+Database core        & \pkg{odb}               & LEF/DEF/Verilog $\rightarrow$ shared DB (Ch.~\ref{ch:odb}) \\
+Timing / parasitics  & \pkg{sta}, \pkg{dbSta}, \pkg{rcx}, \pkg{stt}, \pkg{est} & STA, RC extraction (Ch.~\ref{ch:timing}) \\
+Floorplan / setup    & \pkg{ifp}, \pkg{tap}, \pkg{pad}, \pkg{upf} & die/rows, tapcells, I/O, power intent (Ch.~\ref{ch:floorplan}) \\
+Placement            & \pkg{gpl}, \pkg{dpl}, \pkg{mpl}, \pkg{ppl}, \pkg{par} & global/detailed/macro/pin (Ch.~\ref{ch:place}) \\
+Clock tree           & \pkg{cts}, \pkg{cgt}    & buffered clock tree (Ch.~\ref{ch:cts}) \\
+Routing / fill       & \pkg{grt}, \pkg{drt}, \pkg{ant}, \pkg{fin} & global/detailed route (Ch.~\ref{ch:route}) \\
+Timing optimization  & \pkg{rsz}               & resize/buffer/repair (Ch.~\ref{ch:rsz}) \\
+Power / signoff      & \pkg{pdn}, \pkg{psm}    & power grid, IR drop (Ch.~\ref{ch:power}) \\
+Logic / DFT          & \pkg{syn}, \pkg{rmp}, \pkg{cut}, \pkg{dft} & synthesis, restructure, scan (Ch.~\ref{ch:logic}) \\
+Tooling              & \pkg{gui}, \pkg{dst}, \pkg{utl}, \pkg{web} & GUI, distributed, logging (Ch.~\ref{ch:gui}) \\
+\bottomrule
+\end{tabularx}
+\caption{The OpenROAD flow stages and the \file{src/} modules that implement them.}
+\label{tab:flowstages}
+\end{table}
+
+\section{The one picture that matters}
+
+\begin{lstlisting}[style=ortcl]
+   RTL --(Yosys/ABC, external)--> gate netlist (.v) + technology (.lef/.lib)
+                                        |
+                                        v
+   +----------------------------------------------------------------------+
+   |                         OpenRoad application                         |
+   |   Tcl / Python command layer (SWIG)  ->  dispatch to a module        |
+   |                                                                      |
+   |     ifp -> ppl -> gpl -> mpl -> dpl -> cts -> grt -> drt -> ...       |
+   |          \            every module reads/writes            /         |
+   |           \------------->  OpenDB (odb)  <-----------------/          |
+   |                               ^    ^                                 |
+   |                               |    |  timing queries                 |
+   |                            OpenSTA (dbSta)                            |
+   +----------------------------------------------------------------------+
+                                        |
+                                        v
+                          routed layout: DEF / GDSII / db
+\end{lstlisting}
+
+Two shared services are the backbone of the whole tool:
+
+\begin{itemize}
+  \item \textbf{OpenDB} (\pkg{src/odb}) --- the single in-memory design database
+        (\id{dbDatabase} $\rightarrow$ \id{dbChip} $\rightarrow$ \id{dbBlock}
+        with \id{dbInst}, \id{dbNet}, \id{dbITerm}, wires, plus the technology
+        \id{dbTech}/\id{dbLib}). Every module operates on it; see Ch.~\ref{ch:odb}.
+  \item \textbf{OpenSTA} (\pkg{src/sta} + the \pkg{src/dbSta} bridge) --- the
+        static timing analyzer every optimization consults; see Ch.~\ref{ch:timing}.
+\end{itemize}
+
+\section{How a stage plugs in (the module pattern)}
+
+Every module under \file{src/} follows the same shape, so once you can read one
+you can read all of them:
+
+\begin{itemize}
+  \item A public C++ API header under \file{src/<mod>/include/<mod>/}.
+  \item Implementation in \file{src/<mod>/src/}.
+  \item A SWIG interface (\file{*.i}) and a Tcl file (\file{*.tcl}) exposing
+        commands; a \id{Make<Mod>()} factory called from \id{OpenRoad}.
+  \item Logging and metrics through \pkg{src/utl} (the \id{Logger}).
+\end{itemize}
+
+Chapter~\ref{ch:arch} covers this framework in detail (the \id{OpenRoad} object,
+command registration, SWIG, and the \id{Logger}).
+
+\section{A first flow (Tcl)}
+
+\begin{lstlisting}[style=ortcl]
+read_lef Nangate45.lef              ;# technology + standard-cell library
+read_verilog gcd.v                  ;# gate-level netlist
+link_design gcd
+read_liberty Nangate45_typ.lib      ;# timing library
+initialize_floorplan -utilization 40 -site FreePDK45_38x28_10R_NP_162NW_34O
+place_pins -hor_layers metal3 -ver_layers metal2
+global_placement
+detailed_placement
+clock_tree_synthesis
+global_route
+detailed_route
+write_def gcd_routed.def
+\end{lstlisting}
+
+The full autonomous version of this script lives in the companion
+\emph{OpenROAD-flow-scripts} (ORFS) repository; see Ch.~\ref{ch:gui}.
+
+\section{How to read this manual}
+
+\begin{itemize}
+  \item \textbf{Chapters \ref{ch:intro}--\ref{ch:timing}} are the foundations:
+        the flow, the application framework, the OpenDB database, and the timer.
+        Read these first --- everything else depends on them.
+  \item \textbf{Chapters \ref{ch:floorplan}--\ref{ch:cts}} are the front end of
+        the flow: floorplanning, placement, and clock-tree synthesis.
+  \item \textbf{Chapters \ref{ch:route}--\ref{ch:logic}} are the back end:
+        routing, timing repair, power/signoff, and logic/DFT.
+  \item \textbf{Chapter \ref{ch:gui}} covers the GUI, distributed execution, and
+        how to drive the whole flow.
+\end{itemize}
+
+Throughout, \file{monospace blue} is a source path, \cmd{bold monospace} is a
+Tcl command, \id{monospace} is a C++ identifier, and \pkg{teal} is a module
+directory. Paths are relative to the OpenROAD clone at
+\file{openroad\_repos/OpenROAD}.
+
+\glance{Do \textbf{not} start in a routing or placement kernel. Start with
+\pkg{src/odb} (the data model) and the \id{OpenRoad} application object; then
+each stage becomes ``read the DB, compute, write the DB back.''}

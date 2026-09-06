@@ -1,0 +1,119 @@
+% ============================================================
+% Shared preamble for the OpenROAD Codebase Reference Manual
+% Included by main.tex. Every chapter file assumes these
+% packages, macros, and listing styles are available.
+% ============================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage[hidelinks,colorlinks=true,linkcolor=orblue,urlcolor=orteal,citecolor=orblue]{hyperref}
+
+% ------------------------------------------------------------
+% Color palette (OpenROAD-ish blues/greens)
+% ------------------------------------------------------------
+\definecolor{orblue}{HTML}{16497A}
+\definecolor{orteal}{HTML}{0F8B8D}
+\definecolor{orgray}{HTML}{4D4D4D}
+\definecolor{orlight}{HTML}{F4F7F9}
+\definecolor{orkw}{HTML}{A1401F}
+\definecolor{orcomment}{HTML}{5C6B73}
+\definecolor{orstring}{HTML}{0B7261}
+\definecolor{orrule}{HTML}{D0D7DE}
+
+% ------------------------------------------------------------
+% Headers / footers
+% ------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\textsc{OpenROAD Codebase Reference}}
+\fancyhead[R]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\small\thepage}
+
+% ------------------------------------------------------------
+% Listings: C++ code style
+% ------------------------------------------------------------
+\lstdefinestyle{orcode}{
+  language=C++,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{orkw}\bfseries,
+  commentstyle=\color{orcomment}\itshape,
+  stringstyle=\color{orstring},
+  numberstyle=\tiny\color{orgray},
+  backgroundcolor=\color{orlight},
+  frame=single,
+  rulecolor=\color{orrule},
+  breaklines=true,
+  breakatwhitespace=true,
+  showstringspaces=false,
+  tabsize=2,
+  columns=fullflexible,
+  keepspaces=true,
+  aboveskip=8pt,
+  belowskip=8pt,
+  morekeywords={dbDatabase,dbChip,dbBlock,dbInst,dbNet,dbITerm,dbBTerm,dbTech,
+                dbLib,dbMaster,odb,sta,Logger,ord,OpenRoad,Design,Tech}
+}
+
+% Tcl / shell session style
+\lstdefinestyle{ortcl}{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{orlight},
+  frame=single,
+  rulecolor=\color{orrule},
+  breaklines=true,
+  columns=fullflexible,
+  aboveskip=8pt,
+  belowskip=8pt,
+  morecomment=[l]{\#},
+  commentstyle=\color{orcomment}\itshape,
+  morekeywords={read_lef,read_def,read_verilog,link_design,write_db,read_db,
+                initialize_floorplan,global_placement,detailed_placement,
+                clock_tree_synthesis,global_route,detailed_route,repair_timing},
+  keywordstyle=\color{orblue}\bfseries,
+}
+
+\lstset{style=orcode}
+
+% ------------------------------------------------------------
+% Convenience macros (use these everywhere for consistency)
+% ------------------------------------------------------------
+% File path in the OpenROAD tree, e.g. \file{src/odb/include/odb/db.h}
+\newcommand{\file}[1]{\texttt{\textcolor{orblue}{#1}}}
+% A Tcl/shell command, e.g. \cmd{global_placement}
+\newcommand{\cmd}[1]{\texttt{\textbf{#1}}}
+% A C++ identifier (class / function / field), e.g. \id{dbInst}
+\newcommand{\id}[1]{\texttt{#1}}
+% A module / package directory, e.g. \pkg{src/gpl}
+\newcommand{\pkg}[1]{\texttt{\textcolor{orteal}{#1}}}
+
+% Boxed "at a glance" note
+\newcommand{\glance}[1]{%
+  \begin{center}
+  \fcolorbox{orrule}{orlight}{%
+    \parbox{0.95\linewidth}{\small\textbf{At a glance.} #1}%
+  }
+  \end{center}%
+}
+
+% Section spacing tweaks
+\titlespacing*{\section}{0pt}{1.4ex plus 1ex minus .2ex}{0.8ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.2ex plus 1ex minus .2ex}{0.6ex plus .2ex}
+
+\setlist{itemsep=1pt,topsep=2pt,parsep=0pt}

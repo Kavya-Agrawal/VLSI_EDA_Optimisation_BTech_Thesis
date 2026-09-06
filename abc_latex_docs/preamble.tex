@@ -1,0 +1,115 @@
+% ============================================================
+% Shared preamble for the ABC Codebase Reference Manual
+% Included by main.tex. Every chapter file assumes these
+% packages, macros, and listing styles are available.
+% ============================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage[hidelinks,colorlinks=true,linkcolor=abcblue,urlcolor=abcteal,citecolor=abcblue]{hyperref}
+
+% ------------------------------------------------------------
+% Color palette
+% ------------------------------------------------------------
+\definecolor{abcblue}{HTML}{1F4E79}
+\definecolor{abcteal}{HTML}{0E7C7B}
+\definecolor{abcgray}{HTML}{4D4D4D}
+\definecolor{abclight}{HTML}{F5F7FA}
+\definecolor{abckw}{HTML}{9B2393}
+\definecolor{abccomment}{HTML}{5C6B73}
+\definecolor{abcstring}{HTML}{0B7261}
+\definecolor{abcrule}{HTML}{D0D7DE}
+
+% ------------------------------------------------------------
+% Headers / footers
+% ------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\textsc{ABC Codebase Reference}}
+\fancyhead[R]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\small\thepage}
+
+% ------------------------------------------------------------
+% Listings: C code style
+% ------------------------------------------------------------
+\lstdefinestyle{abccode}{
+  language=C,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{abckw}\bfseries,
+  commentstyle=\color{abccomment}\itshape,
+  stringstyle=\color{abcstring},
+  numberstyle=\tiny\color{abcgray},
+  backgroundcolor=\color{abclight},
+  frame=single,
+  rulecolor=\color{abcrule},
+  breaklines=true,
+  breakatwhitespace=true,
+  showstringspaces=false,
+  tabsize=2,
+  columns=fullflexible,
+  keepspaces=true,
+  aboveskip=8pt,
+  belowskip=8pt,
+  morekeywords={Abc_Ntk_t,Abc_Obj_t,Gia_Man_t,Gia_Obj_t,Aig_Man_t,Aig_Obj_t,
+                Abc_Frame_t,Vec_Int_t,Vec_Ptr_t,Vec_Wec_t,Vec_Str_t,unsigned}
+}
+
+% Shell / ABC REPL session style
+\lstdefinestyle{abcshell}{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{abclight},
+  frame=single,
+  rulecolor=\color{abcrule},
+  breaklines=true,
+  columns=fullflexible,
+  aboveskip=8pt,
+  belowskip=8pt,
+  morecomment=[l]{\#},
+  commentstyle=\color{abccomment}\itshape,
+}
+
+\lstset{style=abccode}
+
+% ------------------------------------------------------------
+% Convenience macros (use these everywhere for consistency)
+% ------------------------------------------------------------
+% File path in the ABC tree, e.g. \file{src/base/abc/abc.h}
+\newcommand{\file}[1]{\texttt{\textcolor{abcblue}{#1}}}
+% A shell / REPL command, e.g. \cmd{resyn2}
+\newcommand{\cmd}[1]{\texttt{\textbf{#1}}}
+% A C identifier (function / struct / field), e.g. \id{Abc_NtkRewrite}
+\newcommand{\id}[1]{\texttt{#1}}
+% A directory / package, e.g. \pkg{opt/rwr}
+\newcommand{\pkg}[1]{\texttt{\textcolor{abcteal}{#1}}}
+
+% Boxed "at a glance" note
+\newcommand{\glance}[1]{%
+  \begin{center}
+  \fcolorbox{abcrule}{abclight}{%
+    \parbox{0.95\linewidth}{\small\textbf{At a glance.} #1}%
+  }
+  \end{center}%
+}
+
+% Section spacing tweaks
+\titlespacing*{\section}{0pt}{1.4ex plus 1ex minus .2ex}{0.8ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.2ex plus 1ex minus .2ex}{0.6ex plus .2ex}
+
+\setlist{itemsep=1pt,topsep=2pt,parsep=0pt}

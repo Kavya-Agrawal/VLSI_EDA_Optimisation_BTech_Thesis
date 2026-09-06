@@ -1,0 +1,71 @@
+\chapter{Clock Tree Synthesis and Clock Gating}
+\label{ch:cts}
+
+\glance{TritonCTS (\pkg{src/cts}) builds a buffered, skew-balanced clock tree
+on the fly (no offline characterization library required). Clock gating
+(\pkg{src/cgt}) inserts integrated clock gates by proving enable conditions
+with ABC, reducing dynamic power.}
+
+\section{Clock tree synthesis: \pkg{src/cts} (TritonCTS)}
+
+\id{cts::TritonCTS} is driven by \cmd{clock\_tree\_synthesis}. High-level flow:
+
+\begin{enumerate}
+  \item Detect clock nets (or take \cmd{-clk\_nets}).
+  \item Optionally cluster sinks (\cmd{-sink\_clustering\_enable}, size /
+        diameter options) and macros separately.
+  \item On-the-fly characterize candidate buffers for slew/cap (tunable via
+        \cmd{configure\_cts\_characterization}).
+  \item Build a buffered topology (branching / H-tree style), insert buffers
+        from \cmd{-buf\_list} to meet transition and balance levels
+        (\cmd{-balance\_levels}).
+  \item Write the new buffers and nets into odb; optionally call
+        \cmd{-repair\_clock\_nets} (resizer).
+\end{enumerate}
+
+\begin{lstlisting}[style=ortcl]
+set_wire_rc -clock -layer metal5
+configure_cts_characterization -max_slew 0.2 -max_cap 0.5
+clock_tree_synthesis -buf_list {BUF_X1 BUF_X2 BUF_X4} \
+                     -sink_clustering_enable \
+                     -balance_levels \
+                     -obstruction_aware
+report_cts
+\end{lstlisting}
+
+Key options: \cmd{-root\_buf}, \cmd{-wire\_unit},
+\cmd{-distance\_between\_buffers}, \cmd{-apply\_ndr}, \cmd{-insertion\_delay},
+\cmd{-library}. CTS uses Steiner trees from \pkg{src/stt} and hands off to
+\pkg{src/rsz} for post-CTS timing repair.
+
+\section{Clock gating: \pkg{src/cgt}}
+
+\id{cgt::ClockGating} automatically finds safe enable conditions and inserts
+clock-gate cells. Per register it BFS-gathers nearby nets, exports a cone to
+ABC (simulation then SAT) to prove an OR/AND enable is correct, minimizes the
+net set, and --- if enough registers share a condition --- inserts a clock
+gate.
+
+\begin{lstlisting}[style=ortcl]
+clock_gating -min_instances 10 -max_cover 100
+\end{lstlisting}
+
+ABC is used only as a proof engine here; its algorithms are covered in the
+separate ABC reference.
+
+\section{Summary}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+\textbf{Step} & \textbf{Module} & \textbf{Command} & \textbf{Purpose} \\
+\midrule
+Characterize & \pkg{cts} & \cmd{configure\_cts\_characterization} & buffer LUTs \\
+Build tree   & \pkg{cts} & \cmd{clock\_tree\_synthesis} & buffered clock tree \\
+Report       & \pkg{cts} & \cmd{report\_cts} & skew / structure stats \\
+Gate clocks  & \pkg{cgt} & \cmd{clock\_gating} & insert ICGs via ABC proof \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -52,6 +52,26 @@ openroad_ml/**/__pycache__/
 openroad_ml/**/models/__pycache__/
 **/__pycache__/
 
+
+# Large MaskPlace benchmark/model files
+macroPlace/Macro_Placement_ML_for_EDA/maskplace/adaptec3/adaptec3.nets
+macroPlace/Macro_Placement_ML_for_EDA/maskplace/adaptec4/adaptec4.nets
+macroPlace/Macro_Placement_ML_for_EDA/maskplace/model/pretrained_model.pkl
+
+# Large generated/output files
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/CodeElements/FormatTranslators/src/utils/openroad
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/CodeElements/SimulatedAnnealing/ariane133/movie_greedy.gif
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/CodeElements/SimulatedAnnealing/ariane133/movie_spiral.gif
+
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/CodeElements/SimulatedAnnealingGWTW/test/ariane_X4_xflip_yflip/netlist.pb.txt
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/CodeElements/SimulatedAnnealingGWTW/test/bp_ng45/netlist.pb.txt
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/CodeElements/SimulatedAnnealingGWTW/test/mempool_group_asap7/netlist.pb.txt
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/CodeElements/SimulatedAnnealingGWTW/test/mempool_group_ng45/netlist.pb.txt
+
+macroPlace/macro-place-challenge-2026/external/MacroPlacement/Enablements/ASAP7/qrc/ASAP7.tch
+
+
+
 # Large macro-placement datasets (clone separately if needed)
 macroPlace/macro-place-challenge-2026/external/MacroPlacement/Testcases/
 macroPlace/macro-place-challenge-2026/external/MacroPlacement/ExperimentalData/
