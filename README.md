@@ -1,4 +1,4 @@
-# Hardware EDA
+# VLSI EDA Optimisation — BTech Thesis
 
 Personal workspace for ML-for-EDA research and tooling, including logic synthesis (ABC), macro placement, and a curated research compendium.
 
