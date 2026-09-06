@@ -51,7 +51,7 @@ def run(args, log, timeout=7200, cwd=None):
 def clone_local(source, dest, revision, recursive=True):
     """Clone only already available local commits; never fetch floating branches."""
     if not dest.exists():
-        subprocess.run(["git", "clone", "--shared", "--no-checkout", str(source), str(dest)],
+        subprocess.run(["git", "clone", "--no-hardlinks", "--no-checkout", str(source), str(dest)],
                        check=True, stdout=subprocess.DEVNULL)
         subprocess.run(["git", "checkout", "--detach", revision], cwd=dest, check=True,
                        stdout=subprocess.DEVNULL)
@@ -132,6 +132,9 @@ class Workspace:
             raise RuntimeError(f"unexpected untracked source: {untracked}")
         if (self.source/HEADER).read_text() != policy.header():
             raise RuntimeError("generated header changed")
+        alt = self.source / ".git/objects/info/alternates"
+        if alt.exists() and alt.read_text().strip():
+            raise RuntimeError("OpenROAD clone depends on external object storage")
         def check_nested(path):
             for line in output(["git", "ls-tree", "-r", "HEAD"], path).splitlines():
                 meta, rel = line.split("\t", 1)
@@ -152,7 +155,8 @@ class Workspace:
     def build(self, policy, directory):
         self.integrity(policy)
         self.execute(["cmake", "-S", "/experiment/source", "-B", "/experiment/build",
-                      "-DCMAKE_BUILD_TYPE=Release", "-DENABLE_GUI=OFF", "-DENABLE_TESTS=ON",
+                      "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_GUI=OFF", "-DENABLE_TESTS=ON",
+                      "-DFETCHCONTENT_SOURCE_DIR_FMT=/experiment/source/third-party/slang-elab/third_party/fmt",
                       "-DENABLE_GPU=OFF", "-DCMAKE_CXX_FLAGS=-march=x86-64 -mtune=generic"], directory/"configure.log")
         self.execute(["cmake", "--build", "/experiment/build", "--target", "openroad", "-j", str(self.config["jobs"])], directory/"build.log")
         binary = self.work/"build/bin/openroad"

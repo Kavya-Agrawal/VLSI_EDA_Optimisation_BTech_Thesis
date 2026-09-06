@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import math
 import statistics
+import re
 
 class Rejected(ValueError):
     pass
@@ -31,12 +32,25 @@ def validate(m):
     for name in TIMING:
         if m[name] > 0:
             raise Rejected(f"negative-slack metric has positive value: {name}")
+    if m["setup_tns_ns"] > m["setup_wns_ns"]:
+        raise Rejected("setup TNS cannot be better than setup WNS")
+    if m["hold_tns_ns"] > m["hold_wns_ns"]:
+        raise Rejected("hold TNS cannot be better than hold WNS")
     for name in EVIDENCE:
         if m.get(name) is not True:
             raise Rejected(f"missing successful evidence: {name}")
-    for name in ("design", "replica", "policy_id", "binary_sha256", "audit_binary_sha256", "protocol_sha256"):
-        if name not in m or m[name] is None:
+    for name in ("binary_sha256", "audit_binary_sha256", "protocol_sha256"):
+        if type(m.get(name)) is not str or not re.fullmatch(r"[0-9a-f]{64}", m[name]):
             raise Rejected(f"missing provenance: {name}")
+    if type(m.get("policy_id")) is not str or not re.fullmatch(r"[0-9a-f]{16}", m["policy_id"]):
+        raise Rejected("missing provenance: policy_id")
+    if type(m.get("design")) is not str or not re.fullmatch(r"[a-z0-9_]+", m["design"]):
+        raise Rejected("missing provenance: design")
+    if type(m.get("replica")) is not int or m["replica"] < 0:
+        raise Rejected("missing provenance: replica")
+    for name in ("clock_skew_setup_ns", "clock_skew_hold_ns"):
+        if name in m and (type(m[name]) not in (int, float) or not math.isfinite(m[name])):
+            raise Rejected(f"missing/non-finite/non-numeric metric: {name}")
     return m
 
 

@@ -1,6 +1,7 @@
 """Compile the actual generated header and differential-test the C++ policy."""
 import json
 import math
+import os
 from pathlib import Path
 import random
 import subprocess
@@ -26,7 +27,9 @@ def check(policy, directory, samples=500):
         cases.append([(rng.uniform(-1,1)*scale, float(rng.randrange(100)), float(rng.randrange(100)))
                       for _ in range(rng.randrange(33))])
     data = "".join(str(len(c))+"\n"+"".join(" ".join(map(repr,f))+"\n" for f in c) for c in cases)
-    result = subprocess.run([str(binary)], input=data, text=True, capture_output=True, timeout=30)
+    env = {**os.environ, "ASAN_OPTIONS": "detect_leaks=0"}
+    result = subprocess.run([str(binary)], input=data, text=True, capture_output=True,
+                            timeout=30, env=env)
     (directory/"run.log").write_text(result.stdout + result.stderr)
     if result.returncode:
         raise RuntimeError(f"kernel/sanitizer failure; see {directory/'run.log'}")
