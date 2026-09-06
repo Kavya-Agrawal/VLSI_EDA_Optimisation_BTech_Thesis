@@ -1,0 +1,46 @@
+diff --git a/src/rsz/src/policy/SetupLegacyBase.cc b/src/rsz/src/policy/SetupLegacyBase.cc
+index 4473462..1feb192 100644
+--- a/src/rsz/src/policy/SetupLegacyBase.cc
++++ b/src/rsz/src/policy/SetupLegacyBase.cc
+@@ -3,6 +3,8 @@
+ 
+ #include "SetupLegacyBase.hh"
+ 
++#include "EvolvedPathDriverPolicy.h"
++
+ #include <algorithm>
+ #include <cmath>
+ #include <cstdlib>
+@@ -796,6 +798,32 @@ bool SetupLegacyBase::repairPath(sta::Path* path,
+                              return lhs.second > rhs.second;
+                            });
+ 
++  // Only the ranking is evolvable. Collection, target identity, repair budgets,
++  // move generators, timing checks and rollback remain upstream-owned.
++  if (rsz_evolve::enabled && ranked_targets.size() > 1) {
++    std::vector<rsz_evolve::Features> features;
++    features.reserve(ranked_targets.size());
++    for (const auto& item : ranked_targets) {
++      features.push_back({static_cast<double>(item.second),
++                          static_cast<double>(fanout(item.first.vertex(resizer_))),
++                          static_cast<double>(item.first.path_index)});
++    }
++    const auto permutation = rsz_evolve::order(features);
++    decltype(ranked_targets) reordered;
++    reordered.reserve(ranked_targets.size());
++    for (const auto index : permutation) {
++      reordered.push_back(std::move(ranked_targets[index]));
++    }
++    ranked_targets = std::move(reordered);
++    static bool reported = false;
++    if (!reported) {
++      logger_->report("RSZ_EVOLVE policy={} exercised={}",
++                      rsz_evolve::policy_id,
++                      ranked_targets.size());
++      reported = true;
++    }
++  }
++
+   std::vector<Target> targets;
+   targets.reserve(ranked_targets.size());
+   for (std::pair<Target, sta::Delay>& ranked_target : ranked_targets) {

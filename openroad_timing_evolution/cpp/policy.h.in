@@ -1,0 +1,52 @@
+// Generated expression; all surrounding code is fixed and integrity checked.
+#pragma once
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <numeric>
+#include <stdexcept>
+#include <vector>
+
+namespace rsz_evolve {
+inline constexpr bool enabled = @ENABLED@;
+inline constexpr const char* policy_id = "@ID@";
+struct Features { double load, fanout, position; };
+inline double priority(const Features& f)
+{
+  return @EXPRESSION@;
+}
+
+// Input records are read-only; output is a permutation of stock ranking.
+// Normalize over the complete merged path, including latch fanin segments.
+inline std::vector<std::size_t> order(const std::vector<Features>& input)
+{
+  std::vector<std::size_t> indices(input.size());
+  std::iota(indices.begin(), indices.end(), 0);
+  if (!enabled) { return indices; }
+  double dl = 0.0, df = 0.0, dp = 0.0;
+  for (const auto& f : input) {
+    if (!std::isfinite(f.load) || !std::isfinite(f.fanout)
+        || !std::isfinite(f.position) || f.fanout < 0 || f.position < 0) {
+      throw std::runtime_error("RSZ_EVOLVE invalid feature");
+    }
+    dl = std::max(dl, std::abs(f.load));
+    df = std::max(df, f.fanout);
+    dp = std::max(dp, f.position);
+  }
+  if (dl == 0) { dl = 1; }
+  if (df == 0) { df = 1; }
+  if (dp == 0) { dp = 1; }
+  std::vector<double> scores;
+  scores.reserve(input.size());
+  for (const auto& f : input) {
+    const double score = priority({f.load / dl, f.fanout / df, f.position / dp});
+    if (!std::isfinite(score)) { throw std::runtime_error("RSZ_EVOLVE invalid score"); }
+    scores.push_back(score);
+  }
+  // Exact comparison, with a unique immutable tie-break: strict weak ordering.
+  std::sort(indices.begin(), indices.end(), [&](std::size_t a, std::size_t b) {
+    return scores[a] > scores[b] || (scores[a] == scores[b] && a < b);
+  });
+  return indices;
+}
+}  // namespace rsz_evolve

@@ -1,0 +1,340 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{amsmath}
+\newcommand{\href}[2]{\pdfstartlink attr{/Border [0 0 0]} user{/Subtype /Link /A << /S /URI /URI (#1) >>}#2\pdfendlink}
+\renewcommand{\familydefault}{\sfdefault}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\pagestyle{empty}
+\pdfinfo{/Title (Five important OpenROAD algorithms explained simply) /Author (OpenROAD study handouts) /Subject (Placement, static timing analysis, clock trees, timing repair and routing)}
+\newcommand{\start}[3]{\noindent{\small OPENROAD ALGORITHMS\quad #1 OF 5\hfill #3}\par\vspace{8pt}{\fontsize{22}{25}\selectfont\bfseries #2\par}\vspace{5pt}}
+\newcommand{\head}[1]{\par\vspace{5pt}{\large\bfseries #1}\par\vspace{1pt}}
+\newcommand{\sub}[2]{\textbf{#1}\ #2\par}
+\newcommand{\finish}[2]{\vfill{\footnotesize OpenROAD explained simply\hfill #1\quad Page #2 of 2}\newpage}
+\newcommand{\sources}[1]{\par\vspace{6pt}{\fontsize{9}{11}\selectfont\raggedright\textbf{Sources and code}\quad #1\par}}
+\newcommand{\code}[1]{\par{\ttfamily\small #1}\par}
+\newcommand{\flow}[5]{\begin{center}\setlength{\unitlength}{1pt}\begin{picture}(500,43)
+\put(0,13){\framebox(90,28){\shortstack{#1}}}\put(90,27){\vector(1,0){12}}
+\put(102,13){\framebox(90,28){\shortstack{#2}}}\put(192,27){\vector(1,0){12}}
+\put(204,13){\framebox(90,28){\shortstack{#3}}}\put(294,27){\vector(1,0){12}}
+\put(306,13){\framebox(90,28){\shortstack{#4}}}\put(396,27){\vector(1,0){12}}
+\put(408,13){\framebox(90,28){\shortstack{#5}}}
+\end{picture}\end{center}}
+\begin{document}
+\fontsize{11}{13.6}\selectfont
+
+\start{1}{Global placement with RePlAce}{THE IDEA}
+\textbf{What it does}\quad Chooses approximate positions for the chip's logic cells so that connected cells are close, while cells are spread across the available space.
+
+\textbf{Remember this}\quad Connected cells pull together. Crowded regions push cells apart. Nesterov's method repeatedly updates their positions.
+
+\head{Where this fits in OpenROAD}
+After floorplanning, \textbf{global placement} distributes cells. Detailed placement then puts them on legal sites and removes overlaps. Clock tree synthesis and routing follow. Timing analysis is used repeatedly throughout the flow.
+
+\head{The algorithm in everyday language}
+Imagine arranging students in a classroom. Students doing a project together want nearby seats, but everybody cannot occupy the front row.
+
+\sub{1\quad Start with cell positions.}{Inputs include the netlist (which pins connect), cell sizes, fixed objects and usable chip area.}
+\sub{2\quad Estimate connection length.}{Long connections receive a penalty. Moving connected cells closer usually reduces that penalty.}
+\sub{3\quad Measure crowding.}{Divide the chip into small bins. Overfull bins create a spreading force, using an electrostatic model. These are mathematical charges, not real electrical charges.}
+\sub{4\quad Move cells with Nesterov updates.}{Use the previous movement to form a look-ahead position, then use the slope of the cost there to choose the next move. This is accelerated gradient optimization.}
+\sub{5\quad Repeat and hand off.}{Balance wire length against density until stopping criteria are reached. Output: approximate cell locations for legalization.}
+
+\head{The two competing effects}
+\begin{center}\setlength{\unitlength}{1pt}\begin{picture}(480,95)
+\put(0,73){\makebox(215,18){\textbf{Shorten a connection}}}
+\put(17,34){\framebox(38,26){A}}\put(160,34){\framebox(38,26){B}}
+\put(55,47){\line(1,0){105}}\put(72,27){\vector(1,0){25}}\put(141,27){\vector(-1,0){25}}
+\put(0,0){\makebox(215,18){Cells move toward each other}}
+\put(255,73){\makebox(225,18){\textbf{Relieve a crowded region}}}
+\put(340,37){\framebox(30,24){A}}\put(358,30){\framebox(30,24){B}}
+\put(330,46){\vector(-1,0){42}}\put(399,46){\vector(1,0){42}}
+\put(255,0){\makebox(225,18){Cells spread into free space}}
+\end{picture}\end{center}
+\textbf{Why it matters}\quad Poor placement creates long wires and congestion. Later timing repair and routing then have a harder problem to solve.
+\finish{Global placement}{1}
+
+\start{1}{Global placement with RePlAce}{EXAMPLE AND EXPLANATION}
+\head{One small numerical example}
+A and B are connected. A is at $(0,0)$ and B at $(10,0)$. Their simple Manhattan distance is 10 units. Moving B to $(4,0)$ reduces it to 4 units.
+
+But if many other cells already occupy that region, moving B there increases crowding. The placer must consider \textbf{both} effects, rather than just making every wire shorter.
+
+\textbf{A simplified objective}\quad
+\[\text{cost}=\text{smooth wire-length estimate}+\lambda\,\text{density penalty}\]
+Here $\lambda$ controls how strongly crowding matters. OpenROAD uses a detailed numerical model; this expression explains the central idea.
+
+\head{Why Nesterov is useful}
+An ordinary gradient step looks for a downhill move from the current position. A Nesterov step uses momentum from previous movement and evaluates the direction at a look-ahead position. This can reach a useful placement with fewer iterations. It does not guarantee the best possible chip layout.
+
+\flow{Initial\\positions}{Wire length\\and density}{Look-ahead\\gradient}{Update\\positions}{Check and\\repeat}
+
+\head{How timing and routing influence placement}
+\sub{Timing driven mode}{Gives more weight to connections with poor slack, encouraging the placer to shorten important connections. Slack means the time margin before a timing violation.}
+\sub{Routability driven mode}{Estimates routing congestion and can inflate the effective area of cells in crowded routing regions, encouraging more space there.}
+\textbf{Tradeoff}\quad Spreading cells helps density and routing, but may lengthen wires. Pulling everything together can create overlap and congestion.
+
+\head{A command to recognize}
+\code{global\_placement -timing\_driven -routability\_driven}
+This is one stage command, not a complete script. The design, libraries, floorplan, timing constraints and wire RC model must already be set up.
+
+\head{What to say to your professors}
+``OpenROAD uses RePlAce for global placement. It treats wire length as a pulling effect and cell density as a spreading effect. Nesterov's accelerated gradient method updates the cell positions. Detailed placement then makes those positions legal.''
+
+\sources{\href{https://openroad.readthedocs.io/en/latest/main/src/gpl/README.html}{OpenROAD Global Placement documentation}; \href{https://cseweb.ucsd.edu/~jlu/papers/eplace-todaes14/paper.pdf}{Lu et al., ePlace, 2015}. Implementation: \texttt{src/gpl/src/nesterovPlace.cpp} and \texttt{nesterovBase.cpp}. Examples in these handouts are illustrative, not measured OpenROAD results.}
+\finish{Global placement}{2}
+
+\start{2}{Static timing analysis with OpenSTA}{THE IDEA}
+\textbf{What it does}\quad Calculates whether signals arrive early enough for setup checks and late enough for hold checks. It identifies the paths that need attention.
+
+\textbf{Remember this}\quad OpenSTA measures timing. It does not itself resize gates or build a clock tree. Its results guide those optimization engines.
+
+\head{The three times to understand}
+\sub{Arrival time}{When data reaches a pin, according to the delay model.}
+\sub{Required time}{The latest allowed arrival for setup, or the earliest allowed arrival for hold. Clock timing and constraints determine these limits.}
+\sub{Slack}{The margin between arrival and the limit. Negative slack means that the timing check fails.}
+
+\head{The algorithm is graph propagation}
+The timing graph has pins as nodes and cell or wire delays as edges. The tool propagates values through this graph instead of simulating every possible input waveform.
+
+\sub{1\quad Read the timing model.}{Use the netlist, Liberty cell delays, SDC timing constraints and estimated or extracted wire resistance and capacitance.}
+\sub{2\quad Propagate arrival times forward.}{Add delay along each edge. At a merge, keep the latest relevant arrival for setup and the earliest relevant arrival for hold.}
+\sub{3\quad Propagate required times backward.}{Start from endpoint limits and work backward through delays. This finds how much time is available at upstream pins.}
+\sub{4\quad Calculate slack and report.}{Report critical paths, WNS and TNS. After a circuit change, incremental analysis updates affected timing values.}
+
+\head{A tiny timing graph}
+\begin{center}\setlength{\unitlength}{1pt}\begin{picture}(485,100)
+\put(0,65){\framebox(95,24){Input A at 0}}
+\put(0,10){\framebox(95,24){Input B at 0}}
+\put(95,77){\line(1,0){78}}\put(95,22){\line(1,0){78}}
+\put(104,81){\makebox(65,16){0.40 ns}}\put(104,2){\makebox(65,16){0.70 ns}}
+\put(173,22){\line(0,1){55}}\put(173,49){\vector(1,0){20}}
+\put(193,37){\framebox(82,24){Merge pin}}
+\put(275,49){\vector(1,0){94}}\put(280,55){\makebox(80,16){0.20 ns}}
+\put(369,37){\framebox(111,24){Endpoint}}
+\put(189,10){\makebox(95,17){latest: 0.70}}
+\put(370,10){\makebox(111,17){latest: 0.90 ns}}
+\end{picture}\end{center}
+For this simplified setup example, the merge takes $\max(0.40,0.70)$. The final arrival is $0.70+0.20=0.90$ ns. Real analysis also distinguishes clocks, transitions and analysis conditions.
+\finish{Static timing analysis}{1}
+
+\start{2}{Static timing analysis with OpenSTA}{WNS AND TNS MADE SIMPLE}
+\head{Setup and hold use different slack signs}
+\textbf{Setup: data must not be too late.}
+\[\text{setup slack}=\text{required time}-\text{latest arrival time}\]
+If the latest allowed arrival is 0.80 ns and data arrives at 0.90 ns, slack is $0.80-0.90=-0.10$ ns. The data is 0.10 ns late.
+
+\textbf{Hold: new data must not arrive too early.}
+\[\text{hold slack}=\text{earliest arrival time}-\text{required time}\]
+If new data must not arrive before 0.18 ns but arrives at 0.12 ns, slack is $0.12-0.18=-0.06$ ns. We need more minimum data-path delay.
+
+\head{WNS tells us the worst violation}
+\textbf{WNS means worst negative slack.} Consider four endpoint setup slacks:
+\[\text{A}: -0.20\quad \text{B}: -0.10\quad \text{C}: +0.05\quad \text{D}: -0.05\quad\text{ns}\]
+The WNS is $-0.20$ ns. Endpoint A has the largest timing failure.
+
+\head{TNS tells us the accumulated violation}
+\textbf{TNS means total negative slack.} Sum only the negative endpoint slacks:
+\[\text{TNS}=-0.20-0.10-0.05=-0.35\text{ ns}\]
+For the selected analysis, use each endpoint's worst relevant slack. Do not add every enumerated path to the same endpoint, and do not let positive slack cancel negative slack. Setup and hold are reported separately.
+
+\head{What zero means}
+OpenSTA's \texttt{report\_wns} clamps positive worst slack to zero. If all checked endpoints pass, WNS and TNS are both zero. \texttt{report\_worst\_slack} can still show a positive margin. Correct constraints and all required operating corners must also be checked; zero in one report alone is not complete timing closure.
+
+\head{Commands and a short spoken explanation}
+\code{report\_checks -path\_delay max}
+\code{report\_wns -max\qquad report\_tns -max}
+Use \texttt{-min} for hold WNS/TNS; a detailed hold report uses \texttt{-path\_delay min}.
+
+``OpenSTA propagates arrival and required times through a timing graph. Slack tells us whether a check passes. WNS is the worst negative margin; TNS adds the negative margins across endpoints.''
+
+\sources{\href{https://github.com/parallaxsw/OpenSTA}{Official OpenSTA repository and documentation}. Definitions checked against \texttt{src/sta/search/Search.tcl} and \texttt{Search.cc} in the local OpenROAD checkout. Values above are teaching examples with already determined required times.}
+\finish{Static timing analysis}{2}
+
+\start{3}{Clock tree synthesis with TritonCTS}{THE IDEA}
+\textbf{What it does}\quad Builds a buffered network that delivers a clock signal to many flip-flops with controlled delay, skew and signal transition time.
+
+\textbf{Remember this}\quad Divide clock sinks into groups, build balanced branches, and insert suitable clock buffers.
+
+\head{Why one clock wire is not enough}
+A clock can drive thousands of flip-flops. One driver connected to every clock pin sees a large electrical load. Long wires also add resistance and capacitance. Clock edges become slow, and distant sinks may receive them at different times.
+
+Think of a school announcement system: local amplifiers distribute the same bell signal to groups of classrooms.
+
+\head{Four words you should know}
+\sub{Sink}{A receiving clock pin, such as a flip-flop clock input.}
+\sub{Buffer}{A cell that strengthens and redistributes the clock signal.}
+\sub{Clock latency}{The travel time from the clock reference to a sink.}
+\sub{Clock skew}{The difference in clock arrival times between sinks.}
+
+\head{The main algorithmic ideas}
+OpenROAD uses \textbf{TritonCTS 2.0}. It characterizes candidate buffer and wire segments using the loaded technology data, then uses this information while building the tree.
+
+Clustering groups sinks spatially. Capacitated K-means, called \textbf{CKMeans} in the code, supports controlled partition sizes while building branches. An \textbf{H-tree based hierarchy} distributes the clock toward sink groups. Optional sink pre-clustering adds local buffered groups before that tree is built.
+
+\head{A simplified buffered clock tree}
+\begin{center}\setlength{\unitlength}{1pt}\begin{picture}(475,130)
+\put(198,106){\framebox(79,22){Clock root}}
+\put(237,106){\line(0,-1){19}}\put(103,87){\line(1,0){269}}
+\put(103,87){\vector(0,-1){13}}\put(372,87){\vector(0,-1){13}}
+\put(68,52){\framebox(70,22){Buffer}}\put(337,52){\framebox(70,22){Buffer}}
+\put(103,52){\line(0,-1){13}}\put(49,39){\line(1,0){109}}
+\put(372,52){\line(0,-1){13}}\put(318,39){\line(1,0){109}}
+\put(49,39){\vector(0,-1){13}}\put(158,39){\vector(0,-1){13}}
+\put(318,39){\vector(0,-1){13}}\put(427,39){\vector(0,-1){13}}
+\put(19,4){\framebox(60,22){FF1}}\put(128,4){\framebox(60,22){FF2}}
+\put(288,4){\framebox(60,22){FF3}}\put(397,4){\framebox(60,22){FF4}}
+\end{picture}\end{center}
+\textbf{FF means flip-flop.} This diagram shows connectivity, not an exact physical H shape. Real trees adapt to sink positions, loads, macros and constraints.
+\finish{Clock tree synthesis}{1}
+
+\start{3}{Clock tree synthesis with TritonCTS}{EXAMPLE AND EXPLANATION}
+\head{The steps from input to output}
+\sub{1\quad Gather sinks.}{Read clock definitions, sink positions, buffers and wire RC data.}
+\sub{2\quad Form branches.}{Partition sinks and construct an H-tree based hierarchy.}
+\sub{3\quad Choose buffers.}{Use characterization to control capacitance and slew, meaning the time taken by a signal edge to transition.}
+\sub{4\quad Balance and place.}{Build buffered subnets and balance loads or latencies where supported and enabled.}
+\sub{5\quad Recheck timing.}{Legalize placement, update parasitics, propagate clock delays, and check setup and hold.}
+
+\flow{Clock\\sinks}{Group\\sinks}{Build\\branches}{Insert\\buffers}{Check skew\\and timing}
+
+\head{A small skew example}
+Before balancing, suppose the clock arrives at four sinks at:
+\[0.10,\;0.18,\;0.25,\;0.30\text{ ns}\]
+The overall arrival spread is $0.30-0.10=0.20$ ns.
+
+After CTS, suppose arrivals are:
+\[0.22,\;0.23,\;0.24,\;0.23\text{ ns}\]
+The spread is now $0.24-0.22=0.02$ ns. Some sinks became later, but delivery became much more balanced. These are illustrative numbers, not a promised CTS result.
+
+\head{How clocks affect WNS and TNS}
+For a register-to-register path, both the launching and capturing clock arrival times affect slack. A later capture clock can help setup but hurt hold. CTS therefore needs timing checks after the actual clock network is modeled. \textbf{Equal wire length alone does not guarantee equal delay.}
+
+\textbf{Tradeoff}\quad More buffers can improve drive strength and balance, but add area, clock power and insertion delay. CTS aims for acceptable skew and electrical limits, not necessarily zero skew.
+
+\head{Commands and a short spoken explanation}
+\code{clock\_tree\_synthesis\qquad report\_cts}
+The platform must supply valid clock buffers and RC settings. \texttt{report\_cts} reports tree counts; timing reports are needed to assess clock arrival times and slack.
+
+``TritonCTS groups clock sinks, builds an H-tree based branching network, and inserts buffers using technology delay information. The aim is a well-driven clock with controlled skew, followed by setup and hold analysis.''
+
+\sources{\href{https://openroad.readthedocs.io/en/latest/main/src/cts/README.html}{OpenROAD Clock Tree Synthesis documentation}. Code: \texttt{src/cts/src/HTreeBuilder.cpp}, \texttt{Clustering.cpp}, \texttt{SinkClustering.cpp}, \texttt{TechChar.cpp}.}
+\finish{Clock tree synthesis}{2}
+
+\start{4}{Timing repair with the Resizer}{THE IDEA}
+\textbf{What it does}\quad Changes cells and buffering to reduce setup and hold violations, using OpenSTA to measure the effect of each round of repair.
+
+\textbf{Remember this}\quad Measure timing, find a bad path, change the circuit, and measure again. WNS and TNS are the scores that guide this loop.
+
+\head{How WNS and TNS guide repair}
+\textbf{WNS} identifies the worst negative slack. \textbf{TNS} adds negative endpoint slacks. The command \texttt{repair\_timing} uses repair heuristics to improve these metrics. A heuristic is a practical search strategy, not a guarantee of the global optimum.
+
+\head{Setup repair means making late data faster}
+The Resizer targets the worst setup path and then works on other violating endpoints to reduce total negative slack. Depending on the library and settings, it can use these changes:
+
+\sub{Gate sizing}{Replace a cell with a stronger equivalent to drive its load faster. A larger cell also adds area and input capacitance.}
+\sub{Buffering or removing buffers}{Split a large load or long wire into better-driven sections; remove an unnecessary buffer if its extra delay hurts.}
+\sub{Cloning or load splitting}{Give a critical load a less heavily loaded driver by duplicating suitable logic or reorganizing buffering.}
+\sub{Pin or threshold-voltage swaps}{Use a faster equivalent input pin or an available faster cell variant. Only legal, function-preserving changes are allowed.}
+
+\head{Hold repair means slowing early data}
+If data arrives too early, hold repair typically inserts delay buffers in the \textbf{data path}. The extra minimum delay can fix hold, but consumes setup margin. OpenROAD normally repairs setup first and guards setup while inserting hold buffers.
+
+\head{The repair loop}
+\flow{Run\\OpenSTA}{Choose bad\\endpoint}{Try a legal\\repair}{Update RC\\and timing}{Keep useful\\progress}
+\textbf{Repeat} until timing targets are reached, progress stops, or area, buffer and iteration limits prevent further repair. The tool may undo changes that fail its improvement criteria.
+
+\textbf{Inputs}\quad A timed physical design, libraries, constraints and parasitics.\par
+\textbf{Outputs}\quad A modified netlist and cell placement needing legalization, routing updates and timing verification.
+\finish{Timing repair}{1}
+
+\start{4}{Timing repair with the Resizer}{WNS AND TNS CLOSURE}
+\head{Why improving only WNS is not enough}
+Suppose three endpoint setup slacks are:
+\[\text{Before:}\quad -0.20,\;-0.10,\;-0.05\text{ ns}\]
+WNS is $-0.20$ ns and TNS is $-0.35$ ns.
+
+Repair the first endpoint so its slack becomes $+0.02$ ns:
+\[\text{After:}\quad +0.02,\;-0.10,\;-0.05\text{ ns}\]
+WNS improves to $-0.10$ ns and TNS to $-0.15$ ns. \textbf{Two endpoints still fail.} Further repair is required. In a real circuit, one change can affect several endpoints at once.
+
+\head{A setup fix and a hold fix}
+\sub{Setup example}{A path has a 1.00 ns allowed arrival and arrives at 1.12 ns: slack $=-0.12$ ns. A suitable stronger driver reduces arrival to 0.96 ns: slack becomes $+0.04$ ns.}
+\sub{Hold example}{The earliest allowed arrival is 0.12 ns, but data arrives at 0.08 ns: slack $=-0.04$ ns. A delay buffer adds 0.06 ns: arrival becomes 0.14 ns and hold slack becomes $+0.02$ ns. Setup must be checked again.}
+Both are simplified teaching examples; real cell and wire delays depend on load, slew and operating conditions.
+
+\head{Commands to recognize}
+With CTS complete, propagated clocks and valid parasitics, the essential repair commands are:
+\code{repair\_timing -setup -repair\_tns 100}
+\code{repair\_timing -hold}
+\texttt{-repair\_tns 100} targets all violating endpoints; \texttt{0} targets only the worst endpoint. The number is a percentage of endpoints to attempt, not a promised percentage improvement. Check \texttt{help repair\_timing} in your installed version.
+
+\head{When can you claim timing closure}
+Re-legalize changed cells, update routes and parasitics, then rerun setup and hold analysis. Check all required timing corners, constraints and electrical limits. A clean pre-route estimate can fail after real wire delays are included. Area, power or congestion may also limit repair.
+
+\head{What to say to your professors}
+``OpenSTA measures WNS and TNS. The Resizer improves them by trying gate and buffer changes on critical paths. Setup repair speeds up late data; hold repair delays early data. We repeat analysis and repair with updated physical information until all required checks pass.''
+
+\sources{\href{https://openroad.readthedocs.io/en/latest/main/src/rsz/README.html}{OpenROAD Gate Resizer documentation, Repair Timing}. Code: \texttt{src/rsz/src/Optimizer.cc}, the setup policies in \texttt{src/rsz/src/policy/}, and \texttt{RepairHold.cc}. Command behavior checked against local source.}
+\finish{Timing repair}{2}
+
+\start{5}{Global routing with FastRoute}{THE IDEA}
+\textbf{What it does}\quad Plans which coarse chip regions and metal layers each signal connection should use while trying to avoid routing congestion.
+
+\textbf{Remember this}\quad Start with short routes. Make crowded corridors expensive. Reroute selected connections through less crowded corridors.
+
+\head{A road map for wires}
+Think of routing as planning roads between houses. The shortest road is attractive, but not if every vehicle needs the same narrow bridge.
+
+OpenROAD's \textbf{FastRoute based global router} divides the chip into a coarse grid. Connections cross grid edges with limited routing capacity. A \textbf{net} is a set of pins that must be electrically connected. A \textbf{via} connects wires on different metal layers.
+
+\head{The important algorithmic steps}
+\sub{1\quad Build the routing grid.}{Read placed pins, allowed layers, obstacles and estimated capacity for wires between neighboring regions.}
+\sub{2\quad Create short connecting trees.}{Steiner-tree construction can introduce extra branch points to connect a multi-pin net with less total wire. FastRoute uses fast pattern routing for initial connections.}
+\sub{3\quad Find overloaded corridors.}{Compare routing demand with capacity. Demand above capacity is congestion overflow.}
+\sub{4\quad Rip up and reroute.}{Remove selected route segments. A maze search explores grid neighbors using costs that discourage congestion and excessive wire or vias. Repeated congestion penalties encourage alternate paths.}
+\sub{5\quad Assign layers and produce guides.}{Refine the routing plan and hand coarse guides to detailed routing. Detailed routing selects exact tracks and vias and checks physical design rules.}
+
+\head{Why the shortest route may lose}
+\begin{center}\setlength{\unitlength}{1pt}\begin{picture}(485,107)
+\put(25,60){\framebox(44,24){A}}\put(410,60){\framebox(44,24){B}}
+\put(69,72){\line(1,0){115}}\put(302,72){\vector(1,0){108}}
+\put(184,58){\framebox(118,28){Crowded corridor}}
+\put(47,60){\line(0,-1){36}}\put(47,24){\line(1,0){385}}\put(432,24){\vector(0,1){36}}
+\put(118,0){\makebox(240,18){Longer path through free capacity}}
+\put(115,89){\makebox(250,18){Short route through a bottleneck}}
+\end{picture}\end{center}
+This is a conceptual route map. The actual search uses a grid, many interacting nets and several routing layers.
+\finish{Global routing}{1}
+
+\start{5}{Global routing with FastRoute}{EXAMPLE AND EXPLANATION}
+\head{One corridor with too many wires}
+A grid edge has capacity for 5 wire tracks. The current routes need 8. Its overflow is:
+\[\max(0,\text{demand}-\text{capacity})=\max(0,8-5)=3\]
+If three connections can be moved to another corridor with spare capacity, demand falls to 5 and this edge's overflow becomes zero. The router must also ensure the detour does not simply create a new bottleneck elsewhere.
+
+\head{How maze routing chooses a path}
+Each grid move has a cost. Search accumulates the costs while exploring possible routes. A path with more grid steps can win if it avoids expensive congested edges.
+
+\textbf{A teaching example}\quad A short route has length cost 4 plus congestion penalty 10: total 14. A detour has length cost 7 and no congestion penalty: total 7. The search prefers the detour. These are invented scores, not FastRoute's exact cost formula.
+
+\flow{Initial\\routes}{Measure\\overflow}{Raise busy\\edge costs}{Rip up and\\reroute}{Check and\\repeat}
+
+\head{How routing affects timing closure}
+Routing determines wire length, layer choices and vias. These change wire resistance and capacitance, which change signal delay. OpenSTA uses updated parasitics to recompute slack; the Resizer can then repair newly visible violations.
+
+\textbf{Tradeoff}\quad A detour may reduce congestion but worsen timing. Timing-critical nets can be prioritized. If the layout is too dense, routing alone may not solve the problem; placement or the floorplan may need revision.
+
+\head{Commands to recognize}
+\code{global\_route}
+\code{estimate\_parasitics -global\_routing}
+These require an initialized physical design and valid routing and RC settings. The first produces a global route plan; the second estimates its parasitics for timing analysis. Exact metal geometry is created later by the detailed router, commonly called TritonRoute in OpenROAD.
+
+\head{What to say to your professors}
+``FastRoute plans connections on a coarse grid. It starts with short routes, detects overused routing corridors, and uses rip-up and maze rerouting to reduce congestion. The output guides detailed routing and provides better wire-delay estimates for timing repair.''
+
+\textbf{The full loop}\quad Place cells, build the clock, route wires, analyze timing and repair. Timing analysis and repair repeat across these stages.
+
+\sources{\href{https://openroad.readthedocs.io/en/latest/main/src/grt/README.html}{OpenROAD Global Routing documentation}; \href{https://www.engineering.iastate.edu/~cnchu/pubs/j52.pdf}{Pan et al., FastRoute, 2012}. Code: \texttt{src/grt/src/fastroute/src/FastRoute.cpp}, \texttt{maze.cpp}, \texttt{maze3D.cpp}. Source review: 7 September 2026; local OpenROAD revision \texttt{63fe72c577ef}.}
+\finish{Global routing}{2}
+\end{document}

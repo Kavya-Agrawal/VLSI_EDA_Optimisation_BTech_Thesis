@@ -1,0 +1,5 @@
+work/
+.runs/
+presentation/.build/
+presentation/.codex-finalizer/
+presentation/node_modules
