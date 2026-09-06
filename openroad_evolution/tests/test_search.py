@@ -11,16 +11,18 @@ class SearchTest(unittest.TestCase):
     def test_mutation_is_bounded_and_enabled(self):
         import random
 
-        child = mutate(MirrorPolicy(1.0, 0.0, 0.0), random.Random(3))
+        child = mutate(MirrorPolicy(1.0, 0.0), random.Random(3))
         child.validate()
         self.assertTrue(child.enabled)
-        self.assertNotEqual(child.identifier, MirrorPolicy(1.0, 0.0, 0.0).identifier)
+        self.assertNotEqual(child.identifier, MirrorPolicy(1.0, 0.0).identifier)
 
     def test_archive_captures_baseline_and_candidates(self):
         class FakeEvaluator:
             raw = {
                 "finish__timing__setup__ws": -0.2,
                 "finish__timing__setup__tns": -8,
+                "finish__timing__hold__ws": -0.05,
+                "finish__timing__hold__tns": -1,
                 "detailedroute__route__wirelength": 7200,
                 "detailedroute__route__drc_errors": 0,
                 "detailedroute__antenna__violating__nets": 0,

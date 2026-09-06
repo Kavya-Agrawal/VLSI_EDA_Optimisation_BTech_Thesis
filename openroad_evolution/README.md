@@ -18,9 +18,10 @@ ordering a compact, non-commutative placement heuristic with real downstream
 effects on routing and timing.
 
 The evolving artifact is a generated C++ header, typically 25 lines. It ranks
-legal mirror candidates using a weighted expression over local HPWL, cell pin
-degree, and stable instance ID. It cannot move a cell, alter connectivity, or
-bypass OpenDP's cell-edge-spacing and non-increasing-HPWL guards.
+legal mirror candidates using two bounded coefficients over `log1p(local HPWL)`
+and pin degree. The stable instance ID only breaks an exact tie. It cannot move
+a cell, alter connectivity, or bypass OpenDP's cell-edge-spacing and
+non-increasing-HPWL guards.
 
 `patches/opt_mirror_policy.patch` adds the fixed seam. The runner applies it
 only in an isolated Git worktree and initializes the exact nested source
@@ -28,24 +29,34 @@ submodules there; the pinned `external/OpenROAD` submodule is never modified.
 
 ## Correctness and QoR contract
 
-Candidates are evaluated serially and a candidate enters the parent pool only
-if all of the following pass:
+The search can only replace the generated header. Before every build, the
+runner rejects a changed OpenROAD or ORFS revision, a modified ORFS tracked
+file, any nested submodule drift, an `OptMirror.cpp` hash different from the
+fixed safety seam, or any unapproved worktree mutation. It archives the exact
+header, source/flow revisions, config digest, flow seeds and reports.
+
+A candidate is physically admissible only if every one of five paired,
+seed-controlled ORFS runs passes all of the following:
 
 1. OpenROAD compiles.
 2. Upstream `dpl.mirror1`, `mirror2`, `mirror3`, and
    `mirror_edge_spacing` regression tests pass.
 3. ORFS completes `all metadata` for `nangate45/gcd`, which covers synthesis,
    placement, CTS, global/detailed routing, finishing and signoff reports.
-4. METRICS2.1 reports zero detailed-placement violations, and detailed-route
-   DRC and antenna violations do not exceed the stock baseline.
-5. The candidate has finite final setup WNS/TNS, routed wirelength, and total
-   elapsed time.
+4. METRICS2.1 reports zero detailed-placement violations, zero detailed-route
+   DRC errors, and zero antenna violations.
+5. The candidate has finite final setup and hold WNS/TNS, routed wirelength,
+   and total elapsed time.
 
-The score is `0.45*WNS + 0.35*TNS - 0.15*wirelength - 0.05*runtime`, expressed
-as normalized improvement over the stock baseline. Timing closure is therefore
-the primary optimization target; routing quality and practical runtime remain
-visible. Failed candidates are retained with their source, logs, metrics and
-rejection reason, rather than silently discarded.
+The bounded score is `0.30 Δsetup-WNS + 0.25 Δsetup-TNS + 0.15 Δhold-WNS +
+0.15 Δhold-TNS + 0.10 Δwirelength + 0.05 Δruntime`. Each signed normalized
+delta is clipped to `[-1, 1]`, so a near-zero baseline cannot dominate the
+decision. A training promotion additionally requires no median setup/hold
+regression, a median wirelength increase of at most 0.5%, a runtime increase of
+at most 10%, every paired seed to have a positive score, and a paired
+percentile-bootstrap lower bound above 0.002. This is an empirical quality
+screen, not a proof of silicon correctness. Failed candidates remain in the
+archive with their source, logs, metrics and rejection reason.
 
 ## One-time tool setup
 
@@ -78,18 +89,21 @@ Run these commands from this directory:
 ```sh
 PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json prepare
 PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json evolve --generations 3 --population 4
+PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json verify --candidate <training-promoted-id>
 ```
 
-The default is intentionally conservative: 12 candidate full flows plus the
-stock baseline. Increase the population only after verifying the baseline on
-your machine. The run is serial because ORFS uses fixed `results/`, `logs/`,
-and `reports/` locations for a design.
+The default is intentionally conservative: five seed-controlled full flows per
+candidate and baseline. The `verify` command reruns a selected candidate on
+held-out `nangate45/aes` and `nangate45/ibex`; nothing automatically modifies
+or merges upstream OpenROAD source. The run is serial because ORFS uses fixed
+`results/`, `logs/`, and `reports/` locations for a design.
 
 Generated artifacts are intentionally ignored by Git:
 
 - `work/openroad-source/`: patched isolated OpenROAD worktree and build tree.
-- `.evolution/runs/<candidate-id>/`: generated header, compile/regression/flow
-  logs, final METRICS2.1 JSON and a decision record.
+- `.evolution/runs/<platform>/<design>/<candidate-id>/`: generated header,
+  manifest, compile/regression/flow logs, final METRICS2.1 JSON and a decision
+  record.
 - `.evolution/archive.jsonl`: append-only search history, including failures.
 
 ## Test the framework itself

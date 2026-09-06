@@ -19,7 +19,6 @@ class MirrorPolicy:
 
     hpwl_weight: float = 1.0
     degree_weight: float = 0.0
-    id_weight: float = 0.0
     enabled: bool = True
 
     @classmethod
@@ -31,11 +30,9 @@ class MirrorPolicy:
         for name, value in asdict(self).items():
             if name == "enabled":
                 continue
-            if not math.isfinite(value) or abs(value) > 100.0:
-                raise ValueError(f"{name} must be finite and in [-100, 100]")
-        if self.enabled and not any(
-            (self.hpwl_weight, self.degree_weight, self.id_weight)
-        ):
+            if not math.isfinite(value) or abs(value) > 5.0:
+                raise ValueError(f"{name} must be finite and in [-5, 5]")
+        if self.enabled and not any((self.hpwl_weight, self.degree_weight)):
             raise ValueError("an enabled policy must have a non-zero weight")
 
     @property
@@ -65,6 +62,7 @@ class MirrorPolicy:
 // Do not edit: the experiment runner rewrites this file per candidate.
 #pragma once
 
+#include <cmath>
 #include <cstdint>
 
 namespace dpl {{
@@ -82,13 +80,12 @@ class EvolvedMirrorPolicy
   {{
     constexpr double kHpwlWeight = {self.hpwl_weight:.17g};
     constexpr double kDegreeWeight = {self.degree_weight:.17g};
-    constexpr double kIdWeight = {self.id_weight:.17g};
-    const double lhs_score = kHpwlWeight * static_cast<double>(lhs_hpwl)
-                           + kDegreeWeight * static_cast<double>(lhs_degree)
-                           + kIdWeight * static_cast<double>(lhs_id);
-    const double rhs_score = kHpwlWeight * static_cast<double>(rhs_hpwl)
-                           + kDegreeWeight * static_cast<double>(rhs_degree)
-                           + kIdWeight * static_cast<double>(rhs_id);
+    // log1p normalizes DBU-scale HPWL and fanout so both evolved features
+    // remain numerically meaningful. Instance ID only breaks exact ties.
+    const double lhs_score = kHpwlWeight * std::log1p(static_cast<double>(lhs_hpwl))
+                           + kDegreeWeight * std::log1p(static_cast<double>(lhs_degree));
+    const double rhs_score = kHpwlWeight * std::log1p(static_cast<double>(rhs_hpwl))
+                           + kDegreeWeight * std::log1p(static_cast<double>(rhs_degree));
     if (lhs_score != rhs_score) {{
       return lhs_score > rhs_score;
     }}

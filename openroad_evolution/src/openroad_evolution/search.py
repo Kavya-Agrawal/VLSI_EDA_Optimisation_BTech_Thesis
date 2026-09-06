@@ -10,16 +10,15 @@ from typing import Protocol
 
 from .candidate import MirrorPolicy
 from .evaluator import Evaluation
-from .metrics import FlowMetrics
 
 
 class Evaluator(Protocol):
-    def evaluate(self, policy: MirrorPolicy, baseline: FlowMetrics | None = None) -> Evaluation: ...
+    def evaluate(self, policy: MirrorPolicy, baseline: Evaluation | None = None) -> Evaluation: ...
 
 
 def mutate(parent: MirrorPolicy, rng: random.Random) -> MirrorPolicy:
     """Mutate exactly one coefficient; retain a bounded, interpretable policy."""
-    weights = [parent.hpwl_weight, parent.degree_weight, parent.id_weight]
+    weights = [parent.hpwl_weight, parent.degree_weight]
     index = rng.randrange(len(weights))
     weights[index] = max(-5.0, min(5.0, weights[index] + rng.gauss(0.0, 0.75)))
     if not any(weights):
@@ -47,6 +46,8 @@ class EvolutionRun:
                         "score": result.score,
                         "reasons": result.reasons,
                         "metrics": result.metrics,
+                        "replicas": result.replicas,
+                        "promotion": result.promotion,
                     },
                     sort_keys=True,
                 )
@@ -61,10 +62,8 @@ class EvolutionRun:
         self._append(baseline_result)
         if not baseline_result.valid or baseline_result.metrics is None:
             raise RuntimeError("stock baseline must compile, pass regressions, and finish ORFS")
-        baseline = FlowMetrics(baseline_result.metrics)
-
         completed: list[Evaluation] = [baseline_result]
-        parents = [MirrorPolicy(1.0, 0.0, 0.0, enabled=True)]
+        parents = [MirrorPolicy(1.0, 0.0, enabled=True)]
         seen = {baseline_result.policy.identifier}
         for _generation in range(generations):
             candidates: list[MirrorPolicy] = []
@@ -73,7 +72,7 @@ class EvolutionRun:
                 if child.identifier not in seen:
                     candidates.append(child)
                     seen.add(child.identifier)
-            generation_results = [self.evaluator.evaluate(item, baseline) for item in candidates]
+            generation_results = [self.evaluator.evaluate(item, baseline_result) for item in candidates]
             for result in generation_results:
                 self._append(result)
             completed.extend(generation_results)

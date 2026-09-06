@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from hashlib import sha256
 from pathlib import Path
 import subprocess
 
@@ -21,6 +22,10 @@ class OpenRoadWorkspace:
     @staticmethod
     def _run(args: list[str], *, cwd: Path | None = None) -> None:
         subprocess.run(args, cwd=cwd, check=True, text=True)
+
+    @staticmethod
+    def _output(args: list[str], *, cwd: Path) -> str:
+        return subprocess.run(args, cwd=cwd, check=True, text=True, capture_output=True).stdout
 
     def prepare(self) -> None:
         if not self.config.openroad_source.exists():
@@ -64,4 +69,70 @@ class OpenRoadWorkspace:
 
     def write_policy(self, policy: MirrorPolicy) -> None:
         policy.validate()
-        self.header_path.write_text(policy.to_header())
+        temporary = self.header_path.with_suffix(".h.tmp")
+        try:
+            temporary.write_text(policy.to_header())
+            temporary.replace(self.header_path)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+    def assert_integrity(self, expected_policy: MirrorPolicy | None = None) -> None:
+        """Reject any source state beyond the fixed patch and generated header.
+
+        This is the source-containment boundary. The search never applies a
+        model-proposed diff: a candidate may only replace the generated header
+        after this method confirms the pinned upstream commit, every nested
+        submodule, the safety guard, and the allowed dirty-file set.
+        """
+        head = self._output(["git", "rev-parse", "HEAD"], cwd=self.source_dir).strip()
+        if head != self.config.pinned_openroad_revision:
+            raise RuntimeError(
+                "OpenROAD worktree revision differs from the configured pinned revision: "
+                f"{head} != {self.config.pinned_openroad_revision}"
+            )
+        orfs_head = self._output(["git", "rev-parse", "HEAD"], cwd=self.config.orfs_root).strip()
+        if orfs_head != self.config.pinned_orfs_revision:
+            raise RuntimeError(
+                "ORFS revision differs from the configured pinned revision: "
+                f"{orfs_head} != {self.config.pinned_orfs_revision}"
+            )
+        orfs_diff = subprocess.run(
+            ["git", "diff", "--quiet"], cwd=self.config.orfs_root, text=True
+        ).returncode
+        if orfs_diff != 0:
+            raise RuntimeError("ORFS tracked files are modified; evaluation requires the pinned flow")
+        submodules = self._output(
+            ["git", "submodule", "status", "--recursive"], cwd=self.source_dir
+        ).splitlines()
+        invalid_submodules = [line for line in submodules if line and line[0] != " "]
+        if invalid_submodules:
+            raise RuntimeError("uninitialized or changed OpenROAD submodule: " + invalid_submodules[0])
+
+        target = self.source_dir / "src/dpl/src/OptMirror.cpp"
+        source = target.read_text()
+        actual_hash = sha256(source.encode()).hexdigest()
+        if actual_hash != self.config.pinned_opt_mirror_sha256:
+            raise RuntimeError("OptMirror.cpp differs from the pinned fixed safety seam")
+        required = (
+            "EvolvedMirrorPolicy.h",
+            "EvolvedMirrorPolicy::enabled()",
+            "if (hpwl_after > hpwl_before)",
+            "isEdgeSpacingLegal(cell, orient_my)",
+        )
+        missing = [item for item in required if item not in source]
+        if missing:
+            raise RuntimeError("OptMirror safety seam is incomplete: " + ", ".join(missing))
+
+        status = self._output(["git", "status", "--porcelain"], cwd=self.source_dir).splitlines()
+        allowed = {
+            " M src/dpl/src/OptMirror.cpp",
+            "?? src/dpl/src/EvolvedMirrorPolicy.h",
+        }
+        unexpected = [line for line in status if line not in allowed]
+        if unexpected:
+            raise RuntimeError("unexpected source mutation in evaluation worktree: " + unexpected[0])
+        if expected_policy is not None:
+            header = self.header_path.read_text() if self.header_path.exists() else ""
+            if header != expected_policy.to_header():
+                raise RuntimeError("generated policy header does not match the candidate contract")
+        self._run(["git", "diff", "--check"], cwd=self.source_dir)

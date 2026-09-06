@@ -14,11 +14,12 @@ The source-level search space is deliberately constrained to a ranking
 expression:
 
 ```
-priority(cell) = a * local_HPWL + b * pin_degree + c * instance_ID
+priority(cell) = a * log1p(local_HPWL) + b * log1p(pin_degree)
 ```
 
-The candidate header is real C++ compiled into OpenROAD. `a`, `b`, and `c` are
-mutated by a seeded evolutionary search, and every version is saved. This is
+The candidate header is real C++ compiled into OpenROAD. `a` and `b` are
+bounded to `[-5, 5]`, mutated by a seeded evolutionary search, and every
+version is saved. Instance ID only breaks exact ties. This is
 algorithm evolution, not a flow-knob sweep: it changes the execution order of
 the heuristic decisions inside the OpenROAD placement source code.
 
@@ -44,35 +45,38 @@ hard gates:
 
 ```
 build(x) AND mirror_regressions(x) AND ORFS_RTL_to_GDS(x)
-AND place_violations(x) = 0
-AND DRC(x) <= DRC(b)
-AND antenna_violations(x) <= antenna_violations(b)
+AND place_violations(x) = 0 AND DRC(x) = 0 AND antenna_violations(x) = 0
 ```
 
 Only then is it ranked:
 
 ```
-S(x) = 0.45 ΔWNS + 0.35 ΔTNS - 0.15 Δrouted_wirelength - 0.05 Δruntime
+S(x) = .30 Δsetup-WNS + .25 Δsetup-TNS + .15 Δhold-WNS + .15 Δhold-TNS
+       + .10 Δrouted_wirelength + .05 Δruntime
 ```
 
-Each delta is normalized by `max(abs(baseline), 1)` so a near-zero metric
-cannot dominate simply because of its unit scale. A negative score is valid
-but does not become a parent when stronger candidates exist. This distinction
-is important: feasibility/correctness is not the same as quality of results.
+Each delta is normalized by `max(abs(baseline), 1)` and clipped to `[-1, 1]`,
+so a near-zero metric cannot dominate simply because of its unit scale. A
+candidate must pass every hard gate on five paired seeds. Promotion then also
+requires no median timing regression, bounded wirelength/runtime regression,
+positive score on each seed, and a paired percentile-bootstrap lower bound
+above the configured threshold. These are reproducible empirical safeguards,
+not a mathematical proof of chip-level correctness.
 
 ## Experimental reporting plan
 
-Use at least three independently seeded runs on `nangate45/gcd` for rapid
-iteration. Promote the best policy only after rerunning the same candidate on
-two held-out ORFS designs (for example `nangate45/aes` and `nangate45/ibex`),
-with unchanged gates. Report:
+Use the five configured paired seeds on `nangate45/gcd` for rapid iteration.
+The runner varies `GPL_RANDOM_SEED`, `GRT_SEED`, and `OR_SEED` while keeping
+each stock/candidate pair aligned. A training-promoted policy must then pass
+the same gates on held-out `nangate45/aes` and `nangate45/ibex` through the
+`verify` command. Report:
 
 1. Baseline and best-candidate WNS, TNS, routed wirelength, runtime, DRC and
    antenna counts.
 2. Median and range across repeat runs, not only the best observed sample.
 3. The exact generated `EvolvedMirrorPolicy.h`, commit IDs of OpenROAD and
    ORFS, configuration JSON, and the archive record.
-4. Ablations for each ranking feature (`a`, `b`, `c`) and a policy disabled
+4. Ablations for each ranking feature (`a`, `b`) and a policy disabled
    baseline, so the result is attributable to algorithmic ordering rather than
    a tool-version or flow-config difference.
 
