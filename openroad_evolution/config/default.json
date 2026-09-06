@@ -1,0 +1,15 @@
+{
+  "openroad_source": "../../external/OpenROAD",
+  "orfs_root": "../../external/OpenROAD-flow-scripts",
+  "workspace": "../work",
+  "patch": "../patches/opt_mirror_policy.patch",
+  "build_dir": "{workspace}/build",
+  "openroad_executable": "{build_dir}/bin/openroad",
+  "jobs": 4,
+  "build_command": "cd {source_dir} && ./etc/Build.sh -cmake-build -dir={build_dir} -threads={jobs}",
+  "unit_test_command": "ctest --test-dir {build_dir} --output-on-failure -R '^dpl\\.(mirror1|mirror2|mirror3|mirror_edge_spacing)\\.(py|tcl)$'",
+  "flow_command": "OPENROAD_EXE={openroad_executable} make -C {orfs_root}/flow DESIGN_CONFIG=designs/nangate45/gcd/config.mk all metadata",
+  "metrics_path": "{orfs_root}/flow/reports/nangate45/gcd/base/metadata.json",
+  "full_flow": true,
+  "seed": 41
+}

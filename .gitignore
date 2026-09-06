@@ -98,3 +98,5 @@ abc/*.a
 openroad_repos/
 !ml_for_eda_research/openroad/
 !ml_for_eda_research/openroad/**
+openroad_evolution/.evolution/
+openroad_evolution/work/

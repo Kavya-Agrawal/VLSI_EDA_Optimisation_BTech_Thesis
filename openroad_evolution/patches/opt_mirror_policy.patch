@@ -1,0 +1,30 @@
+diff --git a/src/dpl/src/OptMirror.cpp b/src/dpl/src/OptMirror.cpp
+index 1f6ba0ec0..e7b8e4df7 100644
+--- a/src/dpl/src/OptMirror.cpp
++++ b/src/dpl/src/OptMirror.cpp
+@@ -10,0 +11 @@
++#include "EvolvedMirrorPolicy.h"
+@@ -153,6 +155,23 @@ std::vector<odb::dbInst*> OptimizeMirroring::findMirrorCandidates(
+ int OptimizeMirroring::mirrorCandidates(
+     std::vector<odb::dbInst*>& mirror_candidates)
+ {
++  // The generated policy only changes the order of otherwise legal mirror
++  // attempts. The acceptance rule below remains the upstream non-increasing
++  // HPWL guard, so a policy cannot bypass OpenDP legality or worsen a local
++  // objective. A disabled policy is the byte-for-byte upstream ordering.
++  if (EvolvedMirrorPolicy::enabled()) {
++    std::ranges::sort(mirror_candidates, [this](const odb::dbInst* lhs,
++                                                const odb::dbInst* rhs) {
++      return EvolvedMirrorPolicy::isHigherPriority(
++          hpwl(const_cast<odb::dbInst*>(lhs)),
++          static_cast<uint32_t>(lhs->getITerms().size()),
++          lhs->getId(),
++          hpwl(const_cast<odb::dbInst*>(rhs)),
++          static_cast<uint32_t>(rhs->getITerms().size()),
++          rhs->getId());
++    });
++  }
++
+   int mirror_count = 0;
+   for (odb::dbInst* inst : mirror_candidates) {
+     Node* cell = network_->getNode(inst);
