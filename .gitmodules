@@ -1,0 +1,6 @@
+[submodule "external/OpenROAD"]
+	path = external/OpenROAD
+	url = https://github.com/The-OpenROAD-Project/OpenROAD.git
+[submodule "external/OpenROAD-flow-scripts"]
+	path = external/OpenROAD-flow-scripts
+	url = https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts.git
