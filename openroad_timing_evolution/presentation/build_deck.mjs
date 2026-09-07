@@ -237,7 +237,8 @@ function slide8() {
     addText(s, it[0], 105, 185 + i * 72, 210, 24, 20, teal, { bold: true });
     addText(s, it[1], 330, 185 + i * 72, 760, 24, 20, navy);
   });
-  addText(s, "Command: python3 -m openroad_timing_evolution --config openroad_timing_evolution/config/smoke.json evolve --generations 3 --population 4", 105, 578, 980, 48, 18, gray);
+  addText(s, "Command", 105, 570, 120, 24, 18, teal, { bold: true });
+  addText(s, "python3 -m openroad_timing_evolution --config openroad_timing_evolution/config/smoke.json evolve --generations 3 --population 4", 240, 570, 820, 52, 17, gray);
   foot(s, 8);
   notes(s, "Validation performed during wrap-up: python3 -m openroad_timing_evolution selftest; python3 -m openroad_timing_evolution propose/check; python3 -m openroad_timing_evolution --config openroad_timing_evolution/config/smoke.json doctor.");
 }
@@ -247,6 +248,8 @@ function slide8() {
 const stagingDir = path.join(ROOT, "presentation", ".codex-finalizer");
 await fs.mkdir(stagingDir, { recursive: true });
 const candidatePath = path.join(stagingDir, "candidate.pptx");
+const receiptPath = path.join(stagingDir, "openroad_timing_evolution_framework.validation.json");
+try { await fs.rm(receiptPath); } catch {}
 await (await PresentationFile.exportPptx(p)).save(candidatePath);
 
 const requirements = {
@@ -269,7 +272,7 @@ const result = await finalizePresentation({
   ],
   fontPolicy: { basis: "design", families: [font] },
   verifyArtifactToolImport: true,
-  receiptPath: path.join(stagingDir, "openroad_timing_evolution_framework.validation.json"),
+  receiptPath,
 });
 
 const imported = await PresentationFile.importPptx(await (await import("@oai/artifact-tool")).FileBlob.load(FINAL_PPTX));
