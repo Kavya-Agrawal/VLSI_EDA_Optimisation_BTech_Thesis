@@ -2,6 +2,18 @@
 
 Personal workspace for ML-for-EDA research and tooling, including logic synthesis (ABC), macro placement, and a curated research compendium.
 
+## Quick start
+
+```bash
+make doctor
+make list
+make test
+```
+
+The top-level `Makefile` provides the same command interface on every research
+branch. See [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) for the code map, clean branch
+names, setup instructions, and framework commands.
+
 ## Contents
 
 | Directory | Description |
