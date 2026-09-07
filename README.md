@@ -1,6 +1,20 @@
 # VLSI EDA Optimisation — BTech Thesis
 
-Personal workspace for ML-for-EDA research and tooling, including logic synthesis (ABC), macro placement, and a curated research compendium.
+Research code for logic synthesis, physical design, and ML-guided algorithm
+evolution using Berkeley ABC and OpenROAD.
+
+## Quick start
+
+```bash
+make doctor
+make setup
+make list
+make test
+```
+
+The top-level `Makefile` is the common entry point on every research branch.
+See [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) for the directory map, branch map,
+and commands for each framework.
 
 ## Contents
 
@@ -12,6 +26,8 @@ Personal workspace for ML-for-EDA research and tooling, including logic synthesi
 | [`external/OpenROAD/`](external/OpenROAD/) | Pinned official OpenROAD source, with nested submodules |
 | [`external/OpenROAD-flow-scripts/`](external/OpenROAD-flow-scripts/) | Pinned official RTL-to-GDSII flow source and tool submodules |
 | [`openroad_evolution/`](openroad_evolution/) | Reproducible algorithm-evolution framework for detailed placement |
+| [`openroad_timing_evolution/`](openroad_timing_evolution/) | Correctness-gated resizer timing evolution framework |
+| [`openroad_ml/`](openroad_ml/) | ML experiments for OpenROAD congestion, timing, and gate sizing |
 | [`abc_documentation.txt`](abc_documentation.txt) | Quick links to ABC and OpenROAD resources |
 
 ## Upstream sources
@@ -28,6 +44,6 @@ OpenROAD and OpenROAD-flow-scripts are included as pinned Git submodules. Initia
 git submodule update --init --recursive
 ```
 
-The `openroad_evolution/` package evolves a deliberately small, safe
-detailed-placement heuristic and evaluates each candidate through OpenROAD
-regressions and a complete ORFS run. See its README before starting an experiment.
+The evolution packages modify only bounded generated policies in isolated
+workspaces, then gate candidates with tests and full ORFS evidence. Read the
+framework's own README before starting a long experiment.
