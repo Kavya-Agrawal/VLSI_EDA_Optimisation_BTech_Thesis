@@ -131,7 +131,9 @@ test-timing-gnn:
 
 test-synapse:
 	@test -d abc/src/ext_ml/python || { echo 'Unavailable here; run: make branch FRAMEWORK=synapse' >&2; exit 2; }
-	cd abc/src/ext_ml/python && $(PYTHON) -m tests.test_smoke
+	@if ! $(PYTHON) -c 'import numpy' >/dev/null 2>&1; then \
+		echo 'SKIP synapse: install abc/src/ext_ml/python/requirements.txt'; \
+	else cd abc/src/ext_ml/python && $(PYTHON) -m tests.test_smoke; fi
 
 test-polyphony:
 	@test -d abc/src/ext_poly/python || { echo 'Unavailable here; run: make branch FRAMEWORK=polyphony' >&2; exit 2; }
