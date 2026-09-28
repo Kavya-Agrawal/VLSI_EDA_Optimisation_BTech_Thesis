@@ -8,7 +8,7 @@ from pathlib import Path
 import random
 from typing import Protocol
 
-from .candidate import MirrorPolicy, PROGRAM_OPS, program_segments, related_indices
+from .candidate import MirrorPolicy, PROGRAM_OPS, program_segments, related_indices, relation_graph
 from .evaluator import Evaluation
 
 
@@ -134,10 +134,16 @@ class EvolutionRun:
             None,
         )
         if baseline_result is None:
+            print("[evolution] baseline: evaluating stock OpenROAD with full correctness gates", flush=True)
             baseline_result = self.evaluator.evaluate(MirrorPolicy.baseline())
             self._append(baseline_result)
             completed.append(baseline_result)
             seen.add(baseline_result.policy.identifier)
+        else:
+            print(
+                f"[evolution] baseline: reused valid stock result {baseline_result.policy.identifier}",
+                flush=True,
+            )
         if not baseline_result.valid or baseline_result.metrics is None:
             reason = "; ".join(baseline_result.reasons) or "unknown baseline failure"
             raise RuntimeError(
@@ -151,7 +157,13 @@ class EvolutionRun:
             [item.policy for item in valid_archive[: max(1, min(4, len(valid_archive)))]]
             or [MirrorPolicy(1.0, 0.0, enabled=True)]
         )
-        for _generation in range(generations):
+        total_requested = generations * population
+        evaluated_now = 0
+        for generation_index in range(generations):
+            print(
+                f"[evolution] generation {generation_index + 1}/{generations}: creating {population} source-changing candidate(s)",
+                flush=True,
+            )
             candidates: list[MirrorPolicy] = []
             while len(candidates) < population:
                 for _attempt in range(10_000):
@@ -159,10 +171,34 @@ class EvolutionRun:
                     if child.identifier not in seen:
                         candidates.append(child)
                         seen.add(child.identifier)
+                        ops = ",".join(child.program[:4])
+                        if len(child.program) > 4:
+                            ops += ",..."
+                        edge_count = len(relation_graph(child.program)["edges"])
+                        print(
+                            f"[evolution] queued {len(candidates)}/{population}: {child.identifier} "
+                            f"blocks={len(child.program)} edges={edge_count} ops={ops}",
+                            flush=True,
+                        )
                         break
                 else:
                     raise RuntimeError("could not generate a new unseen policy")
-            generation_results = [self.evaluator.evaluate(item, baseline_result) for item in candidates]
+            generation_results = []
+            for candidate in candidates:
+                evaluated_now += 1
+                print(
+                    f"[evolution] attempt {evaluated_now}/{total_requested}: evaluating {candidate.identifier} with OpenROAD",
+                    flush=True,
+                )
+                result = self.evaluator.evaluate(candidate, baseline_result)
+                status = "valid" if result.valid else "invalid"
+                score = "n/a" if result.score is None else f"{result.score:.6g}"
+                reason = "" if result.valid else f"; reason: {'; '.join(result.reasons[:2])}"
+                print(
+                    f"[evolution] attempt {evaluated_now}/{total_requested} done: {candidate.identifier} {status}, score={score}{reason}",
+                    flush=True,
+                )
+                generation_results.append(result)
             for result in generation_results:
                 self._append(result)
             completed.extend(generation_results)
