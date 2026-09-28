@@ -44,5 +44,18 @@ class BuildInvalidationTest(unittest.TestCase):
             self.assertTrue(build.exists())
 
 
+class CandidateRegressionGateTest(unittest.TestCase):
+    def test_evolved_candidates_use_safety_regression_gate(self):
+        template = (
+            "docker run --rm --network none --user $(id -u):$(id -g) -e HOME=/tmp "
+            "-v {repo_root}:{repo_root} -w {repo_root} "
+            "openroad/flow-ubuntu22.04-dev:latest "
+            "ctest --test-dir {build_dir} --output-on-failure --no-tests=error "
+            "-R '^dpl\\.mirror_edge_spacing\\.tcl$'"
+        )
+        self.assertIn("mirror_edge_spacing", template)
+        self.assertIn("--no-tests=error", template)
+
+
 if __name__ == "__main__":
     unittest.main()

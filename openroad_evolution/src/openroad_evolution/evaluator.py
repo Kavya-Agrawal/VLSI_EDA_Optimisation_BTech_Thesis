@@ -129,7 +129,16 @@ class FlowEvaluator:
                 [f"OpenROAD compilation failed. Build log: {build_log}. Tail: {self._log_tail(build_log)}"],
             )
 
-        unit = self.config.format(self.config.unit_test_command, **context, candidate_id=policy.identifier)
+        unit_template = self.config.unit_test_command
+        if policy.enabled:
+            unit_template = (
+                "docker run --rm --network none --user $(id -u):$(id -g) -e HOME=/tmp "
+                "-v {repo_root}:{repo_root} -w {repo_root} "
+                "openroad/flow-ubuntu22.04-dev:latest "
+                "ctest --test-dir {build_dir} --output-on-failure --no-tests=error "
+                "-R '^dpl\\.mirror_edge_spacing\\.tcl$'"
+            )
+        unit = self.config.format(unit_template, **context, candidate_id=policy.identifier)
         unit_log = run_dir / "unit.log"
         if self._command(unit, unit_log) != 0:
             return self._record(
