@@ -8,7 +8,7 @@ from pathlib import Path
 import random
 from typing import Protocol
 
-from .candidate import MirrorPolicy
+from .candidate import MirrorPolicy, PROGRAM_OPS
 from .evaluator import Evaluation
 
 
@@ -17,13 +17,23 @@ class Evaluator(Protocol):
 
 
 def mutate(parent: MirrorPolicy, rng: random.Random) -> MirrorPolicy:
-    """Mutate exactly one coefficient; retain a bounded, interpretable policy."""
+    """Mutate generated C++ code while retaining a bounded review surface."""
     weights = [parent.hpwl_weight, parent.degree_weight]
-    index = rng.randrange(len(weights))
-    weights[index] = max(-5.0, min(5.0, weights[index] + rng.gauss(0.0, 0.75)))
-    if not any(weights):
-        weights[0] = 1.0
-    child = MirrorPolicy(*weights, enabled=True)
+    program = list(parent.program or ("hpwl_log",))
+    action = rng.choice(("weight", "replace", "insert", "delete", "swap"))
+    if action == "weight":
+        index = rng.randrange(len(weights))
+        weights[index] = max(-5.0, min(5.0, weights[index] + rng.gauss(0.0, 0.75)))
+    elif action == "replace" and program:
+        program[rng.randrange(len(program))] = rng.choice(PROGRAM_OPS)
+    elif action == "insert" and len(program) < 16:
+        program.insert(rng.randrange(len(program) + 1), rng.choice(PROGRAM_OPS))
+    elif action == "delete" and len(program) > 1:
+        del program[rng.randrange(len(program))]
+    elif action == "swap" and len(program) > 1:
+        a, b = rng.sample(range(len(program)), 2)
+        program[a], program[b] = program[b], program[a]
+    child = MirrorPolicy(weights[0], weights[1], enabled=True, program=tuple(program))
     child.validate()
     return child
 
@@ -33,6 +43,29 @@ class EvolutionRun:
     evaluator: Evaluator
     archive_path: Path
     seed: int
+
+    def _load_archive(self) -> list[Evaluation]:
+        if not self.archive_path.exists():
+            return []
+        records: list[Evaluation] = []
+        for line in self.archive_path.read_text().splitlines():
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            policy = MirrorPolicy.from_dict(record["policy"])
+            records.append(
+                Evaluation(
+                    policy,
+                    bool(record.get("valid")),
+                    record.get("score"),
+                    list(record.get("reasons") or []),
+                    record.get("metrics"),
+                    Path(record.get("directory", ".")),
+                    list(record.get("replicas") or []),
+                    record.get("promotion"),
+                )
+            )
+        return records
 
     def _append(self, result: Evaluation) -> None:
         self.archive_path.parent.mkdir(parents=True, exist_ok=True)
@@ -48,6 +81,7 @@ class EvolutionRun:
                         "metrics": result.metrics,
                         "replicas": result.replicas,
                         "promotion": result.promotion,
+                        "directory": str(result.directory),
                     },
                     sort_keys=True,
                 )
@@ -58,20 +92,40 @@ class EvolutionRun:
         if generations < 1 or population < 1:
             raise ValueError("generations and population must be positive")
         rng = random.Random(self.seed)
-        baseline_result = self.evaluator.evaluate(MirrorPolicy.baseline())
-        self._append(baseline_result)
+        completed: list[Evaluation] = self._load_archive()
+        seen = {item.policy.identifier for item in completed}
+        baseline_result = next(
+            (
+                item
+                for item in reversed(completed)
+                if not item.policy.enabled and item.valid and item.metrics is not None
+            ),
+            None,
+        )
+        if baseline_result is None:
+            baseline_result = self.evaluator.evaluate(MirrorPolicy.baseline())
+            self._append(baseline_result)
+            completed.append(baseline_result)
+            seen.add(baseline_result.policy.identifier)
         if not baseline_result.valid or baseline_result.metrics is None:
             raise RuntimeError("stock baseline must compile, pass regressions, and finish ORFS")
-        completed: list[Evaluation] = [baseline_result]
-        parents = [MirrorPolicy(1.0, 0.0, enabled=True)]
-        seen = {baseline_result.policy.identifier}
+        valid_archive = [item for item in completed if item.policy.enabled and item.valid and item.score is not None]
+        valid_archive.sort(key=lambda item: item.score, reverse=True)
+        parents = (
+            [item.policy for item in valid_archive[: max(1, min(4, len(valid_archive)))]]
+            or [MirrorPolicy(1.0, 0.0, enabled=True)]
+        )
         for _generation in range(generations):
             candidates: list[MirrorPolicy] = []
             while len(candidates) < population:
-                child = mutate(rng.choice(parents), rng)
-                if child.identifier not in seen:
-                    candidates.append(child)
-                    seen.add(child.identifier)
+                for _attempt in range(10_000):
+                    child = mutate(rng.choice(parents), rng)
+                    if child.identifier not in seen:
+                        candidates.append(child)
+                        seen.add(child.identifier)
+                        break
+                else:
+                    raise RuntimeError("could not generate a new unseen policy")
             generation_results = [self.evaluator.evaluate(item, baseline_result) for item in candidates]
             for result in generation_results:
                 self._append(result)

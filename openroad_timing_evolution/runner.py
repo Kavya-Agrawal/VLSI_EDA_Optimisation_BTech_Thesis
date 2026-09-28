@@ -73,6 +73,9 @@ class Campaign:
         self.id = uuid.uuid4().hex[:12]
         self.directory = self.ws.work/"runs"/self.id
         self.directory.mkdir(parents=True)
+        self.memory = self.ws.work/"memory"
+        self.memory.mkdir(parents=True, exist_ok=True)
+        self.memory_archive = self.memory/"archive.jsonl"
         # Pin the evaluator itself, template, adapter, config, source, flow and image.
         self.protocol = {"config": config, "docker_image_id": self.ws.image,
                          "files": {str(p.relative_to(ROOT)): sha(p)
@@ -89,11 +92,23 @@ class Campaign:
         (self.directory/name).write_text(json.dumps(data, indent=2, allow_nan=False)+"\n")
 
     def archive(self, record):
+        enriched = {**record, "campaign_id": self.id, "campaign_directory": str(self.directory),
+                    "protocol_sha256": self.protocol_sha}
         with (self.directory/"archive.jsonl").open("a") as stream:
-            stream.write(canonical(record)+"\n")
+            stream.write(canonical(enriched)+"\n")
             stream.flush()
             import os
             os.fsync(stream.fileno())
+        with self.memory_archive.open("a") as stream:
+            stream.write(canonical(enriched)+"\n")
+            stream.flush()
+            import os
+            os.fsync(stream.fileno())
+
+    def history(self):
+        if not self.memory_archive.exists():
+            return []
+        return [json.loads(line) for line in self.memory_archive.read_text().splitlines() if line.strip()]
 
     def assert_protocol(self):
         for rel, digest in self.protocol["files"].items():

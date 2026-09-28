@@ -12,7 +12,7 @@ class MirrorPolicyTest(unittest.TestCase):
         policy = MirrorPolicy(1.0, -0.25)
         header = policy.to_header()
         self.assertIn(policy.identifier, header)
-        self.assertIn("kDegreeWeight = -0.25", header)
+        self.assertIn("score += -0.25 * std::log1p", header)
         self.assertIn("std::log1p", header)
         self.assertNotIn("kIdWeight", header)
         self.assertEqual(policy, MirrorPolicy.from_dict(policy.to_dict()))
@@ -20,7 +20,8 @@ class MirrorPolicyTest(unittest.TestCase):
     def test_rejects_invalid_policy(self):
         with self.assertRaises(ValueError):
             MirrorPolicy(float("inf"), 0.0).validate()
-        with self.assertRaises(ValueError):
-            MirrorPolicy(0.0, 0.0).validate()
+        MirrorPolicy(0.0, 0.0, program=("mirror_entropy_temper",)).validate()
         with self.assertRaises(ValueError):
             MirrorPolicy(5.01, 0.0).validate()
+        with self.assertRaises(ValueError):
+            MirrorPolicy(0.0, 0.0, program=("unknown",)).validate()

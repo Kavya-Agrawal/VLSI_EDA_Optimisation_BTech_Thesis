@@ -6,7 +6,7 @@ from pathlib import Path
 import random
 import subprocess
 
-from .policy import evaluate_expr
+from .policy import Policy
 from .workspace import ROOT, run
 
 
@@ -42,7 +42,7 @@ def check(policy, directory, samples=500):
             dl = max((abs(f[0]) for f in c), default=0) or 1
             df = max((f[1] for f in c), default=0) or 1
             dp = max((f[2] for f in c), default=0) or 1
-            scores = [evaluate_expr(json.loads(policy.tree_json), (f[0]/dl,f[1]/df,f[2]/dp)) for f in c]
+            scores = [policy.score((f[0]/dl,f[1]/df,f[2]/dp)) for f in c]
             if not all(math.isfinite(s) for s in scores):
                 raise RuntimeError("reference produced non-finite priority")
             expected = sorted(range(len(c)), key=lambda i: (-scores[i],i))

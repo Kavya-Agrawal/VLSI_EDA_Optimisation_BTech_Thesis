@@ -19,6 +19,7 @@ def main():
     sub.add_parser("prepare")
     sub.add_parser("baseline")
     sub.add_parser("selftest")
+    sub.add_parser("report")
     p = sub.add_parser("propose")
     p.add_argument("--output",type=Path,required=True)
     p.add_argument("--seed",type=int,default=41)
@@ -45,6 +46,15 @@ def main():
     if args.command=="check":
         policy = Policy.read(args.candidate)
         print(json.dumps(kernel.check(policy,ROOT/"work/kernel"/policy.id),indent=2))
+        return 0
+    if args.command=="report":
+        from .report import build_report
+        summary = build_report(ROOT)
+        out = ROOT/"work/memory/summary.md"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(summary)
+        print(summary)
+        print(json.dumps({"summary": str(out)}))
         return 0
     config = load_config(args.config)
     if args.command=="doctor":

@@ -10,6 +10,7 @@ from .candidate import MirrorPolicy
 from .config import ExperimentConfig
 from .evaluator import FlowEvaluator
 from .search import EvolutionRun
+from .report import build_report
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -32,6 +33,7 @@ def _parser() -> argparse.ArgumentParser:
         choices=("aes", "ibex"),
         help="held-out Nangate45 design; defaults to both aes and ibex",
     )
+    actions.add_parser("report", help="summarize original-vs-evolved archived results")
     return parser
 
 
@@ -40,7 +42,7 @@ def _load_archived_policy(archive: Path, candidate_id: str) -> MirrorPolicy:
         raise FileNotFoundError(f"evolution archive does not exist: {archive}")
     for line in archive.read_text().splitlines():
         record = json.loads(line)
-        if record["policy"].get("identifier") == candidate_id:
+        if record.get("identifier") == candidate_id:
             return MirrorPolicy.from_dict(record["policy"])
     raise ValueError(f"candidate {candidate_id!r} is not present in {archive}")
 
@@ -55,6 +57,14 @@ def main() -> int:
         return 0
 
     archive = config.workspace.parent / ".evolution" / "archive.jsonl"
+    if args.action == "report":
+        summary = build_report(archive)
+        out = archive.parent / "summary.md"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(summary)
+        print(summary)
+        print(json.dumps({"summary": str(out)}))
+        return 0
     if args.action == "verify":
         policy = _load_archived_policy(archive, args.candidate)
         selected_designs = args.design or ["aes", "ibex"]

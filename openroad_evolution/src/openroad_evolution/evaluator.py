@@ -73,7 +73,7 @@ class FlowEvaluator:
 
     def evaluate(self, policy: MirrorPolicy, baseline: Evaluation | None = None) -> Evaluation:
         self.prepare()
-        run_dir = self.results_dir / policy.identifier
+        run_dir = self._fresh_run_dir(policy.identifier)
         run_dir.mkdir(parents=True, exist_ok=True)
         self.workspace.write_policy(policy)
         self.workspace.assert_integrity(policy)
@@ -183,6 +183,16 @@ class FlowEvaluator:
         if baseline.metrics is not None:
             return [FlowMetrics(baseline.metrics)]
         raise ValueError("baseline evaluation does not contain metrics")
+
+    def _fresh_run_dir(self, identifier: str) -> Path:
+        base = self.results_dir / identifier
+        if not base.exists():
+            return base
+        for index in range(1, 100_000):
+            candidate = self.results_dir / f"{identifier}-attempt-{index:05d}"
+            if not candidate.exists():
+                return candidate
+        raise RuntimeError(f"too many archived attempts for {identifier}")
 
     def _write_manifest(self, policy: MirrorPolicy, directory: Path) -> None:
         """Persist the complete reproducibility and containment contract."""

@@ -156,6 +156,7 @@ class ExperimentConfig:
             openroad_executable=self.openroad_executable_template.format(
                 build_dir=build_dir
             ),
+            repo_root=self.path.parents[2],
             jobs=self.jobs,
             candidate_id=candidate_id,
             replica=replica,

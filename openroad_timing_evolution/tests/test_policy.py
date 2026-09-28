@@ -35,7 +35,7 @@ class PolicyTests(unittest.TestCase):
         for _ in range(25):
             parent = mutate(parent, rng)
             self.assertTrue(parent.enabled)
-            self.assertLessEqual(len(parent.tree_json), 8192)
+            self.assertLessEqual(len(parent.code_json), 8192)
 
     def test_generated_header_matches_python_ordering(self):
         policy = Policy.from_dict({"enabled": True, "expression": ["add", "load", ["mul", 0.25, "fanout"]]})

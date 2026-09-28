@@ -1,4 +1,4 @@
-"""A bounded expression grammar, never eval(), arbitrary C++, or model patches."""
+"""Bounded generated C++ priority policies, never eval() or free-form patches."""
 from __future__ import annotations
 
 import hashlib
@@ -10,6 +10,23 @@ from pathlib import Path
 
 FEATURES = ("load", "fanout", "position")
 OPS = ("add", "sub", "mul", "min", "max")
+PROGRAM_OPS = (
+    "load_pressure",
+    "fanout_shock",
+    "late_path_focus",
+    "frontload_relief",
+    "nonlinear_blend",
+    "stability_damper",
+)
+
+PROGRAM_CPP = {
+    "load_pressure": "score += f.load;",
+    "fanout_shock": "score += 0.35 * f.load * std::log1p(f.fanout);",
+    "late_path_focus": "if (f.position > 0.65) { score += 0.20 * f.load; }",
+    "frontload_relief": "if (f.position < 0.20) { score -= 0.10 * f.fanout; }",
+    "nonlinear_blend": "score += 0.15 * std::sqrt(std::abs(f.load)) * (1.0 + f.fanout);",
+    "stability_damper": "score -= 0.05 * f.position * f.position;",
+}
 
 
 def canonical(value) -> str:
@@ -56,25 +73,74 @@ def evaluate_expr(node, features):
             "min": lambda: min(a,b), "max": lambda: max(a,b)}[op]()
 
 
+def validate_program(program):
+    if type(program) is not list or not program:
+        raise ValueError("program must be a nonempty list")
+    if len(program) > 16:
+        raise ValueError("program may contain at most 16 statements")
+    for op in program:
+        if op not in PROGRAM_OPS:
+            raise ValueError(f"unknown program operation: {op}")
+
+
+def program_body(program, cpp=False):
+    if not cpp:
+        return list(program)
+    return "double score = 0.0;\n  " + "\n  ".join(PROGRAM_CPP[op] for op in program) + "\n  return score;"
+
+
+def evaluate_program(program, features):
+    load, fanout, position = features
+    score = 0.0
+    for op in program:
+        if op == "load_pressure":
+            score += load
+        elif op == "fanout_shock":
+            score += 0.35 * load * math.log1p(fanout)
+        elif op == "late_path_focus":
+            if position > 0.65:
+                score += 0.20 * load
+        elif op == "frontload_relief":
+            if position < 0.20:
+                score -= 0.10 * fanout
+        elif op == "nonlinear_blend":
+            score += 0.15 * math.sqrt(abs(load)) * (1.0 + fanout)
+        elif op == "stability_damper":
+            score -= 0.05 * position * position
+        else:
+            raise ValueError("unknown program operation")
+    return score
+
+
 @dataclass(frozen=True)
 class Policy:
     enabled: bool
-    tree_json: str
+    code_json: str
 
     @classmethod
     def from_dict(cls, data):
-        if type(data) is not dict or set(data) != {"enabled", "expression"}:
-            raise ValueError("policy requires exactly enabled and expression")
+        if type(data) is not dict or "enabled" not in data:
+            raise ValueError("policy requires enabled plus expression or program")
         if type(data["enabled"]) is not bool:
             raise ValueError("enabled must be boolean")
-        validate_expr(data["expression"])
-        if not data["enabled"] and data["expression"] != "load":
-            raise ValueError("disabled policy must be the canonical stock control")
-        return cls(data["enabled"], canonical(data["expression"]))
+        keys = set(data)
+        if keys == {"enabled", "expression"}:
+            validate_expr(data["expression"])
+            if not data["enabled"] and data["expression"] != "load":
+                raise ValueError("disabled policy must be the canonical stock control")
+            code = {"kind": "expression", "value": data["expression"]}
+        elif keys == {"enabled", "program"}:
+            validate_program(data["program"])
+            if not data["enabled"] and data["program"] != ["load_pressure"]:
+                raise ValueError("disabled policy must be the canonical stock control")
+            code = {"kind": "program", "value": data["program"]}
+        else:
+            raise ValueError("policy requires exactly enabled and one of expression/program")
+        return cls(data["enabled"], canonical(code))
 
     @classmethod
     def stock(cls):
-        return cls.from_dict({"enabled": False, "expression": "load"})
+        return cls.from_dict({"enabled": False, "program": ["load_pressure"]})
 
     @classmethod
     def read(cls, path):
@@ -83,7 +149,8 @@ class Policy:
         return cls.from_dict(json.loads(Path(path).read_text()))
 
     def data(self):
-        return {"enabled": self.enabled, "expression": json.loads(self.tree_json)}
+        code = json.loads(self.code_json)
+        return {"enabled": self.enabled, code["kind"]: code["value"]}
 
     @property
     def id(self):
@@ -92,8 +159,19 @@ class Policy:
     def header(self):
         # Template and validator are trusted evaluator code, not evolved artifacts.
         template = (Path(__file__).parent / "cpp/policy.h.in").read_text()
+        code = json.loads(self.code_json)
+        if code["kind"] == "expression":
+            body = "return " + expression(code["value"], True) + ";"
+        else:
+            body = program_body(code["value"], True)
         return template.replace("@ENABLED@", str(self.enabled).lower()).replace(
-            "@EXPRESSION@", expression(json.loads(self.tree_json), True)).replace("@ID@", self.id)
+            "@PRIORITY_BODY@", body).replace("@ID@", self.id)
+
+    def score(self, features):
+        code = json.loads(self.code_json)
+        if code["kind"] == "expression":
+            return evaluate_expr(code["value"], features)
+        return evaluate_program(code["value"], features)
 
 
 def random_tree(rng, depth=0):
@@ -104,7 +182,24 @@ def random_tree(rng, depth=0):
 
 def mutate(parent, rng: random.Random):
     for _ in range(100):
-        tree = json.loads(parent.tree_json)
+        data = parent.data()
+        if "program" in data:
+            program = list(data["program"])
+            action = rng.choice(("replace", "insert", "delete", "swap"))
+            if action == "replace" and program:
+                program[rng.randrange(len(program))] = rng.choice(PROGRAM_OPS)
+            elif action == "insert" and len(program) < 16:
+                program.insert(rng.randrange(len(program) + 1), rng.choice(PROGRAM_OPS))
+            elif action == "delete" and len(program) > 1:
+                del program[rng.randrange(len(program))]
+            elif action == "swap" and len(program) > 1:
+                a, b = rng.sample(range(len(program)), 2)
+                program[a], program[b] = program[b], program[a]
+            try:
+                return Policy.from_dict({"enabled": True, "program": program})
+            except ValueError:
+                continue
+        tree = data["expression"]
         paths = [()]
         def walk(n, p=()):
             if type(n) is list:

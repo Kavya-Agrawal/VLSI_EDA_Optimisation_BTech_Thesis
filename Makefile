@@ -4,6 +4,7 @@ PYTHON ?= python3
 JOBS ?= 4
 GENERATIONS ?= 3
 POPULATION ?= 4
+N ?= 3
 FRAMEWORK ?=
 ACTION ?= test
 CANDIDATE ?=
@@ -15,7 +16,9 @@ DESIGN_CONFIG ?= designs/nangate45/gcd/config.mk
 	test-placement test-timing-evolution test-congestion-cnn test-rl-gatesize \
 	test-timing-gnn test-synapse test-polyphony \
 	prepare-placement evolve-placement verify-placement \
+	run-placement report-placement \
 	doctor-timing-evolution prepare-timing-evolution baseline-timing-evolution evolve-timing-evolution \
+	run-timing report-timing-evolution run-both results \
 	train-congestion-cnn train-rl-gatesize train-timing-gnn train-synapse train-polyphony \
 	abc-build openroad-flow openroad-shell
 
@@ -32,6 +35,10 @@ help:
 	  '  make setup                        Initialize pinned Git submodules' \
 	  '' \
 	  'Evolution runs:' \
+	  '  make run-both N=40                 Run both real OpenROAD evolution loops' \
+	  '  make results                       Print original-vs-evolved summaries' \
+	  '  make run-placement N=40            Continue OptMirror for 40 candidates' \
+	  '  make run-timing N=40               Continue Resizer for 40 candidates' \
 	  '  make evolve-placement [GENERATIONS=3 POPULATION=4]' \
 	  '  make evolve-timing-evolution [GENERATIONS=3 POPULATION=4]' \
 	  '  make verify-placement CANDIDATE=<id>' \
@@ -147,9 +154,17 @@ evolve-placement:
 	@test -d openroad_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=placement' >&2; exit 2; }
 	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m openroad_evolution.cli --config config/default.json evolve --generations $(GENERATIONS) --population $(POPULATION)
 
+run-placement:
+	@test -d openroad_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=placement' >&2; exit 2; }
+	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m openroad_evolution.cli --config config/default.json evolve --generations $(N) --population 1
+
 verify-placement:
 	@test -n "$(CANDIDATE)" || { echo 'CANDIDATE is required.' >&2; exit 2; }
 	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m openroad_evolution.cli --config config/default.json verify --candidate "$(CANDIDATE)"
+
+report-placement:
+	@test -d openroad_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=placement' >&2; exit 2; }
+	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m openroad_evolution.cli --config config/default.json report
 
 doctor-timing-evolution:
 	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
@@ -166,6 +181,22 @@ baseline-timing-evolution:
 evolve-timing-evolution:
 	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
 	$(PYTHON) -m openroad_timing_evolution evolve --generations $(GENERATIONS) --population $(POPULATION)
+
+run-timing:
+	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
+	$(PYTHON) -m openroad_timing_evolution evolve --generations $(N) --population 1
+
+report-timing-evolution:
+	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
+	$(PYTHON) -m openroad_timing_evolution report
+
+run-both:
+	$(MAKE) --no-print-directory run-placement N=$(N)
+	$(MAKE) --no-print-directory run-timing N=$(N)
+
+results:
+	$(MAKE) --no-print-directory report-placement
+	$(MAKE) --no-print-directory report-timing-evolution
 
 train-congestion-cnn:
 	cd openroad_ml/congestion_cnn && $(PYTHON) -m train.train --epochs 2 --synthetic

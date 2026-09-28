@@ -6,7 +6,7 @@ The target is WNS/TNS improvement after the full OpenROAD-flow-scripts path. Clo
 
 ## Why this cut was chosen
 
-The resizer path-driver ordering is small enough to evolve safely and still affects timing closure. The framework mutates a tiny expression grammar over normalized load delay, fanout and path position. It never accepts arbitrary C++, Python `eval`, free-form patches, or model-written source files.
+The resizer path-driver ordering is small enough to evolve safely and still affects timing closure. The framework mutates a tiny generated C++ priority program over normalized load delay, fanout and path position. The audited statement library includes load pressure, late-path focus, nonlinear blending, stability damping and **Fanout Shock Path Pressure**. It never accepts arbitrary C++, Python `eval`, free-form patches, or model-written source files.
 
 Research ideas used:
 
@@ -47,4 +47,4 @@ The default smoke campaign uses `gcd` for training, `aes` for validation and `ib
 
 ## Current status
 
-This branch contains the framework, patch, tests, documentation and presentation deck. The local self-tests exercise grammar rejection, C++/Python policy equivalence and metric rejection. A full OpenROAD QoR campaign is intentionally left as a reproducible command because it requires a long Docker build and complete ORFS runs.
+This branch contains the framework, patch, tests, documentation and presentation deck. The local self-tests exercise generated-program rejection, C++/Python policy equivalence and metric rejection. A full OpenROAD QoR campaign is intentionally left as a reproducible command because it requires a long Docker build and complete ORFS runs.

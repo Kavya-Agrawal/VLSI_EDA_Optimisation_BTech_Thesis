@@ -41,3 +41,37 @@ class SearchTest(unittest.TestCase):
             results = EvolutionRun(FakeEvaluator(), archive, 5).execute(generations=1, population=2)
             self.assertEqual(len(results), 3)
             self.assertEqual(len(archive.read_text().splitlines()), 3)
+
+    def test_resume_reuses_baseline_and_appends_new_candidates(self):
+        class FakeEvaluator:
+            raw = {
+                "finish__timing__setup__ws": -0.2,
+                "finish__timing__setup__tns": -8,
+                "finish__timing__hold__ws": -0.05,
+                "finish__timing__hold__tns": -1,
+                "detailedroute__route__wirelength": 7200,
+                "detailedroute__route__drc_errors": 0,
+                "detailedroute__antenna__violating__nets": 0,
+                "detailedplace__design__violations": 0,
+                "total_elapsed_seconds": 100,
+            }
+
+            def __init__(self):
+                self.calls = []
+
+            def evaluate(self, policy, baseline=None):
+                self.calls.append(policy.identifier)
+                raw = dict(self.raw)
+                if policy.enabled:
+                    raw["finish__timing__setup__ws"] += 0.01
+                return Evaluation(policy, True, 0.1 if baseline else None, [], raw, Path("."))
+
+        with tempfile.TemporaryDirectory() as temp:
+            archive = Path(temp) / "archive.jsonl"
+            first = FakeEvaluator()
+            EvolutionRun(first, archive, 5).execute(generations=1, population=2)
+            second = FakeEvaluator()
+            EvolutionRun(second, archive, 5).execute(generations=1, population=2)
+            records = archive.read_text().splitlines()
+            self.assertEqual(len(records), 5)
+            self.assertNotIn(MirrorPolicy.baseline().identifier, second.calls)

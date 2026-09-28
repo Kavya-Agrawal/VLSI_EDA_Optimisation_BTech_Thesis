@@ -17,11 +17,14 @@ accepted flip updates net boxes used by later decisions. This makes the
 ordering a compact, non-commutative placement heuristic with real downstream
 effects on routing and timing.
 
-The evolving artifact is a generated C++ header, typically 25 lines. It ranks
-legal mirror candidates using two bounded coefficients over `log1p(local HPWL)`
-and pin degree. The stable instance ID only breaks an exact tie. It cannot move
-a cell, alter connectivity, or bypass OpenDP's cell-edge-spacing and
-non-increasing-HPWL guards.
+The evolving artifact is a generated C++ header. It ranks legal mirror
+candidates using a short program assembled from audited scoring blocks such as
+local HPWL pressure, pin-degree pressure, cross terms, deterministic phase
+perturbation, and **Mirror Entropy Tempering**. Mutations change the actual
+generated C++ statement sequence through insert, delete, replace, swap, and
+weight edits. The stable instance ID only breaks an exact tie. The policy
+cannot move a cell, alter connectivity, or bypass OpenDP's cell-edge-spacing
+and non-increasing-HPWL guards.
 
 `patches/opt_mirror_policy.patch` adds the fixed seam. The runner applies it
 only in an isolated Git worktree and initializes the exact nested source

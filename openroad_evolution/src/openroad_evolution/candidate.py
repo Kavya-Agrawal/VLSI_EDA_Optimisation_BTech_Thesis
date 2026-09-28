@@ -2,10 +2,38 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from hashlib import sha256
 import json
 import math
+
+PROGRAM_OPS = (
+    "hpwl_log",
+    "degree_log",
+    "mirror_entropy_temper",
+    "fanout_shock_penalty",
+    "hpwl_degree_cross",
+    "deterministic_phase",
+)
+
+CODE_SNIPPETS = {
+    "hpwl_log": "score += std::log1p(static_cast<double>(hpwl));",
+    "degree_log": "score += 0.35 * std::log1p(static_cast<double>(degree));",
+    "mirror_entropy_temper": (
+        "const double entropy = std::log1p(static_cast<double>(degree));\n"
+        "    score += std::log1p(static_cast<double>(hpwl)) / (1.0 + entropy);"
+    ),
+    "fanout_shock_penalty": (
+        "if (degree > 8) {\n"
+        "      score -= 0.20 * std::log1p(static_cast<double>(degree - 8));\n"
+        "    }"
+    ),
+    "hpwl_degree_cross": (
+        "score += 0.05 * std::sqrt(std::log1p(static_cast<double>(hpwl)))\n"
+        "           * std::log1p(static_cast<double>(degree));"
+    ),
+    "deterministic_phase": "score += static_cast<double>(stable_id % 17) * 1e-9;",
+}
 
 
 @dataclass(frozen=True)
@@ -20,34 +48,65 @@ class MirrorPolicy:
     hpwl_weight: float = 1.0
     degree_weight: float = 0.0
     enabled: bool = True
+    program: tuple[str, ...] = field(default_factory=lambda: ("hpwl_log",))
 
     @classmethod
     def baseline(cls) -> "MirrorPolicy":
         """Return the stock algorithm: candidate order is not changed."""
-        return cls(enabled=False)
+        return cls(enabled=False, program=())
 
     def validate(self) -> None:
         for name, value in asdict(self).items():
-            if name == "enabled":
+            if name in ("enabled", "program"):
                 continue
             if not math.isfinite(value) or abs(value) > 5.0:
                 raise ValueError(f"{name} must be finite and in [-5, 5]")
-        if self.enabled and not any((self.hpwl_weight, self.degree_weight)):
-            raise ValueError("an enabled policy must have a non-zero weight")
+        if type(self.program) is not tuple:
+            raise ValueError("program must be an immutable tuple")
+        if len(self.program) > 16:
+            raise ValueError("program may contain at most 16 statements")
+        for op in self.program:
+            if op not in PROGRAM_OPS:
+                raise ValueError(f"unknown program operation: {op}")
+        if self.enabled and not self.program:
+            raise ValueError("an enabled policy must contain generated code")
 
     @property
     def identifier(self) -> str:
-        payload = json.dumps(asdict(self), sort_keys=True, separators=(",", ":"))
+        payload = json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
         return sha256(payload.encode()).hexdigest()[:12]
 
-    def to_dict(self) -> dict[str, float | bool]:
-        return asdict(self)
+    def to_dict(self) -> dict[str, float | bool | list[str]]:
+        return {
+            "hpwl_weight": self.hpwl_weight,
+            "degree_weight": self.degree_weight,
+            "enabled": self.enabled,
+            "program": list(self.program),
+        }
 
     @classmethod
-    def from_dict(cls, value: dict[str, float | bool]) -> "MirrorPolicy":
-        policy = cls(**value)
+    def from_dict(cls, value: dict[str, float | bool | list[str]]) -> "MirrorPolicy":
+        data = dict(value)
+        if "program" not in data:
+            data["program"] = [] if data.get("enabled") is False else ["hpwl_log"]
+        data["program"] = tuple(data["program"])  # type: ignore[index]
+        policy = cls(**data)
         policy.validate()
         return policy
+
+    def _score_body(self) -> str:
+        if not self.enabled:
+            return "return 0.0;"
+        lines = ["double score = 0.0;"]
+        if self.hpwl_weight or self.degree_weight:
+            lines += [
+                f"score += {self.hpwl_weight:.17g} * std::log1p(static_cast<double>(hpwl));",
+                f"score += {self.degree_weight:.17g} * std::log1p(static_cast<double>(degree));",
+            ]
+        for op in self.program:
+            lines.append(CODE_SNIPPETS[op])
+        lines.append("return score;")
+        return "\n    ".join(lines)
 
     def to_header(self) -> str:
         """Render the only source file varied by the search.
@@ -71,6 +130,13 @@ class EvolvedMirrorPolicy
  public:
   static constexpr bool enabled() {{ return {enabled}; }}
 
+  static double score(const int64_t hpwl,
+                      const uint32_t degree,
+                      const uint32_t stable_id)
+  {{
+    {self._score_body()}
+  }}
+
   static bool isHigherPriority(const int64_t lhs_hpwl,
                                const uint32_t lhs_degree,
                                const uint32_t lhs_id,
@@ -78,14 +144,8 @@ class EvolvedMirrorPolicy
                                const uint32_t rhs_degree,
                                const uint32_t rhs_id)
   {{
-    constexpr double kHpwlWeight = {self.hpwl_weight:.17g};
-    constexpr double kDegreeWeight = {self.degree_weight:.17g};
-    // log1p normalizes DBU-scale HPWL and fanout so both evolved features
-    // remain numerically meaningful. Instance ID only breaks exact ties.
-    const double lhs_score = kHpwlWeight * std::log1p(static_cast<double>(lhs_hpwl))
-                           + kDegreeWeight * std::log1p(static_cast<double>(lhs_degree));
-    const double rhs_score = kHpwlWeight * std::log1p(static_cast<double>(rhs_hpwl))
-                           + kDegreeWeight * std::log1p(static_cast<double>(rhs_degree));
+    const double lhs_score = score(lhs_hpwl, lhs_degree, lhs_id);
+    const double rhs_score = score(rhs_hpwl, rhs_degree, rhs_id);
     if (lhs_score != rhs_score) {{
       return lhs_score > rhs_score;
     }}

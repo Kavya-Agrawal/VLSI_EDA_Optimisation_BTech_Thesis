@@ -80,16 +80,22 @@ Generated work and evidence are ignored by Git.
 
 ### Candidate representation
 
-A candidate has two bounded coefficients:
+A candidate is a small generated C++ program assembled from audited statement
+blocks. The current block library includes local-HPWL pressure, pin-degree
+pressure, HPWL/degree cross terms, deterministic phase perturbation, and the
+new **Mirror Entropy Tempering** heuristic:
 
-```text
-priority(cell) = hpwl_weight * log1p(local_HPWL)
-               + degree_weight * log1p(pin_degree)
+```cpp
+score += std::log1p(hpwl_delta);
+score += -0.25 * std::log1p(std::fabs(static_cast<double>(pin_degree) - 4.0));
+score += 0.12 * std::sin(static_cast<double>(stable_id % 97u));
 ```
 
-Higher-priority candidates are attempted first. Stable OpenDB instance ID is
-used only to break an exact tie. Both coefficients must be finite and remain
-inside `[-5, 5]`. The disabled baseline preserves stock candidate order.
+The search evolves the source-level sequence of these blocks using insert,
+delete, replace, swap, and numeric-weight mutation. Higher-priority candidates
+are attempted first. Stable OpenDB instance ID is used only to break an exact
+tie. The generated program is bounded to at most 16 audited blocks and finite
+weights in `[-5, 5]`. The disabled baseline preserves stock candidate order.
 
 This is algorithm evolution rather than an ORFS knob sweep: it changes the
 execution order of a non-commutative heuristic inside compiled OpenROAD code.
@@ -113,9 +119,11 @@ bypass the upstream legality and HPWL guards.
 ### Evolution process
 
 1. Evaluate the disabled stock-order baseline.
-2. Begin with the enabled policy `(hpwl_weight=1, degree_weight=0)`.
-3. Select one coefficient and add seeded Gaussian noise with sigma `0.75`.
-4. Clamp the result to `[-5, 5]` and reject duplicate policy IDs.
+2. Begin with a short generated C++ policy such as `hpwl_log`.
+3. Mutate either the numeric weights or the program itself with insert,
+   delete, replace, swap, and statement-order changes.
+4. Clamp weights to `[-5, 5]`, bound programs to 16 audited statements, and
+   reject duplicate policy IDs.
 5. Compile and evaluate every candidate against the paired stock baseline.
 6. Rank all valid accumulated candidates by scalar score.
 7. Retain up to the best four candidates as parents for the next generation.
@@ -233,16 +241,28 @@ measured only as audit evidence.
 
 ### Candidate representation
 
-Each policy is a bounded expression tree over normalized:
+Each policy is a small generated C++ program over normalized:
 
 - `load`: stock load-delay ranking feature
 - `fanout`: driver fanout
 - `position`: original position in the stock ordering
 
-Allowed operators are `add`, `sub`, `mul`, `min`, and `max`. Constants must be
-finite and inside `[-4, 4]`. Trees are limited to depth 5 and 31 nodes, and a
-policy JSON file cannot exceed 8 KiB. There is no Python `eval`, arbitrary C++,
-or free-form source patch in the candidate representation.
+The default representation evolves an ordered list of audited C++ statement
+blocks. The library includes load pressure, nonlinear blending, front-loaded
+relief, late-path focus, stability damping, and the new **Fanout Shock Path
+Pressure** heuristic. That heuristic deliberately gives extra priority to
+targets where normalized fanout suggests a repair can propagate through a wider
+downstream cone:
+
+```cpp
+score += 0.35 * std::log1p(std::max(0.0, fanout)) * (1.0 + 0.25 * load);
+```
+
+Mutation edits the program sequence with replace, insert, delete, and swap
+operators. For compatibility with older archive entries, the framework can
+still read and evaluate legacy bounded expression trees, but new candidates are
+generated as C++ program blocks. There is no Python `eval`, arbitrary C++, or
+free-form source patch in the candidate representation.
 
 The resulting scores are sorted descending. Original index is the immutable
 tie-breaker, preserving a strict weak ordering.
@@ -267,10 +287,10 @@ tie-breaker, preserving a strict weak ordering.
 ### Evolution process
 
 1. Build and evaluate the disabled stock policy on training designs.
-2. Seed the search with `load` and three small expressions involving load,
-   fanout, or position.
-3. Generate later candidates by seeded random subtree replacement.
-4. Reject duplicate candidate IDs and invalid expression trees.
+2. Seed the search with short generated C++ programs using load pressure,
+   fanout shock, late-path focus, nonlinear blend, and stability damping.
+3. Generate later candidates by mutating the generated program sequence.
+4. Reject duplicate candidate IDs and invalid generated programs.
 5. Evaluate feasible candidates on training only.
 6. Retain the best `population` candidates as parents.
 7. Select a champion only when its worst observed training replicate gain is
@@ -391,6 +411,7 @@ Equivalent direct commands from `openroad_evolution/` are:
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json prepare
 PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json evolve --generations 3 --population 4
+PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json report
 ```
 
 The intended held-out command is:
@@ -399,8 +420,8 @@ The intended held-out command is:
 make verify-placement CANDIDATE=<training-promoted-id>
 ```
 
-Fix and test the archive lookup defect documented above before relying on that
-command.
+The archive lookup now uses the top-level candidate identifier recorded by the
+search archive.
 
 ### Resizer timing-evolution commands
 
@@ -416,10 +437,11 @@ Equivalent direct commands from the repository root are:
 
 ```bash
 python3 -m openroad_timing_evolution selftest
-python3 -m openroad_timing_evolution doctor --config openroad_timing_evolution/config/smoke.json
-python3 -m openroad_timing_evolution prepare --config openroad_timing_evolution/config/smoke.json
-python3 -m openroad_timing_evolution baseline --config openroad_timing_evolution/config/smoke.json
-python3 -m openroad_timing_evolution evolve --config openroad_timing_evolution/config/smoke.json --generations 3 --population 4
+python3 -m openroad_timing_evolution --config openroad_timing_evolution/config/smoke.json doctor
+python3 -m openroad_timing_evolution --config openroad_timing_evolution/config/smoke.json prepare
+python3 -m openroad_timing_evolution --config openroad_timing_evolution/config/smoke.json baseline
+python3 -m openroad_timing_evolution --config openroad_timing_evolution/config/smoke.json evolve --generations 3 --population 4
+python3 -m openroad_timing_evolution report
 ```
 
 To create, check, and evaluate one explicit policy:
@@ -440,10 +462,11 @@ long and require the complete ORFS/OpenROAD source submodules and PDK data.
 The central research claim should be phrased narrowly:
 
 - OptMirror evolves an interpretable ordering policy for legal detailed-cell
-  mirror attempts and evaluates it through repeated full physical-design runs.
-- Resizer evolution searches bounded expression trees that reorder existing
-  setup path-driver repair targets and uses formal, physical, electrical, and
-  timing gates.
+  mirror attempts by compiling generated C++ policy code and evaluating it
+  through repeated full physical-design runs.
+- Resizer evolution searches generated C++ priority programs that reorder
+  existing setup path-driver repair targets and uses formal, physical,
+  electrical, and timing gates.
 - Neither system performs unrestricted autonomous source-code rewriting.
 - Neither system currently uses an LLM in the search loop.
 - OptMirror validation is empirical and does not include formal equivalence.
