@@ -28,6 +28,38 @@ PROGRAM_CPP = {
     "stability_damper": "score -= 0.05 * f.position * f.position;",
 }
 
+HEURISTIC_NAMES = {
+    "load_pressure": "Load Pressure",
+    "fanout_shock": "Fanout Shock Path Pressure",
+    "late_path_focus": "Late-Path Focus",
+    "frontload_relief": "Front-Loaded Relief",
+    "nonlinear_blend": "Nonlinear Slack-Load Blend",
+    "stability_damper": "Stability Damper",
+}
+
+
+def program_segments(program):
+    if type(program) is not list or not program:
+        return []
+    out = []
+
+    def visit(start, end, name):
+        out.append((start, end, name))
+        if end - start <= 1:
+            return
+        mid = start + (end - start) // 2
+        visit(start, mid, name + "L")
+        visit(mid, end, name + "R")
+
+    visit(0, len(program), "S")
+    return out
+
+
+def describe_program(program):
+    names = [HEURISTIC_NAMES.get(op, op) for op in program]
+    segments = [f"{name}[{start}:{end}]" for start, end, name in program_segments(program)]
+    return "blocks=" + " -> ".join(names) + "; segment-tree=" + ", ".join(segments)
+
 
 def canonical(value) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
@@ -86,7 +118,13 @@ def validate_program(program):
 def program_body(program, cpp=False):
     if not cpp:
         return list(program)
-    return "double score = 0.0;\n  " + "\n  ".join(PROGRAM_CPP[op] for op in program) + "\n  return score;"
+    return (
+        "// Segmented Semantic Program Evolution: "
+        + describe_program(program)
+        + "\n  double score = 0.0;\n  "
+        + "\n  ".join(PROGRAM_CPP[op] for op in program)
+        + "\n  return score;"
+    )
 
 
 def evaluate_program(program, features):
@@ -185,7 +223,7 @@ def mutate(parent, rng: random.Random):
         data = parent.data()
         if "program" in data:
             program = list(data["program"])
-            action = rng.choice(("replace", "insert", "delete", "swap"))
+            action = rng.choice(("replace", "insert", "delete", "swap", "segment_reverse", "segment_duplicate"))
             if action == "replace" and program:
                 program[rng.randrange(len(program))] = rng.choice(PROGRAM_OPS)
             elif action == "insert" and len(program) < 16:
@@ -195,6 +233,13 @@ def mutate(parent, rng: random.Random):
             elif action == "swap" and len(program) > 1:
                 a, b = rng.sample(range(len(program)), 2)
                 program[a], program[b] = program[b], program[a]
+            elif action == "segment_reverse" and len(program) > 2:
+                start, end, _ = rng.choice([s for s in program_segments(program) if s[1] - s[0] > 1])
+                program[start:end] = reversed(program[start:end])
+            elif action == "segment_duplicate" and len(program) < 16:
+                start, end, _ = rng.choice(program_segments(program))
+                fragment = program[start:end][: 16 - len(program)]
+                program[start:start] = fragment
             try:
                 return Policy.from_dict({"enabled": True, "program": program})
             except ValueError:

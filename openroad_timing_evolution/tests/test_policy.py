@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from openroad_timing_evolution import kernel
-from openroad_timing_evolution.policy import Policy, mutate
+from openroad_timing_evolution.policy import Policy, describe_program, mutate, program_segments
 
 
 class PolicyTests(unittest.TestCase):
@@ -38,11 +38,22 @@ class PolicyTests(unittest.TestCase):
             self.assertLessEqual(len(parent.code_json), 8192)
 
     def test_generated_header_matches_python_ordering(self):
-        policy = Policy.from_dict({"enabled": True, "expression": ["add", "load", ["mul", 0.25, "fanout"]]})
+        policy = Policy.from_dict({"enabled": True, "program": ["load_pressure", "fanout_shock", "stability_damper"]})
+        self.assertIn("Segmented Semantic Program Evolution", policy.header())
         with tempfile.TemporaryDirectory() as tmp:
             result = kernel.check(policy, Path(tmp), samples=30)
         self.assertTrue(result["differential_pass"])
         self.assertGreaterEqual(result["cases"], 34)
+
+    def test_segment_tree_describes_generated_code(self):
+        program = ["load_pressure", "fanout_shock", "late_path_focus"]
+        self.assertEqual(
+            program_segments(program),
+            [(0, 3, "S"), (0, 1, "SL"), (1, 3, "SR"), (1, 2, "SRL"), (2, 3, "SRR")],
+        )
+        description = describe_program(program)
+        self.assertIn("Fanout Shock Path Pressure", description)
+        self.assertIn("S[0:3]", description)
 
 
 if __name__ == "__main__":

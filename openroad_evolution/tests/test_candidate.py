@@ -1,6 +1,6 @@
 import unittest
 
-from openroad_evolution.candidate import MirrorPolicy
+from openroad_evolution.candidate import MirrorPolicy, describe_program, program_segments
 
 
 class MirrorPolicyTest(unittest.TestCase):
@@ -12,6 +12,7 @@ class MirrorPolicyTest(unittest.TestCase):
         policy = MirrorPolicy(1.0, -0.25)
         header = policy.to_header()
         self.assertIn(policy.identifier, header)
+        self.assertIn("Segmented Semantic Program Evolution", header)
         self.assertIn("score += -0.25 * std::log1p", header)
         self.assertIn("std::log1p", header)
         self.assertNotIn("kIdWeight", header)
@@ -25,3 +26,13 @@ class MirrorPolicyTest(unittest.TestCase):
             MirrorPolicy(5.01, 0.0).validate()
         with self.assertRaises(ValueError):
             MirrorPolicy(0.0, 0.0, program=("unknown",)).validate()
+
+    def test_segment_tree_describes_generated_code(self):
+        program = ("hpwl_log", "mirror_entropy_temper", "deterministic_phase")
+        self.assertEqual(
+            program_segments(program),
+            [(0, 3, "S"), (0, 1, "SL"), (1, 3, "SR"), (1, 2, "SRL"), (2, 3, "SRR")],
+        )
+        description = describe_program(program)
+        self.assertIn("Mirror Entropy Tempering", description)
+        self.assertIn("S[0:3]", description)

@@ -92,10 +92,14 @@ score += 0.12 * std::sin(static_cast<double>(stable_id % 97u));
 ```
 
 The search evolves the source-level sequence of these blocks using insert,
-delete, replace, swap, and numeric-weight mutation. Higher-priority candidates
-are attempted first. Stable OpenDB instance ID is used only to break an exact
-tie. The generated program is bounded to at most 16 audited blocks and finite
-weights in `[-5, 5]`. The disabled baseline preserves stock candidate order.
+delete, replace, swap, segment reverse, segment duplication, and numeric-weight
+mutation. The segment operators implement **Segmented Semantic Program
+Evolution**: each generated C++ block is a leaf, contiguous leaves form a
+binary segment tree, and the search can mutate either a leaf or a whole subtree
+of the generated program. Higher-priority candidates are attempted first.
+Stable OpenDB instance ID is used only to break an exact tie. The generated
+program is bounded to at most 16 audited blocks and finite weights in `[-5,
+5]`. The disabled baseline preserves stock candidate order.
 
 This is algorithm evolution rather than an ORFS knob sweep: it changes the
 execution order of a non-commutative heuristic inside compiled OpenROAD code.
@@ -120,8 +124,9 @@ bypass the upstream legality and HPWL guards.
 
 1. Evaluate the disabled stock-order baseline.
 2. Begin with a short generated C++ policy such as `hpwl_log`.
-3. Mutate either the numeric weights or the program itself with insert,
-   delete, replace, swap, and statement-order changes.
+3. Mutate either the numeric weights, one generated statement block, or a
+   binary-tree source segment with insert, delete, replace, swap,
+   segment-reverse, and segment-duplicate operators.
 4. Clamp weights to `[-5, 5]`, bound programs to 16 audited statements, and
    reject duplicate policy IDs.
 5. Compile and evaluate every candidate against the paired stock baseline.
@@ -258,11 +263,15 @@ downstream cone:
 score += 0.35 * std::log1p(std::max(0.0, fanout)) * (1.0 + 0.25 * load);
 ```
 
-Mutation edits the program sequence with replace, insert, delete, and swap
-operators. For compatibility with older archive entries, the framework can
-still read and evaluate legacy bounded expression trees, but new candidates are
-generated as C++ program blocks. There is no Python `eval`, arbitrary C++, or
-free-form source patch in the candidate representation.
+Mutation edits the program sequence with replace, insert, delete, swap,
+segment-reverse, and segment-duplicate operators. These segment operators are
+the timing version of **Segmented Semantic Program Evolution**: load, fanout,
+late-path, and damping blocks are leaves in a binary source tree, and whole
+subtrees can be moved or repeated as one source region. For compatibility with
+older archive entries, the framework can still read and evaluate legacy bounded
+expression trees, but new candidates are generated as C++ program blocks. There
+is no Python `eval`, arbitrary C++, or free-form source patch in the candidate
+representation.
 
 The resulting scores are sorted descending. Original index is the immutable
 tie-breaker, preserving a strict weak ordering.
@@ -289,7 +298,8 @@ tie-breaker, preserving a strict weak ordering.
 1. Build and evaluate the disabled stock policy on training designs.
 2. Seed the search with short generated C++ programs using load pressure,
    fanout shock, late-path focus, nonlinear blend, and stability damping.
-3. Generate later candidates by mutating the generated program sequence.
+3. Generate later candidates by mutating generated leaves or binary-tree source
+   segments.
 4. Reject duplicate candidate IDs and invalid generated programs.
 5. Evaluate feasible candidates on training only.
 6. Retain the best `population` candidates as parents.
@@ -467,6 +477,10 @@ The central research claim should be phrased narrowly:
 - Resizer evolution searches generated C++ priority programs that reorder
   existing setup path-driver repair targets and uses formal, physical,
   electrical, and timing gates.
+- The showpiece algorithm is Segmented Semantic Program Evolution: the evolved
+  code is represented as audited C++ leaves plus a binary segment tree, so the
+  search can evolve small code blocks and larger source regions without opening
+  the door to arbitrary unsafe patches.
 - Neither system performs unrestricted autonomous source-code rewriting.
 - Neither system currently uses an LLM in the search loop.
 - OptMirror validation is empirical and does not include formal equivalence.

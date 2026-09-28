@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from statistics import median
 
-from .candidate import MirrorPolicy
+from .candidate import MirrorPolicy, describe_program
 
 
 METRICS = (
@@ -39,8 +39,8 @@ def _policy_summary(policy: dict) -> str:
     if not p.enabled:
         return "Original OpenROAD order. The generated policy is disabled, so OptMirror processes candidates in stock order."
     return (
-        "Evolved OptMirror code. Generated C++ program steps are "
-        f"{', '.join(p.program)} with legacy weights "
+        "Evolved OptMirror code using Segmented Semantic Program Evolution. "
+        f"{describe_program(p.program)} with legacy weights "
         f"hpwl={p.hpwl_weight:.4g}, degree={p.degree_weight:.4g}."
     )
 

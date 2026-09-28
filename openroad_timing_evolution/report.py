@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from statistics import median
 
-from .policy import Policy
+from .policy import Policy, describe_program
 
 
 METRICS = (
@@ -48,7 +48,10 @@ def _policy_summary(data: dict) -> str:
         return "Original OpenROAD resizer order. The generated policy is disabled, so path drivers keep stock load-delay ordering."
     data = policy.data()
     if "program" in data:
-        return f"Evolved Resizer code. Generated C++ program steps: `{data['program']}`."
+        return (
+            "Evolved Resizer code using Segmented Semantic Program Evolution. "
+            f"{describe_program(data['program'])}."
+        )
     return f"Evolved Resizer path-driver order. Priority expression: `{data['expression']}`."
 
 

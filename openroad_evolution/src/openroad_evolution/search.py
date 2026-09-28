@@ -8,7 +8,7 @@ from pathlib import Path
 import random
 from typing import Protocol
 
-from .candidate import MirrorPolicy, PROGRAM_OPS
+from .candidate import MirrorPolicy, PROGRAM_OPS, program_segments
 from .evaluator import Evaluation
 
 
@@ -20,7 +20,7 @@ def mutate(parent: MirrorPolicy, rng: random.Random) -> MirrorPolicy:
     """Mutate generated C++ code while retaining a bounded review surface."""
     weights = [parent.hpwl_weight, parent.degree_weight]
     program = list(parent.program or ("hpwl_log",))
-    action = rng.choice(("weight", "replace", "insert", "delete", "swap"))
+    action = rng.choice(("weight", "replace", "insert", "delete", "swap", "segment_reverse", "segment_duplicate"))
     if action == "weight":
         index = rng.randrange(len(weights))
         weights[index] = max(-5.0, min(5.0, weights[index] + rng.gauss(0.0, 0.75)))
@@ -33,6 +33,15 @@ def mutate(parent: MirrorPolicy, rng: random.Random) -> MirrorPolicy:
     elif action == "swap" and len(program) > 1:
         a, b = rng.sample(range(len(program)), 2)
         program[a], program[b] = program[b], program[a]
+    elif action == "segment_reverse" and len(program) > 2:
+        start, end, _ = rng.choice([s for s in program_segments(program) if s[1] - s[0] > 1])
+        program[start:end] = reversed(program[start:end])
+    elif action == "segment_duplicate" and len(program) < 16:
+        start, end, _ = rng.choice(program_segments(program))
+        fragment = program[start:end]
+        room = 16 - len(program)
+        fragment = fragment[:room]
+        program[start:start] = fragment
     child = MirrorPolicy(weights[0], weights[1], enabled=True, program=tuple(program))
     child.validate()
     return child
