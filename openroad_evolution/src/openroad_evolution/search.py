@@ -8,7 +8,7 @@ from pathlib import Path
 import random
 from typing import Protocol
 
-from .candidate import MirrorPolicy, PROGRAM_OPS, program_segments
+from .candidate import MirrorPolicy, PROGRAM_OPS, program_segments, related_indices
 from .evaluator import Evaluation
 
 
@@ -18,33 +18,55 @@ class Evaluator(Protocol):
 
 def mutate(parent: MirrorPolicy, rng: random.Random) -> MirrorPolicy:
     """Mutate generated C++ code while retaining a bounded review surface."""
-    weights = [parent.hpwl_weight, parent.degree_weight]
-    program = list(parent.program or ("hpwl_log",))
-    action = rng.choice(("weight", "replace", "insert", "delete", "swap", "segment_reverse", "segment_duplicate"))
-    if action == "weight":
-        index = rng.randrange(len(weights))
-        weights[index] = max(-5.0, min(5.0, weights[index] + rng.gauss(0.0, 0.75)))
-    elif action == "replace" and program:
-        program[rng.randrange(len(program))] = rng.choice(PROGRAM_OPS)
-    elif action == "insert" and len(program) < 16:
-        program.insert(rng.randrange(len(program) + 1), rng.choice(PROGRAM_OPS))
-    elif action == "delete" and len(program) > 1:
-        del program[rng.randrange(len(program))]
-    elif action == "swap" and len(program) > 1:
-        a, b = rng.sample(range(len(program)), 2)
-        program[a], program[b] = program[b], program[a]
-    elif action == "segment_reverse" and len(program) > 2:
-        start, end, _ = rng.choice([s for s in program_segments(program) if s[1] - s[0] > 1])
-        program[start:end] = reversed(program[start:end])
-    elif action == "segment_duplicate" and len(program) < 16:
-        start, end, _ = rng.choice(program_segments(program))
-        fragment = program[start:end]
-        room = 16 - len(program)
-        fragment = fragment[:room]
-        program[start:start] = fragment
-    child = MirrorPolicy(weights[0], weights[1], enabled=True, program=tuple(program))
-    child.validate()
-    return child
+    for _ in range(100):
+        weights = [parent.hpwl_weight, parent.degree_weight]
+        program = list(parent.program or ("hpwl_log",))
+        action = rng.choice((
+            "weight",
+            "replace",
+            "insert",
+            "delete",
+            "swap",
+            "segment_reverse",
+            "segment_duplicate",
+            "graph_swap",
+            "graph_insert_bridge",
+        ))
+        if action == "weight":
+            index = rng.randrange(len(weights))
+            weights[index] = max(-5.0, min(5.0, weights[index] + rng.gauss(0.0, 0.75)))
+        elif action == "replace" and program:
+            program[rng.randrange(len(program))] = rng.choice(PROGRAM_OPS)
+        elif action == "insert" and len(program) < 16:
+            program.insert(rng.randrange(len(program) + 1), rng.choice(PROGRAM_OPS))
+        elif action == "delete" and len(program) > 1:
+            del program[rng.randrange(len(program))]
+        elif action == "swap" and len(program) > 1:
+            a, b = rng.sample(range(len(program)), 2)
+            program[a], program[b] = program[b], program[a]
+        elif action == "segment_reverse" and len(program) > 2:
+            start, end, _ = rng.choice([s for s in program_segments(program) if s[1] - s[0] > 1])
+            program[start:end] = reversed(program[start:end])
+        elif action == "segment_duplicate" and len(program) < 16:
+            start, end, _ = rng.choice(program_segments(program))
+            fragment = program[start:end]
+            room = 16 - len(program)
+            fragment = fragment[:room]
+            program[start:start] = fragment
+        elif action == "graph_swap" and len(program) > 1:
+            pairs = related_indices(program)
+            a, b = rng.choice(pairs) if pairs else rng.sample(range(len(program)), 2)
+            program[a], program[b] = program[b], program[a]
+        elif action == "graph_insert_bridge" and len(program) < 16:
+            pairs = related_indices(program)
+            _, b = rng.choice(pairs) if pairs else (0, rng.randrange(len(program)))
+            bridge = rng.choice(("mirror_entropy_temper", "hpwl_degree_cross", "fanout_shock_penalty"))
+            program.insert(b, bridge)
+        child = MirrorPolicy(weights[0], weights[1], enabled=True, program=tuple(program))
+        child.validate()
+        if child.identifier != parent.identifier:
+            return child
+    raise RuntimeError("could not generate a source-changing OptMirror mutation")
 
 
 @dataclass

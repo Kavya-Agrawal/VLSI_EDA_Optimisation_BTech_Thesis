@@ -96,7 +96,12 @@ delete, replace, swap, segment reverse, segment duplication, and numeric-weight
 mutation. The segment operators implement **Segmented Semantic Program
 Evolution**: each generated C++ block is a leaf, contiguous leaves form a
 binary segment tree, and the search can mutate either a leaf or a whole subtree
-of the generated program. Higher-priority candidates are attempted first.
+of the generated program. Each leaf also carries typed metadata: variables read,
+variables written, control role, and heuristic role. The framework builds a
+semantic relation graph over the leaves, adding edges for source locality,
+shared input/output variables, and matching control-flow roles. Graph-guided
+mutation can swap related nodes or insert a bridge heuristic between related
+nodes. Higher-priority candidates are attempted first.
 Stable OpenDB instance ID is used only to break an exact tie. The generated
 program is bounded to at most 16 audited blocks and finite weights in `[-5,
 5]`. The disabled baseline preserves stock candidate order.
@@ -126,7 +131,7 @@ bypass the upstream legality and HPWL guards.
 2. Begin with a short generated C++ policy such as `hpwl_log`.
 3. Mutate either the numeric weights, one generated statement block, or a
    binary-tree source segment with insert, delete, replace, swap,
-   segment-reverse, and segment-duplicate operators.
+   segment-reverse, segment-duplicate, graph-swap, and graph-bridge operators.
 4. Clamp weights to `[-5, 5]`, bound programs to 16 audited statements, and
    reject duplicate policy IDs.
 5. Compile and evaluate every candidate against the paired stock baseline.
@@ -267,10 +272,15 @@ Mutation edits the program sequence with replace, insert, delete, swap,
 segment-reverse, and segment-duplicate operators. These segment operators are
 the timing version of **Segmented Semantic Program Evolution**: load, fanout,
 late-path, and damping blocks are leaves in a binary source tree, and whole
-subtrees can be moved or repeated as one source region. For compatibility with
-older archive entries, the framework can still read and evaluate legacy bounded
-expression trees, but new candidates are generated as C++ program blocks. There
-is no Python `eval`, arbitrary C++, or free-form source patch in the candidate
+subtrees can be moved or repeated as one source region. Each timing leaf also
+has typed read/write/control metadata, so the semantic relation graph can link
+nearby nodes, nodes that share `load`, `fanout`, `position`, or `score`, and
+nodes with matching conditional or straight-line control roles. Graph-guided
+mutation uses those edges to swap related repair heuristics or insert a bridge
+heuristic between connected nodes. For compatibility with older archive
+entries, the framework can still read and evaluate legacy bounded expression
+trees, but new candidates are generated as C++ program blocks. There is no
+Python `eval`, arbitrary C++, or free-form source patch in the candidate
 representation.
 
 The resulting scores are sorted descending. Original index is the immutable
@@ -481,6 +491,10 @@ The central research claim should be phrased narrowly:
   code is represented as audited C++ leaves plus a binary segment tree, so the
   search can evolve small code blocks and larger source regions without opening
   the door to arbitrary unsafe patches.
+- The presentation-level extension is the semantic relation graph: code leaves
+  are related by source locality, input/output sharing, and control-role
+  similarity, giving the evolution loop a visible program-structure model
+  without needing unrestricted C++ rewriting.
 - Neither system performs unrestricted autonomous source-code rewriting.
 - Neither system currently uses an LLM in the search loop.
 - OptMirror validation is empirical and does not include formal equivalence.

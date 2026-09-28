@@ -1,6 +1,6 @@
 import unittest
 
-from openroad_evolution.candidate import MirrorPolicy, describe_program, program_segments
+from openroad_evolution.candidate import MirrorPolicy, describe_program, program_segments, relation_graph
 
 
 class MirrorPolicyTest(unittest.TestCase):
@@ -36,3 +36,12 @@ class MirrorPolicyTest(unittest.TestCase):
         description = describe_program(program)
         self.assertIn("Mirror Entropy Tempering", description)
         self.assertIn("S[0:3]", description)
+        self.assertIn("semantic-relation-graph", description)
+
+    def test_relation_graph_tracks_dataflow_and_control_roles(self):
+        graph = relation_graph(("hpwl_log", "hpwl_degree_cross", "fanout_shock_penalty"))
+        self.assertEqual(graph["nodes"][1]["reads"], ["hpwl", "degree"])
+        reasons = [reason for edge in graph["edges"] for reason in edge["reasons"]]
+        self.assertIn("source_locality", reasons)
+        self.assertIn("data_flow:hpwl,score", reasons)
+        self.assertIn("data_flow:degree,score", reasons)

@@ -24,9 +24,12 @@ perturbation, and **Mirror Entropy Tempering**. Mutations change the actual
 generated C++ statement sequence through insert, delete, replace, swap, and
 weight edits. The showpiece search operator is **Segmented Semantic Program
 Evolution**: each C++ block is a leaf in a binary source tree, so the framework
-can evolve one block or a whole contiguous subtree. The stable instance ID only
-breaks an exact tie. The policy cannot move a cell, alter connectivity, or
-bypass OpenDP's cell-edge-spacing and non-increasing-HPWL guards.
+can evolve one block or a whole contiguous subtree. Each leaf also carries
+read/write/control metadata, and a semantic relation graph links nearby blocks,
+blocks that share variables, and blocks with similar control roles. The stable
+instance ID only breaks an exact tie. The policy cannot move a cell, alter
+connectivity, or bypass OpenDP's cell-edge-spacing and non-increasing-HPWL
+guards.
 
 `patches/opt_mirror_policy.patch` adds the fixed seam. The runner applies it
 only in an isolated Git worktree and initializes the exact nested source

@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from openroad_timing_evolution import kernel
-from openroad_timing_evolution.policy import Policy, describe_program, mutate, program_segments
+from openroad_timing_evolution.policy import Policy, describe_program, mutate, program_segments, relation_graph
 
 
 class PolicyTests(unittest.TestCase):
@@ -54,6 +54,15 @@ class PolicyTests(unittest.TestCase):
         description = describe_program(program)
         self.assertIn("Fanout Shock Path Pressure", description)
         self.assertIn("S[0:3]", description)
+        self.assertIn("semantic-relation-graph", description)
+
+    def test_relation_graph_tracks_dataflow_and_control_roles(self):
+        graph = relation_graph(["load_pressure", "fanout_shock", "nonlinear_blend"])
+        self.assertEqual(graph["nodes"][1]["reads"], ["load", "fanout"])
+        reasons = [reason for edge in graph["edges"] for reason in edge["reasons"]]
+        self.assertIn("source_locality", reasons)
+        self.assertIn("data_flow:load,score", reasons)
+        self.assertIn("control_role:straight_line", reasons)
 
 
 if __name__ == "__main__":

@@ -37,6 +37,15 @@ HEURISTIC_NAMES = {
     "stability_damper": "Stability Damper",
 }
 
+BLOCK_META = {
+    "load_pressure": {"reads": ("load",), "writes": ("score",), "control": "straight_line", "role": "timing_pressure"},
+    "fanout_shock": {"reads": ("load", "fanout"), "writes": ("score",), "control": "straight_line", "role": "downstream_cone_pressure"},
+    "late_path_focus": {"reads": ("position", "load"), "writes": ("score",), "control": "conditional", "role": "late_path_prioritization"},
+    "frontload_relief": {"reads": ("position", "fanout"), "writes": ("score",), "control": "conditional", "role": "early_path_damping"},
+    "nonlinear_blend": {"reads": ("load", "fanout"), "writes": ("score",), "control": "straight_line", "role": "feature_interaction"},
+    "stability_damper": {"reads": ("position",), "writes": ("score",), "control": "straight_line", "role": "oscillation_control"},
+}
+
 
 def program_segments(program):
     if type(program) is not list or not program:
@@ -55,10 +64,61 @@ def program_segments(program):
     return out
 
 
+def relation_graph(program):
+    if type(program) is not list:
+        return {"nodes": [], "edges": []}
+    nodes = []
+    edges = []
+    for index, op in enumerate(program):
+        meta = BLOCK_META[op]
+        nodes.append({
+            "id": f"n{index}",
+            "op": op,
+            "name": HEURISTIC_NAMES[op],
+            "reads": list(meta["reads"]),
+            "writes": list(meta["writes"]),
+            "control": meta["control"],
+            "role": meta["role"],
+        })
+    for i, left in enumerate(program):
+        left_meta = BLOCK_META[left]
+        for j, right in enumerate(program[i + 1:], i + 1):
+            right_meta = BLOCK_META[right]
+            reasons = []
+            distance = j - i
+            if distance == 1:
+                reasons.append("source_locality")
+            shared = sorted((set(left_meta["reads"]) | set(left_meta["writes"])) &
+                            (set(right_meta["reads"]) | set(right_meta["writes"])))
+            if shared:
+                reasons.append("data_flow:" + ",".join(shared))
+            if left_meta["control"] == right_meta["control"]:
+                reasons.append("control_role:" + str(left_meta["control"]))
+            if reasons:
+                edges.append({"from": f"n{i}", "to": f"n{j}", "distance": distance, "reasons": reasons})
+    return {"nodes": nodes, "edges": edges}
+
+
+def related_indices(program):
+    pairs = []
+    for edge in relation_graph(program)["edges"]:
+        pairs.append((int(edge["from"][1:]), int(edge["to"][1:])))
+    return pairs
+
+
 def describe_program(program):
     names = [HEURISTIC_NAMES.get(op, op) for op in program]
     segments = [f"{name}[{start}:{end}]" for start, end, name in program_segments(program)]
-    return "blocks=" + " -> ".join(names) + "; segment-tree=" + ", ".join(segments)
+    graph = relation_graph(program)
+    edges = [f"{edge['from']}->{edge['to']}({'+'.join(edge['reasons'])})" for edge in graph["edges"]]
+    return (
+        "blocks="
+        + " -> ".join(names)
+        + "; segment-tree="
+        + ", ".join(segments)
+        + "; semantic-relation-graph="
+        + ", ".join(edges)
+    )
 
 
 def canonical(value) -> str:
@@ -223,7 +283,16 @@ def mutate(parent, rng: random.Random):
         data = parent.data()
         if "program" in data:
             program = list(data["program"])
-            action = rng.choice(("replace", "insert", "delete", "swap", "segment_reverse", "segment_duplicate"))
+            action = rng.choice((
+                "replace",
+                "insert",
+                "delete",
+                "swap",
+                "segment_reverse",
+                "segment_duplicate",
+                "graph_swap",
+                "graph_insert_bridge",
+            ))
             if action == "replace" and program:
                 program[rng.randrange(len(program))] = rng.choice(PROGRAM_OPS)
             elif action == "insert" and len(program) < 16:
@@ -240,6 +309,15 @@ def mutate(parent, rng: random.Random):
                 start, end, _ = rng.choice(program_segments(program))
                 fragment = program[start:end][: 16 - len(program)]
                 program[start:start] = fragment
+            elif action == "graph_swap" and len(program) > 1:
+                pairs = related_indices(program)
+                a, b = rng.choice(pairs) if pairs else rng.sample(range(len(program)), 2)
+                program[a], program[b] = program[b], program[a]
+            elif action == "graph_insert_bridge" and len(program) < 16:
+                pairs = related_indices(program)
+                _, b = rng.choice(pairs) if pairs else (0, rng.randrange(len(program)))
+                bridge = rng.choice(("fanout_shock", "nonlinear_blend", "stability_damper"))
+                program.insert(b, bridge)
             try:
                 return Policy.from_dict({"enabled": True, "program": program})
             except ValueError:

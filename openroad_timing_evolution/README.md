@@ -6,7 +6,7 @@ The target is WNS/TNS improvement after the full OpenROAD-flow-scripts path. Clo
 
 ## Why this cut was chosen
 
-The resizer path-driver ordering is small enough to evolve safely and still affects timing closure. The framework mutates a tiny generated C++ priority program over normalized load delay, fanout and path position. The audited statement library includes load pressure, late-path focus, nonlinear blending, stability damping and **Fanout Shock Path Pressure**. The showpiece search operator is **Segmented Semantic Program Evolution**: the generated C++ blocks are leaves in a binary source tree, so the framework can mutate one block or a whole contiguous segment. It never accepts arbitrary C++, Python `eval`, free-form patches, or model-written source files.
+The resizer path-driver ordering is small enough to evolve safely and still affects timing closure. The framework mutates a tiny generated C++ priority program over normalized load delay, fanout and path position. The audited statement library includes load pressure, late-path focus, nonlinear blending, stability damping and **Fanout Shock Path Pressure**. The showpiece search operator is **Segmented Semantic Program Evolution**: the generated C++ blocks are leaves in a binary source tree, so the framework can mutate one block or a whole contiguous segment. A semantic relation graph connects nearby blocks, blocks sharing `load`/`fanout`/`position`/`score`, and blocks with similar control roles, then graph-guided mutation edits related nodes. It never accepts arbitrary C++, Python `eval`, free-form patches, or model-written source files.
 
 Research ideas used:
 

@@ -44,6 +44,15 @@ HEURISTIC_NAMES = {
     "deterministic_phase": "Deterministic Phase Tie Shaper",
 }
 
+BLOCK_META = {
+    "hpwl_log": {"reads": ("hpwl",), "writes": ("score",), "control": "straight_line", "role": "physical_pressure"},
+    "degree_log": {"reads": ("degree",), "writes": ("score",), "control": "straight_line", "role": "connectivity_pressure"},
+    "mirror_entropy_temper": {"reads": ("hpwl", "degree"), "writes": ("entropy", "score"), "control": "derived_value", "role": "semantic_tempering"},
+    "fanout_shock_penalty": {"reads": ("degree",), "writes": ("score",), "control": "conditional", "role": "legality_risk_guard"},
+    "hpwl_degree_cross": {"reads": ("hpwl", "degree"), "writes": ("score",), "control": "straight_line", "role": "feature_interaction"},
+    "deterministic_phase": {"reads": ("stable_id",), "writes": ("score",), "control": "tie_breaker", "role": "deterministic_diversity"},
+}
+
 
 def program_segments(program: tuple[str, ...] | list[str]) -> list[tuple[int, int, str]]:
     """Return a binary segment tree over generated-code leaves.
@@ -70,10 +79,74 @@ def program_segments(program: tuple[str, ...] | list[str]) -> list[tuple[int, in
     return out
 
 
+def relation_graph(program: tuple[str, ...] | list[str]) -> dict[str, object]:
+    """Build a semantic relation graph for the generated code blocks.
+
+    This graph is intentionally lightweight, but it is real metadata consumed
+    by mutation. Edges are added when code blocks are nearby in source order,
+    consume or produce the same variables, or share a control-flow role.
+    """
+    items = list(program)
+    nodes = []
+    edges = []
+    for index, op in enumerate(items):
+        meta = BLOCK_META[op]
+        nodes.append(
+            {
+                "id": f"n{index}",
+                "op": op,
+                "name": HEURISTIC_NAMES[op],
+                "reads": list(meta["reads"]),
+                "writes": list(meta["writes"]),
+                "control": meta["control"],
+                "role": meta["role"],
+            }
+        )
+    for i, left in enumerate(items):
+        left_meta = BLOCK_META[left]
+        for j, right in enumerate(items[i + 1 :], i + 1):
+            right_meta = BLOCK_META[right]
+            reasons = []
+            distance = j - i
+            if distance == 1:
+                reasons.append("source_locality")
+            left_vars = set(left_meta["reads"]) | set(left_meta["writes"])
+            right_vars = set(right_meta["reads"]) | set(right_meta["writes"])
+            shared = sorted(left_vars & right_vars)
+            if shared:
+                reasons.append("data_flow:" + ",".join(shared))
+            if left_meta["control"] == right_meta["control"]:
+                reasons.append("control_role:" + str(left_meta["control"]))
+            if reasons:
+                edges.append({"from": f"n{i}", "to": f"n{j}", "distance": distance, "reasons": reasons})
+    return {"nodes": nodes, "edges": edges}
+
+
+def related_indices(program: tuple[str, ...] | list[str]) -> list[tuple[int, int]]:
+    pairs = []
+    for edge in relation_graph(program)["edges"]:
+        left = int(str(edge["from"])[1:])
+        right = int(str(edge["to"])[1:])
+        pairs.append((left, right))
+    return pairs
+
+
 def describe_program(program: tuple[str, ...] | list[str]) -> str:
     names = [HEURISTIC_NAMES.get(op, op) for op in program]
     segments = [f"{name}[{start}:{end}]" for start, end, name in program_segments(program)]
-    return "blocks=" + " -> ".join(names) + "; segment-tree=" + ", ".join(segments)
+    graph = relation_graph(program)
+    edge_summary = [
+        f"{edge['from']}->{edge['to']}({'+'.join(edge['reasons'])})"
+        for edge in graph["edges"]
+    ]
+    return (
+        "blocks="
+        + " -> ".join(names)
+        + "; segment-tree="
+        + ", ".join(segments)
+        + "; semantic-relation-graph="
+        + ", ".join(edge_summary)
+    )
 
 
 @dataclass(frozen=True)

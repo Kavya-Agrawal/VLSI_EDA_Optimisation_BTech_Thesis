@@ -80,8 +80,11 @@ Both frameworks are append-only at the archive level. New runs add new records a
 Both systems now use **Segmented Semantic Program Evolution**. The candidate
 program is represented as audited C++ leaves plus a binary segment tree over
 contiguous source regions. Mutation can edit one leaf or a whole segment with
-replace, insert, delete, swap, reverse, or duplicate operations. This gives you
-a clean presentation story: the framework evolves code structure while the
+replace, insert, delete, swap, reverse, duplicate, graph-swap, or graph-bridge
+operations. Each leaf also has typed read/write/control metadata. The framework
+builds a semantic relation graph where nodes are related by nearby source
+location, shared input/output variables, and similar control roles. This gives
+you a clean presentation story: the framework evolves code structure while the
 trusted evaluator keeps OpenROAD legality, timing, and physical checks fixed.
 
 OptMirror evolves the generated OpenROAD header:
