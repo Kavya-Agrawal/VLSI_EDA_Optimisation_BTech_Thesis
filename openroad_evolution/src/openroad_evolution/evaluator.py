@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 import json
 from pathlib import Path
+import shutil
 import subprocess
 
 from .candidate import MirrorPolicy
@@ -57,7 +58,31 @@ class FlowEvaluator:
     def prepare(self) -> None:
         self.workspace.prepare()
         self.workspace.assert_integrity(MirrorPolicy.baseline())
+        self._invalidate_incompatible_build()
         self.results_dir.mkdir(parents=True, exist_ok=True)
+
+    def _invalidate_incompatible_build(self) -> None:
+        """Delete only build trees known to be incompatible with this runner.
+
+        Earlier revisions configured OpenROAD as Release and OpenSTA forced
+        LTO, producing stale non-linkable objects. A full clean is needed once
+        for such trees, but deleting the build tree for every candidate wastes
+        most of the runtime. After this check passes, candidate builds are
+        incremental and only recompile code affected by the generated header.
+        """
+        build_dir = self.workspace.build_dir
+        cache = build_dir / "CMakeCache.txt"
+        if not cache.exists():
+            return
+        text = cache.read_text(errors="replace")
+        required = (
+            "CMAKE_BUILD_TYPE:STRING=RelWithDebInfo",
+            "LINK_TIME_OPTIMIZATION:BOOL=OFF",
+        )
+        opensta_flags = build_dir / "src/sta/CMakeFiles/OpenSTA.dir/flags.make"
+        flags = opensta_flags.read_text(errors="replace") if opensta_flags.exists() else ""
+        if not all(item in text for item in required) or "-flto" in flags:
+            shutil.rmtree(build_dir)
 
     def _command(self, command: str, log: Path) -> int:
         completed = subprocess.run(

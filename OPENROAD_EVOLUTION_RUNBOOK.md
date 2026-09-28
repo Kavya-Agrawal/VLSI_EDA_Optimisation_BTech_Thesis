@@ -36,6 +36,20 @@ make run-placement N=40
 make run-timing N=40
 ```
 
+For the shortest single smoke attempt, use:
+
+```bash
+make run-placement N=1
+make report-placement
+```
+
+or:
+
+```bash
+make run-timing N=1
+make report-timing-evolution
+```
+
 ## Show the results
 
 ```bash
@@ -74,6 +88,14 @@ openroad_timing_evolution/work/runs/
 ```
 
 Both frameworks are append-only at the archive level. New runs add new records and unique run directories. Candidate IDs already present in the archive are skipped on later invocations.
+
+## Runtime notes
+
+OptMirror now keeps a compatible OpenROAD build tree and uses incremental
+rebuilds after the first successful build. It deletes the build tree only when
+it detects an old incompatible Release/LTO build. The ORFS flow directories are
+still unique per candidate and replica, because reusing physical-design output
+would contaminate correctness evidence.
 
 ## What actually evolves
 
