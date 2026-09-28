@@ -71,6 +71,18 @@ class FlowEvaluator:
         log.write_text(completed.stdout)
         return completed.returncode
 
+    @staticmethod
+    def _log_tail(log: Path, *, max_lines: int = 20) -> str:
+        if not log.exists():
+            return "log file was not written"
+        interesting = []
+        needles = (" error", "Error", "fatal", "undefined reference", "lto", "failed")
+        for line in log.read_text(errors="replace").splitlines():
+            if any(needle in line for needle in needles):
+                interesting.append(line.strip())
+        tail = interesting[-max_lines:] or log.read_text(errors="replace").splitlines()[-max_lines:]
+        return " | ".join(item for item in tail if item)[-2000:]
+
     def evaluate(self, policy: MirrorPolicy, baseline: Evaluation | None = None) -> Evaluation:
         self.prepare()
         run_dir = self._fresh_run_dir(policy.identifier)
@@ -84,12 +96,22 @@ class FlowEvaluator:
         context = dict(source_dir=self.workspace.source_dir, build_dir=self.workspace.build_dir)
 
         build = self.config.format(self.config.build_command, **context, candidate_id=policy.identifier)
-        if self._command(build, run_dir / "build.log") != 0:
-            return self._record(policy, run_dir, ["OpenROAD compilation failed"])
+        build_log = run_dir / "build.log"
+        if self._command(build, build_log) != 0:
+            return self._record(
+                policy,
+                run_dir,
+                [f"OpenROAD compilation failed. Build log: {build_log}. Tail: {self._log_tail(build_log)}"],
+            )
 
         unit = self.config.format(self.config.unit_test_command, **context, candidate_id=policy.identifier)
-        if self._command(unit, run_dir / "unit.log") != 0:
-            return self._record(policy, run_dir, ["OptMirror regression suite failed"])
+        unit_log = run_dir / "unit.log"
+        if self._command(unit, unit_log) != 0:
+            return self._record(
+                policy,
+                run_dir,
+                [f"OptMirror regression suite failed. Unit log: {unit_log}. Tail: {self._log_tail(unit_log)}"],
+            )
 
         reference_replicas = self._baseline_replicas(baseline)
         if baseline is not None and len(reference_replicas) != self.config.replicates:
