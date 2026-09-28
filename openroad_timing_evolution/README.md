@@ -34,16 +34,46 @@ The evaluator fails closed. A candidate only survives when all of these pass:
 
 ## Commands
 
-Run from the repository root:
+Run from the repository root.
+
+Fast checks:
+
+```bash
+make test-timing-evolution
+make doctor-timing-evolution
+```
+
+Run one timing-evolution attempt and print the report:
+
+```bash
+make run-timing N=1
+make report-timing-evolution
+```
+
+Run more attempts:
+
+```bash
+make run-timing N=40
+make report-timing-evolution
+```
+
+The report is written to:
+
+```text
+openroad_timing_evolution/work/memory/summary.md
+```
+
+Direct Python commands:
 
 ```bash
 python3 -m openroad_timing_evolution selftest
 python3 -m openroad_timing_evolution doctor --config openroad_timing_evolution/config/smoke.json
 python3 -m openroad_timing_evolution baseline --config openroad_timing_evolution/config/smoke.json
 python3 -m openroad_timing_evolution evolve --config openroad_timing_evolution/config/smoke.json --generations 3 --population 4
+python3 -m openroad_timing_evolution report
 ```
 
-The default smoke campaign uses `gcd` for training, `aes` for validation and `ibex` for the sealed test split on Nangate45. Evidence is written under `openroad_timing_evolution/work/runs/<id>/`.
+The default smoke campaign uses `gcd` for training, `aes` for validation and `ibex` for the sealed test split on Nangate45. Evidence is written under `openroad_timing_evolution/work/runs/<id>/`, and append-only cross-run memory is written to `openroad_timing_evolution/work/memory/archive.jsonl`.
 
 ## Current status
 

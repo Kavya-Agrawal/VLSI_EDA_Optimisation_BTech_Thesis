@@ -16,6 +16,52 @@ The top-level `Makefile` is the common entry point on every research branch.
 See [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) for the directory map, branch map,
 and commands for each framework.
 
+## OpenROAD code-evolution runs
+
+Use branch `research/openroad-evolution-suite` for the two real OpenROAD
+evolution frameworks:
+
+```bash
+git switch research/openroad-evolution-suite
+git pull --ff-only --recurse-submodules
+git submodule update --init --recursive
+make test-placement
+make test-timing-evolution
+```
+
+Run both frameworks:
+
+```bash
+make run-both N=1
+make results
+```
+
+Run only OptMirror placement:
+
+```bash
+make run-placement N=1
+make report-placement
+```
+
+Run only Resizer timing closure:
+
+```bash
+make run-timing N=1
+make report-timing-evolution
+```
+
+Increase `N` for more new evolution attempts. The archives are append-only:
+`N=40` followed by `N=80` gives 120 attempted candidates, not an overwrite.
+Result summaries are written to:
+
+- `openroad_evolution/.evolution/summary.md`
+- `openroad_timing_evolution/work/memory/summary.md`
+
+The framework evolves generated C++ policy code, not only scalar parameters.
+Both experiments use Segmented Semantic Program Evolution with a semantic
+relation graph over code blocks. See [`OPENROAD_EVOLUTION_RUNBOOK.md`](OPENROAD_EVOLUTION_RUNBOOK.md)
+for the detailed runbook and evidence locations.
+
 ## Contents
 
 | Directory | Description |

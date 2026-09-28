@@ -71,6 +71,11 @@ Each report shows:
 - original-vs-evolved metrics from archived full-flow evidence
 - evidence archive and run-directory locations
 
+If the reports say no valid stock baseline is archived yet, the full flow has
+not completed successfully. In that case inspect the newest run directory
+listed in the error message, then rerun the relevant framework command after
+fixing the issue.
+
 ## Evidence locations
 
 OptMirror placement:

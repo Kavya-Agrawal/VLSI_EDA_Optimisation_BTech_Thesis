@@ -92,12 +92,33 @@ installed by ORFS, then points ORFS at that candidate executable via
 
 ## Run an experiment
 
-Run these commands from this directory:
+From the repository root, the shortest command is:
+
+```sh
+make run-placement N=1
+make report-placement
+```
+
+Use a larger `N` for more new candidates:
+
+```sh
+make run-placement N=40
+make report-placement
+```
+
+The report is written to:
+
+```text
+openroad_evolution/.evolution/summary.md
+```
+
+The direct Python commands are:
 
 ```sh
 PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json prepare
 PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json evolve --generations 3 --population 4
 PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json verify --candidate <training-promoted-id>
+PYTHONPATH=src python3 -m openroad_evolution.cli --config config/default.json report
 ```
 
 The default is intentionally conservative: five seed-controlled full flows per
@@ -113,6 +134,12 @@ Generated artifacts are intentionally ignored by Git:
   manifest, compile/regression/flow logs, final METRICS2.1 JSON and a decision
   record.
 - `.evolution/archive.jsonl`: append-only search history, including failures.
+
+The build is optimized for repeated candidates. The runner keeps a compatible
+RelWithDebInfo, non-LTO OpenROAD build tree and uses incremental rebuilds after
+the first successful build. It deletes the build tree only when it detects an
+old incompatible Release/LTO build. ORFS result directories remain unique per
+candidate and replica to keep evidence uncontaminated.
 
 ## Test the framework itself
 
