@@ -75,3 +75,20 @@ class SearchTest(unittest.TestCase):
             records = archive.read_text().splitlines()
             self.assertEqual(len(records), 5)
             self.assertNotIn(MirrorPolicy.baseline().identifier, second.calls)
+
+    def test_baseline_failure_reports_reason_and_directory(self):
+        class FailingEvaluator:
+            def evaluate(self, policy, baseline=None):
+                return Evaluation(
+                    policy,
+                    False,
+                    None,
+                    ["OpenROAD compilation failed"],
+                    None,
+                    Path("/tmp/baseline-run"),
+                )
+
+        with tempfile.TemporaryDirectory() as temp:
+            archive = Path(temp) / "archive.jsonl"
+            with self.assertRaisesRegex(RuntimeError, "OpenROAD compilation failed.*baseline-run"):
+                EvolutionRun(FailingEvaluator(), archive, 5).execute(generations=1, population=1)

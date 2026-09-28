@@ -139,7 +139,12 @@ class EvolutionRun:
             completed.append(baseline_result)
             seen.add(baseline_result.policy.identifier)
         if not baseline_result.valid or baseline_result.metrics is None:
-            raise RuntimeError("stock baseline must compile, pass regressions, and finish ORFS")
+            reason = "; ".join(baseline_result.reasons) or "unknown baseline failure"
+            raise RuntimeError(
+                "stock baseline must compile, pass regressions, and finish ORFS. "
+                f"Last baseline failure: {reason}. "
+                f"See {baseline_result.directory}"
+            )
         valid_archive = [item for item in completed if item.policy.enabled and item.valid and item.score is not None]
         valid_archive.sort(key=lambda item: item.score, reverse=True)
         parents = (
