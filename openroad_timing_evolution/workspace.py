@@ -122,7 +122,10 @@ class Workspace:
         if output(["git", "rev-parse", "HEAD"], self.source) != self.config["openroad_revision"]:
             raise RuntimeError("OpenROAD revision changed")
         expected_diff = (ROOT/"patches/path_driver_policy.patch").read_text().strip()
-        if output(["git", "diff", "--no-ext-diff", "--no-color", "--", TARGET], self.source) != expected_diff:
+        # Pin the object-name width as well as the content.  A user's
+        # core.abbrev setting must not make a byte-identical seam look dirty.
+        if output(["git", "diff", "--no-ext-diff", "--no-color", "--abbrev=7",
+                   "--", TARGET], self.source) != expected_diff:
             raise RuntimeError("source is not the byte-exact fixed seam")
         dirty = output(["git", "diff", "--name-only", "HEAD"], self.source).splitlines()
         if dirty != [TARGET]:

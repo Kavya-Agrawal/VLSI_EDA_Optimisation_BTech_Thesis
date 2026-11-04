@@ -1,0 +1,10 @@
+--- a/src/cts/src/HTreeBuilder_new.cpp
++++ b/src/cts/src/HTreeBuilder_new.cpp
+@@ -78,6 +149,7 @@
+   }
+ 
+   SinkClustering matching(options_, techChar_, this);
++  matching.reservePoints(points.size());
+   const unsigned numPoints = points.size();
+ 
+   for (int pointIdx = 0; pointIdx < numPoints; ++pointIdx) {

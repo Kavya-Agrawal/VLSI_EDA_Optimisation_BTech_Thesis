@@ -1,0 +1,15 @@
+--- a/src/cts/src/Clock.h
++++ b/src/cts/src/Clock.h
+@@ -139,7 +139,11 @@
+   }
+ 
+   std::string getName() const { return name_; }
+-  int getNumSinks() const { return instances_.size() - 1; }
++  int getNumSinks() const
++  {
++    // LEARN-API-01: a partially constructed subnet has no driver yet.
++    return instances_.empty() ? 0 : static_cast<int>(instances_.size() - 1);
++  }
+ 
+   ClockInst* getDriver() const
+   {

@@ -1,0 +1,74 @@
+// SPDX-License-Identifier: BSD-3-Clause
+#include "TestSupport.h"
+#include "learning/Geometry.h"
+#include "learning/KdTree.h"
+#include "learning/LocalSearch.h"
+#include "learning/SpatialOrder.h"
+#include <random>
+#include <set>
+
+namespace learning_test {
+void testGeometry()
+{
+  using namespace ord::learning;
+  std::mt19937 random(73);
+  std::vector<Point> points;
+  for (unsigned i = 0; i < 257; ++i) {
+    points.push_back({double(random() % 100), double(random() % 100), i});
+  }
+  const KdTree index(points);
+  for (unsigned iteration = 0; iteration < 500; ++iteration) {
+    const Point query{double(random() % 110), double(random() % 110), 0};
+    const auto excluded = random() % points.size();
+    std::pair<double, std::size_t> expected{std::numeric_limits<double>::infinity(),
+                                          std::numeric_limits<std::size_t>::max()};
+    for (const auto& point : points) {
+      if (point.id != excluded) {
+        expected = std::min(expected, std::make_pair(manhattan(query, point), point.id));
+      }
+    }
+    CHECK(index.nearest(query, excluded) == expected);
+    Bounds box;
+    box.extend(query);
+    box.extend({query.x + 10, query.y + 10, 0});
+    std::vector<std::size_t> expected_range;
+    for (const auto& point : points) {
+      if (point.x >= box.xmin && point.x <= box.xmax
+          && point.y >= box.ymin && point.y <= box.ymax) {
+        expected_range.push_back(point.id);
+      }
+    }
+    CHECK(index.range(box) == expected_range);
+  }
+  CHECK(std::isinf(KdTree({}).nearest({}).first));
+  CHECK(std::isinf(KdTree({{1, 1, 0}}).nearest({}, 0).first));
+  const std::vector<Point> square{{0, 0, 0}, {1, 1, 1}, {0, 1, 2}, {1, 0, 3}, {.5, .5, 4}};
+  CHECK(convexHull(square).size() == 4);
+  CHECK(convexHull({{0, 0, 0}, {0, 0, 1}}).size() == 1);
+  CHECK(convexHull({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}}).size() == 2);
+  Bounds bounds;
+  bounds.extend({0, 0, 0});
+  bounds.extend({1, 1, 1});
+  CHECK(mortonKey({0, 0, 0}, bounds) == 0);
+  CHECK(mortonKey({1, 1, 0}, bounds) > mortonKey({0, 1, 0}, bounds));
+  for (unsigned mode = 0; mode < 3; ++mode) {
+    PolicyConfig config;
+    config.spatial_mode = mode;
+    auto order = spatialOrder(square, config);
+    CHECK(order.size() == square.size());
+    std::sort(order.begin(), order.end());
+    for (std::size_t i = 0; i < order.size(); ++i) {
+      CHECK(order[i] == i);
+    }
+  }
+  const std::vector<std::size_t> crossing{0, 1, 2, 3};
+  const std::vector<Point> corners(square.begin(), square.begin() + 4);
+  const auto improved = twoOpt(corners, crossing, 10);
+  CHECK(tourLength(corners, improved) <= tourLength(corners, crossing));
+  auto centers = farthestFirst(points, 20);
+  CHECK(centers.size() == 20);
+  CHECK(std::set<std::size_t>(centers.begin(), centers.end()).size() == 20);
+  CHECK(farthestFirst({}, 3).empty());
+  CHECK(farthestFirst(square, 100).size() == square.size());
+}
+}  // namespace learning_test

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="592" viewBox="0 0 1050 592" role="img">
+<title>Where the actual source changes are concentrated</title>
+<rect width="1050" height="592" fill="white"/>
+<text x="32" y="35" fill="#162939" font-size="20" font-family="Arial,sans-serif" text-anchor="start">Where the actual source changes are concentrated</text>
+<text x="32" y="60" fill="#526575" font-size="12" font-family="Arial,sans-serif" text-anchor="start">Applied production-source changes · embedded definitions count at each source location</text>
+<text x="348" y="119" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/SinkClustering_new.cpp</text>
+<rect x="360.000" y="105.000" width="600.000" height="19.000" fill="#326b96"/>
+<text x="968.0" y="119" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">522</text>
+<text x="348" y="150" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">rsz/SetupLegacyBase_new.cc</text>
+<rect x="360.000" y="136.000" width="402.299" height="19.000" fill="#326b96"/>
+<text x="770.2988505747126" y="150" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">350</text>
+<text x="348" y="181" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/Clustering_new.cpp</text>
+<rect x="360.000" y="167.000" width="308.046" height="19.000" fill="#326b96"/>
+<text x="676.0459770114942" y="181" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">268</text>
+<text x="348" y="212" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/TechChar_new.cpp</text>
+<rect x="360.000" y="198.000" width="221.839" height="19.000" fill="#326b96"/>
+<text x="589.8390804597701" y="212" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">193</text>
+<text x="348" y="243" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">rsz/RecoverPower_new.cc</text>
+<rect x="360.000" y="229.000" width="197.701" height="19.000" fill="#326b96"/>
+<text x="565.7011494252873" y="243" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">172</text>
+<text x="348" y="274" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/LatencyBalancer_new.cpp</text>
+<rect x="360.000" y="260.000" width="173.563" height="19.000" fill="#326b96"/>
+<text x="541.5632183908046" y="274" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">151</text>
+<text x="348" y="305" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/TreeBuilder_new.cpp</text>
+<rect x="360.000" y="291.000" width="121.839" height="19.000" fill="#326b96"/>
+<text x="489.8390804597701" y="305" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">106</text>
+<text x="348" y="336" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/HTreeBuilder_new.cpp</text>
+<rect x="360.000" y="322.000" width="98.851" height="19.000" fill="#326b96"/>
+<text x="466.85057471264366" y="336" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">86</text>
+<text x="348" y="367" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/TritonCTS_new.cpp</text>
+<rect x="360.000" y="353.000" width="44.828" height="19.000" fill="#326b96"/>
+<text x="412.82758620689657" y="367" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">39</text>
+<text x="348" y="398" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/Clock_new.cpp</text>
+<rect x="360.000" y="384.000" width="20.690" height="19.000" fill="#326b96"/>
+<text x="388.6896551724138" y="398" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">18</text>
+<text x="348" y="429" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/LearningPolicyConfig.h</text>
+<rect x="360.000" y="415.000" width="20.690" height="19.000" fill="#326b96"/>
+<text x="388.6896551724138" y="429" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">18</text>
+<text x="348" y="460" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">cts/LearningMode.h</text>
+<rect x="360.000" y="446.000" width="12.644" height="19.000" fill="#326b96"/>
+<text x="380.64367816091954" y="460" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">11</text>
+<line x1="360" y1="487" x2="960" y2="487" stroke="#162939" stroke-width="1"/>
+<text x="360.0" y="507" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">0</text>
+<text x="510.0" y="507" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">130.5</text>
+<text x="660.0" y="507" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">261</text>
+<text x="810.0" y="507" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">391.5</text>
+<text x="960.0" y="507" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">522</text>
+<text x="660.0" y="530" fill="#526575" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">Changed lines (added + removed)</text>
+<text x="32" y="577" fill="#526575" font-size="11" font-family="Arial,sans-serif" text-anchor="start">Source: bundled CSV snapshot · no measured OpenROAD QoR</text>
+</svg>

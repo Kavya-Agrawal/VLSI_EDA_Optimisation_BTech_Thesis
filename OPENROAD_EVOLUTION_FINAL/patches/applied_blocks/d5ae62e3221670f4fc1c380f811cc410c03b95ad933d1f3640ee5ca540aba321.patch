@@ -1,0 +1,12 @@
+--- a/src/cts/src/LatencyBalancer_new.cpp
++++ b/src/cts/src/LatencyBalancer_new.cpp
+@@ -293,7 +441,8 @@
+ 
+ float LatencyBalancer::computeAveSinkArrivals(TreeBuilder* builder)
+ {
+-  Clock clock = builder->getClock();
++  // LEARN-CTS-07: borrow the graph's clock instead of copying sink storage.
++  const Clock& clock = builder->getClock();
+   odb::dbNet* topInputClockNet = builder->getTopInputNet();
+   // compute average input arrival at all sinks
+   float sumArrivals = 0.0;

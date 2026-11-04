@@ -221,3 +221,28 @@ openroad-flow:
 
 openroad-shell:
 	./run-openroad-flow.sh shell
+
+# Source-level OpenROAD teaching branch: kernels, source-pair catalogue, report.
+.PHONY: learning-openroad learning-openroad-test learning-openroad-sanitize \
+ learning-openroad-dataset learning-openroad-verify learning-openroad-report
+learning-openroad:
+	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution demo
+learning-openroad-test:
+	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution test
+learning-openroad-sanitize:
+	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution sanitize
+learning-openroad-dataset:
+	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution dataset
+learning-openroad-verify:
+	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution verify
+learning-openroad-report:
+	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution report
+
+.PHONY: learning-final learning-stats
+learning-final:
+	@$(PYTHON) external/OpenROAD/learning_evolution/tools/catalogue.py generate
+	@$(PYTHON) external/OpenROAD/learning_evolution/tools/guide.py
+	@$(PYTHON) external/OpenROAD/learning_evolution/tools/source_map.py
+	@$(PYTHON) external/OpenROAD/learning_evolution/tools/build_final.py
+learning-stats:
+	@$(MAKE) --no-print-directory -C OPENROAD_EVOLUTION_FINAL stats

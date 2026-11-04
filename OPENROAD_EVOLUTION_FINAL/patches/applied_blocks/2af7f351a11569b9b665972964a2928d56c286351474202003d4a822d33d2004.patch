@@ -1,0 +1,26 @@
+--- a/src/cts/src/Clock_new.cpp
++++ b/src/cts/src/Clock_new.cpp
+@@ -60,6 +61,23 @@
+     allPositionsY.push_back(sink.getY());
+   });
+ 
++  // LEARN-CTS-03: two order statistics suffice for a trimmed region.
++  if (ord::learning::enabled() && !allPositionsX.empty()) {
++    const std::size_t trim = percentile * allPositionsX.size();
++    const auto limits = [trim](std::vector<int> values) {
++      std::nth_element(values.begin(), values.begin() + trim, values.end());
++      const int lower = values[trim];
++      const auto upper_index = values.size() - trim - 1;
++      std::nth_element(values.begin(), values.begin() + upper_index, values.end());
++      return std::pair<int, int>{lower, values[upper_index]};
++    };
++    const auto [xmin, xmax] = limits(std::move(allPositionsX));
++    const auto [ymin, ymax] = limits(std::move(allPositionsY));
++    return Box<int>(xmin, ymin, xmax, ymax);
++  }
++  if (allPositionsX.empty()) {
++    return Box<int>();
++  }
+   std::ranges::sort(allPositionsX);
+   std::ranges::sort(allPositionsY);
+ 

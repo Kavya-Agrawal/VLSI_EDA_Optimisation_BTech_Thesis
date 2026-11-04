@@ -1,0 +1,18 @@
+--- a/src/rsz/src/CMakeLists.txt
++++ b/src/rsz/src/CMakeLists.txt
+@@ -13,12 +13,12 @@
+ add_library(rsz_lib
+     BufferedNet.cc
+     PreChecks.cc
+-    RecoverPower.cc
++    RecoverPower_new.cc
+     RepairDesign.cc
+-    RepairHold.cc
++    RepairHold_new.cc
+     Rebuffer.cc
+     policy/SetupLegacyMtPolicy.cc
+-    policy/SetupLegacyBase.cc
++    policy/SetupLegacyBase_new.cc
+     MoveCommitter.cc
+     MoveTracker.cc
+     policy/OptimizationPolicy.cc

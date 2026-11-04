@@ -1,0 +1,45 @@
+--- a/src/cts/BUILD
++++ b/src/cts/BUILD
+@@ -42,15 +42,15 @@
+ cc_library(
+     name = "cts",
+     srcs = [
+-        "src/Clock.cpp",
+-        "src/Clustering.cpp",
++        "src/Clock_new.cpp",
++        "src/Clustering_new.cpp",
+         "src/CtsOptions.cpp",
+-        "src/HTreeBuilder.cpp",
+-        "src/LatencyBalancer.cpp",
+-        "src/SinkClustering.cpp",
+-        "src/TechChar.cpp",
+-        "src/TreeBuilder.cpp",
+-        "src/TritonCTS.cpp",
++        "src/HTreeBuilder_new.cpp",
++        "src/LatencyBalancer_new.cpp",
++        "src/SinkClustering_new.cpp",
++        "src/TechChar_new.cpp",
++        "src/TreeBuilder_new.cpp",
++        "src/TritonCTS_new.cpp",
+     ],
+     hdrs = [
+         "include/cts/TritonCTS.h",
+@@ -63,6 +63,7 @@
+     ],
+     deps = [
+         ":private_hdrs",
++        ":learning_kernels",
+         "//src/dbSta",
+         "//src/dbSta:dbNetwork",
+         "//src/est",
+@@ -159,3 +160,10 @@
+         "//src/cts/test:__pkg__",
+     ],
+ )
++
++# Independent header-only kernels avoid a CTS/Resizer library dependency cycle.
++cc_library(
++    name = "learning_kernels",
++    hdrs = ["src/LearningMode.h", "src/LearningPolicyConfig.h"],
++    includes = ["src"],
++)

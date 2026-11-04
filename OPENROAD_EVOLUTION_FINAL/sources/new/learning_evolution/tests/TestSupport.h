@@ -1,0 +1,38 @@
+// SPDX-License-Identifier: BSD-3-Clause
+#pragma once
+#include <cmath>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+namespace learning_test {
+inline unsigned checks = 0;
+inline void check(bool condition, const char* expression, int line)
+{
+  ++checks;
+  if (!condition) {
+    throw std::runtime_error(std::string(expression) + " at line " + std::to_string(line));
+  }
+}
+inline bool near(double a, double b) { return std::abs(a - b) <= 1e-9; }
+
+template <typename Function>
+void rejects(Function function)
+{
+  bool threw = false;
+  try {
+    function();
+  } catch (const std::exception&) {
+    threw = true;
+  }
+  check(threw, "expected exception", __LINE__);
+}
+void testIndexes();
+void testGeometry();
+void testGraph();
+void testOptimization();
+void testPolicies();
+void testModel();
+}  // namespace learning_test
+#define CHECK(expression) learning_test::check(bool(expression), #expression, __LINE__)

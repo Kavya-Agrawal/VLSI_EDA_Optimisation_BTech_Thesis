@@ -1,0 +1,185 @@
+--- a/src/cts/src/TechChar_new.cpp
++++ b/src/cts/src/TechChar_new.cpp
+@@ -40,6 +40,182 @@
+ #include "utl/Logger.h"
+ #include "utl/algorithms.h"
+ 
++
++// Algorithms below belong to this production translation unit.
++#include "LearningMode.h"
++#include "LearningPolicyConfig.h"
++
++// BEGIN INTEGRATED KERNEL Pareto
++// SPDX-License-Identifier: BSD-3-Clause
++#include <algorithm>
++#include <array>
++#include <cmath>
++#include <cstddef>
++#include <stdexcept>
++#include <vector>
++
++namespace ord::learning {
++struct Objective
++{
++  std::size_t id;
++  // All components are costs: slack loss, area, runtime, for example.
++  std::array<double, 3> costs;
++};
++
++inline bool dominates(const Objective& a, const Objective& b)
++{
++  bool strict = false;
++  for (std::size_t i = 0; i < a.costs.size(); ++i) {
++    if (a.costs[i] > b.costs[i]) {
++      return false;
++    }
++    strict = strict || a.costs[i] < b.costs[i];
++  }
++  return strict;
++}
++
++inline std::vector<Objective> paretoFront(const std::vector<Objective>& candidates)
++{
++  for (const auto& candidate : candidates) {
++    for (double cost : candidate.costs) {
++      if (!std::isfinite(cost)) {
++        throw std::invalid_argument("Nonfinite Pareto objective");
++      }
++    }
++  }
++  std::vector<Objective> front;
++  for (std::size_t i = 0; i < candidates.size(); ++i) {
++    bool dominated = false;
++    for (std::size_t j = 0; j < candidates.size(); ++j) {
++      if (i != j && dominates(candidates[j], candidates[i])) {
++        dominated = true;
++        break;
++      }
++    }
++    if (!dominated) {
++      front.push_back(candidates[i]);
++    }
++  }
++  return front;
++}
++
++inline std::vector<std::vector<Objective>> nondominatedLayers(std::vector<Objective> remaining)
++{
++  std::vector<std::vector<Objective>> layers;
++  while (!remaining.empty()) {
++    auto front = paretoFront(remaining);
++    std::vector<Objective> next;
++    for (const auto& candidate : remaining) {
++      const bool on_front = std::any_of(front.begin(), front.end(), [&](const auto& member) {
++        return member.id == candidate.id;
++      });
++      if (!on_front) {
++        next.push_back(candidate);
++      }
++    }
++    layers.push_back(std::move(front));
++    remaining = std::move(next);
++  }
++  return layers;
++}
++}  // namespace ord::learning
++// END INTEGRATED KERNEL Pareto
++
++// BEGIN INTEGRATED KERNEL MinCostFlow
++// SPDX-License-Identifier: BSD-3-Clause
++#include <algorithm>
++#include <cstddef>
++#include <cmath>
++#include <limits>
++#include <stdexcept>
++#include <utility>
++#include <vector>
++
++namespace ord::learning {
++// Small integral-capacity residual solver for educational assignment examples.
++// Bellman-Ford allows negative reverse costs; reachable negative cycles reject.
++class MinCostFlow
++{
++ public:
++  explicit MinCostFlow(std::size_t nodes) : graph_(nodes) {}
++
++  void addEdge(std::size_t from, std::size_t to, int capacity, double cost)
++  {
++    if (from >= graph_.size() || to >= graph_.size() || from == to || capacity < 0) {
++      throw std::invalid_argument("Invalid residual edge");
++    }
++    const auto forward = graph_[from].size();
++    const auto reverse = graph_[to].size();
++    graph_[from].push_back({to, reverse, capacity, cost});
++    graph_[to].push_back({from, forward, 0, -cost});
++  }
++
++  std::pair<int, double> solve(std::size_t source, std::size_t sink, int demand)
++  {
++    if (source >= graph_.size() || sink >= graph_.size() || source == sink || demand < 0) {
++      throw std::invalid_argument("Invalid flow terminals");
++    }
++    int sent = 0;
++    double cost = 0;
++    while (sent < demand) {
++      std::vector<double> distance(graph_.size(), std::numeric_limits<double>::infinity());
++      std::vector<std::pair<std::size_t, std::size_t>> parent(graph_.size());
++      distance[source] = 0;
++      for (std::size_t iteration = 0; iteration < graph_.size(); ++iteration) {
++        bool changed = false;
++        for (std::size_t node = 0; node < graph_.size(); ++node) {
++          if (!std::isfinite(distance[node])) {
++            continue;
++          }
++          for (std::size_t index = 0; index < graph_[node].size(); ++index) {
++            const auto& edge = graph_[node][index];
++            if (edge.capacity > 0 && distance[node] + edge.cost < distance[edge.to] - 1e-12) {
++              distance[edge.to] = distance[node] + edge.cost;
++              parent[edge.to] = {node, index};
++              changed = true;
++            }
++          }
++        }
++        if (!changed) {
++          break;
++        }
++        if (iteration + 1 == graph_.size()) {
++          throw std::invalid_argument("Reachable negative residual cycle");
++        }
++      }
++      if (!std::isfinite(distance[sink])) {
++        break;
++      }
++      int augment = demand - sent;
++      for (auto node = sink; node != source; node = parent[node].first) {
++        const auto [previous, index] = parent[node];
++        augment = std::min(augment, graph_[previous][index].capacity);
++      }
++      for (auto node = sink; node != source; node = parent[node].first) {
++        const auto [previous, index] = parent[node];
++        auto& edge = graph_[previous][index];
++        edge.capacity -= augment;
++        graph_[node][edge.reverse].capacity += augment;
++      }
++      sent += augment;
++      cost += augment * distance[sink];
++    }
++    return {sent, cost};
++  }
++
++ private:
++  struct Edge
++  {
++    std::size_t to;
++    std::size_t reverse;
++    int capacity;
++    double cost;
++  };
++  std::vector<std::vector<Edge>> graph_;
++};
++}  // namespace ord::learning
++// END INTEGRATED KERNEL MinCostFlow
++
+ namespace cts {
+ 
+ using utl::CTS;

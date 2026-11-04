@@ -1,0 +1,13 @@
+--- a/src/cts/src/TechChar.h
++++ b/src/cts/src/TechChar.h
+@@ -106,8 +106,8 @@
+ 
+   const std::string& getBufferMaster(unsigned idx) const
+   {
+-    assert(idx >= 0 || idx < bufferMasters_.size());
+-    return bufferMasters_[idx];
++    // LEARN-API-04: the old unsigned-index OR assertion was always true.
++    return bufferMasters_.at(idx);
+   }
+ 
+  private:

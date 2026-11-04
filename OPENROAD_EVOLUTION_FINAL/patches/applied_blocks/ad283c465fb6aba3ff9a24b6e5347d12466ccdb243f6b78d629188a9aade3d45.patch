@@ -1,0 +1,12 @@
+--- a/src/cts/src/HTreeBuilder.h
++++ b/src/cts/src/HTreeBuilder.h
+@@ -88,7 +88,8 @@
+ 
+     Point<double>& getBranchingPoint(unsigned idx)
+     {
+-      return branchPointLoc_[idx];
++      // LEARN-API-03: invalid topology references fail at the access boundary.
++      return branchPointLoc_.at(idx);
+     }
+ 
+     unsigned getBranchingPointParentIdx(unsigned idx) const
