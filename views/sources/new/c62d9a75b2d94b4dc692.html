@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolved (New) Source: learning_evolution/tools/study_stats.py</title>
+<style>
+body {
+    font-family: "Latin Modern Roman", "Times New Roman", Times, Georgia, "DejaVu Serif", serif;
+    color: #111;
+    background: #fff;
+    line-height: 1.55;
+    margin: 40px auto;
+    max-width: 1060px;
+    padding: 0 24px;
+}
+h1 {
+    font-size: 25px;
+    font-weight: bold;
+    border-bottom: 2px solid #222;
+    padding-bottom: 8px;
+    margin: 12px 0 16px 0;
+}
+h2 {
+    font-size: 19px;
+    font-weight: bold;
+    border-bottom: 1px solid #888;
+    padding-bottom: 4px;
+    margin-top: 36px;
+    margin-bottom: 14px;
+}
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+p {
+    margin: 10px 0;
+    line-height: 1.55;
+}
+a {
+    color: #003399;
+    text-decoration: underline;
+}
+a:visited {
+    color: #4a154b;
+}
+a:hover {
+    color: #b00;
+}
+.academic-nav {
+    margin: 18px 0;
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-family: monospace, sans-serif;
+    font-size: 13.5px;
+}
+.academic-nav a {
+    margin-right: 18px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.academic-nav a:hover {
+    text-decoration: underline;
+}
+.notice {
+    padding: 12px 16px;
+    border: 1px solid #bbb;
+    background: #fbfbf6;
+    font-size: 13.5px;
+    margin: 18px 0;
+    line-height: 1.5;
+}
+.summary-grid {
+    display: table;
+    width: 100%;
+    margin: 16px 0;
+    border: 1px solid #999;
+    border-collapse: collapse;
+}
+.summary-grid td {
+    border: 1px solid #bbb;
+    padding: 10px 14px;
+    vertical-align: top;
+    width: 25%;
+    background: #fafafa;
+}
+.summary-grid strong {
+    display: block;
+    font-size: 22px;
+    font-family: monospace, sans-serif;
+    margin-top: 4px;
+}
+table.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    border: 1px solid #888;
+}
+table.academic-table th, table.academic-table td {
+    border: 1px solid #bbb;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+table.academic-table th {
+    background: #ebebeb;
+    font-weight: bold;
+}
+table.academic-table tr:nth-child(even) {
+    background: #fbfbfb;
+}
+code {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    background: #f3f3f3;
+    padding: 1px 4px;
+    border: 1px solid #e0e0e0;
+}
+pre {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.scroll {
+    max-height: 540px;
+    overflow-y: auto;
+    border: 1px solid #bbb;
+}
+.tools {
+    margin: 12px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: monospace, sans-serif;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+.tools input, .tools select, .tools button {
+    font: inherit;
+    padding: 6px 10px;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 2px;
+}
+.muted {
+    color: #555;
+    font-size: 13px;
+}
+figure.academic-fig {
+    margin: 24px 0 32px 0;
+    padding: 14px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}
+figure.academic-fig img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+figcaption.academic-cap {
+    font-size: 13.5px;
+    color: #222;
+    margin-top: 10px;
+    line-height: 1.5;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+}
+.code-view {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 12px;
+}
+</style>
+</head>
+<body>
+<div class="academic-nav">
+  <a href="../../../index.html#sources">&larr; Back to Source Index</a>
+  <a href="../../../index.html">Main Review Page</a>
+  <a href="../../../graphs.html">Visualizations</a>
+  <a href="../../../diffs/c62d9a75b2d94b4dc692.html">Compare Side-by-Side Diff</a>
+  <a href="../../../sources/new/learning_evolution/tools/study_stats.py">Raw File</a>
+</div>
+
+<h1>Evolved (New) Source: learning_evolution/tools/study_stats.py</h1>
+<p><strong>File Repository Path:</strong> <code>learning_evolution/tools/study_stats.py</code></p>
+<p><strong>Total Lines:</strong> 229 &middot; <strong>Format:</strong> Formatted HTML View (&middot; <a href="../../../sources/new/learning_evolution/tools/study_stats.py">Download Raw Source File</a>)</p>
+
+<div class="code-view">
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   1</span>#!/usr/bin/env python3
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   2</span>&quot;&quot;&quot;CSV-derived descriptive statistics and dependency-free SVG plots.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   3</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   4</span>These describe simulated study labels, not real OpenROAD outcomes. There is
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   5</span>no statistically justified prediction of future tool improvement in this data.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   6</span>&quot;&quot;&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   7</span>import argparse
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   8</span>from collections import Counter
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   9</span>import csv
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  10</span>import html
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  11</span>import importlib.util
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  12</span>import json
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  13</span>import math
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  14</span>from pathlib import Path
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  15</span>import statistics
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  16</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  17</span>FIELDS = {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  18</span>    &#x27;simulated_wns_impact_pct&#x27;: (&#x27;WNS improvement&#x27;, &#x27;%&#x27;),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  19</span>    &#x27;simulated_tns_impact_pct&#x27;: (&#x27;TNS improvement&#x27;, &#x27;%&#x27;),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  20</span>    &#x27;simulated_runtime_delta_s&#x27;: (&#x27;Runtime delta&#x27;, &#x27;s&#x27;),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  21</span>    &#x27;simulated_overall_score&#x27;: (&#x27;Overall study score&#x27;, &#x27;score units&#x27;),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  22</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  23</span>BLUE, ORANGE, INK, MUTED, GRID = &#x27;#326b96&#x27;, &#x27;#b8753a&#x27;, &#x27;#162939&#x27;, &#x27;#526575&#x27;, &#x27;#dce3e9&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  24</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  25</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  26</span>def read_csv(path):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  27</span>    with Path(path).open(newline=&#x27;&#x27;) as handle:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  28</span>        return list(csv.DictReader(handle))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  29</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  30</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  31</span>def write_csv(path, rows):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  32</span>    if not rows:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  33</span>        raise ValueError(&#x27;Refusing to write an empty analytical table&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  34</span>    with Path(path).open(&#x27;w&#x27;, newline=&#x27;&#x27;) as handle:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  35</span>        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  36</span>        writer.writeheader()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  37</span>        writer.writerows(rows)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  38</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  39</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  40</span>def percentile(values, percentage):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  41</span>    if not values or not 0 &lt;= percentage &lt;= 100:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  42</span>        raise ValueError(&#x27;Percentile needs data and a percentage in [0, 100]&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  43</span>    ordered = sorted(values)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  44</span>    position = (len(ordered) - 1) * percentage / 100
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  45</span>    low, high = math.floor(position), math.ceil(position)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  46</span>    return ordered[low] + (ordered[high] - ordered[low]) * (position - low)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  47</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  48</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>def describe(values, field, unit):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>    if not values or not all(math.isfinite(value) for value in values):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  51</span>        raise ValueError(&#x27;Statistics need finite nonempty observations&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  52</span>    width = .25 if unit == &#x27;%&#x27; else .1
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  53</span>    bins = Counter(math.floor(value / width) for value in values)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  54</span>    # Deterministic tie-break: the lowest interval among equally common bins.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  55</span>    modal = min(bins, key=lambda key: (-bins[key], key))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  56</span>    return dict(metric=field, unit=unit, count=len(values),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  57</span>                mean=statistics.mean(values), median=statistics.median(values),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  58</span>                stddev=statistics.stdev(values) if len(values) &gt; 1 else 0.,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  59</span>                minimum=min(values), maximum=max(values),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  60</span>                **{&#x27;p&#x27; + str(p): percentile(values, p) for p in [1, 5, 10, 25, 50, 75, 90, 95, 99]},
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  61</span>                modal_bin_low=modal * width, modal_bin_high=(modal + 1) * width,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  62</span>                modal_bin_count=bins[modal], modal_bin_width=width)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  63</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  64</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  65</span>class Svg:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  66</span>    def __init__(self, title, subtitle, width=1050, height=520):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  67</span>        self.width, self.height = width, height
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  68</span>        self.parts = [f&#x27;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;{width}&quot; height=&quot;{height}&quot; viewBox=&quot;0 0 {width} {height}&quot; role=&quot;img&quot;&gt;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  69</span>                      f&#x27;&lt;title&gt;{html.escape(title)}&lt;/title&gt;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  70</span>                      f&#x27;&lt;rect width=&quot;{width}&quot; height=&quot;{height}&quot; fill=&quot;white&quot;/&gt;&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  71</span>        self.text(32, 35, title, 20, INK)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  72</span>        self.text(32, 60, subtitle, 12, MUTED)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  73</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  74</span>    def text(self, x, y, value, size=12, fill=INK, anchor=&#x27;start&#x27;):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  75</span>        self.parts.append(f&#x27;&lt;text x=&quot;{x}&quot; y=&quot;{y}&quot; fill=&quot;{fill}&quot; font-size=&quot;{size}&quot; font-family=&quot;Arial,sans-serif&quot; text-anchor=&quot;{anchor}&quot;&gt;{html.escape(str(value))}&lt;/text&gt;&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  76</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  77</span>    def line(self, x1, y1, x2, y2, color=GRID, width=1):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  78</span>        self.parts.append(f&#x27;&lt;line x1=&quot;{x1}&quot; y1=&quot;{y1}&quot; x2=&quot;{x2}&quot; y2=&quot;{y2}&quot; stroke=&quot;{color}&quot; stroke-width=&quot;{width}&quot;/&gt;&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  79</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  80</span>    def rect(self, x, y, width, height, fill):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  81</span>        self.parts.append(f&#x27;&lt;rect x=&quot;{x:.3f}&quot; y=&quot;{y:.3f}&quot; width=&quot;{max(0,width):.3f}&quot; height=&quot;{max(0,height):.3f}&quot; fill=&quot;{fill}&quot;/&gt;&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  82</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  83</span>    def dot(self, x, y, radius=2, fill=BLUE, opacity=.4):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  84</span>        self.parts.append(f&#x27;&lt;circle cx=&quot;{x:.3f}&quot; cy=&quot;{y:.3f}&quot; r=&quot;{radius}&quot; fill=&quot;{fill}&quot; opacity=&quot;{opacity}&quot;/&gt;&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  85</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  86</span>    def path(self, points, color):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  87</span>        coordinates = &#x27; &#x27;.join(f&#x27;{x:.3f},{y:.3f}&#x27; for x,y in points)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  88</span>        self.parts.append(f&#x27;&lt;polyline points=&quot;{coordinates}&quot; fill=&quot;none&quot; stroke=&quot;{color}&quot; stroke-width=&quot;2.5&quot;/&gt;&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  89</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  90</span>    def save(self, path):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  91</span>        self.text(32, self.height - 15, &#x27;Source: bundled CSV snapshot · no measured OpenROAD QoR&#x27;, 11, MUTED)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  92</span>        Path(path).write_text(&#x27;\n&#x27;.join(self.parts + [&#x27;&lt;/svg&gt;&#x27;]) + &#x27;\n&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  93</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  94</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  95</span>def axes(svg, xmax, ymax, xlabel, ylabel):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  96</span>    left, top, width, height = 90, 100, 890, svg.height - 195
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  97</span>    for step in range(6):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  98</span>        x = left + width * step / 5
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  99</span>        y = top + height - height * step / 5
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 100</span>        svg.line(left, y, left + width, y)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 101</span>        svg.text(left - 12, y + 4, f&#x27;{ymax * step / 5:.3g}&#x27;, anchor=&#x27;end&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 102</span>        svg.text(x, top + height + 22, f&#x27;{xmax * step / 5:.3g}&#x27;, anchor=&#x27;middle&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 103</span>    svg.line(left, top, left, top + height, INK)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 104</span>    svg.line(left, top + height, left + width, top + height, INK)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 105</span>    svg.text(left, top - 13, ylabel, 12, MUTED)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 106</span>    svg.text(left + width / 2, top + height + 48, xlabel, 12, MUTED, &#x27;middle&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 107</span>    return lambda x: left + width * x / xmax, lambda y: top + height - height * y / ymax
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 108</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 109</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 110</span>def bar_chart(path, title, subtitle, labels, values, xlabel):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 111</span>    chart = Svg(title, subtitle, height=max(520, 220 + 31 * len(labels)))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 112</span>    left, right = 360, 960
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 113</span>    maximum = max(values) or 1
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 114</span>    for index, (label, value) in enumerate(zip(labels, values)):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 115</span>        y = 105 + index * 31
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 116</span>        chart.text(left - 12, y + 14, label, 12, anchor=&#x27;end&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 117</span>        chart.rect(left, y, (right - left) * value / maximum, 19, BLUE)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 118</span>        chart.text(left + (right - left) * value / maximum + 8, y + 14, f&#x27;{value:.4g}&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 119</span>    bottom = 115 + len(labels) * 31
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 120</span>    chart.line(left, bottom, right, bottom, INK)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 121</span>    for index in range(5):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 122</span>        x = left + (right - left) * index / 4
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 123</span>        chart.text(x, bottom + 20, f&#x27;{maximum * index / 4:.4g}&#x27;, anchor=&#x27;middle&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 124</span>    chart.text((left + right) / 2, bottom + 43, xlabel, 12, MUTED, &#x27;middle&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 125</span>    chart.save(path)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 126</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 127</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 128</span>def graphs(root, rows, applied):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 129</span>    output = root / &#x27;graphs&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 130</span>    output.mkdir(exist_ok=True)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 131</span>    wns = [float(row[&#x27;simulated_wns_impact_pct&#x27;]) for row in rows]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 132</span>    tns = [float(row[&#x27;simulated_tns_impact_pct&#x27;]) for row in rows]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 133</span>    chart = Svg(&#x27;Distribution of simulated timing improvements&#x27;, &#x27;WNS (blue) and TNS (orange) · all 3,500 proposed policy variants&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 134</span>    bins = [[0] * 20 for _ in range(2)]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 135</span>    for destination, values in zip(bins, [wns, tns]):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 136</span>        for value in values:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 137</span>            destination[min(19, int(value / .25))] += 1
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 138</span>    xx, yy = axes(chart, 5, max(max(b) for b in bins) * 1.12,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 139</span>                  &#x27;Simulated improvement (%) · bins of 0.25 percentage points&#x27;, &#x27;Candidate count&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 140</span>    for group in range(20):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 141</span>        for offset, (histogram, color) in enumerate(zip(bins, [BLUE, ORANGE])):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 142</span>            x = xx(group * .25 + .015 + offset * .115)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 143</span>            chart.rect(x, yy(histogram[group]), xx(.105) - xx(0), yy(0) - yy(histogram[group]), color)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 144</span>    chart.text(770, 82, &#x27;WNS&#x27;, 12, BLUE)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 145</span>    chart.text(850, 82, &#x27;TNS&#x27;, 12, ORANGE)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 146</span>    chart.save(output / &#x27;improvement_distribution.svg&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 147</span>    chart = Svg(&#x27;Percentiles of simulated timing improvements&#x27;, &#x27;Empirical quantiles with linear interpolation · all candidates; no selection filtering&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 148</span>    xx, yy = axes(chart, 100, 5, &#x27;Percentile (%)&#x27;, &#x27;Simulated improvement (%)&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 149</span>    for values, color in [(wns, BLUE), (tns, ORANGE)]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 150</span>        chart.path([(xx(p), yy(percentile(values, p))) for p in range(101)], color)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 151</span>    chart.text(770, 82, &#x27;WNS&#x27;, 12, BLUE)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 152</span>    chart.text(850, 82, &#x27;TNS&#x27;, 12, ORANGE)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 153</span>    chart.save(output / &#x27;improvement_percentiles.svg&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 154</span>    chart = Svg(&#x27;WNS versus TNS study labels&#x27;, &#x27;One point per proposed variant · the label generator creates these clusters&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 155</span>    xx, yy = axes(chart, 5, 5, &#x27;Simulated WNS improvement (%)&#x27;, &#x27;Simulated TNS improvement (%)&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 156</span>    for x, y in zip(wns, tns):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 157</span>        chart.dot(xx(x), yy(y), 1.8, BLUE, .23)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 158</span>    chart.save(output / &#x27;wns_tns_scatter.svg&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 159</span>    # Distinguish actual source-edit concentration from simulated QoR labels.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 160</span>    counts = Counter()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 161</span>    for row in applied:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 162</span>        if row[&#x27;target_path&#x27;].startswith(&#x27;src/&#x27;) and Path(row[&#x27;target_path&#x27;]).suffix in {&#x27;.cpp&#x27;, &#x27;.cc&#x27;, &#x27;.h&#x27;, &#x27;.hh&#x27;}:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 163</span>            counts[row[&#x27;target_path&#x27;]] += int(row[&#x27;lines_added&#x27;]) + int(row[&#x27;lines_removed&#x27;])
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 164</span>    selected = counts.most_common(12)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 165</span>    labels = [(&#x27;/&#x27;.join(path.split(&#x27;/&#x27;)[1:2]) + &#x27;/&#x27; + Path(path).name) for path,_ in selected]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 166</span>    bar_chart(output / &#x27;source_change_concentration.svg&#x27;, &#x27;Where the actual source changes are concentrated&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 167</span>              &#x27;Applied production-source changes · embedded definitions count at each source location&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 168</span>              labels, [count for _,count in selected], &#x27;Changed lines (added + removed)&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 169</span>    top = sorted(rows, key=lambda row: float(row[&#x27;simulated_overall_score&#x27;]), reverse=True)[:10]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 170</span>    bar_chart(output / &#x27;highest_labeled_candidates.svg&#x27;, &#x27;Highest-scoring candidates in the study labels&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 171</span>              &#x27;Ranking by simulated_overall_score · this is not an experimentally optimal code change&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 172</span>              [row[&#x27;change_hash&#x27;][:12] for row in top],
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 173</span>              [float(row[&#x27;simulated_overall_score&#x27;]) for row in top], &#x27;Simulated score (arbitrary units)&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 174</span>    fields = Counter(field for row in rows for field in row[&#x27;changed_fields&#x27;].split(&#x27;;&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 175</span>    bar_chart(output / &#x27;changed_policy_fields.svg&#x27;, &#x27;Which policy fields the proposed variants edit&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 176</span>              &#x27;Nonexclusive counts: one patch may edit multiple fields&#x27;, list(fields), list(fields.values()), &#x27;Candidate patches touching field (count)&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 177</span>    return [str(path.relative_to(root)) for path in sorted(output.glob(&#x27;*.svg&#x27;))]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 178</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 179</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 180</span>def analyze(root, print_report=True):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 181</span>    root = Path(root).resolve()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 182</span>    rows = read_csv(root / &#x27;data/candidates.csv&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 183</span>    applied = read_csv(root / &#x27;data/applied_changes.csv&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 184</span>    output = root / &#x27;statistics&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 185</span>    output.mkdir(exist_ok=True)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 186</span>    descriptions = []
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 187</span>    for field, (title, unit) in FIELDS.items():
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 188</span>        descriptions.append(describe([float(row[field]) for row in rows], field, unit))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 189</span>    combined = [(float(row[&#x27;simulated_wns_impact_pct&#x27;]) + float(row[&#x27;simulated_tns_impact_pct&#x27;])) / 2 for row in rows]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 190</span>    descriptions.append(describe(combined, &#x27;combined_timing_label_pct&#x27;, &#x27;%&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 191</span>    write_csv(output / &#x27;summary.csv&#x27;, descriptions)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 192</span>    (output / &#x27;summary.json&#x27;).write_text(json.dumps(descriptions, indent=2) + &#x27;\n&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 193</span>    top = sorted(rows, key=lambda row: (-float(row[&#x27;simulated_overall_score&#x27;]), row[&#x27;change_hash&#x27;]))[:20]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 194</span>    write_csv(output / &#x27;highest_labeled_candidates.csv&#x27;, top)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 195</span>    concentration = Counter()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 196</span>    for row in applied:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 197</span>        concentration[row[&#x27;target_path&#x27;]] += int(row[&#x27;lines_added&#x27;]) + int(row[&#x27;lines_removed&#x27;])
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 198</span>    write_csv(output / &#x27;changes_by_file.csv&#x27;, [dict(path=path, changed_lines=count)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 199</span>              for path,count in concentration.most_common()])
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 200</span>    graph_paths = graphs(root, rows, applied)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 201</span>    result = dict(provenance=&#x27;descriptive statistics of simulated labels; not measured OpenROAD improvements&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 202</span>                  candidate_count=len(rows), applied_hunks=len(applied),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 203</span>                  summaries=descriptions, highest_labeled_candidate=top[0], graphs=graph_paths,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 204</span>                  interpretation=&#x27;The all-candidate mean describes this CSV only. Ranking fictional labels cannot identify an optimal real OpenROAD change.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 205</span>                  percentile_method=&#x27;Linear interpolation at (n - 1) * p / 100&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 206</span>                  mode_method=&#x27;Most-populated fixed-width interval; lowest interval breaks ties. Continuous-valued exact modes are not emphasized.&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 207</span>    (output / &#x27;analysis.json&#x27;).write_text(json.dumps(result, indent=2) + &#x27;\n&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 208</span>    renderer = root / &#x27;scripts/render_dashboard.py&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 209</span>    if renderer.is_file():
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 210</span>        specification = importlib.util.spec_from_file_location(&#x27;study_dashboard_renderer&#x27;, renderer)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 211</span>        module = importlib.util.module_from_spec(specification)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 212</span>        specification.loader.exec_module(module)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 213</span>        module.refresh(root, result, rows, read_csv(root / &#x27;data/source_file_index.csv&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 214</span>    if print_report:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 215</span>        print(&#x27;CSV-DERIVED STUDY STATISTICS — simulated labels, not measured OpenROAD QoR&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 216</span>        print(f&#x27;Candidates: {len(rows)}; applied source blocks: {len(applied)}&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 217</span>        print(f&#x27;{&quot;Metric&quot;:32} {&quot;Mean&quot;:&gt;9} {&quot;Median&quot;:&gt;9} {&quot;Std dev&quot;:&gt;9} {&quot;P1&quot;:&gt;9} {&quot;P95&quot;:&gt;9} {&quot;P99&quot;:&gt;9} {&quot;Modal interval&quot;:&gt;18}&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 218</span>        for entry in descriptions:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 219</span>            mode = f&#x27;[{entry[&quot;modal_bin_low&quot;]:.2f}, {entry[&quot;modal_bin_high&quot;]:.2f})&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 220</span>            print(f&#x27;{entry[&quot;metric&quot;]:32} {entry[&quot;mean&quot;]:9.4f} {entry[&quot;median&quot;]:9.4f} {entry[&quot;stddev&quot;]:9.4f} {entry[&quot;p1&quot;]:9.4f} {entry[&quot;p95&quot;]:9.4f} {entry[&quot;p99&quot;]:9.4f} {mode:&gt;18}&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 221</span>        print(&#x27;Graphs:&#x27;, root / &#x27;graphs&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 222</span>        print(&#x27;No real-world expected improvement or optimal code change can be inferred from these simulated labels.&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 223</span>    return result
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 224</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 225</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 226</span>if __name__ == &#x27;__main__&#x27;:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 227</span>    parser = argparse.ArgumentParser(description=__doc__)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 228</span>    parser.add_argument(&#x27;--root&#x27;, type=Path, default=Path(__file__).resolve().parents[1])
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 229</span>    analyze(parser.parse_args().root)
+</div>
+
+<p style="margin-top:20px;"><a href="../../../index.html#sources">&larr; Back to Source Index</a></p>
+</body>
+</html>

@@ -276,16 +276,15 @@ def main():
     copy_file(HOME / 'tools/verify_bundle.py', Path('scripts/verify_bundle.py'))
     copy_file(HOME / 'tools/render_graphs.py', Path('scripts/render_graphs.py'))
     copy_file(HOME / 'tools/test_dashboard.cjs', Path('scripts/test_dashboard.cjs'))
-    renderer = 'import html, json\nfrom pathlib import Path\nFINAL = Path(__file__).resolve().parents[1]\nCSS = ' + repr(CSS) + '\n\n' + inspect.getsource(page) + '\n' + inspect.getsource(dashboard)
-    renderer += '\ndef refresh(root, analysis, rows, index):\n    global FINAL\n    FINAL = Path(root)\n    dashboard(analysis, rows, index)\n'
-    (FINAL / 'scripts/render_dashboard.py').write_text(renderer)
+    copy_file(HOME / 'tools/render_dashboard.py', Path('scripts/render_dashboard.py'))
     analysis = analyze(FINAL)
     render(FINAL)
-    dashboard(analysis, rows, index)
+    import render_dashboard
+    render_dashboard.refresh(FINAL, analysis, rows, index)
     documentation(analysis, index)
     # Source/data checksums remain stable when graphs and statistics regenerate.
     checksums = {}
-    for directory in ['data', 'sources', 'candidate_code', 'patches']:
+    for directory in ['data', 'sources', 'candidate_code', 'patches', 'views']:
         for path in sorted((FINAL / directory).rglob('*')):
             if path.is_file():
                 checksums[str(path.relative_to(FINAL))] = hashlib.sha256(path.read_bytes()).hexdigest()
