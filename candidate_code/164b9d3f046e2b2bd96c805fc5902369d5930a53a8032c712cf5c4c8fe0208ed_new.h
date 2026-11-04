@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: BSD-3-Clause
+#pragma once
+namespace ord::learning {
+struct PolicyConfig
+{
+  double load_weight = 1.56216630;
+  double density_weight = 0.32763784;
+  double prefix_weight = 0.15725775;
+  double neighborhood_weight = 0.37813633;
+  double late_weight = 0.09468107;
+  double critical_weight = 0.07710625;
+  unsigned budget = 29;
+  unsigned neighborhood = 3;
+  unsigned spatial_mode = 1;
+  bool use_dp = true;
+};
+inline constexpr PolicyConfig policyConfig() { return {}; }
+}  // namespace ord::learning

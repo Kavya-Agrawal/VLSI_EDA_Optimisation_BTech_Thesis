@@ -1,0 +1,11 @@
+--- a/src/cts/src/LearningPolicyConfig.h
++++ b/src/cts/src/LearningPolicyConfig.h
+@@ -3,7 +3,7 @@
+ namespace ord::learning {
+ struct PolicyConfig
+ {
+-  double load_weight = 1.0;
++  double load_weight = 0.80548850;
+   double density_weight = 0.18;
+   double prefix_weight = 0.12;
+   double neighborhood_weight = 0.08;

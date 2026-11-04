@@ -1,0 +1,25 @@
+--- a/src/rsz/src/CMakeLists.txt
++++ b/src/rsz/src/CMakeLists.txt
+@@ -13,12 +13,12 @@
+ add_library(rsz_lib
+     BufferedNet.cc
+     PreChecks.cc
+-    RecoverPower.cc
++    RecoverPower_new.cc
+     RepairDesign.cc
+-    RepairHold.cc
++    RepairHold_new.cc
+     Rebuffer.cc
+     policy/SetupLegacyMtPolicy.cc
+-    policy/SetupLegacyBase.cc
++    policy/SetupLegacyBase_new.cc
+     MoveCommitter.cc
+     MoveTracker.cc
+     policy/OptimizationPolicy.cc
+@@ -150,3 +150,6 @@
+       rsz_lib
+   )
+ endif()
++
++# Experimental header-only learning kernels; no CTS binary dependency.
++target_include_directories(rsz_lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../cts/src)

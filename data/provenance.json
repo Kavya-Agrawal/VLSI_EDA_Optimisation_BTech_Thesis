@@ -1,0 +1,9 @@
+{
+  "candidate_count": 3500,
+  "source_variant_seed": 4173,
+  "label_seed": 8192,
+  "source_target": "src/cts/src/LearningPolicyConfig.h",
+  "study_only": true,
+  "measured_openroad": false,
+  "description": "Replayable source candidates with explicitly fictional impact labels."
+}

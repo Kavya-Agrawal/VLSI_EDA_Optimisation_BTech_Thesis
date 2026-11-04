@@ -1,0 +1,29 @@
+--- a/src/cts/src/LearningPolicyConfig.h
++++ b/src/cts/src/LearningPolicyConfig.h
+@@ -3,16 +3,16 @@
+ namespace ord::learning {
+ struct PolicyConfig
+ {
+-  double load_weight = 1.0;
+-  double density_weight = 0.18;
+-  double prefix_weight = 0.12;
+-  double neighborhood_weight = 0.08;
+-  double late_weight = 0.06;
+-  double critical_weight = 0.10;
+-  unsigned budget = 12;
+-  unsigned neighborhood = 4;
+-  unsigned spatial_mode = 1;
+-  bool use_dp = true;
++  double load_weight = 0.90494870;
++  double density_weight = 0.41818112;
++  double prefix_weight = 0.19559986;
++  double neighborhood_weight = 0.11141993;
++  double late_weight = 0.12171567;
++  double critical_weight = 0.46492888;
++  unsigned budget = 38;
++  unsigned neighborhood = 3;
++  unsigned spatial_mode = 0;
++  bool use_dp = false;
+ };
+ inline constexpr PolicyConfig policyConfig() { return {}; }
+ }  // namespace ord::learning

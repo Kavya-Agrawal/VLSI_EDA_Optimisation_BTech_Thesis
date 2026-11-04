@@ -1,0 +1,33 @@
+--- a/src/rsz/src/RecoverPower_new.cc
++++ b/src/rsz/src/RecoverPower_new.cc
+@@ -70,11 +218,25 @@
+     }
+   }
+ 
+-  std::ranges::sort(ends_with_slack,
+-                    [this](sta::Vertex* end1, sta::Vertex* end2) {
+-                      return sta_->slack(end1, max_) > sta_->slack(end2, max_);
+-                    });
+-
++  // LEARN-RSZ-02: snapshot slacks before sorting; comparator is pure.
++  if (ord::learning::enabled()) {
++    std::vector<std::pair<sta::Slack, sta::Vertex*>> cached;
++    cached.reserve(ends_with_slack.size());
++    for (auto* vertex : ends_with_slack) {
++      cached.emplace_back(sta_->slack(vertex, max_), vertex);
++    }
++    std::stable_sort(cached.begin(), cached.end(), [](const auto& a, const auto& b) {
++      return a.first > b.first;
++    });
++    for (std::size_t i = 0; i < cached.size(); ++i) {
++      ends_with_slack[i] = cached[i].second;
++    }
++  } else {
++    std::ranges::sort(ends_with_slack,
++                      [this](sta::Vertex* end1, sta::Vertex* end2) {
++                        return sta_->slack(end1, max_) > sta_->slack(end2, max_);
++                      });
++  }
+   debugPrint(logger_,
+              RSZ,
+              "recover_power",

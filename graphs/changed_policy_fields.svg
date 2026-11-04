@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="530" viewBox="0 0 1050 530" role="img">
+<title>Which policy fields the proposed variants edit</title>
+<rect width="1050" height="530" fill="white"/>
+<text x="32" y="35" fill="#162939" font-size="20" font-family="Arial,sans-serif" text-anchor="start">Which policy fields the proposed variants edit</text>
+<text x="32" y="60" fill="#526575" font-size="12" font-family="Arial,sans-serif" text-anchor="start">Nonexclusive counts: one patch may edit multiple fields</text>
+<text x="348" y="119" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">load_weight</text>
+<rect x="360.000" y="105.000" width="600.000" height="19.000" fill="#326b96"/>
+<text x="968.0" y="119" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3500</text>
+<text x="348" y="150" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">density_weight</text>
+<rect x="360.000" y="136.000" width="514.286" height="19.000" fill="#326b96"/>
+<text x="882.2857142857143" y="150" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3000</text>
+<text x="348" y="181" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">prefix_weight</text>
+<rect x="360.000" y="167.000" width="514.286" height="19.000" fill="#326b96"/>
+<text x="882.2857142857143" y="181" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3000</text>
+<text x="348" y="212" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">neighborhood_weight</text>
+<rect x="360.000" y="198.000" width="514.286" height="19.000" fill="#326b96"/>
+<text x="882.2857142857143" y="212" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3000</text>
+<text x="348" y="243" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">late_weight</text>
+<rect x="360.000" y="229.000" width="514.286" height="19.000" fill="#326b96"/>
+<text x="882.2857142857143" y="243" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3000</text>
+<text x="348" y="274" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">critical_weight</text>
+<rect x="360.000" y="260.000" width="514.286" height="19.000" fill="#326b96"/>
+<text x="882.2857142857143" y="274" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3000</text>
+<text x="348" y="305" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">budget</text>
+<rect x="360.000" y="291.000" width="514.286" height="19.000" fill="#326b96"/>
+<text x="882.2857142857143" y="305" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3000</text>
+<text x="348" y="336" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">neighborhood</text>
+<rect x="360.000" y="322.000" width="514.286" height="19.000" fill="#326b96"/>
+<text x="882.2857142857143" y="336" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3000</text>
+<text x="348" y="367" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">spatial_mode</text>
+<rect x="360.000" y="353.000" width="514.286" height="19.000" fill="#326b96"/>
+<text x="882.2857142857143" y="367" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3000</text>
+<text x="348" y="398" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">use_dp</text>
+<rect x="360.000" y="384.000" width="514.286" height="19.000" fill="#326b96"/>
+<text x="882.2857142857143" y="398" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">3000</text>
+<line x1="360" y1="425" x2="960" y2="425" stroke="#162939" stroke-width="1"/>
+<text x="360.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">0</text>
+<text x="510.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">875</text>
+<text x="660.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">1750</text>
+<text x="810.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">2625</text>
+<text x="960.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">3500</text>
+<text x="660.0" y="468" fill="#526575" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">Candidate patches touching field (count)</text>
+<text x="32" y="515" fill="#526575" font-size="11" font-family="Arial,sans-serif" text-anchor="start">Source: bundled CSV snapshot · no measured OpenROAD QoR</text>
+</svg>

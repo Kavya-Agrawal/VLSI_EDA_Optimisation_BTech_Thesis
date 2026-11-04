@@ -1,0 +1,167 @@
+--- a/src/cts/src/LatencyBalancer.cpp
++++ b/src/cts/src/LatencyBalancer_new.cpp
+@@ -40,6 +40,154 @@
+ #include "sta/TimingModel.hh"
+ #include "utl/Logger.h"
+ 
++
++// Algorithms below belong to this production translation unit.
++#include "LearningMode.h"
++#include "LearningPolicyConfig.h"
++
++// BEGIN INTEGRATED KERNEL TimingDag
++// SPDX-License-Identifier: BSD-3-Clause
++#include <algorithm>
++#include <cmath>
++#include <cstddef>
++#include <deque>
++#include <limits>
++#include <stdexcept>
++#include <vector>
++
++namespace ord::learning {
++// Educational single-corner scalar DAG, not a replacement for OpenSTA.
++class TimingDag
++{
++ public:
++  explicit TimingDag(std::vector<double> delays)
++      : delays_(std::move(delays)), children_(delays_.size()), parents_(delays_.size())
++  {
++    for (double value : delays_) {
++      if (!std::isfinite(value) || value < 0) {
++        throw std::invalid_argument("Invalid vertex delay");
++      }
++    }
++  }
++
++  void addEdge(std::size_t from, std::size_t to)
++  {
++    children_.at(from).push_back(to);
++    parents_.at(to).push_back(from);
++    order_.clear();
++  }
++
++  void compile()
++  {
++    order_.clear();
++    std::vector<std::size_t> degrees;
++    std::deque<std::size_t> ready;
++    for (const auto& parents : parents_) {
++      degrees.push_back(parents.size());
++    }
++    for (std::size_t i = 0; i < delays_.size(); ++i) {
++      if (!degrees[i]) {
++        ready.push_back(i);
++      }
++    }
++    while (!ready.empty()) {
++      const auto node = ready.front();
++      ready.pop_front();
++      order_.push_back(node);
++      for (auto child : children_[node]) {
++        if (--degrees[child] == 0) {
++          ready.push_back(child);
++        }
++      }
++    }
++    if (order_.size() != delays_.size()) {
++      order_.clear();
++      throw std::invalid_argument("TimingDag contains a cycle");
++    }
++  }
++
++  std::vector<double> arrivals() const
++  {
++    requireCompiled();
++    std::vector<double> values(delays_.size(), 0);
++    for (auto node : order_) {
++      double incoming = 0;
++      for (auto parent : parents_[node]) {
++        incoming = std::max(incoming, values[parent]);
++      }
++      values[node] = incoming + delays_[node];
++    }
++    return values;
++  }
++
++  std::vector<double> required(double endpoint_required) const
++  {
++    requireCompiled();
++    std::vector<double> values(delays_.size(), endpoint_required);
++    for (auto it = order_.rbegin(); it != order_.rend(); ++it) {
++      for (auto child : children_[*it]) {
++        values[*it] = std::min(values[*it], values[child] - delays_[child]);
++      }
++    }
++    return values;
++  }
++
++  std::vector<double> slacks(double endpoint_required) const
++  {
++    auto values = required(endpoint_required);
++    const auto arrival = arrivals();
++    for (std::size_t i = 0; i < values.size(); ++i) {
++      values[i] -= arrival[i];
++    }
++    return values;
++  }
++
++  // Mark only descendants; used to demonstrate incremental invalidation.
++  std::vector<std::size_t> affected(std::size_t source) const
++  {
++    if (source >= delays_.size()) {
++      throw std::out_of_range("TimingDag source");
++    }
++    std::vector<bool> seen(delays_.size(), false);
++    std::vector<std::size_t> stack{source};
++    std::vector<std::size_t> result;
++    while (!stack.empty()) {
++      const auto node = stack.back();
++      stack.pop_back();
++      if (seen[node]) {
++        continue;
++      }
++      seen[node] = true;
++      result.push_back(node);
++      stack.insert(stack.end(), children_[node].begin(), children_[node].end());
++    }
++    std::sort(result.begin(), result.end());
++    return result;
++  }
++
++  void setDelay(std::size_t node, double value)
++  {
++    if (!std::isfinite(value) || value < 0) {
++      throw std::invalid_argument("Invalid replacement delay");
++    }
++    delays_.at(node) = value;
++  }
++
++ private:
++  void requireCompiled() const
++  {
++    if (order_.size() != delays_.size()) {
++      throw std::logic_error("Compile TimingDag before querying");
++    }
++  }
++  std::vector<double> delays_;
++  std::vector<std::vector<std::size_t>> children_;
++  std::vector<std::vector<std::size_t>> parents_;
++  std::vector<std::size_t> order_;
++};
++}  // namespace ord::learning
++// END INTEGRATED KERNEL TimingDag
++
+ namespace cts {
+ 
+ using utl::CTS;
+@@ -293,7 +441,8 @@
+ 
+ float LatencyBalancer::computeAveSinkArrivals(TreeBuilder* builder)
+ {
+-  Clock clock = builder->getClock();
++  // LEARN-CTS-07: borrow the graph's clock instead of copying sink storage.
++  const Clock& clock = builder->getClock();
+   odb::dbNet* topInputClockNet = builder->getTopInputNet();
+   // compute average input arrival at all sinks
+   float sumArrivals = 0.0;

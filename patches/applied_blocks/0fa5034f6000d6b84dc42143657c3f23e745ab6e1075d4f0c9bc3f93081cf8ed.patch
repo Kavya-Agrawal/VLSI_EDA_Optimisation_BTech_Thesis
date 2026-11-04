@@ -1,0 +1,13 @@
+--- a/src/cts/src/Util.h
++++ b/src/cts/src/Util.h
+@@ -136,6 +137,10 @@
+ 
+   Box<double> normalize(double factor)
+   {
++    // LEARN-API-07: invalid scaling must not silently create inverted regions.
++    if (!std::isfinite(factor) || factor <= 0) {
++      throw std::invalid_argument("Box normalization needs a positive finite scale");
++    }
+     return Box<double>(getMinX() * factor,
+                        getMinY() * factor,
+                        getMaxX() * factor,

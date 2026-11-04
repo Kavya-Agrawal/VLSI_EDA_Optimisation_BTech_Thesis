@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="520" viewBox="0 0 1050 520" role="img">
+<title>Distribution of simulated timing improvements</title>
+<rect width="1050" height="520" fill="white"/>
+<text x="32" y="35" fill="#162939" font-size="20" font-family="Arial,sans-serif" text-anchor="start">Distribution of simulated timing improvements</text>
+<text x="32" y="60" fill="#526575" font-size="12" font-family="Arial,sans-serif" text-anchor="start">WNS (blue) and TNS (orange) · all 3,500 proposed policy variants</text>
+<line x1="90" y1="425.0" x2="980" y2="425.0" stroke="#dce3e9" stroke-width="1"/>
+<text x="78" y="429.0" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">0</text>
+<text x="90.0" y="447" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">0</text>
+<line x1="90" y1="360.0" x2="980" y2="360.0" stroke="#dce3e9" stroke-width="1"/>
+<text x="78" y="364.0" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">149</text>
+<text x="268.0" y="447" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">1</text>
+<line x1="90" y1="295.0" x2="980" y2="295.0" stroke="#dce3e9" stroke-width="1"/>
+<text x="78" y="299.0" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">298</text>
+<text x="446.0" y="447" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">2</text>
+<line x1="90" y1="230.0" x2="980" y2="230.0" stroke="#dce3e9" stroke-width="1"/>
+<text x="78" y="234.0" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">448</text>
+<text x="624.0" y="447" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">3</text>
+<line x1="90" y1="165.0" x2="980" y2="165.0" stroke="#dce3e9" stroke-width="1"/>
+<text x="78" y="169.0" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">597</text>
+<text x="802.0" y="447" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">4</text>
+<line x1="90" y1="100.0" x2="980" y2="100.0" stroke="#dce3e9" stroke-width="1"/>
+<text x="78" y="104.0" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">746</text>
+<text x="980.0" y="447" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">5</text>
+<line x1="90" y1="100" x2="90" y2="425" stroke="#162939" stroke-width="1"/>
+<line x1="90" y1="425" x2="980" y2="425" stroke="#162939" stroke-width="1"/>
+<text x="90" y="87" fill="#526575" font-size="12" font-family="Arial,sans-serif" text-anchor="start">Candidate count</text>
+<text x="535.0" y="473" fill="#526575" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">Simulated improvement (%) · bins of 0.25 percentage points</text>
+<rect x="92.670" y="156.171" width="18.690" height="268.829" fill="#326b96"/>
+<rect x="113.140" y="159.657" width="18.690" height="265.343" fill="#b8753a"/>
+<rect x="137.170" y="159.221" width="18.690" height="265.779" fill="#326b96"/>
+<rect x="157.640" y="162.271" width="18.690" height="262.729" fill="#b8753a"/>
+<rect x="181.670" y="159.657" width="18.690" height="265.343" fill="#326b96"/>
+<rect x="202.140" y="134.821" width="18.690" height="290.179" fill="#b8753a"/>
+<rect x="226.170" y="157.478" width="18.690" height="267.522" fill="#326b96"/>
+<rect x="246.640" y="176.213" width="18.690" height="248.787" fill="#b8753a"/>
+<rect x="270.670" y="425.000" width="18.690" height="0.000" fill="#326b96"/>
+<rect x="291.140" y="424.564" width="18.690" height="0.436" fill="#b8753a"/>
+<rect x="315.170" y="425.000" width="18.690" height="0.000" fill="#326b96"/>
+<rect x="335.640" y="425.000" width="18.690" height="0.000" fill="#b8753a"/>
+<rect x="359.670" y="338.295" width="18.690" height="86.705" fill="#326b96"/>
+<rect x="380.140" y="341.781" width="18.690" height="83.219" fill="#b8753a"/>
+<rect x="404.170" y="341.781" width="18.690" height="83.219" fill="#326b96"/>
+<rect x="424.640" y="341.345" width="18.690" height="83.655" fill="#b8753a"/>
+<rect x="448.670" y="341.345" width="18.690" height="83.655" fill="#326b96"/>
+<rect x="469.140" y="343.088" width="18.690" height="81.912" fill="#b8753a"/>
+<rect x="493.170" y="343.088" width="18.690" height="81.912" fill="#326b96"/>
+<rect x="513.640" y="338.295" width="18.690" height="86.705" fill="#b8753a"/>
+<rect x="537.670" y="425.000" width="18.690" height="0.000" fill="#326b96"/>
+<rect x="558.140" y="425.000" width="18.690" height="0.000" fill="#b8753a"/>
+<rect x="582.170" y="425.000" width="18.690" height="0.000" fill="#326b96"/>
+<rect x="602.640" y="425.000" width="18.690" height="0.000" fill="#b8753a"/>
+<rect x="626.670" y="425.000" width="18.690" height="0.000" fill="#326b96"/>
+<rect x="647.140" y="425.000" width="18.690" height="0.000" fill="#b8753a"/>
+<rect x="671.170" y="425.000" width="18.690" height="0.000" fill="#326b96"/>
+<rect x="691.640" y="425.000" width="18.690" height="0.000" fill="#b8753a"/>
+<rect x="715.670" y="425.000" width="18.690" height="0.000" fill="#326b96"/>
+<rect x="736.140" y="425.000" width="18.690" height="0.000" fill="#b8753a"/>
+<rect x="760.170" y="425.000" width="18.690" height="0.000" fill="#326b96"/>
+<rect x="780.640" y="425.000" width="18.690" height="0.000" fill="#b8753a"/>
+<rect x="804.670" y="393.629" width="18.690" height="31.371" fill="#326b96"/>
+<rect x="825.140" y="397.115" width="18.690" height="27.885" fill="#b8753a"/>
+<rect x="849.170" y="399.729" width="18.690" height="25.271" fill="#326b96"/>
+<rect x="869.640" y="394.936" width="18.690" height="30.064" fill="#b8753a"/>
+<rect x="893.670" y="394.065" width="18.690" height="30.935" fill="#326b96"/>
+<rect x="914.140" y="391.887" width="18.690" height="33.113" fill="#b8753a"/>
+<rect x="938.170" y="390.579" width="18.690" height="34.421" fill="#326b96"/>
+<rect x="958.640" y="394.065" width="18.690" height="30.935" fill="#b8753a"/>
+<text x="770" y="82" fill="#326b96" font-size="12" font-family="Arial,sans-serif" text-anchor="start">WNS</text>
+<text x="850" y="82" fill="#b8753a" font-size="12" font-family="Arial,sans-serif" text-anchor="start">TNS</text>
+<text x="32" y="505" fill="#526575" font-size="11" font-family="Arial,sans-serif" text-anchor="start">Source: bundled CSV snapshot · no measured OpenROAD QoR</text>
+</svg>

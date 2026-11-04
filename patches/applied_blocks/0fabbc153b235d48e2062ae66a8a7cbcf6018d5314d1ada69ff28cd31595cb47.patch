@@ -1,0 +1,23 @@
+--- a/src/cts/src/HTreeBuilder_new.cpp
++++ b/src/cts/src/HTreeBuilder_new.cpp
+@@ -160,6 +232,20 @@
+           = (xSum / (float) pointCounter);  // geometric center of cluster
+       const float normCenterY = (ySum / (float) pointCounter);
+       Point<double> center((double) normCenterX, (double) normCenterY);
++      // LEARN-CTS-05: coordinate medians minimize the fixed cluster's L1 cost.
++      if (ord::learning::enabled()) {
++        std::vector<double> xs, ys;
++        xs.reserve(cluster.size());
++        ys.reserve(cluster.size());
++        for (auto point_idx : cluster) {
++          xs.push_back(points[point_idx].first);
++          ys.push_back(points[point_idx].second);
++        }
++        const auto middle = cluster.size() / 2;
++        std::nth_element(xs.begin(), xs.begin() + middle, xs.end());
++        std::nth_element(ys.begin(), ys.begin() + middle, ys.end());
++        center = Point<double>(xs[middle], ys[middle]);
++      }
+       Point<double> rootBufLoc
+           = legalizeOneBuffer(center, options_->getSinkBuffer());
+       commitMoveLoc(center, rootBufLoc);

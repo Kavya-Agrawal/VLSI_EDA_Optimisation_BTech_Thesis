@@ -1,0 +1,16 @@
+--- a/src/rsz/BUILD
++++ b/src/rsz/BUILD
+@@ -55,11 +55,11 @@
+         "src/PreChecks.hh",
+         "src/Rebuffer.cc",
+         "src/Rebuffer.hh",
+-        "src/RecoverPower.cc",
++        "src/RecoverPower_new.cc",
+         "src/RecoverPower.hh",
+         "src/RepairDesign.cc",
+         "src/RepairDesign.hh",
+-        "src/RepairHold.cc",
++        "src/RepairHold_new.cc",
+         "src/RepairHold.hh",
+         "src/RepairSetupContext.hh",
+         "src/RepairTargetCollector.cc",
