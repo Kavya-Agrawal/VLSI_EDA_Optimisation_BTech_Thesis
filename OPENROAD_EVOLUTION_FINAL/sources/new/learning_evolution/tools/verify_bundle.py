@@ -46,8 +46,8 @@ def main():
     summary = json.loads((ROOT / 'statistics/summary.json').read_text())
     for item in summary:
         field = item['metric']
-        if field == 'combined_timing_label_pct':
-            values = [(float(row['simulated_wns_impact_pct']) + float(row['simulated_tns_impact_pct'])) / 2 for row in rows]
+        if field in ('combined_timing_label_pct', 'combined_timing_impact_pct'):
+            values = [(float(row['wns_impact_pct']) + float(row['tns_impact_pct'])) / 2 for row in rows]
         else:
             values = [float(row[field]) for row in rows]
         if abs(statistics.mean(values) - item['mean']) > 1e-12:

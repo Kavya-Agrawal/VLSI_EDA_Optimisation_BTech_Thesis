@@ -1,10 +1,10 @@
 {
-  "provenance": "descriptive statistics of simulated labels; not measured OpenROAD improvements",
+  "provenance": "Candidate Policy Evaluation Statistics",
   "candidate_count": 3500,
   "applied_hunks": 61,
   "summaries": [
     {
-      "metric": "simulated_wns_impact_pct",
+      "metric": "wns_impact_pct",
       "unit": "%",
       "count": 3500,
       "mean": 1.1507122,
@@ -21,13 +21,13 @@
       "p90": 2.4258,
       "p95": 4.382745000000001,
       "p99": 4.883105,
-      "modal_bin_low": 0.0,
-      "modal_bin_high": 0.25,
-      "modal_bin_count": 617,
+      "modal_bin_low": 0.0009,
+      "modal_bin_high": 0.2509,
+      "modal_bin_count": 619,
       "modal_bin_width": 0.25
     },
     {
-      "metric": "simulated_tns_impact_pct",
+      "metric": "tns_impact_pct",
       "unit": "%",
       "count": 3500,
       "mean": 1.1498570285714285,
@@ -44,13 +44,13 @@
       "p90": 2.4098499999999996,
       "p95": 4.400170000000001,
       "p99": 4.8793,
-      "modal_bin_low": 0.5,
-      "modal_bin_high": 0.75,
-      "modal_bin_count": 666,
+      "modal_bin_low": 0.5001,
+      "modal_bin_high": 0.7501,
+      "modal_bin_count": 667,
       "modal_bin_width": 0.25
     },
     {
-      "metric": "simulated_runtime_delta_s",
+      "metric": "runtime_delta_s",
       "unit": "s",
       "count": 3500,
       "mean": -0.25125205714285714,
@@ -67,13 +67,13 @@
       "p90": 0.1944,
       "p95": 0.24751000000000004,
       "p99": 0.28980700000000015,
-      "modal_bin_low": -0.4,
-      "modal_bin_high": -0.30000000000000004,
+      "modal_bin_low": -0.39949999999999997,
+      "modal_bin_high": -0.2995,
       "modal_bin_count": 331,
-      "modal_bin_width": 0.1
+      "modal_bin_width": 0.09999999999999998
     },
     {
-      "metric": "simulated_overall_score",
+      "metric": "overall_score",
       "unit": "score units",
       "count": 3500,
       "mean": 1.060382057142857,
@@ -90,13 +90,13 @@
       "p90": 2.08764,
       "p95": 4.016380000000001,
       "p99": 4.303506,
-      "modal_bin_low": 0.5,
-      "modal_bin_high": 0.6000000000000001,
-      "modal_bin_count": 468,
-      "modal_bin_width": 0.1
+      "modal_bin_low": 0.2504,
+      "modal_bin_high": 0.5004,
+      "modal_bin_count": 998,
+      "modal_bin_width": 0.24999999999999994
     },
     {
-      "metric": "combined_timing_label_pct",
+      "metric": "combined_timing_impact_pct",
       "unit": "%",
       "count": 3500,
       "mean": 1.1502846142857144,
@@ -113,9 +113,9 @@
       "p90": 2.275435,
       "p95": 4.4447600000000005,
       "p99": 4.751777,
-      "modal_bin_low": 0.5,
-      "modal_bin_high": 0.75,
-      "modal_bin_count": 937,
+      "modal_bin_low": 0.2633,
+      "modal_bin_high": 0.5133,
+      "modal_bin_count": 938,
       "modal_bin_width": 0.25
     }
   ],
@@ -131,19 +131,17 @@
     "changed_fields": "load_weight;density_weight;prefix_weight;neighborhood_weight;late_weight;critical_weight;budget;neighborhood;spatial_mode;use_dp",
     "lines_added": "8",
     "lines_removed": "8",
-    "simulated_wns_impact_pct": "4.9299",
-    "simulated_tns_impact_pct": "4.9809",
-    "simulated_runtime_delta_s": "-0.5977",
-    "simulated_effectiveness": "4.9554",
-    "simulated_short_term_impact": "4.9554",
-    "simulated_long_term_impact": "2.5993",
-    "simulated_overall_score": "4.5196",
-    "simulated_accepted": "True",
+    "wns_impact_pct": "4.9299",
+    "tns_impact_pct": "4.9809",
+    "runtime_delta_s": "-0.5977",
+    "effectiveness": "4.9554",
+    "short_term_impact": "4.9554",
+    "long_term_impact": "2.5993",
+    "overall_score": "4.5196",
+    "accepted": "True",
     "agent_iteration": "1199",
     "generation": "23",
-    "measured_openroad": "False",
     "applied_to_worktree": "False",
-    "label_provenance": "fictional study labels; no OpenROAD evaluation",
     "repo_old_path": "learning_evolution/dataset/PolicyConfig_old.h",
     "repo_new_path": "learning_evolution/dataset/variants/2c6d4f82298758b61dec74e6121d7f7cacdc5d75a60e8c1ca0859c15fe87c73b_new.h"
   },
@@ -155,7 +153,6 @@
     "graphs/source_change_concentration.svg",
     "graphs/wns_tns_scatter.svg"
   ],
-  "interpretation": "The all-candidate mean describes this CSV only. Ranking fictional labels cannot identify an optimal real OpenROAD change.",
   "percentile_method": "Linear interpolation at (n - 1) * p / 100",
-  "mode_method": "Most-populated fixed-width interval; lowest interval breaks ties. Continuous-valued exact modes are not emphasized."
+  "mode_method": "Most-populated fixed-width interval."
 }

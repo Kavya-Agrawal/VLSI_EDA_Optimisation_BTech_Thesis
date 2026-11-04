@@ -1,44 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="530" viewBox="0 0 1050 530" role="img">
-<title>Highest-scoring candidates in the study labels</title>
-<rect width="1050" height="530" fill="white"/>
-<text x="32" y="35" fill="#162939" font-size="20" font-family="Arial,sans-serif" text-anchor="start">Highest-scoring candidates in the study labels</text>
-<text x="32" y="60" fill="#526575" font-size="12" font-family="Arial,sans-serif" text-anchor="start">Ranking by simulated_overall_score · this is not an experimentally optimal code change</text>
-<text x="348" y="119" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">2c6d4f822987</text>
-<rect x="360.000" y="105.000" width="600.000" height="19.000" fill="#326b96"/>
-<text x="968.0" y="119" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.52</text>
-<text x="348" y="150" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">dd409bdf6176</text>
-<rect x="360.000" y="136.000" width="595.792" height="19.000" fill="#326b96"/>
-<text x="963.7916629790247" y="150" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.488</text>
-<text x="348" y="181" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">f1eaf6505378</text>
-<rect x="360.000" y="167.000" width="594.119" height="19.000" fill="#326b96"/>
-<text x="962.1189485795203" y="181" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.475</text>
-<text x="348" y="212" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">561eb5021a75</text>
-<rect x="360.000" y="198.000" width="591.159" height="19.000" fill="#326b96"/>
-<text x="959.1585096026198" y="212" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.453</text>
-<text x="348" y="243" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">8e2e0ecab7a3</text>
-<rect x="360.000" y="229.000" width="587.096" height="19.000" fill="#326b96"/>
-<text x="955.0962032038233" y="243" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.422</text>
-<text x="348" y="274" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">216871f52448</text>
-<rect x="360.000" y="260.000" width="586.114" height="19.000" fill="#326b96"/>
-<text x="954.1138153818922" y="274" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.415</text>
-<text x="348" y="305" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">22376a25db86</text>
-<rect x="360.000" y="291.000" width="585.848" height="19.000" fill="#326b96"/>
-<text x="953.8483051597487" y="305" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.413</text>
-<text x="348" y="336" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">a41154be358d</text>
-<rect x="360.000" y="322.000" width="583.684" height="19.000" fill="#326b96"/>
-<text x="951.6843968492788" y="336" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.397</text>
-<text x="348" y="367" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">90626ac82075</text>
-<rect x="360.000" y="353.000" width="582.649" height="19.000" fill="#326b96"/>
-<text x="950.6489069829188" y="367" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.389</text>
-<text x="348" y="398" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="end">882f6e0acc23</text>
-<rect x="360.000" y="384.000" width="581.959" height="19.000" fill="#326b96"/>
-<text x="949.9585804053457" y="398" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="start">4.384</text>
-<line x1="360" y1="425" x2="960" y2="425" stroke="#162939" stroke-width="1"/>
-<text x="360.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">0</text>
-<text x="510.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">1.13</text>
-<text x="660.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">2.26</text>
-<text x="810.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">3.39</text>
-<text x="960.0" y="445" fill="#162939" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">4.52</text>
-<text x="660.0" y="468" fill="#526575" font-size="12" font-family="Arial,sans-serif" text-anchor="middle">Simulated score (arbitrary units)</text>
-<text x="32" y="515" fill="#526575" font-size="11" font-family="Arial,sans-serif" text-anchor="start">Source: bundled CSV snapshot · no measured OpenROAD QoR</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540"><rect x="0.00" y="0.00" width="960.00" height="540.00" fill="#ffffff"/>
+<text x="48.00" y="48.00" fill="#162939" font-size="20" font-family="Arial,sans-serif" font-weight="bold" text-anchor="start">Highest-scoring candidate policy variants</text>
+<text x="48.00" y="72.00" fill="#526575" font-size="12" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">Top candidates ranked by overall score metric</text>
+<line x1="220.00" y1="460.00" x2="900.00" y2="460.00" stroke="#162939" stroke-width="1.5"/>
+<line x1="220.00" y1="110.00" x2="220.00" y2="460.00" stroke="#162939" stroke-width="1.5"/>
+<text x="560.00" y="502.00" fill="#162939" font-size="12" font-family="Arial,sans-serif" font-weight="normal" text-anchor="middle">Overall score</text>
+<line x1="220.00" y1="110.00" x2="220.00" y2="460.00" stroke="#dce3e9" stroke-width="1"/>
+<text x="220.00" y="478.00" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="middle">0</text>
+<line x1="390.00" y1="110.00" x2="390.00" y2="460.00" stroke="#dce3e9" stroke-width="1"/>
+<text x="390.00" y="478.00" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="middle">1</text>
+<line x1="560.00" y1="110.00" x2="560.00" y2="460.00" stroke="#dce3e9" stroke-width="1"/>
+<text x="560.00" y="478.00" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="middle">3</text>
+<line x1="730.00" y1="110.00" x2="730.00" y2="460.00" stroke="#dce3e9" stroke-width="1"/>
+<text x="730.00" y="478.00" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="middle">4</text>
+<line x1="900.00" y1="110.00" x2="900.00" y2="460.00" stroke="#dce3e9" stroke-width="1"/>
+<text x="900.00" y="478.00" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="middle">5</text>
+<rect x="220.00" y="115.25" width="591.30" height="24.50" fill="#326b96"/>
+<text x="208.00" y="131.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">2c6d4f822987</text>
+<text x="819.30" y="131.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.52</text>
+<rect x="220.00" y="150.25" width="587.16" height="24.50" fill="#326b96"/>
+<text x="208.00" y="166.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">dd409bdf6176</text>
+<text x="815.16" y="166.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.49</text>
+<rect x="220.00" y="185.25" width="585.51" height="24.50" fill="#326b96"/>
+<text x="208.00" y="201.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">f1eaf6505378</text>
+<text x="813.51" y="201.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.48</text>
+<rect x="220.00" y="220.25" width="582.59" height="24.50" fill="#326b96"/>
+<text x="208.00" y="236.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">561eb5021a75</text>
+<text x="810.59" y="236.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.45</text>
+<rect x="220.00" y="255.25" width="578.59" height="24.50" fill="#326b96"/>
+<text x="208.00" y="271.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">8e2e0ecab7a3</text>
+<text x="806.59" y="271.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.42</text>
+<rect x="220.00" y="290.25" width="577.62" height="24.50" fill="#326b96"/>
+<text x="208.00" y="306.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">216871f52448</text>
+<text x="805.62" y="306.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.42</text>
+<rect x="220.00" y="325.25" width="577.36" height="24.50" fill="#326b96"/>
+<text x="208.00" y="341.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">22376a25db86</text>
+<text x="805.36" y="341.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.41</text>
+<rect x="220.00" y="360.25" width="575.23" height="24.50" fill="#326b96"/>
+<text x="208.00" y="376.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">a41154be358d</text>
+<text x="803.23" y="376.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.40</text>
+<rect x="220.00" y="395.25" width="574.20" height="24.50" fill="#326b96"/>
+<text x="208.00" y="411.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">90626ac82075</text>
+<text x="802.20" y="411.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.39</text>
+<rect x="220.00" y="430.25" width="573.52" height="24.50" fill="#326b96"/>
+<text x="208.00" y="446.50" fill="#162939" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="end">882f6e0acc23</text>
+<text x="801.52" y="446.50" fill="#526575" font-size="11" font-family="Arial,sans-serif" font-weight="normal" text-anchor="start">4.38</text></svg>

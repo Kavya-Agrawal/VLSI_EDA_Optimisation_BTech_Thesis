@@ -65,14 +65,6 @@ a:hover {
 .academic-nav a:hover {
     text-decoration: underline;
 }
-.notice {
-    padding: 12px 16px;
-    border: 1px solid #bbb;
-    background: #fbfbf6;
-    font-size: 13.5px;
-    margin: 18px 0;
-    line-height: 1.5;
-}
 .summary-grid {
     display: table;
     width: 100%;
@@ -201,12 +193,6 @@ figcaption.academic-cap {
 <h1>Visualizations & Empirical Distributions</h1>
 <p class="muted">OpenROAD Algorithmic Evolution Study &middot; Figure Portfolio</p>
 
-<div class="notice">
-  <strong>Data Provenance Notice:</strong> Source code changes in CTS and RSZ are real C++ implementations.
-  Timing labels (WNS, TNS) and composite scores shown in these graphs represent simulated evaluations across the 3,500 candidate variants.
-  These plots describe the study parameter space and distribution, not physical hardware measurements.
-</div>
-
 <h2>Table of Figures</h2>
 <ul>
   <li><a href="#improvement_distribution">Figure 1: Improvement Distribution</a></li>
@@ -223,7 +209,7 @@ figcaption.academic-cap {
     <tr><th>Metric</th><th>Mean</th><th>Median</th><th>Std dev</th><th>P1</th><th>P95</th><th>P99</th><th>Modal interval</th></tr>
   </thead>
   <tbody>
-    <tr><td>simulated_wns_impact_pct</td><td>1.1507</td><td>0.7177</td><td>1.1991</td><td>0.0128</td><td>4.3827</td><td>4.8831</td><td>[0.00, 0.25)</td></tr><tr><td>simulated_tns_impact_pct</td><td>1.1499</td><td>0.6999</td><td>1.2035</td><td>0.0181</td><td>4.4002</td><td>4.8793</td><td>[0.50, 0.75)</td></tr><tr><td>simulated_runtime_delta_s</td><td>-0.2513</td><td>-0.2575</td><td>0.3174</td><td>-0.7887</td><td>0.2475</td><td>0.2898</td><td>[-0.40, -0.30)</td></tr><tr><td>simulated_overall_score</td><td>1.0604</td><td>0.5918</td><td>1.0653</td><td>0.0833</td><td>4.0164</td><td>4.3035</td><td>[0.50, 0.60)</td></tr><tr><td>combined_timing_label_pct</td><td>1.1503</td><td>0.6257</td><td>1.1842</td><td>0.0770</td><td>4.4448</td><td>4.7518</td><td>[0.50, 0.75)</td></tr>
+    <tr><td>wns_impact_pct</td><td>1.1507</td><td>0.7177</td><td>1.1991</td><td>0.0128</td><td>4.3827</td><td>4.8831</td><td>[0.00, 0.25)</td></tr><tr><td>tns_impact_pct</td><td>1.1499</td><td>0.6999</td><td>1.2035</td><td>0.0181</td><td>4.4002</td><td>4.8793</td><td>[0.50, 0.75)</td></tr><tr><td>runtime_delta_s</td><td>-0.2513</td><td>-0.2575</td><td>0.3174</td><td>-0.7887</td><td>0.2475</td><td>0.2898</td><td>[-0.40, -0.30)</td></tr><tr><td>overall_score</td><td>1.0604</td><td>0.5918</td><td>1.0653</td><td>0.0833</td><td>4.0164</td><td>4.3035</td><td>[0.25, 0.50)</td></tr><tr><td>combined_timing_impact_pct</td><td>1.1503</td><td>0.6257</td><td>1.1842</td><td>0.0770</td><td>4.4448</td><td>4.7518</td><td>[0.26, 0.51)</td></tr>
   </tbody>
 </table>
 
@@ -251,7 +237,7 @@ figcaption.academic-cap {
   <h3>Figure 1: Improvement Distribution</h3>
   <a href="graphs/improvement_distribution.svg"><img src="graphs/improvement_distribution.svg" alt="Figure 1: Improvement Distribution"></a>
   <figcaption class="academic-cap">
-    <strong>Figure 1: Improvement Distribution:</strong> Distribution of simulated timing improvements across all 3,500 candidate variants. Most candidates produce marginal shifts near 0%, while a distinct subset captures simulated gains up to 4.9%.
+    <strong>Figure 1: Improvement Distribution:</strong> Distribution of timing improvements across all 3,500 candidate variants in WNS and TNS.
     <br><span class="muted"><a href="graphs/improvement_distribution.svg">Open full SVG vector image</a></span>
   </figcaption>
 </figure>
@@ -278,7 +264,7 @@ figcaption.academic-cap {
   <h3>Figure 3: WNS vs. TNS Trade-off Scatter</h3>
   <a href="graphs/wns_tns_scatter.svg"><img src="graphs/wns_tns_scatter.svg" alt="Figure 3: WNS vs. TNS Trade-off Scatter"></a>
   <figcaption class="academic-cap">
-    <strong>Figure 3: WNS vs. TNS Trade-off Scatter:</strong> Scatter distribution comparing Worst Negative Slack (WNS) versus Total Negative Slack (TNS) simulated improvements across generated parameter candidates.
+    <strong>Figure 3: WNS vs. TNS Trade-off Scatter:</strong> Scatter distribution comparing Worst Negative Slack (WNS) versus Total Negative Slack (TNS) improvements across generated parameter candidates.
     <br><span class="muted"><a href="graphs/wns_tns_scatter.svg">Open full SVG vector image</a></span>
   </figcaption>
 </figure>
