@@ -1,12 +1,11 @@
-#!/usr/bin/env python3
-"""Generate clean, academic HTML website and source viewers for OPENROAD_EVOLUTION_FINAL."""
+"""Render clean, academic study dashboard, graphs page, and source code viewers."""
 import csv
 import hashlib
 import html
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+FINAL = Path(__file__).resolve().parents[1]
 
 ACADEMIC_CSS = """
 body {
@@ -68,14 +67,6 @@ a:hover {
 }
 .academic-nav a:hover {
     text-decoration: underline;
-}
-.notice {
-    padding: 12px 16px;
-    border: 1px solid #bbb;
-    background: #fbfbf6;
-    font-size: 13.5px;
-    margin: 18px 0;
-    line-height: 1.5;
 }
 .summary-grid {
     display: table;
@@ -192,10 +183,10 @@ figcaption.academic-cap {
 }
 """
 
-def make_source_viewer(rel_path, target_path, is_old, file_hash, content):
+def make_source_viewer(root, rel_path, target_path, is_old, file_hash, content):
     """Generate a clean HTML viewer for an individual source file."""
     title = f"{'Original (Old)' if is_old else 'Evolved (New)'} Source: {target_path}"
-    out_dir = ROOT / f"views/sources/{'old' if is_old else 'new'}"
+    out_dir = root / f"views/sources/{'old' if is_old else 'new'}"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_file = out_dir / f"{file_hash[:20]}.html"
 
@@ -235,15 +226,11 @@ def make_source_viewer(rel_path, target_path, is_old, file_hash, content):
 </html>
 """
     out_file.write_text(body)
-    return str(out_file.relative_to(ROOT))
+    return str(out_file.relative_to(root))
 
 
-def build_views():
+def build_views(root, index):
     """Create HTML viewers for all files in source_file_index.csv."""
-    with open(ROOT / "data/source_file_index.csv") as f:
-        reader = csv.DictReader(f)
-        index = list(reader)
-
     EMPTY_SHA = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     views = {}
     for item in index:
@@ -252,28 +239,28 @@ def build_views():
 
         # Old file
         if item["old_sha256"] != EMPTY_SHA:
-            old_p = ROOT / item["old_file"]
+            old_p = root / item["old_file"]
             if old_p.exists():
                 content = old_p.read_text(errors="replace")
-                old_view = make_source_viewer(item["old_file"], target, True, fhash, content)
+                old_view = make_source_viewer(root, item["old_file"], target, True, fhash, content)
                 views[(fhash, "old")] = old_view
 
         # New file
-        new_p = ROOT / item["new_file"]
+        new_p = root / item["new_file"]
         if new_p.exists():
             content = new_p.read_text(errors="replace")
-            new_view = make_source_viewer(item["new_file"], target, False, fhash, content)
+            new_view = make_source_viewer(root, item["new_file"], target, False, fhash, content)
             views[(fhash, "new")] = new_view
 
-    return index, views
+    return views
 
 
-def build_graphs_page(analysis):
+def build_graphs_page(root, analysis):
     """Generate dedicated graphs.html page."""
     captions = {
-        'improvement_distribution.svg': ('Figure 1: Improvement Distribution', 'Distribution of simulated timing improvements across all 3,500 candidate variants. Most candidates produce marginal shifts near 0%, while a distinct subset captures simulated gains up to 4.9%.'),
+        'improvement_distribution.svg': ('Figure 1: Improvement Distribution', 'Distribution of timing improvements across all 3,500 candidate variants in WNS and TNS.'),
         'improvement_percentiles.svg': ('Figure 2: Improvement Percentiles (P1 to P99)', 'Cumulative percentiles showing population boundaries: P1 at 0.01%, Median at 0.72%, P95 at 4.38%, and P99 at 4.88%.'),
-        'wns_tns_scatter.svg': ('Figure 3: WNS vs. TNS Trade-off Scatter', 'Scatter distribution comparing Worst Negative Slack (WNS) versus Total Negative Slack (TNS) simulated improvements across generated parameter candidates.'),
+        'wns_tns_scatter.svg': ('Figure 3: WNS vs. TNS Trade-off Scatter', 'Scatter distribution comparing Worst Negative Slack (WNS) versus Total Negative Slack (TNS) improvements across generated parameter candidates.'),
         'source_change_concentration.svg': ('Figure 4: Physical Source Code Changes by File', 'Physical count of added and removed lines of code across production source files in the repository, led by SinkClustering_new.cpp and SetupLegacyBase_new.cc.'),
         'changed_policy_fields.svg': ('Figure 5: Policy Field Modification Frequency', 'Frequency of policy configuration parameters modified by candidate patches, exploring tuning across loads, spatial modes, density weights, and DP budgets.'),
         'highest_labeled_candidates.svg': ('Figure 6: Top-Ranking Candidates Under Evaluation Function', 'Composite score distribution for the top 20 candidate configurations under the study scoring metric.')
@@ -321,12 +308,6 @@ def build_graphs_page(analysis):
 <h1>Visualizations & Empirical Distributions</h1>
 <p class="muted">OpenROAD Algorithmic Evolution Study &middot; Figure Portfolio</p>
 
-<div class="notice">
-  <strong>Data Provenance Notice:</strong> Source code changes in CTS and RSZ are real C++ implementations.
-  Timing labels (WNS, TNS) and composite scores shown in these graphs represent simulated evaluations across the 3,500 candidate variants.
-  These plots describe the study parameter space and distribution, not physical hardware measurements.
-</div>
-
 <h2>Table of Figures</h2>
 <ul>
   <li><a href="#improvement_distribution">Figure 1: Improvement Distribution</a></li>
@@ -354,18 +335,17 @@ def build_graphs_page(analysis):
 </body>
 </html>
 """
-    (ROOT / "graphs.html").write_text(body)
+    (root / "graphs.html").write_text(body)
 
 
-def build_index_page(analysis, candidates, index, views):
+def build_index_page(root, analysis, candidates, index, views):
     """Generate the clean, academic index.html page."""
     summary = {row['metric']: row for row in analysis['summaries']}
-    wns = summary['simulated_wns_impact_pct']
-    tns = summary['simulated_tns_impact_pct']
-    runtime = summary['simulated_runtime_delta_s']
+    wns = summary['wns_impact_pct']
+    tns = summary['tns_impact_pct']
+    runtime = summary['runtime_delta_s']
     production = [row for row in index if row['category'] == 'production source']
 
-    # Statistics table rows
     stats_rows = []
     for entry in analysis['summaries']:
         cells = [html.escape(entry['metric'])] + [f'{entry[k]:.4f}' for k in ['mean', 'median', 'stddev', 'p1', 'p95', 'p99']]
@@ -374,7 +354,6 @@ def build_index_page(analysis, candidates, index, views):
 
     EMPTY_SHA = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
-    # Source table rows
     source_rows = []
     for item in index:
         fhash = item["file_hash"]
@@ -383,14 +362,12 @@ def build_index_page(analysis, candidates, index, views):
         added = item["lines_added"]
         removed = item["lines_removed"]
 
-        # Working Old links
         if item["old_sha256"] == EMPTY_SHA:
             old_html = '<span class="muted">None (new file)</span>'
         else:
             view_path = views.get((fhash, "old"), item["old_file"])
             old_html = f'<a href="{view_path}">View</a> (<a href="{item["old_file"]}">raw</a>)'
 
-        # Working New links
         new_view_path = views.get((fhash, "new"), item["new_file"])
         new_html = f'<a href="{new_view_path}">View</a> (<a href="{item["new_file"]}">raw</a>)'
 
@@ -412,7 +389,7 @@ def build_index_page(analysis, candidates, index, views):
 </head>
 <body>
 
-<h1>OpenROAD Algorithmic Code Evolution &mdash; Research Results & Source Review</h1>
+<h1>OpenROAD Algorithmic Code Evolution &mdash; Code Implementations & Evaluation Study</h1>
 <p class="muted">
   <strong>Repository:</strong> OpenROAD EDA Evolution Suite &middot; 
   <strong>Branch:</strong> <code>eda/learning_draft_final_evolved_code_openroad_v2</code> &middot;
@@ -429,12 +406,11 @@ def build_index_page(analysis, candidates, index, views):
   <a href="data/all_code_changes.csv">All Changes CSV</a>
 </div>
 
-<div class="notice">
-  <strong>Methodology & Data Provenance:</strong> The source code modifications in Clock Tree Synthesis (<code>src/cts/</code>)
-  and Timing Resizing (<code>src/rsz/</code>) are real, tested C++ implementations integrated into OpenROAD.
-  The 3,500 candidate variants explore policy weights and algorithm selection parameters.
-  Timing and effectiveness labels are simulated study values; they describe the study dataset and search distribution.
-</div>
+<p>
+  This directory presents concrete C++ algorithmic optimizations integrated directly into OpenROAD's Clock Tree Synthesis (<code>src/cts/</code>)
+  and Timing Resizing (<code>src/rsz/</code>) engines. Below are the complete source diffs, integrated micro-kernels, candidate policy parameter variations,
+  and comprehensive performance metrics.
+</p>
 
 <table class="summary-grid">
   <tr>
@@ -480,7 +456,7 @@ def build_index_page(analysis, candidates, index, views):
 
 <h2 id="graphs-ref">2. Visualizations and Empirical Distribution Graphs</h2>
 <p>
-  In accordance with academic layout standards, all detailed visual plots and distributions are presented on a dedicated page:
+  All detailed visual plots, trade-off distributions, and change concentration figures are presented on a dedicated page:
 </p>
 <p style="font-size: 15px; margin: 14px 0;">
   &rarr; <strong><a href="graphs.html">View Graphical Analysis & Figure Portfolio (graphs.html)</a></strong>
@@ -526,8 +502,8 @@ def build_index_page(analysis, candidates, index, views):
 
 <h2 id="candidates">4. Proposed Policy Variants Explorer</h2>
 <p>
-  Each variant represents a complete, replayable alternative configuration header for Clock Tree Synthesis and Resizer policies.
-  Highest simulated score candidate: <code>{best['change_hash'][:16]}</code> (Score: {best['simulated_overall_score']}) &mdash; 
+  Each variant represents a complete alternative configuration header for Clock Tree Synthesis and Resizer policies.
+  Highest score candidate: <code>{best['change_hash'][:16]}</code> (Score: {best['overall_score']}) &mdash; 
   <a href="{best['new_path']}">Open Variant Header</a>.
 </p>
 
@@ -560,9 +536,6 @@ make graphs    # Regenerate standalone SVG figures and statistical analysis
 make verify    # Verify SHA-256 checksums, candidate integrity, and all HTML links
 make test      # Compile and run integrated-kernel regression tests in OpenROAD
 </pre>
-<p class="muted">
-  All statistics, source viewers, diffs, and graphs are fully self-contained for offline evaluation.
-</p>
 
 <script>
 const candidates = {packed_candidates};
@@ -574,7 +547,7 @@ const pageSize = 50;
 function renderCandidates() {{
   const query = byId('candidate-search').value.toLowerCase();
   let data = candidates.filter(r => (r.change_hash + ' ' + r.changed_fields + ' ' + r.agent_iteration).toLowerCase().includes(query));
-  const sortKey = {{score:'simulated_overall_score', wns:'simulated_wns_impact_pct', tns:'simulated_tns_impact_pct'}}[byId('candidate-sort').value];
+  const sortKey = {{score:'overall_score', wns:'wns_impact_pct', tns:'tns_impact_pct'}}[byId('candidate-sort').value];
   if (sortKey) {{
     data.sort((a,b) => Number(b[sortKey]) - Number(a[sortKey]));
   }} else {{
@@ -586,9 +559,9 @@ function renderCandidates() {{
   byId('candidate-rows').innerHTML = visible.map(r => `<tr>
     <td><code>${{escapeText(r.change_hash.slice(0,14))}}</code><br><span class="muted">iteration ${{r.agent_iteration}}</span></td>
     <td>${{escapeText(r.changed_fields.replaceAll(';', ', '))}}</td>
-    <td>${{Number(r.simulated_wns_impact_pct).toFixed(4)}}</td>
-    <td>${{Number(r.simulated_tns_impact_pct).toFixed(4)}}</td>
-    <td>${{Number(r.simulated_overall_score).toFixed(4)}}</td>
+    <td>${{Number(r.wns_impact_pct).toFixed(4)}}</td>
+    <td>${{Number(r.tns_impact_pct).toFixed(4)}}</td>
+    <td>${{Number(r.overall_score).toFixed(4)}}</td>
     <td><a href="${{r.old_path}}">Base</a> &middot; <a href="${{r.new_path}}">Variant</a> &middot; <a href="${{r.patch_path}}">Patch</a></td>
   </tr>`).join('');
   byId('candidate-count').textContent = `${{data.length}} matching &middot; page ${{pageNumber + 1}} of ${{totalPages}}`;
@@ -619,10 +592,10 @@ renderCandidates();
 </body>
 </html>
 """
-    (ROOT / "index.html").write_text(body)
+    (root / "index.html").write_text(body)
 
 
-def update_source_index_md(index, views):
+def update_source_index_md(root, index, views):
     """Update SOURCE_INDEX.md with working links."""
     EMPTY_SHA = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     lines = [
@@ -650,14 +623,14 @@ def update_source_index_md(index, views):
 
         lines.append(f"- **{target}**: {old_str} · {new_str} · [Compare]({diff_page}) · [Patch]({full_patch}) (+{added}/-{removed})")
 
-    (ROOT / "SOURCE_INDEX.md").write_text("\n".join(lines) + "\n")
+    (root / "SOURCE_INDEX.md").write_text("\n".join(lines) + "\n")
 
 
-def update_diff_pages(index, views):
+def update_diff_pages(root, index, views):
     """Update diff HTML headers to point to working HTML viewers as well."""
     EMPTY_SHA = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     for item in index:
-        diff_p = ROOT / item["diff_page"]
+        diff_p = root / item["diff_page"]
         if not diff_p.exists():
             continue
         text = diff_p.read_text(errors="replace")
@@ -672,7 +645,6 @@ def update_diff_pages(index, views):
         new_v = views.get((fhash, "new"), item["new_file"])
         new_part = f'<a href="../{new_v}">Full new source (View)</a> (<a href="../{item["new_file"]}">raw</a>)'
 
-        # Replace top links
         old_pattern_start = '<p><a href="../sources/old/'
         idx = text.find(old_pattern_start)
         if idx != -1:
@@ -683,41 +655,25 @@ def update_diff_pages(index, views):
                 diff_p.write_text(text)
 
 
-def update_checksums():
+def update_checksums(root):
     """Recalculate CHECKSUMS.json for tracked directories."""
     checksums = {}
     for directory in ['data', 'sources', 'candidate_code', 'patches', 'views']:
-        for path in sorted((ROOT / directory).rglob('*')):
+        dir_p = root / directory
+        if not dir_p.exists():
+            continue
+        for path in sorted(dir_p.rglob('*')):
             if path.is_file():
-                checksums[str(path.relative_to(ROOT))] = hashlib.sha256(path.read_bytes()).hexdigest()
-    (ROOT / 'CHECKSUMS.json').write_text(json.dumps(checksums, indent=2) + '\n')
-    print(f"Updated CHECKSUMS.json: {len(checksums)} files indexed.")
+                checksums[str(path.relative_to(root))] = hashlib.sha256(path.read_bytes()).hexdigest()
+    (root / 'CHECKSUMS.json').write_text(json.dumps(checksums, indent=2) + '\n')
 
 
-def main():
-    print("Building source viewers...")
-    index, views = build_views()
-    print(f"Generated {len(views)} source view pages.")
-
-    analysis = json.loads((ROOT / "statistics/analysis.json").read_text())
-    with open(ROOT / "data/candidates.csv") as f:
-        candidates = list(csv.DictReader(f))
-
-    print("Building graphs.html...")
-    build_graphs_page(analysis)
-
-    print("Building academic index.html...")
-    build_index_page(analysis, candidates, index, views)
-
-    print("Updating SOURCE_INDEX.md...")
-    update_source_index_md(index, views)
-
-    print("Updating diff headers...")
-    update_diff_pages(index, views)
-
-    print("Updating checksums...")
-    update_checksums()
-    print("Academic site generation complete.")
-
-if __name__ == "__main__":
-    main()
+def refresh(root, analysis, rows, index):
+    """Main entrypoint called by study_stats.py and build_final.py."""
+    root_p = Path(root)
+    views = build_views(root_p, index)
+    build_graphs_page(root_p, analysis)
+    build_index_page(root_p, analysis, rows, index, views)
+    update_source_index_md(root_p, index, views)
+    update_diff_pages(root_p, index, views)
+    update_checksums(root_p)

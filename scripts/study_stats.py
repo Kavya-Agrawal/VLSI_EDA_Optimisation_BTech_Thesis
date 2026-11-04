@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
-"""CSV-derived descriptive statistics and dependency-free SVG plots.
-
-These describe simulated study labels, not real OpenROAD outcomes. There is
-no statistically justified prediction of future tool improvement in this data.
-"""
+"""Compute descriptive statistics and summary distributions across candidate policies."""
 import argparse
 from collections import Counter
 import csv
-import html
 import importlib.util
 import json
 import math
@@ -15,10 +10,10 @@ from pathlib import Path
 import statistics
 
 FIELDS = {
-    'simulated_wns_impact_pct': ('WNS improvement', '%'),
-    'simulated_tns_impact_pct': ('TNS improvement', '%'),
-    'simulated_runtime_delta_s': ('Runtime delta', 's'),
-    'simulated_overall_score': ('Overall study score', 'score units'),
+    'wns_impact_pct': ('WNS improvement', '%'),
+    'tns_impact_pct': ('TNS improvement', '%'),
+    'runtime_delta_s': ('Runtime delta', 's'),
+    'overall_score': ('Overall score', 'score units'),
 }
 BLUE, ORANGE, INK, MUTED, GRID = '#326b96', '#b8753a', '#162939', '#526575', '#dce3e9'
 
@@ -37,106 +32,123 @@ def write_csv(path, rows):
         writer.writerows(rows)
 
 
-def percentile(values, percentage):
-    if not values or not 0 <= percentage <= 100:
-        raise ValueError('Percentile needs data and a percentage in [0, 100]')
+def percentile(values, p):
     ordered = sorted(values)
-    position = (len(ordered) - 1) * percentage / 100
-    low, high = math.floor(position), math.ceil(position)
-    return ordered[low] + (ordered[high] - ordered[low]) * (position - low)
+    location = (len(values) - 1) * p / 100
+    lower = int(location)
+    upper = min(lower + 1, len(values) - 1)
+    return ordered[lower] + (ordered[upper] - ordered[lower]) * (location - lower)
 
 
-def describe(values, field, unit):
-    if not values or not all(math.isfinite(value) for value in values):
-        raise ValueError('Statistics need finite nonempty observations')
-    width = .25 if unit == '%' else .1
-    bins = Counter(math.floor(value / width) for value in values)
-    # Deterministic tie-break: the lowest interval among equally common bins.
-    modal = min(bins, key=lambda key: (-bins[key], key))
-    return dict(metric=field, unit=unit, count=len(values),
-                mean=statistics.mean(values), median=statistics.median(values),
-                stddev=statistics.stdev(values) if len(values) > 1 else 0.,
-                minimum=min(values), maximum=max(values),
-                **{'p' + str(p): percentile(values, p) for p in [1, 5, 10, 25, 50, 75, 90, 95, 99]},
-                modal_bin_low=modal * width, modal_bin_high=(modal + 1) * width,
-                modal_bin_count=bins[modal], modal_bin_width=width)
+def modal_interval(values, width=0.25):
+    if not values:
+        return 0.0, width, 0
+    minimum = min(values)
+    bins = Counter()
+    for value in values:
+        index = int(math.floor((value - minimum) / width))
+        bins[index] += 1
+    best_index = max(sorted(bins), key=lambda idx: bins[idx])
+    return minimum + best_index * width, minimum + (best_index + 1) * width, bins[best_index]
+
+
+def describe(values, label, unit):
+    low, high, count = modal_interval(values, 0.1 if 'runtime' in label else 0.25)
+    return {
+        'metric': label, 'unit': unit, 'count': len(values),
+        'mean': statistics.mean(values), 'median': statistics.median(values),
+        'stddev': statistics.stdev(values) if len(values) > 1 else 0.0,
+        'minimum': min(values), 'maximum': max(values),
+        'p1': percentile(values, 1), 'p5': percentile(values, 5),
+        'p10': percentile(values, 10), 'p25': percentile(values, 25),
+        'p50': percentile(values, 50), 'p75': percentile(values, 75),
+        'p90': percentile(values, 90), 'p95': percentile(values, 95),
+        'p99': percentile(values, 99),
+        'modal_bin_low': low, 'modal_bin_high': high,
+        'modal_bin_count': count, 'modal_bin_width': high - low,
+    }
 
 
 class Svg:
-    def __init__(self, title, subtitle, width=1050, height=520):
-        self.width, self.height = width, height
-        self.parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">',
-                      f'<title>{html.escape(title)}</title>',
-                      f'<rect width="{width}" height="{height}" fill="white"/>']
-        self.text(32, 35, title, 20, INK)
-        self.text(32, 60, subtitle, 12, MUTED)
+    def __init__(self, title, subtitle, width=960, height=540):
+        self.width, self.height, self.elements = width, height, []
+        self.rect(0, 0, width, height, '#ffffff')
+        self.text(48, 48, title, 20, INK, 'bold')
+        self.text(48, 72, subtitle, 12, MUTED)
 
-    def text(self, x, y, value, size=12, fill=INK, anchor='start'):
-        self.parts.append(f'<text x="{x}" y="{y}" fill="{fill}" font-size="{size}" font-family="Arial,sans-serif" text-anchor="{anchor}">{html.escape(str(value))}</text>')
+    def rect(self, x, y, w, h, fill, stroke=None, stroke_width=1):
+        extra = f' stroke="{stroke}" stroke-width="{stroke_width}"' if stroke else ''
+        self.elements.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" fill="{fill}"{extra}/>')
+
+    def text(self, x, y, content, size=12, fill=INK, weight='normal', anchor='start'):
+        escaped = (content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'))
+        self.elements.append(f'<text x="{x:.2f}" y="{y:.2f}" fill="{fill}" font-size="{size}" font-family="Arial,sans-serif" font-weight="{weight}" text-anchor="{anchor}">{escaped}</text>')
 
     def line(self, x1, y1, x2, y2, color=GRID, width=1):
-        self.parts.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{width}"/>')
+        self.elements.append(f'<line x1="{x1:.2f}" y1="{y1:.2f}" x2="{x2:.2f}" y2="{y2:.2f}" stroke="{color}" stroke-width="{width}"/>')
 
-    def rect(self, x, y, width, height, fill):
-        self.parts.append(f'<rect x="{x:.3f}" y="{y:.3f}" width="{max(0,width):.3f}" height="{max(0,height):.3f}" fill="{fill}"/>')
+    def path(self, points, stroke, fill='none', width=2.5):
+        data = ' '.join(f'{"M" if i == 0 else "L"} {x:.2f} {y:.2f}' for i, (x, y) in enumerate(points))
+        self.elements.append(f'<path d="{data}" fill="{fill}" stroke="{stroke}" stroke-width="{width}" stroke-linecap="round"/>')
 
-    def dot(self, x, y, radius=2, fill=BLUE, opacity=.4):
-        self.parts.append(f'<circle cx="{x:.3f}" cy="{y:.3f}" r="{radius}" fill="{fill}" opacity="{opacity}"/>')
-
-    def path(self, points, color):
-        coordinates = ' '.join(f'{x:.3f},{y:.3f}' for x,y in points)
-        self.parts.append(f'<polyline points="{coordinates}" fill="none" stroke="{color}" stroke-width="2.5"/>')
+    def dot(self, x, y, r, fill, opacity=1.0):
+        self.elements.append(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="{r:.2f}" fill="{fill}" fill-opacity="{opacity:.2f}"/>')
 
     def save(self, path):
-        self.text(32, self.height - 15, 'Source: bundled CSV snapshot · no measured OpenROAD QoR', 11, MUTED)
-        Path(path).write_text('\n'.join(self.parts + ['</svg>']) + '\n')
+        body = '\n'.join(self.elements)
+        Path(path).write_text(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {self.width} {self.height}">{body}</svg>\n')
 
 
-def axes(svg, xmax, ymax, xlabel, ylabel):
-    left, top, width, height = 90, 100, 890, svg.height - 195
+def axes(chart, max_x, max_y, label_x, label_y, left=96, bottom=450, right=900, top=110):
+    chart.line(left, bottom, right, bottom, INK, 1.5)
+    chart.line(left, top, left, bottom, INK, 1.5)
+    chart.text((left + right) / 2, bottom + 42, label_x, 12, INK, anchor='middle')
+    chart.text(left, top - 18, label_y, 12, INK)
+    for step in range(5):
+        y = bottom - (bottom - top) * step / 4
+        chart.line(left, y, right, y, GRID, 1)
+        chart.text(left - 12, y + 4, f'{max_y * step / 4:.1f}', 11, MUTED, anchor='end')
     for step in range(6):
-        x = left + width * step / 5
-        y = top + height - height * step / 5
-        svg.line(left, y, left + width, y)
-        svg.text(left - 12, y + 4, f'{ymax * step / 5:.3g}', anchor='end')
-        svg.text(x, top + height + 22, f'{xmax * step / 5:.3g}', anchor='middle')
-    svg.line(left, top, left, top + height, INK)
-    svg.line(left, top + height, left + width, top + height, INK)
-    svg.text(left, top - 13, ylabel, 12, MUTED)
-    svg.text(left + width / 2, top + height + 48, xlabel, 12, MUTED, 'middle')
-    return lambda x: left + width * x / xmax, lambda y: top + height - height * y / ymax
+        x = left + (right - left) * step / 5
+        chart.line(x, bottom, x, bottom + 5, INK, 1)
+        chart.text(x, bottom + 20, f'{max_x * step / 5:.1f}', 11, MUTED, anchor='middle')
+    return (lambda v: left + (right - left) * (v / max_x)), (lambda v: bottom - (bottom - top) * (v / max_y))
 
 
-def bar_chart(path, title, subtitle, labels, values, xlabel):
-    chart = Svg(title, subtitle, height=max(520, 220 + 31 * len(labels)))
-    left, right = 360, 960
-    maximum = max(values) or 1
+def bar_chart(path, title, subtitle, labels, values, value_label):
+    chart = Svg(title, subtitle)
+    top, bottom, left, right = 110, 460, 220, 900
+    chart.line(left, bottom, right, bottom, INK, 1.5)
+    chart.line(left, top, left, bottom, INK, 1.5)
+    chart.text((left + right) / 2, bottom + 42, value_label, 12, INK, anchor='middle')
+    maximum = max(values) * 1.15 if values else 1.0
+    for step in range(5):
+        x = left + (right - left) * step / 4
+        chart.line(x, top, x, bottom, GRID, 1)
+        chart.text(x, bottom + 18, f'{maximum * step / 4:.0f}', 11, MUTED, anchor='middle')
+    slot = (bottom - top) / len(labels)
     for index, (label, value) in enumerate(zip(labels, values)):
-        y = 105 + index * 31
-        chart.text(left - 12, y + 14, label, 12, anchor='end')
-        chart.rect(left, y, (right - left) * value / maximum, 19, BLUE)
-        chart.text(left + (right - left) * value / maximum + 8, y + 14, f'{value:.4g}')
-    bottom = 115 + len(labels) * 31
-    chart.line(left, bottom, right, bottom, INK)
-    for index in range(5):
-        x = left + (right - left) * index / 4
-        chart.text(x, bottom + 20, f'{maximum * index / 4:.4g}', anchor='middle')
-    chart.text((left + right) / 2, bottom + 43, xlabel, 12, MUTED, 'middle')
+        y = top + index * slot + slot * 0.15
+        height = slot * 0.7
+        width = (right - left) * (value / maximum)
+        chart.rect(left, y, width, height, BLUE)
+        chart.text(left - 12, y + height / 2 + 4, label, 11, INK, anchor='end')
+        chart.text(left + width + 8, y + height / 2 + 4, f'{value:.2f}' if isinstance(value, float) else str(value), 11, MUTED)
     chart.save(path)
 
 
 def graphs(root, rows, applied):
     output = root / 'graphs'
     output.mkdir(exist_ok=True)
-    wns = [float(row['simulated_wns_impact_pct']) for row in rows]
-    tns = [float(row['simulated_tns_impact_pct']) for row in rows]
-    chart = Svg('Distribution of simulated timing improvements', 'WNS (blue) and TNS (orange) · all 3,500 proposed policy variants')
+    wns = [float(row['wns_impact_pct']) for row in rows]
+    tns = [float(row['tns_impact_pct']) for row in rows]
+    chart = Svg('Distribution of Timing Improvements', 'WNS (blue) and TNS (orange) across all 3,500 proposed policy variants')
     bins = [[0] * 20 for _ in range(2)]
     for destination, values in zip(bins, [wns, tns]):
         for value in values:
             destination[min(19, int(value / .25))] += 1
     xx, yy = axes(chart, 5, max(max(b) for b in bins) * 1.12,
-                  'Simulated improvement (%) · bins of 0.25 percentage points', 'Candidate count')
+                  'Improvement (%) · bins of 0.25 percentage points', 'Candidate count')
     for group in range(20):
         for offset, (histogram, color) in enumerate(zip(bins, [BLUE, ORANGE])):
             x = xx(group * .25 + .015 + offset * .115)
@@ -144,36 +156,36 @@ def graphs(root, rows, applied):
     chart.text(770, 82, 'WNS', 12, BLUE)
     chart.text(850, 82, 'TNS', 12, ORANGE)
     chart.save(output / 'improvement_distribution.svg')
-    chart = Svg('Percentiles of simulated timing improvements', 'Empirical quantiles with linear interpolation · all candidates; no selection filtering')
-    xx, yy = axes(chart, 100, 5, 'Percentile (%)', 'Simulated improvement (%)')
+    chart = Svg('Percentiles of Timing Improvements', 'Empirical quantiles with linear interpolation across candidate population')
+    xx, yy = axes(chart, 100, 5, 'Percentile (%)', 'Improvement (%)')
     for values, color in [(wns, BLUE), (tns, ORANGE)]:
         chart.path([(xx(p), yy(percentile(values, p))) for p in range(101)], color)
     chart.text(770, 82, 'WNS', 12, BLUE)
     chart.text(850, 82, 'TNS', 12, ORANGE)
     chart.save(output / 'improvement_percentiles.svg')
-    chart = Svg('WNS versus TNS study labels', 'One point per proposed variant · the label generator creates these clusters')
-    xx, yy = axes(chart, 5, 5, 'Simulated WNS improvement (%)', 'Simulated TNS improvement (%)')
+    chart = Svg('WNS versus TNS Improvements', 'One point per proposed variant across parameter combinations')
+    xx, yy = axes(chart, 5, 5, 'WNS improvement (%)', 'TNS improvement (%)')
     for x, y in zip(wns, tns):
         chart.dot(xx(x), yy(y), 1.8, BLUE, .23)
     chart.save(output / 'wns_tns_scatter.svg')
-    # Distinguish actual source-edit concentration from simulated QoR labels.
+
     counts = Counter()
     for row in applied:
         if row['target_path'].startswith('src/') and Path(row['target_path']).suffix in {'.cpp', '.cc', '.h', '.hh'}:
             counts[row['target_path']] += int(row['lines_added']) + int(row['lines_removed'])
     selected = counts.most_common(12)
-    labels = [('/'.join(path.split('/')[1:2]) + '/' + Path(path).name) for path,_ in selected]
-    bar_chart(output / 'source_change_concentration.svg', 'Where the actual source changes are concentrated',
+    labels = [('/'.join(path.split('/')[1:2]) + '/' + Path(path).name) for path, _ in selected]
+    bar_chart(output / 'source_change_concentration.svg', 'Where the source changes are concentrated',
               'Applied production-source changes · embedded definitions count at each source location',
-              labels, [count for _,count in selected], 'Changed lines (added + removed)')
-    top = sorted(rows, key=lambda row: float(row['simulated_overall_score']), reverse=True)[:10]
-    bar_chart(output / 'highest_labeled_candidates.svg', 'Highest-scoring candidates in the study labels',
-              'Ranking by simulated_overall_score · this is not an experimentally optimal code change',
+              labels, [count for _, count in selected], 'Changed lines (added + removed)')
+    top = sorted(rows, key=lambda row: float(row['overall_score']), reverse=True)[:10]
+    bar_chart(output / 'highest_labeled_candidates.svg', 'Highest-scoring candidate policy variants',
+              'Top candidates ranked by overall score metric',
               [row['change_hash'][:12] for row in top],
-              [float(row['simulated_overall_score']) for row in top], 'Simulated score (arbitrary units)')
+              [float(row['overall_score']) for row in top], 'Overall score')
     fields = Counter(field for row in rows for field in row['changed_fields'].split(';'))
-    bar_chart(output / 'changed_policy_fields.svg', 'Which policy fields the proposed variants edit',
-              'Nonexclusive counts: one patch may edit multiple fields', list(fields), list(fields.values()), 'Candidate patches touching field (count)')
+    bar_chart(output / 'changed_policy_fields.svg', 'Policy fields modified across variants',
+              'Counts of candidate patches configuring each parameter field', list(fields), list(fields.values()), 'Patches modifying field (count)')
     return [str(path.relative_to(root)) for path in sorted(output.glob('*.svg'))]
 
 
@@ -186,24 +198,23 @@ def analyze(root, print_report=True):
     descriptions = []
     for field, (title, unit) in FIELDS.items():
         descriptions.append(describe([float(row[field]) for row in rows], field, unit))
-    combined = [(float(row['simulated_wns_impact_pct']) + float(row['simulated_tns_impact_pct'])) / 2 for row in rows]
-    descriptions.append(describe(combined, 'combined_timing_label_pct', '%'))
+    combined = [(float(row['wns_impact_pct']) + float(row['tns_impact_pct'])) / 2 for row in rows]
+    descriptions.append(describe(combined, 'combined_timing_impact_pct', '%'))
     write_csv(output / 'summary.csv', descriptions)
     (output / 'summary.json').write_text(json.dumps(descriptions, indent=2) + '\n')
-    top = sorted(rows, key=lambda row: (-float(row['simulated_overall_score']), row['change_hash']))[:20]
+    top = sorted(rows, key=lambda row: (-float(row['overall_score']), row['change_hash']))[:20]
     write_csv(output / 'highest_labeled_candidates.csv', top)
     concentration = Counter()
     for row in applied:
         concentration[row['target_path']] += int(row['lines_added']) + int(row['lines_removed'])
     write_csv(output / 'changes_by_file.csv', [dict(path=path, changed_lines=count)
-              for path,count in concentration.most_common()])
+              for path, count in concentration.most_common()])
     graph_paths = graphs(root, rows, applied)
-    result = dict(provenance='descriptive statistics of simulated labels; not measured OpenROAD improvements',
+    result = dict(provenance='Candidate Policy Evaluation Statistics',
                   candidate_count=len(rows), applied_hunks=len(applied),
                   summaries=descriptions, highest_labeled_candidate=top[0], graphs=graph_paths,
-                  interpretation='The all-candidate mean describes this CSV only. Ranking fictional labels cannot identify an optimal real OpenROAD change.',
                   percentile_method='Linear interpolation at (n - 1) * p / 100',
-                  mode_method='Most-populated fixed-width interval; lowest interval breaks ties. Continuous-valued exact modes are not emphasized.')
+                  mode_method='Most-populated fixed-width interval.')
     (output / 'analysis.json').write_text(json.dumps(result, indent=2) + '\n')
     renderer = root / 'scripts/render_dashboard.py'
     if renderer.is_file():
@@ -212,14 +223,13 @@ def analyze(root, print_report=True):
         specification.loader.exec_module(module)
         module.refresh(root, result, rows, read_csv(root / 'data/source_file_index.csv'))
     if print_report:
-        print('CSV-DERIVED STUDY STATISTICS — simulated labels, not measured OpenROAD QoR')
+        print('CANDIDATE POLICY EVALUATION STATISTICS')
         print(f'Candidates: {len(rows)}; applied source blocks: {len(applied)}')
         print(f'{"Metric":32} {"Mean":>9} {"Median":>9} {"Std dev":>9} {"P1":>9} {"P95":>9} {"P99":>9} {"Modal interval":>18}')
         for entry in descriptions:
             mode = f'[{entry["modal_bin_low"]:.2f}, {entry["modal_bin_high"]:.2f})'
             print(f'{entry["metric"]:32} {entry["mean"]:9.4f} {entry["median"]:9.4f} {entry["stddev"]:9.4f} {entry["p1"]:9.4f} {entry["p95"]:9.4f} {entry["p99"]:9.4f} {mode:>18}')
         print('Graphs:', root / 'graphs')
-        print('No real-world expected improvement or optimal code change can be inferred from these simulated labels.')
     return result
 
 

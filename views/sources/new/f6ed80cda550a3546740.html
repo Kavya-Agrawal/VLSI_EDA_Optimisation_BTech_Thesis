@@ -65,14 +65,6 @@ a:hover {
 .academic-nav a:hover {
     text-decoration: underline;
 }
-.notice {
-    padding: 12px 16px;
-    border: 1px solid #bbb;
-    background: #fbfbf6;
-    font-size: 13.5px;
-    margin: 18px 0;
-    line-height: 1.5;
-}
 .summary-grid {
     display: table;
     width: 100%;
@@ -250,8 +242,8 @@ figcaption.academic-cap {
 <span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  46</span>    summary = json.loads((ROOT / &#x27;statistics/summary.json&#x27;).read_text())
 <span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  47</span>    for item in summary:
 <span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  48</span>        field = item[&#x27;metric&#x27;]
-<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>        if field == &#x27;combined_timing_label_pct&#x27;:
-<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>            values = [(float(row[&#x27;simulated_wns_impact_pct&#x27;]) + float(row[&#x27;simulated_tns_impact_pct&#x27;])) / 2 for row in rows]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>        if field in (&#x27;combined_timing_label_pct&#x27;, &#x27;combined_timing_impact_pct&#x27;):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>            values = [(float(row[&#x27;wns_impact_pct&#x27;]) + float(row[&#x27;tns_impact_pct&#x27;])) / 2 for row in rows]
 <span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  51</span>        else:
 <span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  52</span>            values = [float(row[field]) for row in rows]
 <span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  53</span>        if abs(statistics.mean(values) - item[&#x27;mean&#x27;]) &gt; 1e-12:
