@@ -61,7 +61,7 @@ def main():
             if abs(oracle - item['p' + str(percentile)]) > 1e-12:
                 raise AssertionError('Percentile mismatch')
     checked_links = 0
-    for path in [ROOT / 'index.html', *sorted((ROOT / 'diffs').glob('*.html'))]:
+    for path in [ROOT / 'index.html', ROOT / 'graphs.html', *sorted((ROOT / 'diffs').glob('*.html'))]:
         parser = Links()
         parser.feed(path.read_text())
         for link in parser.links:

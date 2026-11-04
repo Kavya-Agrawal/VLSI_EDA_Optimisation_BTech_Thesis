@@ -2,6 +2,8 @@
 
 [Open the offline dashboard](OPENROAD_EVOLUTION_FINAL/index.html)
 
+[Open the visual graphs portfolio](OPENROAD_EVOLUTION_FINAL/graphs.html)
+
 [Exact old/new source index](OPENROAD_EVOLUTION_FINAL/SOURCE_INDEX.md)
 
 [Commands and methodology](OPENROAD_EVOLUTION_FINAL/README.md)
