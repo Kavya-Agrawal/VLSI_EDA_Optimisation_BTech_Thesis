@@ -257,3 +257,48 @@ serve-dashboard:
 show-report:
 	@$(MAKE) --no-print-directory -C openroad_evolution_report
 
+# ──────────────────────────────────────────────────────────
+# PV-Evolve: Path-Verified OpenROAD Evolution Framework
+# ──────────────────────────────────────────────────────────
+.PHONY: pv-help pv-test pv-contract pv-attribution pv-compare pv-mutation pv-presentation pv-all
+
+pv-help:
+	@printf '%s\n' \
+	  'PV-Evolve commands:' \
+	  '' \
+	  '  make pv-test              Run PVCC + TPGM import and sanity checks' \
+	  '  make pv-contract          Show PVCC 6-layer contract specification' \
+	  '  make pv-attribution       Demo TPGM path attribution on synthetic data' \
+	  '  make pv-compare           Print PVCC vs ABC comparison table' \
+	  '  make pv-mutation          Demo guided vs blind mutation side-by-side' \
+	  '  make pv-presentation      Open PV-Evolve framework presentation' \
+	  '  make pv-all               Run all PV-Evolve demos'
+
+pv-test:
+	@$(PYTHON) -c "from openroad_timing_evolution.contract import *; from openroad_timing_evolution.path_attribution import *; print('PV-Evolve modules import OK')"
+	@$(PYTHON) -c "from openroad_timing_evolution.contract import compare_to_abc; c=compare_to_abc(); print(f'PVCC: {c[\"pvcc_layers\"]} layers, {len(c[\"pvcc_domains\"])} domains | ABC: {c[\"abc_layers\"]} layer, {len(c[\"abc_domains\"])} domain | Novel: {len(c[\"pvcc_novel_layers\"])}')"
+	@$(PYTHON) -c "from openroad_timing_evolution.policy import Policy, mutate; import random; p=Policy.from_dict({'enabled':True,'program':['load_pressure','fanout_shock']}); m=mutate(p, random.Random(0), {0:0.8,1:0.2}); print(f'Guided mutation test: {m.data()[\"program\"]}')"
+	@echo "All PV-Evolve checks passed."
+
+pv-contract:
+	@$(PYTHON) -m openroad_timing_evolution.pv_demo contract
+
+pv-attribution:
+	@$(PYTHON) -m openroad_timing_evolution.pv_demo attribution
+
+pv-compare:
+	@$(PYTHON) -m openroad_timing_evolution.pv_demo compare
+
+pv-mutation:
+	@$(PYTHON) -m openroad_timing_evolution.pv_demo mutation
+
+pv-presentation:
+	@echo "Opening PV-Evolve framework presentation..."
+	@xdg-open openroad_timing_evolution/presentation/pv_evolve.html 2>/dev/null || \
+	  open openroad_timing_evolution/presentation/pv_evolve.html 2>/dev/null || \
+	  echo "Open openroad_timing_evolution/presentation/pv_evolve.html in a browser"
+
+pv-all: pv-test pv-contract pv-attribution pv-compare pv-mutation
+	@echo ""
+	@echo "All PV-Evolve demos completed."
+

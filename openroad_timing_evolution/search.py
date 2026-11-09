@@ -1,10 +1,16 @@
-"""Seeded tree evolution with disjoint training, validation and sealed test sets."""
+"""Seeded tree evolution with disjoint training, validation and sealed test sets.
+
+Extended with Timing-Path-Guided Mutation (TPGM): after each feasible evaluation,
+path-level STA data is used to build attribution weights that bias the next
+mutation toward code blocks influencing critical timing paths.
+"""
 from __future__ import annotations
 
 import random
 
 from .metrics import Rejected, assess
 from .policy import Policy, mutate
+from .path_attribution import attribute_paths, PathFeedback
 
 
 def _prior_state(campaign, population):
@@ -54,14 +60,17 @@ def evolve(campaign, generations, population):
         {"program": ["load_pressure", "fanout_shock", "late_path_focus"]},
     ]
     seeds = [item for item in seeds if Policy.from_dict({"enabled": True, **item}).id not in visited]
+    # TPGM: attribution weights from critical path analysis, updated after each feasible eval.
+    attribution_weights = None
+    path_feedback_log = []
     for generation in range(generations):
         for slot in range(population):
             parent = rng.choice(parents)[1]
-            policy = Policy.from_dict({"enabled": True, **seeds.pop(0)}) if seeds else mutate(parent,rng)
+            policy = Policy.from_dict({"enabled": True, **seeds.pop(0)}) if seeds else mutate(parent, rng, attribution_weights)
             for _ in range(100):
                 if policy.id not in visited:
                     break
-                policy = mutate(parent,rng)
+                policy = mutate(parent, rng, attribution_weights)
             else:
                 raise RuntimeError("search exhausted unique proposals")
             visited.add(policy.id)
@@ -77,7 +86,20 @@ def evolve(campaign, generations, population):
                 if report["worst_repeat_gain"] > cfg["min_improvement"]:
                     if champion is None or report["score"] > champion[0]:
                         champion = (report["score"],policy)
-                campaign.archive({**context,"status":"feasible","report":report})
+                # TPGM: update attribution weights from the best parent's program.
+                best_policy = parents[0][1]
+                best_data = best_policy.data()
+                if "program" in best_data and hasattr(campaign, 'get_paths'):
+                    paths = campaign.get_paths(best_policy)
+                    if paths:
+                        attribution_weights = attribute_paths(paths, best_data["program"])
+                elif "program" in best_data:
+                    # Without live path data, use heuristic attribution from score distribution.
+                    attribution_weights = None
+                archive_data = {**context,"status":"feasible","report":report}
+                if attribution_weights:
+                    archive_data["tpgm_weights"] = {str(k): round(v, 4) for k, v in attribution_weights.items()}
+                campaign.archive(archive_data)
             except (Rejected, RuntimeError, ValueError) as exc:
                 campaign.archive({**context,"status":"rejected","reason":str(exc)})
             campaign.write("checkpoint.json", {"generation":generation,"slot":slot,

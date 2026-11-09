@@ -278,11 +278,33 @@ def random_tree(rng, depth=0):
     return [rng.choice(OPS), random_tree(rng, depth+1), random_tree(rng, depth+1)]
 
 
-def mutate(parent, rng: random.Random):
+def _pick_guided_index(weights, rng):
+    """Sample a block index from TPGM attribution weights."""
+    if not weights:
+        return None
+    indices = sorted(weights)
+    probs = [weights[i] for i in indices]
+    total = sum(probs)
+    if total <= 0:
+        return None
+    r = rng.random() * total
+    cumulative = 0.0
+    for idx, p in zip(indices, probs):
+        cumulative += p
+        if r <= cumulative:
+            return idx
+    return indices[-1]
+
+
+def mutate(parent, rng: random.Random, attribution_weights=None, p_guided=0.6):
     for _ in range(100):
         data = parent.data()
         if "program" in data:
             program = list(data["program"])
+            # TPGM: use guided target selection with probability p_guided.
+            guided_target = None
+            if attribution_weights and rng.random() < p_guided:
+                guided_target = _pick_guided_index(attribution_weights, rng)
             action = rng.choice((
                 "replace",
                 "insert",
@@ -294,11 +316,14 @@ def mutate(parent, rng: random.Random):
                 "graph_insert_bridge",
             ))
             if action == "replace" and program:
-                program[rng.randrange(len(program))] = rng.choice(PROGRAM_OPS)
+                idx = guided_target if guided_target is not None and guided_target < len(program) else rng.randrange(len(program))
+                program[idx] = rng.choice(PROGRAM_OPS)
             elif action == "insert" and len(program) < 16:
-                program.insert(rng.randrange(len(program) + 1), rng.choice(PROGRAM_OPS))
+                idx = guided_target if guided_target is not None and guided_target <= len(program) else rng.randrange(len(program) + 1)
+                program.insert(idx, rng.choice(PROGRAM_OPS))
             elif action == "delete" and len(program) > 1:
-                del program[rng.randrange(len(program))]
+                idx = guided_target if guided_target is not None and guided_target < len(program) else rng.randrange(len(program))
+                del program[idx]
             elif action == "swap" and len(program) > 1:
                 a, b = rng.sample(range(len(program)), 2)
                 program[a], program[b] = program[b], program[a]
