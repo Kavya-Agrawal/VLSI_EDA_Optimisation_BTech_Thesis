@@ -238,7 +238,7 @@ learning-openroad-verify:
 learning-openroad-report:
 	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution report
 
-.PHONY: learning-final learning-stats
+.PHONY: learning-final learning-stats run-unified pipeline demo serve-dashboard show-report
 learning-final:
 	@$(PYTHON) external/OpenROAD/learning_evolution/tools/catalogue.py generate
 	@$(PYTHON) external/OpenROAD/learning_evolution/tools/guide.py
@@ -246,3 +246,14 @@ learning-final:
 	@$(PYTHON) external/OpenROAD/learning_evolution/tools/build_final.py
 learning-stats:
 	@$(MAKE) --no-print-directory -C OPENROAD_EVOLUTION_FINAL stats
+
+run-unified pipeline demo:
+	@$(PYTHON) run_evolution_pipeline.py
+
+serve-dashboard:
+	@echo "Serving evaluation dashboard on http://127.0.0.1:8000 (Ctrl+C to stop)..."
+	@$(PYTHON) -m http.server 8000 --directory OPENROAD_EVOLUTION_FINAL --bind 127.0.0.1
+
+show-report:
+	@$(MAKE) --no-print-directory -C openroad_evolution_report
+
