@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+"""Consolidated old/new source map with hash references for each applied hunk."""
+import csv
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+HOME = ROOT / 'learning_evolution'
+DESCRIPTIONS = {'Clock_new.cpp': 'Trimmed sink bounds use nth_element order statistics instead of full sorts; handle empty sink sets.', 'TreeBuilder_new.cpp': 'Interval-index pruning of blockage candidates followed by the original exact containment check.', 'HTreeBuilder_new.cpp': 'Opt-in L1 median cluster centers and preallocated sink/capacitance collection.', 'TechChar_new.cpp': 'Opt-in linear axis compaction replaces repeated vector erases; handle empty axes.', 'LatencyBalancer_new.cpp': 'Borrow the existing clock and its sink storage instead of copying it during arrival averaging.', 'TritonCTS_new.cpp': 'Cache cell input capacitances once before ranking dummy-load candidates.', 'RepairHold_new.cc': 'Reserve reusable hold-violation output storage before endpoint scans.', 'RecoverPower_new.cc': 'Cache endpoint slacks before sorting instead of repeated STA calls in the comparator.', 'Clock.h': 'Define the empty-subnet sink count instead of unsigned subtraction underflow.', 'Util.h': 'Reject nonfinite or nonpositive region-normalization scales.', 'CtsOptions.h': 'Reject zero-capacity sink-cluster configuration at the setter boundary.', 'TreeBuilder.h': 'Return a borrowed const adjacency list for child traversal.', 'HTreeBuilder.h': 'Bounds-check branch-point lookup at the topology interface.', 'SinkClustering.h': 'Reserve sink-point and capacitance storage together before collection.', 'TechChar.h': 'Replace an always-true unsigned OR assertion with checked buffer-master access.'}
+DESCRIPTIONS.update({
+    'Geometry.h': 'Bounding boxes, Manhattan metric, Morton bit interleaving and monotone-chain convex hull.',
+    'Fenwick.h': 'Indexed prefix/range sums and nonnegative prefix-selection by binary lifting.',
+    'SlackTree.h': 'Associative range aggregate for worst slack and total negative slack; point updates.',
+    'KdTree.h': 'Balanced Manhattan KD-tree, exact branch-and-bound nearest queries and rectangular range search.',
+    'DisjointSet.h': 'Union by size with path compression for connectivity and component counts.',
+    'RollbackSet.h': 'Checkpointed union forest with reversible unions for speculative clustering.',
+    'SpanningTree.h': 'Kruskal MST/forest and deterministic preorder metric-tour construction.',
+    'TimingDag.h': 'Topological timing propagation, required-time pass and descendant invalidation sets.',
+    'BudgetDp.h': 'Integer-budget 0/1 DP with persistent backpointers plus ratio-greedy ablation.',
+    'PartitionDp.h': 'Contiguous capacity-constrained partitioning by squared cluster-weight dynamic programming.',
+    'Pareto.h': 'Three-objective dominance filtering and nondominated layers.',
+    'LazyQueue.h': 'Version-stamped priorities with stale-entry removal and ABA-safe reinsertion.',
+    'LocalSearch.h': 'Metric two-opt improvement and farthest-first center selection.',
+    'IntervalIndex.h': 'Sorted interval index with subtree maximum-endpoint pruning.',
+    'MinCostFlow.h': 'Integral residual flow, reverse edges and shortest augmenting paths.',
+    'PolicyConfig.h': 'Shared configuration consumed by the real CTS and Resizer call sites.',
+    'RepairOrder.h': 'Load feature normalization, Fenwick/segment-tree context and DP-first target permutation.',
+    'SpatialOrder.h': 'Morton/KD ordering or bounded dense MST with two-opt; source IDs remain a permutation.',
+    'SinkClustering_new.cpp': 'LEARN-CTS-01: replace angular scheduling with opt-in spatial scheduling.',
+    'Clustering_new.cpp': 'LEARN-CTS-02: replace centroid distance scans with exact nearest-outside-cluster KD queries.',
+    'SetupLegacyBase_new.cc': 'LEARN-RSZ-01: replace load-only visitation with DP-prioritized visitation; retain all targets.',
+})
+
+
+def main():
+    pairs = json.loads((HOME / 'source_pairs.json').read_text())
+    with (HOME / 'dataset/applied_changes.csv').open() as handle:
+        rows = list(csv.DictReader(handle))
+    lines = ['# Consolidated code-change reference guide', '',
+             'Real source changes on the learning branch. Study impacts are fictional; no OpenROAD QoR is claimed.', '',
+             '## Original → preserved old → active new', '']
+    for pair in pairs:
+        lines.extend([f"- Original: `{pair['original']}`",
+                      f"  - Preserved: `{pair['old']}`",
+                      f"  - Replacement: `{pair['new']}`",
+                      f"  - Change: {DESCRIPTIONS[Path(pair['new']).name]}"])
+    lines.extend(['', 'CMake and Bazel compile replacement `_new` translation units. Public headers retain canonical include names, with old/new snapshots under snapshots/.',
+                  'Build-file old/new copies live under `learning_evolution/snapshots/`.', '',
+                  '## Applied change blocks', ''])
+    targets = sorted({row['target_path'] for row in rows})
+    for target in targets:
+        name = Path(target).name
+        lines.extend([f'### `{target}`', '', DESCRIPTIONS.get(name,
+                      'Build registration, executable checks, or reproducible dataset/report tooling.'), ''])
+        for row in rows:
+            if row['target_path'] == target:
+                lines.append(f"- Reference `{row['change_hash']}`: old line {row['old_line']} → new line {row['new_line']}; +{row['lines_added']}/-{row['lines_removed']}. Patch: `{row['patch_path']}`")
+        lines.append('')
+    lines.extend(['## Integration status', '',
+        '18 existing C++ source/header files are changed. Algorithm bodies now live directly inside 8 existing translation units; two ordinary module headers share configuration and the experiment flag.',
+        'Installed paths include spatial scheduling, KD queries, interval blockage pruning, median centers, axis compaction, cached capacitance/slack ranking and budget-DP target ordering. Other kernels remain tested extension examples.',
+        'Use `OPENROAD_LEARNING_EVOLUTION=1` only with an OpenROAD binary built from this branch to enable the new call sites.',
+        'The existing binary on this machine does not acquire changes without rebuilding.',
+        'The standalone C++ checks compile and execute without OpenROAD dependencies.', '',
+        '## Corpus interpretation', '',
+        'The 3,500 rows are proposed variants of ten actual configuration fields in src/cts/src/LearningPolicyConfig.h, not 3,500 independent algorithm inventions.',
+        'Each hash identifies a real patch and a complete new header. Every patch replays against the shared old header.',
+        'Small variants edit one coefficient; larger variants edit multiple coefficients, budget, neighborhood, spatial strategy and DP/greedy choice.',
+        '`agent_iteration` and `generation` are synthetic study indices. `simulated_accepted` is a fictional label.',
+        '`applied_to_worktree` is false for every candidate; actual installed blocks are in the separate applied catalogue.',
+        'All WNS/TNS/runtime/effectiveness/impact/score labels are simulated, never measured.', '',
+        '## What still needs real validation', '',
+        'A full OpenROAD compile, upstream CTS and Resizer regressions, and physical/timing evaluation have not run.',
+        'The kernels pass standalone checks, which do not establish physical correctness or improve a real design.',
+        'The pre-existing evolution integrity contracts intentionally reject this wider source surface.',
+        'Do not feed this draft into those research campaigns or claim their validation covers these changes.',
+    ])
+    (HOME / 'CHANGE_GUIDE.md').write_text('\n'.join(lines) + '\n')
+    # Count actual authored code rather than copied snapshots or candidate expansion.
+    authored = [ROOT / 'src/cts/src/LearningMode.h', ROOT / 'src/cts/src/LearningPolicyConfig.h']
+    authored += list((HOME / 'tests').glob('*.cpp')) + list((HOME / 'tests').glob('*.h'))
+    authored += list((HOME / 'tools').glob('*.py'))
+    counts = {row['target_path']: 0 for row in rows if Path(row['target_path']).suffix in {'.cpp', '.cc', '.h', '.hh', '.py'}}
+    for row in rows:
+        if row['target_path'] in counts:
+            counts[row['target_path']] += int(row['lines_added'])
+    added = sum(int(row['lines_added']) for row in rows)
+    removed = sum(int(row['lines_removed']) for row in rows)
+    stats = dict(added_code_lines=sum(counts.values()), referenced_code_files=len(counts),
+                 file_line_counts=counts, applied_hunks=len(rows),
+                 applied_lines_added=added, applied_lines_removed=removed,
+                 source_pairs=len(pairs), candidate_variants=3500,
+                 modified_existing_cpp_files=len(pairs), new_shared_headers=2,
+                 production_cpp_files=len(pairs) + 2, embedded_kernels=17,
+                 excludes='Copied unchanged upstream lines and generated candidate expansion are excluded. Added lines include shared definitions embedded at each production location.')
+    (HOME / 'SOURCE_STATS.json').write_text(json.dumps(stats, indent=2) + '\n')
+    print(f"Added code lines: {stats['added_code_lines']} across {len(counts)} source/test/tool files; applied diff +{added}/-{removed}; {len(rows)} hashes")
+
+
+if __name__ == '__main__':
+    main()

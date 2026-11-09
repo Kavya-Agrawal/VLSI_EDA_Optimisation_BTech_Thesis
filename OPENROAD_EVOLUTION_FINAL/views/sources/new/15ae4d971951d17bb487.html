@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolved (New) Source: learning_evolution/tests/Geometry.cpp</title>
+<style>
+body {
+    font-family: "Latin Modern Roman", "Times New Roman", Times, Georgia, "DejaVu Serif", serif;
+    color: #111;
+    background: #fff;
+    line-height: 1.55;
+    margin: 40px auto;
+    max-width: 1060px;
+    padding: 0 24px;
+}
+h1 {
+    font-size: 25px;
+    font-weight: bold;
+    border-bottom: 2px solid #222;
+    padding-bottom: 8px;
+    margin: 12px 0 16px 0;
+}
+h2 {
+    font-size: 19px;
+    font-weight: bold;
+    border-bottom: 1px solid #888;
+    padding-bottom: 4px;
+    margin-top: 36px;
+    margin-bottom: 14px;
+}
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+p {
+    margin: 10px 0;
+    line-height: 1.55;
+}
+a {
+    color: #003399;
+    text-decoration: underline;
+}
+a:visited {
+    color: #4a154b;
+}
+a:hover {
+    color: #b00;
+}
+.academic-nav {
+    margin: 18px 0;
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-family: monospace, sans-serif;
+    font-size: 13.5px;
+}
+.academic-nav a {
+    margin-right: 18px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.academic-nav a:hover {
+    text-decoration: underline;
+}
+.summary-grid {
+    display: table;
+    width: 100%;
+    margin: 16px 0;
+    border: 1px solid #999;
+    border-collapse: collapse;
+}
+.summary-grid td {
+    border: 1px solid #bbb;
+    padding: 10px 14px;
+    vertical-align: top;
+    width: 25%;
+    background: #fafafa;
+}
+.summary-grid strong {
+    display: block;
+    font-size: 22px;
+    font-family: monospace, sans-serif;
+    margin-top: 4px;
+}
+table.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    border: 1px solid #888;
+}
+table.academic-table th, table.academic-table td {
+    border: 1px solid #bbb;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+table.academic-table th {
+    background: #ebebeb;
+    font-weight: bold;
+}
+table.academic-table tr:nth-child(even) {
+    background: #fbfbfb;
+}
+code {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    background: #f3f3f3;
+    padding: 1px 4px;
+    border: 1px solid #e0e0e0;
+}
+pre {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.scroll {
+    max-height: 540px;
+    overflow-y: auto;
+    border: 1px solid #bbb;
+}
+.tools {
+    margin: 12px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: monospace, sans-serif;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+.tools input, .tools select, .tools button {
+    font: inherit;
+    padding: 6px 10px;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 2px;
+}
+.muted {
+    color: #555;
+    font-size: 13px;
+}
+figure.academic-fig {
+    margin: 24px 0 32px 0;
+    padding: 14px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}
+figure.academic-fig img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+figcaption.academic-cap {
+    font-size: 13.5px;
+    color: #222;
+    margin-top: 10px;
+    line-height: 1.5;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+}
+.code-view {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 12px;
+}
+</style>
+</head>
+<body>
+<div class="academic-nav">
+  <a href="../../../index.html#sources">&larr; Back to Source Index</a>
+  <a href="../../../index.html">Main Review Page</a>
+  <a href="../../../graphs.html">Visualizations</a>
+  <a href="../../../diffs/15ae4d971951d17bb487.html">Compare Side-by-Side Diff</a>
+  <a href="../../../sources/new/learning_evolution/tests/Geometry.cpp">Raw File</a>
+</div>
+
+<h1>Evolved (New) Source: learning_evolution/tests/Geometry.cpp</h1>
+<p><strong>File Repository Path:</strong> <code>learning_evolution/tests/Geometry.cpp</code></p>
+<p><strong>Total Lines:</strong> 74 &middot; <strong>Format:</strong> Formatted HTML View (&middot; <a href="../../../sources/new/learning_evolution/tests/Geometry.cpp">Download Raw Source File</a>)</p>
+
+<div class="code-view">
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   1</span>// SPDX-License-Identifier: BSD-3-Clause
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   2</span>#include &quot;TestSupport.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   3</span>#include &quot;learning/Geometry.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   4</span>#include &quot;learning/KdTree.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   5</span>#include &quot;learning/LocalSearch.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   6</span>#include &quot;learning/SpatialOrder.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   7</span>#include &lt;random&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   8</span>#include &lt;set&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   9</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  10</span>namespace learning_test {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  11</span>void testGeometry()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  12</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  13</span>  using namespace ord::learning;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  14</span>  std::mt19937 random(73);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  15</span>  std::vector&lt;Point&gt; points;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  16</span>  for (unsigned i = 0; i &lt; 257; ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  17</span>    points.push_back({double(random() % 100), double(random() % 100), i});
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  18</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  19</span>  const KdTree index(points);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  20</span>  for (unsigned iteration = 0; iteration &lt; 500; ++iteration) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  21</span>    const Point query{double(random() % 110), double(random() % 110), 0};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  22</span>    const auto excluded = random() % points.size();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  23</span>    std::pair&lt;double, std::size_t&gt; expected{std::numeric_limits&lt;double&gt;::infinity(),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  24</span>                                          std::numeric_limits&lt;std::size_t&gt;::max()};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  25</span>    for (const auto&amp; point : points) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  26</span>      if (point.id != excluded) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  27</span>        expected = std::min(expected, std::make_pair(manhattan(query, point), point.id));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  28</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  29</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  30</span>    CHECK(index.nearest(query, excluded) == expected);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  31</span>    Bounds box;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  32</span>    box.extend(query);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  33</span>    box.extend({query.x + 10, query.y + 10, 0});
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  34</span>    std::vector&lt;std::size_t&gt; expected_range;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  35</span>    for (const auto&amp; point : points) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  36</span>      if (point.x &gt;= box.xmin &amp;&amp; point.x &lt;= box.xmax
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  37</span>          &amp;&amp; point.y &gt;= box.ymin &amp;&amp; point.y &lt;= box.ymax) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  38</span>        expected_range.push_back(point.id);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  39</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  40</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  41</span>    CHECK(index.range(box) == expected_range);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  42</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  43</span>  CHECK(std::isinf(KdTree({}).nearest({}).first));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  44</span>  CHECK(std::isinf(KdTree({{1, 1, 0}}).nearest({}, 0).first));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  45</span>  const std::vector&lt;Point&gt; square{{0, 0, 0}, {1, 1, 1}, {0, 1, 2}, {1, 0, 3}, {.5, .5, 4}};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  46</span>  CHECK(convexHull(square).size() == 4);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  47</span>  CHECK(convexHull({{0, 0, 0}, {0, 0, 1}}).size() == 1);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  48</span>  CHECK(convexHull({{0, 0, 0}, {1, 1, 1}, {2, 2, 2}}).size() == 2);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>  Bounds bounds;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>  bounds.extend({0, 0, 0});
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  51</span>  bounds.extend({1, 1, 1});
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  52</span>  CHECK(mortonKey({0, 0, 0}, bounds) == 0);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  53</span>  CHECK(mortonKey({1, 1, 0}, bounds) &gt; mortonKey({0, 1, 0}, bounds));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  54</span>  for (unsigned mode = 0; mode &lt; 3; ++mode) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  55</span>    PolicyConfig config;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  56</span>    config.spatial_mode = mode;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  57</span>    auto order = spatialOrder(square, config);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  58</span>    CHECK(order.size() == square.size());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  59</span>    std::sort(order.begin(), order.end());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  60</span>    for (std::size_t i = 0; i &lt; order.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  61</span>      CHECK(order[i] == i);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  62</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  63</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  64</span>  const std::vector&lt;std::size_t&gt; crossing{0, 1, 2, 3};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  65</span>  const std::vector&lt;Point&gt; corners(square.begin(), square.begin() + 4);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  66</span>  const auto improved = twoOpt(corners, crossing, 10);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  67</span>  CHECK(tourLength(corners, improved) &lt;= tourLength(corners, crossing));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  68</span>  auto centers = farthestFirst(points, 20);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  69</span>  CHECK(centers.size() == 20);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  70</span>  CHECK(std::set&lt;std::size_t&gt;(centers.begin(), centers.end()).size() == 20);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  71</span>  CHECK(farthestFirst({}, 3).empty());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  72</span>  CHECK(farthestFirst(square, 100).size() == square.size());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  73</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  74</span>}  // namespace learning_test
+</div>
+
+<p style="margin-top:20px;"><a href="../../../index.html#sources">&larr; Back to Source Index</a></p>
+</body>
+</html>

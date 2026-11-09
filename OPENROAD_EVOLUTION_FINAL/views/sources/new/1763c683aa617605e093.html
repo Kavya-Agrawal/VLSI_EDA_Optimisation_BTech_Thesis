@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolved (New) Source: src/cts/src/Util.h</title>
+<style>
+body {
+    font-family: "Latin Modern Roman", "Times New Roman", Times, Georgia, "DejaVu Serif", serif;
+    color: #111;
+    background: #fff;
+    line-height: 1.55;
+    margin: 40px auto;
+    max-width: 1060px;
+    padding: 0 24px;
+}
+h1 {
+    font-size: 25px;
+    font-weight: bold;
+    border-bottom: 2px solid #222;
+    padding-bottom: 8px;
+    margin: 12px 0 16px 0;
+}
+h2 {
+    font-size: 19px;
+    font-weight: bold;
+    border-bottom: 1px solid #888;
+    padding-bottom: 4px;
+    margin-top: 36px;
+    margin-bottom: 14px;
+}
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+p {
+    margin: 10px 0;
+    line-height: 1.55;
+}
+a {
+    color: #003399;
+    text-decoration: underline;
+}
+a:visited {
+    color: #4a154b;
+}
+a:hover {
+    color: #b00;
+}
+.academic-nav {
+    margin: 18px 0;
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-family: monospace, sans-serif;
+    font-size: 13.5px;
+}
+.academic-nav a {
+    margin-right: 18px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.academic-nav a:hover {
+    text-decoration: underline;
+}
+.summary-grid {
+    display: table;
+    width: 100%;
+    margin: 16px 0;
+    border: 1px solid #999;
+    border-collapse: collapse;
+}
+.summary-grid td {
+    border: 1px solid #bbb;
+    padding: 10px 14px;
+    vertical-align: top;
+    width: 25%;
+    background: #fafafa;
+}
+.summary-grid strong {
+    display: block;
+    font-size: 22px;
+    font-family: monospace, sans-serif;
+    margin-top: 4px;
+}
+table.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    border: 1px solid #888;
+}
+table.academic-table th, table.academic-table td {
+    border: 1px solid #bbb;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+table.academic-table th {
+    background: #ebebeb;
+    font-weight: bold;
+}
+table.academic-table tr:nth-child(even) {
+    background: #fbfbfb;
+}
+code {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    background: #f3f3f3;
+    padding: 1px 4px;
+    border: 1px solid #e0e0e0;
+}
+pre {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.scroll {
+    max-height: 540px;
+    overflow-y: auto;
+    border: 1px solid #bbb;
+}
+.tools {
+    margin: 12px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: monospace, sans-serif;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+.tools input, .tools select, .tools button {
+    font: inherit;
+    padding: 6px 10px;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 2px;
+}
+.muted {
+    color: #555;
+    font-size: 13px;
+}
+figure.academic-fig {
+    margin: 24px 0 32px 0;
+    padding: 14px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}
+figure.academic-fig img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+figcaption.academic-cap {
+    font-size: 13.5px;
+    color: #222;
+    margin-top: 10px;
+    line-height: 1.5;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+}
+.code-view {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 12px;
+}
+</style>
+</head>
+<body>
+<div class="academic-nav">
+  <a href="../../../index.html#sources">&larr; Back to Source Index</a>
+  <a href="../../../index.html">Main Review Page</a>
+  <a href="../../../graphs.html">Visualizations</a>
+  <a href="../../../diffs/1763c683aa617605e093.html">Compare Side-by-Side Diff</a>
+  <a href="../../../sources/new/src/cts/src/Util.h">Raw File</a>
+</div>
+
+<h1>Evolved (New) Source: src/cts/src/Util.h</h1>
+<p><strong>File Repository Path:</strong> <code>src/cts/src/Util.h</code></p>
+<p><strong>Total Lines:</strong> 175 &middot; <strong>Format:</strong> Formatted HTML View (&middot; <a href="../../../sources/new/src/cts/src/Util.h">Download Raw Source File</a>)</p>
+
+<div class="code-view">
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   1</span>// SPDX-License-Identifier: BSD-3-Clause
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   2</span>// Copyright (c) 2019-2025, The OpenROAD Authors
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   3</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   4</span>#pragma once
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   5</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   6</span>#include &lt;cmath&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   7</span>#include &lt;iomanip&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   8</span>#include &lt;ios&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   9</span>#include &lt;ostream&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  10</span>#include &lt;stdexcept&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  11</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  12</span>#include &quot;utl/Logger.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  13</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  14</span>namespace cts {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  15</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  16</span>inline bool fuzzyEqual(double x1, double x2, double epsilon = 1e-6)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  17</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  18</span>  return fabs(x1 - x2) &lt; epsilon;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  19</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  20</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  21</span>// x1 &gt;= x2
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  22</span>inline bool fuzzyEqualOrGreater(double x1, double x2, double epsilon = 1e-6)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  23</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  24</span>  if (fabs(x1 - x2) &lt; epsilon) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  25</span>    return true;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  26</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  27</span>  return (x1 &gt; x2);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  28</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  29</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  30</span>// x1 &lt;= x2
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  31</span>inline bool fuzzyEqualOrSmaller(double x1, double x2, double epsilon = 1e-6)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  32</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  33</span>  if (fabs(x1 - x2) &lt; epsilon) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  34</span>    return true;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  35</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  36</span>  return (x1 &lt; x2);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  37</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  38</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  39</span>template &lt;class T&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  40</span>class Point
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  41</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  42</span> public:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  43</span>  Point(T x, T y) : x_(x), y_(y) {}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  44</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  45</span>  T getX() const { return x_; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  46</span>  T getY() const { return y_; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  47</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  48</span>  void setX(T x) { x_ = x; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>  void setY(T y) { y_ = y; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  51</span>  T computeDist(const Point&lt;T&gt;&amp; other) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  52</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  53</span>    T dx = (getX() &gt; other.getX()) ? (getX() - other.getX())
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  54</span>                                   : (other.getX() - getX());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  55</span>    T dy = (getY() &gt; other.getY()) ? (getY() - other.getY())
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  56</span>                                   : (other.getY() - getY());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  57</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  58</span>    return dx + dy;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  59</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  60</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  61</span>  T computeDistX(const Point&lt;T&gt;&amp; other) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  62</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  63</span>    T dx = (getX() &gt; other.getX()) ? (getX() - other.getX())
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  64</span>                                   : (other.getX() - getX());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  65</span>    return dx;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  66</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  67</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  68</span>  T computeDistY(const Point&lt;T&gt;&amp; other) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  69</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  70</span>    T dy = (getY() &gt; other.getY()) ? (getY() - other.getY())
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  71</span>                                   : (other.getY() - getY());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  72</span>    return dy;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  73</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  74</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  75</span>  bool equal(const Point&lt;T&gt;&amp; other, double epsilon = 1e-6) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  76</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  77</span>    return (fabs(getX() - other.getX()) &lt; epsilon)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  78</span>           &amp;&amp; (fabs(getY() - other.getY()) &lt; epsilon);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  79</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  80</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  81</span>  bool operator&lt;(const Point&lt;T&gt;&amp; other) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  82</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  83</span>    if (getX() != other.getX()) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  84</span>      return getX() &lt; other.getX();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  85</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  86</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  87</span>    return getY() &lt; other.getY();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  88</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  89</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  90</span>  bool operator==(const Point&lt;T&gt;&amp; other) const { return equal(other); }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  91</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  92</span>  bool operator!=(const Point&lt;T&gt;&amp; other) const { return !equal(other); }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  93</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  94</span>  friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Point&lt;T&gt;&amp; point)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  95</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  96</span>    out &lt;&lt; &quot;[(&quot; &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; point.getX() &lt;&lt; &quot;, &quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  97</span>        &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; point.getY() &lt;&lt; &quot;)]&quot;;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  98</span>    return out;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  99</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 100</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 101</span> private:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 102</span>  T x_;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 103</span>  T y_;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 104</span>};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 105</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 106</span>template &lt;class T&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 107</span>class Box
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 108</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 109</span> public:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 110</span>  T getMinX() const { return xMin_; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 111</span>  T getMinY() const { return yMin_; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 112</span>  T getMaxX() const { return xMin_ + width_; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 113</span>  T getMaxY() const { return yMin_ + height_; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 114</span>  T getWidth() const { return width_; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 115</span>  T getHeight() const { return height_; }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 116</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 117</span>  Point&lt;T&gt; getCenter()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 118</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 119</span>    if (centerSet_) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 120</span>      Point&lt;T&gt; center(centerX_, centerY_);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 121</span>      return center;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 122</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 123</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 124</span>    centerX_ = xMin_ + width_ / 2;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 125</span>    centerY_ = yMin_ + height_ / 2;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 126</span>    Point&lt;T&gt; center(centerX_, centerY_);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 127</span>    centerSet_ = true;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 128</span>    return center;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 129</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 130</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 131</span>  void setCenter(Point&lt;T&gt; point)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 132</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 133</span>    centerX_ = point.getX();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 134</span>    centerY_ = point.getY();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 135</span>    centerSet_ = true;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 136</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 137</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 138</span>  Box&lt;double&gt; normalize(double factor)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 139</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 140</span>    // LEARN-API-07: invalid scaling must not silently create inverted regions.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 141</span>    if (!std::isfinite(factor) || factor &lt;= 0) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 142</span>      throw std::invalid_argument(&quot;Box normalization needs a positive finite scale&quot;);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 143</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 144</span>    return Box&lt;double&gt;(getMinX() * factor,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 145</span>                       getMinY() * factor,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 146</span>                       getMaxX() * factor,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 147</span>                       getMaxY() * factor);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 148</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 149</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 150</span>  Box() : xMin_(0), yMin_(0), width_(0), height_(0) {}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 151</span>  Box(T xMin, T yMin, T xMax, T yMax)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 152</span>      : xMin_(xMin), yMin_(yMin), width_(xMax - xMin), height_(yMax - yMin)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 153</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 154</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 155</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 156</span>  friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Box&amp; box)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 157</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 158</span>    out &lt;&lt; &quot;[(&quot; &lt;&lt; box.getMinX() &lt;&lt; &quot;, &quot; &lt;&lt; box.getMinY() &lt;&lt; &quot;), (&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 159</span>        &lt;&lt; box.getMaxX() &lt;&lt; &quot;, &quot; &lt;&lt; box.getMaxY() &lt;&lt; &quot;)]&quot;;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 160</span>    return out;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 161</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 162</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 163</span> private:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 164</span>  T xMin_;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 165</span>  T yMin_;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 166</span>  T width_;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 167</span>  T height_;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 168</span>  T centerX_ = 0;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 169</span>  T centerY_ = 0;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 170</span>  bool centerSet_ = false;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 171</span>};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 172</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 173</span>using utl::format_as;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 174</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 175</span>}  // namespace cts
+</div>
+
+<p style="margin-top:20px;"><a href="../../../index.html#sources">&larr; Back to Source Index</a></p>
+</body>
+</html>

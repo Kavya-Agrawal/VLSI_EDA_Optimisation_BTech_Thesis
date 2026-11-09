@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""Compile tests from exact kernel blocks embedded in production source files.
+
+Generated headers are build artifacts, never a separate production algorithm
+library. Editing a production block changes the code compiled by the checks.
+"""
+import json
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+HOME = ROOT / 'learning_evolution'
+
+
+def extract(destination=None):
+    destination = Path(destination or HOME / 'build/embedded/learning')
+    destination.mkdir(parents=True, exist_ok=True)
+    metadata = json.loads((HOME / 'embedded_kernels.json').read_text())
+    for name, info in metadata.items():
+        text = (ROOT / info['source']).read_text()
+        if info.get('whole_file'):
+            body = text
+        else:
+            begin = f'// BEGIN INTEGRATED KERNEL {name}\n'
+            end = f'// END INTEGRATED KERNEL {name}\n'
+            if text.count(begin) != 1 or text.count(end) != 1:
+                raise ValueError('Ambiguous/missing source block: ' + name)
+            body = text.split(begin, 1)[1].split(end, 1)[0]
+            # Shared inline definitions embedded in two TUs must stay identical.
+            pairs = json.loads((HOME / 'source_pairs.json').read_text())
+            for pair in pairs:
+                other = (ROOT / pair['new']).read_text()
+                if begin in other:
+                    duplicate = other.split(begin, 1)[1].split(end, 1)[0]
+                    if duplicate != body:
+                        raise ValueError('Divergent duplicate integrated definition: ' + name)
+            body = '#pragma once\n' + ''.join('#include "' + dep + '"\n' for dep in info['dependencies']) + body
+        (destination / (name + '.h')).write_text(body)
+    print(f'Extracted {len(metadata)} exact source blocks for standalone C++ checks')
+
+
+if __name__ == '__main__':
+    extract()

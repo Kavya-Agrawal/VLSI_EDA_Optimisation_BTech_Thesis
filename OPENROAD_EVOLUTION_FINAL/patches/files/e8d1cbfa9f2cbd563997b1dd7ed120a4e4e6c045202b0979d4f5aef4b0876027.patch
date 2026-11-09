@@ -1,0 +1,284 @@
+--- a/src/cts/src/Clustering.cpp
++++ b/src/cts/src/Clustering_new.cpp
+@@ -21,6 +21,250 @@
+ #include "lemon/maps.h"
+ #include "lemon/network_simplex.h"
+ #include "utl/Logger.h"
++
++
++// Algorithms below belong to this production translation unit.
++#include "LearningMode.h"
++#include "LearningPolicyConfig.h"
++
++// BEGIN INTEGRATED KERNEL Geometry
++// SPDX-License-Identifier: BSD-3-Clause
++#include <algorithm>
++#include <cmath>
++#include <cstddef>
++#include <cstdint>
++#include <limits>
++#include <stdexcept>
++#include <vector>
++
++namespace ord::learning {
++struct Point
++{
++  double x = 0;
++  double y = 0;
++  std::size_t id = 0;
++};
++
++inline double manhattan(const Point& a, const Point& b)
++{
++  return std::abs(a.x - b.x) + std::abs(a.y - b.y);
++}
++
++inline double squaredDistance(const Point& a, const Point& b)
++{
++  const double dx = a.x - b.x;
++  const double dy = a.y - b.y;
++  return dx * dx + dy * dy;
++}
++
++struct Bounds
++{
++  double xmin = std::numeric_limits<double>::infinity();
++  double ymin = std::numeric_limits<double>::infinity();
++  double xmax = -std::numeric_limits<double>::infinity();
++  double ymax = -std::numeric_limits<double>::infinity();
++
++  void extend(const Point& p)
++  {
++    xmin = std::min(xmin, p.x);
++    ymin = std::min(ymin, p.y);
++    xmax = std::max(xmax, p.x);
++    ymax = std::max(ymax, p.y);
++  }
++
++  bool empty() const { return xmin > xmax || ymin > ymax; }
++
++  double lowerBound(const Point& p) const
++  {
++    if (empty()) {
++      return std::numeric_limits<double>::infinity();
++    }
++    const double dx = std::max({xmin - p.x, 0.0, p.x - xmax});
++    const double dy = std::max({ymin - p.y, 0.0, p.y - ymax});
++    return dx + dy;
++  }
++
++  bool intersects(const Bounds& b) const
++  {
++    return !empty() && !b.empty() && xmin <= b.xmax && b.xmin <= xmax
++           && ymin <= b.ymax && b.ymin <= ymax;
++  }
++};
++
++inline std::uint64_t spreadBits(std::uint32_t value)
++{
++  std::uint64_t v = value;
++  v = (v | (v << 16)) & 0x0000ffff0000ffffULL;
++  v = (v | (v << 8)) & 0x00ff00ff00ff00ffULL;
++  v = (v | (v << 4)) & 0x0f0f0f0f0f0f0f0fULL;
++  v = (v | (v << 2)) & 0x3333333333333333ULL;
++  return (v | (v << 1)) & 0x5555555555555555ULL;
++}
++
++inline std::uint64_t mortonKey(const Point& p, const Bounds& bounds)
++{
++  const auto quantize = [](double value, double low, double high) {
++    if (high <= low) {
++      return std::uint32_t{0};
++    }
++    const double normalized = std::clamp((value - low) / (high - low), 0.0, 1.0);
++    return static_cast<std::uint32_t>(normalized * 65535.0);
++  };
++  return spreadBits(quantize(p.x, bounds.xmin, bounds.xmax))
++         | (spreadBits(quantize(p.y, bounds.ymin, bounds.ymax)) << 1);
++}
++
++inline std::vector<Point> convexHull(std::vector<Point> points)
++{
++  std::sort(points.begin(), points.end(), [](const Point& a, const Point& b) {
++    return a.x != b.x ? a.x < b.x : a.y < b.y;
++  });
++  points.erase(std::unique(points.begin(), points.end(), [](const Point& a, const Point& b) {
++    return a.x == b.x && a.y == b.y;
++  }), points.end());
++  if (points.size() <= 2) {
++    return points;
++  }
++  const auto cross = [](const Point& a, const Point& b, const Point& c) {
++    return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
++  };
++  std::vector<Point> hull;
++  for (const auto& point : points) {
++    while (hull.size() >= 2 && cross(hull[hull.size() - 2], hull.back(), point) <= 0) {
++      hull.pop_back();
++    }
++    hull.push_back(point);
++  }
++  const auto lower = hull.size();
++  for (auto i = points.rbegin() + 1; i != points.rend(); ++i) {
++    while (hull.size() > lower && cross(hull[hull.size() - 2], hull.back(), *i) <= 0) {
++      hull.pop_back();
++    }
++    hull.push_back(*i);
++  }
++  hull.pop_back();
++  return hull;
++}
++}  // namespace ord::learning
++// END INTEGRATED KERNEL Geometry
++
++// BEGIN INTEGRATED KERNEL KdTree
++// SPDX-License-Identifier: BSD-3-Clause
++#include <numeric>
++#include <utility>
++
++namespace ord::learning {
++// Balanced spatial index with exact Manhattan nearest-neighbor queries.
++class KdTree
++{
++ public:
++  explicit KdTree(std::vector<Point> points) : points_(std::move(points))
++  {
++    for (const auto& p : points_) {
++      if (!std::isfinite(p.x) || !std::isfinite(p.y)) {
++        throw std::invalid_argument("KdTree requires finite coordinates");
++      }
++    }
++    nodes_.reserve(points_.size());
++    root_ = build(0, points_.size(), 0);
++  }
++
++  std::pair<double, std::size_t> nearest(
++      const Point& query,
++      std::size_t excluded = std::numeric_limits<std::size_t>::max()) const
++  {
++    std::pair<double, std::size_t> best{
++        std::numeric_limits<double>::infinity(),
++        std::numeric_limits<std::size_t>::max()};
++    search(root_, query, excluded, best);
++    return best;
++  }
++
++  std::vector<std::size_t> range(const Bounds& bounds) const
++  {
++    std::vector<std::size_t> ids;
++    visit(root_, bounds, ids);
++    std::sort(ids.begin(), ids.end());
++    return ids;
++  }
++
++ private:
++  struct Node
++  {
++    Point point;
++    Bounds bounds;
++    int left = -1;
++    int right = -1;
++  };
++
++  int build(std::size_t begin, std::size_t end, unsigned depth)
++  {
++    if (begin == end) {
++      return -1;
++    }
++    const auto middle = begin + (end - begin) / 2;
++    const bool x_axis = depth % 2 == 0;
++    std::nth_element(points_.begin() + begin, points_.begin() + middle,
++                     points_.begin() + end, [x_axis](const Point& a, const Point& b) {
++      const double av = x_axis ? a.x : a.y;
++      const double bv = x_axis ? b.x : b.y;
++      return av != bv ? av < bv : a.id < b.id;
++    });
++    const int index = static_cast<int>(nodes_.size());
++    nodes_.push_back({points_[middle], {}, -1, -1});
++    Bounds box;
++    for (auto i = begin; i < end; ++i) {
++      box.extend(points_[i]);
++    }
++    const int left = build(begin, middle, depth + 1);
++    const int right = build(middle + 1, end, depth + 1);
++    nodes_[index] = {points_[middle], box, left, right};
++    return index;
++  }
++
++  void search(int index, const Point& query, std::size_t excluded,
++              std::pair<double, std::size_t>& best) const
++  {
++    if (index < 0) {
++      return;
++    }
++    const auto& node = nodes_[index];
++    if (node.bounds.lowerBound(query) > best.first) {
++      return;
++    }
++    if (node.point.id != excluded) {
++      best = std::min(best, std::make_pair(manhattan(query, node.point), node.point.id));
++    }
++    int first = node.left;
++    int second = node.right;
++    if (first >= 0 && second >= 0
++        && nodes_[second].bounds.lowerBound(query) < nodes_[first].bounds.lowerBound(query)) {
++      std::swap(first, second);
++    }
++    search(first, query, excluded, best);
++    search(second, query, excluded, best);
++  }
++
++  void visit(int index, const Bounds& box, std::vector<std::size_t>& ids) const
++  {
++    if (index < 0 || !nodes_[index].bounds.intersects(box)) {
++      return;
++    }
++    const auto& n = nodes_[index];
++    if (n.point.x >= box.xmin && n.point.x <= box.xmax
++        && n.point.y >= box.ymin && n.point.y <= box.ymax) {
++      ids.push_back(n.point.id);
++    }
++    visit(n.left, box, ids);
++    visit(n.right, box, ids);
++  }
++
++  std::vector<Point> points_;
++  std::vector<Node> nodes_;
++  int root_ = -1;
++};
++}  // namespace ord::learning
++// END INTEGRATED KERNEL KdTree
+ 
+ namespace cts::CKMeans {
+ 
+@@ -239,6 +483,30 @@
+ float Clustering::calcSilh(
+     const std::vector<std::pair<float, float>>& means) const
+ {
++  // LEARN-CTS-02: exact Manhattan KD queries replace all-centroid scans.
++  // A single centroid has no outside competitor: retain upstream behavior.
++  if (ord::learning::enabled() && means.size() > 1 && !sinks_.empty()) {
++    std::vector<ord::learning::Point> centroids;
++    centroids.reserve(means.size());
++    for (std::size_t i = 0; i < means.size(); ++i) {
++      centroids.push_back({means[i].first, means[i].second, i});
++    }
++    const ord::learning::KdTree index(std::move(centroids));
++    float sum = 0;
++    for (const Sink& sink : sinks_) {
++      if (sink.cluster_idx < 0 || static_cast<std::size_t>(sink.cluster_idx) >= means.size()) {
++        continue;
++      }
++      const ord::learning::Point query{sink.x, sink.y, 0};
++      const float inside = calcDist(means[sink.cluster_idx], &sink);
++      const float outside = static_cast<float>(index.nearest(query, sink.cluster_idx).first);
++      const float denominator = std::max(inside, outside);
++      if (denominator != 0) {
++        sum += (outside - inside) / denominator;
++      }
++    }
++    return sum / sinks_.size();
++  }
+   float sum_silh = 0;
+   for (const Sink& sink : sinks_) {
+     float in_d = 0, out_d = FLT_MAX;

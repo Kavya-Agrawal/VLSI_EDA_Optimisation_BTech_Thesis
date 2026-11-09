@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Old / new: src/cts/src/SinkClustering.h</title><style>
+:root{font-family:Arial,sans-serif;color:#162939;background:#f5f7f9}body{margin:0}
+main{max-width:1200px;margin:auto;padding:32px}h1{font-size:30px;margin:8px 0 12px}
+h2{font-size:21px;margin-top:36px}p{line-height:1.55}a{color:#215e8c}
+nav{display:flex;gap:20px;flex-wrap:wrap;margin:24px 0;border-bottom:1px solid #ccd6df;padding-bottom:14px}
+.notice{padding:14px 18px;border-left:4px solid #b8753a;background:#faf4e9;line-height:1.5}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin:28px 0}
+.metric strong{display:block;font-size:30px;margin-top:8px}.muted{color:#526575;font-size:13px}
+.graphs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+figure{margin:0;background:white;border:1px solid #dce3e9;padding:8px}figure img{width:100%;height:auto}
+figcaption{padding:10px;font-size:13px;color:#526575}table{width:100%;border-collapse:collapse;background:white;font-size:13px}
+th,td{padding:11px 10px;border-bottom:1px solid #dce3e9;text-align:left;vertical-align:top}
+th{background:#eaf0f5;font-weight:600;position:sticky;top:0}code{font-size:12px;overflow-wrap:anywhere}
+.scroll{max-height:600px;overflow:auto;border:1px solid #dce3e9}input,select,button{font:inherit;padding:9px;border:1px solid #b9c6d0;background:white;border-radius:3px}
+input{min-width:300px}button{cursor:pointer}.tools{display:flex;gap:12px;align-items:center;margin:12px 0;flex-wrap:wrap}
+pre{white-space:pre-wrap;word-break:break-word;background:white;padding:20px;border:1px solid #dce3e9;line-height:1.45}
+.diff{font-family:monospace;font-size:12px;width:auto;min-width:100%}.diff td{padding:3px 6px;white-space:pre}.diff_header{background:#eef2f5}
+.diff_add{background:#dcecdf}.diff_sub{background:#f3deda}.diff_chg{background:#f2e8c7}
+@media(max-width:800px){main{padding:18px}.graphs,.metrics{grid-template-columns:1fr 1fr}input{min-width:180px}}
+</style></head><body><main><a href="../index.html#sources">Back to source index</a><h1>SinkClustering.h</h1><p><a href="../views/sources/old/3b0c4b9e95fc279a1fce.html">Full original source (View)</a> (<a href="../sources/old/src/cts/src/SinkClustering.h">raw</a>) &middot; <a href="../views/sources/new/3b0c4b9e95fc279a1fce.html">Full new source (View)</a> (<a href="../sources/new/src/cts/src/SinkClustering.h">raw</a>)</p><p class="muted">Context view shows changed regions. Follow the source links for the complete files. An empty original denotes a newly added file.</p><div style="overflow:auto">
+    <table class="diff" id="difflib_chg_to29__top"
+           cellspacing="0" cellpadding="0" rules="groups" >
+        <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+        <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+        <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">OLD: learning_evolution/snapshots/src/cts/src/SinkClustering_old.h</th><th class="diff_next"><br /></th><th colspan="2" class="diff_header">NEW: src/cts/src/SinkClustering.h</th></tr></thead>
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to29__0"></td><td class="diff_header" id="from29_35">35</td><td nowrap="nowrap">&nbsp;public:</td><td class="diff_next"></td><td class="diff_header" id="to29_35">35</td><td nowrap="nowrap">&nbsp;public:</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from29_36">36</td><td nowrap="nowrap">&nbsp;&nbsp;SinkClustering(const&nbsp;CtsOptions*&nbsp;options,</td><td class="diff_next"></td><td class="diff_header" id="to29_36">36</td><td nowrap="nowrap">&nbsp;&nbsp;SinkClustering(const&nbsp;CtsOptions*&nbsp;options,</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from29_37">37</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TechChar*&nbsp;techChar,</td><td class="diff_next"></td><td class="diff_header" id="to29_37">37</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TechChar*&nbsp;techChar,</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from29_38">38</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HTreeBuilder*&nbsp;HTree);</td><td class="diff_next"></td><td class="diff_header" id="to29_38">38</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HTreeBuilder*&nbsp;HTree);</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from29_39">39</td><td nowrap="nowrap"></td><td class="diff_next"></td><td class="diff_header" id="to29_39">39</td><td nowrap="nowrap"></td></tr>
+            <tr><td class="diff_next"><a href="#difflib_chg_to29__top">t</a></td><td class="diff_header"></td><td nowrap="nowrap"></td><td class="diff_next"><a href="#difflib_chg_to29__top">t</a></td><td class="diff_header" id="to29_40">40</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;//&nbsp;LEARN-API-05:&nbsp;allocate&nbsp;point/capacitance&nbsp;arrays&nbsp;together&nbsp;before&nbsp;collection.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header"></td><td nowrap="nowrap"></td><td class="diff_next"></td><td class="diff_header" id="to29_41">41</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;void&nbsp;reservePoints(std::size_t&nbsp;count)</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header"></td><td nowrap="nowrap"></td><td class="diff_next"></td><td class="diff_header" id="to29_42">42</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;{</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header"></td><td nowrap="nowrap"></td><td class="diff_next"></td><td class="diff_header" id="to29_43">43</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;points_.reserve(count);</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header"></td><td nowrap="nowrap"></td><td class="diff_next"></td><td class="diff_header" id="to29_44">44</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;pointsCap_.reserve(count);</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header"></td><td nowrap="nowrap"></td><td class="diff_next"></td><td class="diff_header" id="to29_45">45</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;}</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from29_40">40</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;addPoint(double&nbsp;x,&nbsp;double&nbsp;y)&nbsp;{&nbsp;points_.emplace_back(x,&nbsp;y);&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to29_46">46</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;addPoint(double&nbsp;x,&nbsp;double&nbsp;y)&nbsp;{&nbsp;points_.emplace_back(x,&nbsp;y);&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from29_41">41</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;addCap(float&nbsp;cap)&nbsp;{&nbsp;pointsCap_.emplace_back(cap);&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to29_47">47</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;addCap(float&nbsp;cap)&nbsp;{&nbsp;pointsCap_.emplace_back(cap);&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from29_42">42</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;run(unsigned&nbsp;groupSize,</td><td class="diff_next"></td><td class="diff_header" id="to29_48">48</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;run(unsigned&nbsp;groupSize,</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from29_43">43</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;maxDiameter,</td><td class="diff_next"></td><td class="diff_header" id="to29_49">49</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;maxDiameter,</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from29_44">44</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;scaleFactor,</td><td class="diff_next"></td><td class="diff_header" id="to29_50">50</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;scaleFactor,</td></tr>
+        </tbody>
+    </table></div></main></body></html>

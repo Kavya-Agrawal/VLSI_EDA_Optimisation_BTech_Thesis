@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Old / new: src/cts/src/HTreeBuilder.h</title><style>
+:root{font-family:Arial,sans-serif;color:#162939;background:#f5f7f9}body{margin:0}
+main{max-width:1200px;margin:auto;padding:32px}h1{font-size:30px;margin:8px 0 12px}
+h2{font-size:21px;margin-top:36px}p{line-height:1.55}a{color:#215e8c}
+nav{display:flex;gap:20px;flex-wrap:wrap;margin:24px 0;border-bottom:1px solid #ccd6df;padding-bottom:14px}
+.notice{padding:14px 18px;border-left:4px solid #b8753a;background:#faf4e9;line-height:1.5}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin:28px 0}
+.metric strong{display:block;font-size:30px;margin-top:8px}.muted{color:#526575;font-size:13px}
+.graphs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+figure{margin:0;background:white;border:1px solid #dce3e9;padding:8px}figure img{width:100%;height:auto}
+figcaption{padding:10px;font-size:13px;color:#526575}table{width:100%;border-collapse:collapse;background:white;font-size:13px}
+th,td{padding:11px 10px;border-bottom:1px solid #dce3e9;text-align:left;vertical-align:top}
+th{background:#eaf0f5;font-weight:600;position:sticky;top:0}code{font-size:12px;overflow-wrap:anywhere}
+.scroll{max-height:600px;overflow:auto;border:1px solid #dce3e9}input,select,button{font:inherit;padding:9px;border:1px solid #b9c6d0;background:white;border-radius:3px}
+input{min-width:300px}button{cursor:pointer}.tools{display:flex;gap:12px;align-items:center;margin:12px 0;flex-wrap:wrap}
+pre{white-space:pre-wrap;word-break:break-word;background:white;padding:20px;border:1px solid #dce3e9;line-height:1.45}
+.diff{font-family:monospace;font-size:12px;width:auto;min-width:100%}.diff td{padding:3px 6px;white-space:pre}.diff_header{background:#eef2f5}
+.diff_add{background:#dcecdf}.diff_sub{background:#f3deda}.diff_chg{background:#f2e8c7}
+@media(max-width:800px){main{padding:18px}.graphs,.metrics{grid-template-columns:1fr 1fr}input{min-width:180px}}
+</style></head><body><main><a href="../index.html#sources">Back to source index</a><h1>HTreeBuilder.h</h1><p><a href="../views/sources/old/e7f0de0e8ac0233d39f2.html">Full original source (View)</a> (<a href="../sources/old/src/cts/src/HTreeBuilder.h">raw</a>) &middot; <a href="../views/sources/new/e7f0de0e8ac0233d39f2.html">Full new source (View)</a> (<a href="../sources/new/src/cts/src/HTreeBuilder.h">raw</a>)</p><p class="muted">Context view shows changed regions. Follow the source links for the complete files. An empty original denotes a newly added file.</p><div style="overflow:auto">
+    <table class="diff" id="difflib_chg_to24__top"
+           cellspacing="0" cellpadding="0" rules="groups" >
+        <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+        <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+        <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">OLD: learning_evolution/snapshots/src/cts/src/HTreeBuilder_old.h</th><th class="diff_next"><br /></th><th colspan="2" class="diff_header">NEW: src/cts/src/HTreeBuilder.h</th></tr></thead>
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to24__0"></td><td class="diff_header" id="from24_86">86</td><td nowrap="nowrap"></td><td class="diff_next"></td><td class="diff_header" id="to24_86">86</td><td nowrap="nowrap"></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_87">87</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;getBranchingPointSize()&nbsp;{&nbsp;return&nbsp;branchPointLoc_.size();&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to24_87">87</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;getBranchingPointSize()&nbsp;{&nbsp;return&nbsp;branchPointLoc_.size();&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_88">88</td><td nowrap="nowrap"></td><td class="diff_next"></td><td class="diff_header" id="to24_88">88</td><td nowrap="nowrap"></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_89">89</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;Point&lt;double&gt;&amp;&nbsp;getBranchingPoint(unsigned&nbsp;idx)</td><td class="diff_next"></td><td class="diff_header" id="to24_89">89</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;Point&lt;double&gt;&amp;&nbsp;getBranchingPoint(unsigned&nbsp;idx)</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_90">90</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;{</td><td class="diff_next"></td><td class="diff_header" id="to24_90">90</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;{</td></tr>
+            <tr><td class="diff_next"><a href="#difflib_chg_to24__top">t</a></td><td class="diff_header"></td><td nowrap="nowrap"></td><td class="diff_next"><a href="#difflib_chg_to24__top">t</a></td><td class="diff_header" id="to24_91">91</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;LEARN-API-03:&nbsp;invalid&nbsp;topology&nbsp;references&nbsp;fail&nbsp;at&nbsp;the&nbsp;access&nbsp;boundary.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_91">91</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;branchPointLoc_<span class="diff_chg">[</span>idx<span class="diff_chg">]</span>;</td><td class="diff_next"></td><td class="diff_header" id="to24_92">92</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;branchPointLoc_<span class="diff_chg">.at(</span>idx<span class="diff_chg">)</span>;</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_92">92</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to24_93">93</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_93">93</td><td nowrap="nowrap"></td><td class="diff_next"></td><td class="diff_header" id="to24_94">94</td><td nowrap="nowrap"></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_94">94</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;getBranchingPointParentIdx(unsigned&nbsp;idx)&nbsp;const</td><td class="diff_next"></td><td class="diff_header" id="to24_95">95</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;getBranchingPointParentIdx(unsigned&nbsp;idx)&nbsp;const</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_95">95</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;{</td><td class="diff_next"></td><td class="diff_header" id="to24_96">96</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;{</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_96">96</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;parents_[idx];</td><td class="diff_next"></td><td class="diff_header" id="to24_97">97</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;parents_[idx];</td></tr>
+        </tbody>
+    </table></div></main></body></html>

@@ -1,0 +1,13 @@
+--- a/src/cts/src/CtsOptions.h
++++ b/src/cts/src/CtsOptions.h
+@@ -218,6 +219,10 @@
+   unsigned getSinkClusteringSize() const { return sinkClustersSize_; }
+   void setSinkClusteringSize(unsigned size)
+   {
++    // LEARN-API-06: reject a zero-capacity cluster before partitioning.
++    if (size == 0) {
++      throw std::invalid_argument("Sink clustering size must be positive");
++    }
+     sinkClustersSize_ = size;
+     sinkClustersSizeSet_ = true;
+   }

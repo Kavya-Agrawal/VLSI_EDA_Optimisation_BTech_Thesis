@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolved (New) Source: src/cts/src/Clock_new.cpp</title>
+<style>
+body {
+    font-family: "Latin Modern Roman", "Times New Roman", Times, Georgia, "DejaVu Serif", serif;
+    color: #111;
+    background: #fff;
+    line-height: 1.55;
+    margin: 40px auto;
+    max-width: 1060px;
+    padding: 0 24px;
+}
+h1 {
+    font-size: 25px;
+    font-weight: bold;
+    border-bottom: 2px solid #222;
+    padding-bottom: 8px;
+    margin: 12px 0 16px 0;
+}
+h2 {
+    font-size: 19px;
+    font-weight: bold;
+    border-bottom: 1px solid #888;
+    padding-bottom: 4px;
+    margin-top: 36px;
+    margin-bottom: 14px;
+}
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+p {
+    margin: 10px 0;
+    line-height: 1.55;
+}
+a {
+    color: #003399;
+    text-decoration: underline;
+}
+a:visited {
+    color: #4a154b;
+}
+a:hover {
+    color: #b00;
+}
+.academic-nav {
+    margin: 18px 0;
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-family: monospace, sans-serif;
+    font-size: 13.5px;
+}
+.academic-nav a {
+    margin-right: 18px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.academic-nav a:hover {
+    text-decoration: underline;
+}
+.summary-grid {
+    display: table;
+    width: 100%;
+    margin: 16px 0;
+    border: 1px solid #999;
+    border-collapse: collapse;
+}
+.summary-grid td {
+    border: 1px solid #bbb;
+    padding: 10px 14px;
+    vertical-align: top;
+    width: 25%;
+    background: #fafafa;
+}
+.summary-grid strong {
+    display: block;
+    font-size: 22px;
+    font-family: monospace, sans-serif;
+    margin-top: 4px;
+}
+table.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    border: 1px solid #888;
+}
+table.academic-table th, table.academic-table td {
+    border: 1px solid #bbb;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+table.academic-table th {
+    background: #ebebeb;
+    font-weight: bold;
+}
+table.academic-table tr:nth-child(even) {
+    background: #fbfbfb;
+}
+code {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    background: #f3f3f3;
+    padding: 1px 4px;
+    border: 1px solid #e0e0e0;
+}
+pre {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.scroll {
+    max-height: 540px;
+    overflow-y: auto;
+    border: 1px solid #bbb;
+}
+.tools {
+    margin: 12px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: monospace, sans-serif;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+.tools input, .tools select, .tools button {
+    font: inherit;
+    padding: 6px 10px;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 2px;
+}
+.muted {
+    color: #555;
+    font-size: 13px;
+}
+figure.academic-fig {
+    margin: 24px 0 32px 0;
+    padding: 14px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}
+figure.academic-fig img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+figcaption.academic-cap {
+    font-size: 13.5px;
+    color: #222;
+    margin-top: 10px;
+    line-height: 1.5;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+}
+.code-view {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 12px;
+}
+</style>
+</head>
+<body>
+<div class="academic-nav">
+  <a href="../../../index.html#sources">&larr; Back to Source Index</a>
+  <a href="../../../index.html">Main Review Page</a>
+  <a href="../../../graphs.html">Visualizations</a>
+  <a href="../../../diffs/f747018f12f1c197cd9f.html">Compare Side-by-Side Diff</a>
+  <a href="../../../sources/new/src/cts/src/Clock_new.cpp">Raw File</a>
+</div>
+
+<h1>Evolved (New) Source: src/cts/src/Clock_new.cpp</h1>
+<p><strong>File Repository Path:</strong> <code>src/cts/src/Clock_new.cpp</code></p>
+<p><strong>Total Lines:</strong> 146 &middot; <strong>Format:</strong> Formatted HTML View (&middot; <a href="../../../sources/new/src/cts/src/Clock_new.cpp">Download Raw Source File</a>)</p>
+
+<div class="code-view">
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   1</span>// SPDX-License-Identifier: BSD-3-Clause
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   2</span>// Copyright (c) 2019-2025, The OpenROAD Authors
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   3</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   4</span>#include &quot;Clock.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   5</span>#include &quot;LearningMode.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   6</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   7</span>#include &lt;algorithm&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   8</span>#include &lt;functional&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   9</span>#include &lt;limits&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  10</span>#include &lt;string&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  11</span>#include &lt;utility&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  12</span>#include &lt;vector&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  13</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  14</span>#include &quot;Util.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  15</span>#include &quot;sta/ParseBus.hh&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  16</span>#include &quot;utl/Logger.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  17</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  18</span>namespace cts {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  19</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  20</span>Clock::Clock(const std::string&amp; netName,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  21</span>             const std::string&amp; clockPin,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  22</span>             const std::string&amp; sdcClockName,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  23</span>             int clockPinX,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  24</span>             int clockPinY)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  25</span>    : clockPin_(clockPin),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  26</span>      sdcClockName_(sdcClockName),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  27</span>      clockPinX_(clockPinX),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  28</span>      clockPinY_(clockPinY)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  29</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  30</span>  // Hierarchy delimiters in the net name must be escape.  We use
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  31</span>  // the name to construct buffer names later and the delimiters
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  32</span>  // will confuse downstream tools like read_spef.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  33</span>  netName_ = sta::escapeChars(netName, &#x27;/&#x27;, &#x27;\0&#x27;, &#x27;\0&#x27;, &#x27;\\&#x27;);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  34</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  35</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  36</span>void Clock::report(utl::Logger* logger) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  37</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  38</span>  logger-&gt;report(&quot; ************************************&quot;);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  39</span>  logger-&gt;report(&quot; *         Clock net report         *&quot;);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  40</span>  logger-&gt;report(&quot; ************************************&quot;);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  41</span>  logger-&gt;report(&quot; Net name: {}&quot;, netName_);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  42</span>  logger-&gt;report(&quot; Clock pin: {} ({}, {})&quot;, clockPin_, clockPinX_, clockPinY_);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  43</span>  logger-&gt;report(&quot; Number of sinks: &quot;, sinks_.size());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  44</span>  logger-&gt;report(&quot; ***********************************&quot;);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  45</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  46</span>  logger-&gt;report(&quot;\tPin name \tPos&quot;);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  47</span>  forEachSink([&amp;](const ClockInst&amp; sink) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  48</span>    logger-&gt;report(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>        &quot;\t {} \t ({}, {})&quot;, sink.getName(), sink.getX(), sink.getY());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>  });
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  51</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  52</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  53</span>Box&lt;int&gt; Clock::computeSinkRegion()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  54</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  55</span>  const double percentile = 0.01;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  56</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  57</span>  std::vector&lt;int&gt; allPositionsX;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  58</span>  std::vector&lt;int&gt; allPositionsY;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  59</span>  forEachSink([&amp;](const ClockInst&amp; sink) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  60</span>    allPositionsX.push_back(sink.getX());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  61</span>    allPositionsY.push_back(sink.getY());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  62</span>  });
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  63</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  64</span>  // LEARN-CTS-03: two order statistics suffice for a trimmed region.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  65</span>  if (ord::learning::enabled() &amp;&amp; !allPositionsX.empty()) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  66</span>    const std::size_t trim = percentile * allPositionsX.size();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  67</span>    const auto limits = [trim](std::vector&lt;int&gt; values) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  68</span>      std::nth_element(values.begin(), values.begin() + trim, values.end());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  69</span>      const int lower = values[trim];
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  70</span>      const auto upper_index = values.size() - trim - 1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  71</span>      std::nth_element(values.begin(), values.begin() + upper_index, values.end());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  72</span>      return std::pair&lt;int, int&gt;{lower, values[upper_index]};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  73</span>    };
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  74</span>    const auto [xmin, xmax] = limits(std::move(allPositionsX));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  75</span>    const auto [ymin, ymax] = limits(std::move(allPositionsY));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  76</span>    return Box&lt;int&gt;(xmin, ymin, xmax, ymax);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  77</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  78</span>  if (allPositionsX.empty()) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  79</span>    return Box&lt;int&gt;();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  80</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  81</span>  std::ranges::sort(allPositionsX);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  82</span>  std::ranges::sort(allPositionsY);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  83</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  84</span>  const unsigned numSinks = allPositionsX.size();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  85</span>  const unsigned numOutliers = percentile * numSinks;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  86</span>  const int xMin = allPositionsX[numOutliers];
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  87</span>  const int xMax = allPositionsX[numSinks - numOutliers - 1];
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  88</span>  const int yMin = allPositionsY[numOutliers];
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  89</span>  const int yMax = allPositionsY[numSinks - numOutliers - 1];
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  90</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  91</span>  return Box&lt;int&gt;(xMin, yMin, xMax, yMax);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  92</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  93</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  94</span>Box&lt;double&gt; Clock::computeSinkRegionClustered(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  95</span>    const std::vector&lt;std::pair&lt;float, float&gt;&gt;&amp; sinks)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  96</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  97</span>  auto xMin = std::numeric_limits&lt;float&gt;::max();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  98</span>  auto xMax = std::numeric_limits&lt;float&gt;::lowest();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  99</span>  auto yMin = std::numeric_limits&lt;float&gt;::max();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 100</span>  auto yMax = std::numeric_limits&lt;float&gt;::lowest();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 101</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 102</span>  for (const auto&amp; [sinkX, sinkY] : sinks) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 103</span>    xMin = std::min(xMin, sinkX);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 104</span>    xMax = std::max(xMax, sinkX);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 105</span>    yMin = std::min(yMin, sinkY);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 106</span>    yMax = std::max(yMax, sinkY);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 107</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 108</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 109</span>  return Box&lt;double&gt;(xMin, yMin, xMax, yMax);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 110</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 111</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 112</span>Box&lt;double&gt; Clock::computeNormalizedSinkRegion(double factor)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 113</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 114</span>  return computeSinkRegion().normalize(factor);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 115</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 116</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 117</span>void Clock::forEachSink(const std::function&lt;void(const ClockInst&amp;)&gt;&amp; func) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 118</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 119</span>  for (const ClockInst&amp; sink : sinks_) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 120</span>    func(sink);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 121</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 122</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 123</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 124</span>void Clock::forEachSink(const std::function&lt;void(ClockInst&amp;)&gt;&amp; func)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 125</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 126</span>  for (ClockInst&amp; sink : sinks_) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 127</span>    func(sink);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 128</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 129</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 130</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 131</span>void Clock::forEachClockBuffer(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 132</span>    const std::function&lt;void(const ClockInst&amp;)&gt;&amp; func) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 133</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 134</span>  for (const ClockInst&amp; clockBuffer : clockBuffers_) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 135</span>    func(clockBuffer);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 136</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 137</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 138</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 139</span>void Clock::forEachClockBuffer(const std::function&lt;void(ClockInst&amp;)&gt;&amp; func)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 140</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 141</span>  for (ClockInst&amp; clockBuffer : clockBuffers_) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 142</span>    func(clockBuffer);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 143</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 144</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 145</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 146</span>}  // namespace cts
+</div>
+
+<p style="margin-top:20px;"><a href="../../../index.html#sources">&larr; Back to Source Index</a></p>
+</body>
+</html>

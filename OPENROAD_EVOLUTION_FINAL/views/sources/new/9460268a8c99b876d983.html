@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolved (New) Source: learning_evolution/tools/build_final.py</title>
+<style>
+body {
+    font-family: "Latin Modern Roman", "Times New Roman", Times, Georgia, "DejaVu Serif", serif;
+    color: #111;
+    background: #fff;
+    line-height: 1.55;
+    margin: 40px auto;
+    max-width: 1060px;
+    padding: 0 24px;
+}
+h1 {
+    font-size: 25px;
+    font-weight: bold;
+    border-bottom: 2px solid #222;
+    padding-bottom: 8px;
+    margin: 12px 0 16px 0;
+}
+h2 {
+    font-size: 19px;
+    font-weight: bold;
+    border-bottom: 1px solid #888;
+    padding-bottom: 4px;
+    margin-top: 36px;
+    margin-bottom: 14px;
+}
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+p {
+    margin: 10px 0;
+    line-height: 1.55;
+}
+a {
+    color: #003399;
+    text-decoration: underline;
+}
+a:visited {
+    color: #4a154b;
+}
+a:hover {
+    color: #b00;
+}
+.academic-nav {
+    margin: 18px 0;
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-family: monospace, sans-serif;
+    font-size: 13.5px;
+}
+.academic-nav a {
+    margin-right: 18px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.academic-nav a:hover {
+    text-decoration: underline;
+}
+.summary-grid {
+    display: table;
+    width: 100%;
+    margin: 16px 0;
+    border: 1px solid #999;
+    border-collapse: collapse;
+}
+.summary-grid td {
+    border: 1px solid #bbb;
+    padding: 10px 14px;
+    vertical-align: top;
+    width: 25%;
+    background: #fafafa;
+}
+.summary-grid strong {
+    display: block;
+    font-size: 22px;
+    font-family: monospace, sans-serif;
+    margin-top: 4px;
+}
+table.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    border: 1px solid #888;
+}
+table.academic-table th, table.academic-table td {
+    border: 1px solid #bbb;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+table.academic-table th {
+    background: #ebebeb;
+    font-weight: bold;
+}
+table.academic-table tr:nth-child(even) {
+    background: #fbfbfb;
+}
+code {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    background: #f3f3f3;
+    padding: 1px 4px;
+    border: 1px solid #e0e0e0;
+}
+pre {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.scroll {
+    max-height: 540px;
+    overflow-y: auto;
+    border: 1px solid #bbb;
+}
+.tools {
+    margin: 12px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: monospace, sans-serif;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+.tools input, .tools select, .tools button {
+    font: inherit;
+    padding: 6px 10px;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 2px;
+}
+.muted {
+    color: #555;
+    font-size: 13px;
+}
+figure.academic-fig {
+    margin: 24px 0 32px 0;
+    padding: 14px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}
+figure.academic-fig img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+figcaption.academic-cap {
+    font-size: 13.5px;
+    color: #222;
+    margin-top: 10px;
+    line-height: 1.5;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+}
+.code-view {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 12px;
+}
+</style>
+</head>
+<body>
+<div class="academic-nav">
+  <a href="../../../index.html#sources">&larr; Back to Source Index</a>
+  <a href="../../../index.html">Main Review Page</a>
+  <a href="../../../graphs.html">Visualizations</a>
+  <a href="../../../diffs/9460268a8c99b876d983.html">Compare Side-by-Side Diff</a>
+  <a href="../../../sources/new/learning_evolution/tools/build_final.py">Raw File</a>
+</div>
+
+<h1>Evolved (New) Source: learning_evolution/tools/build_final.py</h1>
+<p><strong>File Repository Path:</strong> <code>learning_evolution/tools/build_final.py</code></p>
+<p><strong>Total Lines:</strong> 296 &middot; <strong>Format:</strong> Formatted HTML View (&middot; <a href="../../../sources/new/learning_evolution/tools/build_final.py">Download Raw Source File</a>)</p>
+
+<div class="code-view">
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   1</span>#!/usr/bin/env python3
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   2</span>&quot;&quot;&quot;Build a self-contained, browsable handoff folder with exact code and data.&quot;&quot;&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   3</span>import csv
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   4</span>import difflib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   5</span>import hashlib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   6</span>import html
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   7</span>import json
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   8</span>import inspect
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   9</span>import re
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  10</span>from pathlib import Path
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  11</span>import shutil
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  12</span>import sys
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  13</span>sys.path.insert(0, str(Path(__file__).resolve().parent))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  14</span>from study_stats import analyze, read_csv, write_csv
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  15</span>from render_graphs import render
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  16</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  17</span>ROOT = Path(__file__).resolve().parents[2]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  18</span>HOME = ROOT / &#x27;learning_evolution&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  19</span>FINAL = ROOT.parents[1] / &#x27;OPENROAD_EVOLUTION_FINAL&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  20</span>CSS = &#x27;&#x27;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  21</span>:root{font-family:Arial,sans-serif;color:#162939;background:#f5f7f9}body{margin:0}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  22</span>main{max-width:1200px;margin:auto;padding:32px}h1{font-size:30px;margin:8px 0 12px}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  23</span>h2{font-size:21px;margin-top:36px}p{line-height:1.55}a{color:#215e8c}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  24</span>nav{display:flex;gap:20px;flex-wrap:wrap;margin:24px 0;border-bottom:1px solid #ccd6df;padding-bottom:14px}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  25</span>.notice{padding:14px 18px;border-left:4px solid #b8753a;background:#faf4e9;line-height:1.5}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  26</span>.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin:28px 0}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  27</span>.metric strong{display:block;font-size:30px;margin-top:8px}.muted{color:#526575;font-size:13px}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  28</span>.graphs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  29</span>figure{margin:0;background:white;border:1px solid #dce3e9;padding:8px}figure img{width:100%;height:auto}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  30</span>figcaption{padding:10px;font-size:13px;color:#526575}table{width:100%;border-collapse:collapse;background:white;font-size:13px}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  31</span>th,td{padding:11px 10px;border-bottom:1px solid #dce3e9;text-align:left;vertical-align:top}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  32</span>th{background:#eaf0f5;font-weight:600;position:sticky;top:0}code{font-size:12px;overflow-wrap:anywhere}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  33</span>.scroll{max-height:600px;overflow:auto;border:1px solid #dce3e9}input,select,button{font:inherit;padding:9px;border:1px solid #b9c6d0;background:white;border-radius:3px}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  34</span>input{min-width:300px}button{cursor:pointer}.tools{display:flex;gap:12px;align-items:center;margin:12px 0;flex-wrap:wrap}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  35</span>pre{white-space:pre-wrap;word-break:break-word;background:white;padding:20px;border:1px solid #dce3e9;line-height:1.45}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  36</span>.diff{font-family:monospace;font-size:12px;width:auto;min-width:100%}.diff td{padding:3px 6px;white-space:pre}.diff_header{background:#eef2f5}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  37</span>.diff_add{background:#dcecdf}.diff_sub{background:#f3deda}.diff_chg{background:#f2e8c7}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  38</span>@media(max-width:800px){main{padding:18px}.graphs,.metrics{grid-template-columns:1fr 1fr}input{min-width:180px}}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  39</span>&#x27;&#x27;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  40</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  41</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  42</span>def page(title, body):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  43</span>    return &#x27;&lt;!doctype html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;title&gt;&#x27; + html.escape(title) + &#x27;&lt;/title&gt;&lt;style&gt;&#x27; + CSS + &#x27;&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&#x27; + body + &#x27;&lt;/body&gt;&lt;/html&gt;\n&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  44</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  45</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  46</span>def copy_file(source, relative):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  47</span>    destination = FINAL / relative
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  48</span>    destination.parent.mkdir(parents=True, exist_ok=True)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>    shutil.copy2(source, destination)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>    return str(relative)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  51</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  52</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  53</span>def source_bundle(applied):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  54</span>    pairs = {pair[&#x27;new&#x27;]: pair for pair in json.loads((HOME / &#x27;source_pairs.json&#x27;).read_text())}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  55</span>    index = []
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  56</span>    for target in sorted({row[&#x27;target_path&#x27;] for row in applied}):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  57</span>        blocks = [row for row in applied if row[&#x27;target_path&#x27;] == target]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  58</span>        original = pairs.get(target, {}).get(&#x27;original&#x27;, target)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  59</span>        before_path = blocks[0][&#x27;old_path&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  60</span>        before = (ROOT / before_path).read_text() if before_path else &#x27;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  61</span>        after = (ROOT / target).read_text()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  62</span>        old_relative = Path(&#x27;sources/old&#x27;) / original
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  63</span>        new_relative = Path(&#x27;sources/new&#x27;) / target
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  64</span>        for relative, content in [(old_relative, before), (new_relative, after)]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  65</span>            destination = FINAL / relative
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  66</span>            destination.parent.mkdir(parents=True, exist_ok=True)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  67</span>            destination.write_text(content)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  68</span>        file_hash = hashlib.sha256((target + &#x27;\n&#x27; + before + &#x27;\n&#x27; + after).encode()).hexdigest()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  69</span>        diff_relative = Path(&#x27;diffs&#x27;) / (file_hash[:20] + &#x27;.html&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  70</span>        diff = difflib.HtmlDiff(tabsize=2, wrapcolumn=100).make_table(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  71</span>            before.splitlines(), after.splitlines(),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  72</span>            fromdesc=html.escape(&#x27;OLD: &#x27; + (before_path or &#x27;(new file)&#x27;)),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  73</span>            todesc=html.escape(&#x27;NEW: &#x27; + target), context=True, numlines=5)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  74</span>        body = &#x27;&lt;main&gt;&lt;a href=&quot;../index.html#sources&quot;&gt;Back to source index&lt;/a&gt;&lt;h1&gt;&#x27; + html.escape(Path(target).name) + &#x27;&lt;/h1&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  75</span>        body += &#x27;&lt;p&gt;&lt;a href=&quot;../&#x27; + old_relative.as_posix() + &#x27;&quot;&gt;Full original source&lt;/a&gt; · &lt;a href=&quot;../&#x27; + new_relative.as_posix() + &#x27;&quot;&gt;Full new source&lt;/a&gt;&lt;/p&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  76</span>        body += &#x27;&lt;p class=&quot;muted&quot;&gt;Context view shows changed regions. Follow the source links for the complete files. An empty original denotes a newly added file.&lt;/p&gt;&lt;div style=&quot;overflow:auto&quot;&gt;&#x27; + diff + &#x27;&lt;/div&gt;&lt;/main&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  77</span>        (FINAL / diff_relative).write_text(page(&#x27;Old / new: &#x27; + target, body))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  78</span>        raw_patch = &#x27;&#x27;.join(difflib.unified_diff(before.splitlines(keepends=True), after.splitlines(keepends=True), fromfile=&#x27;a/&#x27; + original, tofile=&#x27;b/&#x27; + target))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  79</span>        patch_relative = Path(&#x27;patches/files&#x27;) / (file_hash + &#x27;.patch&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  80</span>        (FINAL / patch_relative).write_text(raw_patch)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  81</span>        index.append(dict(file_hash=file_hash, category=(&#x27;production source&#x27; if Path(target).suffix in {&#x27;.cpp&#x27;, &#x27;.cc&#x27;, &#x27;.h&#x27;, &#x27;.hh&#x27;} else &#x27;build integration&#x27;) if target.startswith(&#x27;src/&#x27;) else &#x27;tests / tooling&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  82</span>                          original_path=original, old_repo_path=before_path, new_repo_path=target,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  83</span>                          old_file=old_relative.as_posix(), new_file=new_relative.as_posix(),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  84</span>                          diff_page=diff_relative.as_posix(), full_patch=patch_relative.as_posix(),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  85</span>                          lines_added=sum(int(row[&#x27;lines_added&#x27;]) for row in blocks),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  86</span>                          lines_removed=sum(int(row[&#x27;lines_removed&#x27;]) for row in blocks),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  87</span>                          block_hashes=&#x27;;&#x27;.join(row[&#x27;change_hash&#x27;] for row in blocks),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  88</span>                          old_sha256=hashlib.sha256(before.encode()).hexdigest(),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  89</span>                          new_sha256=hashlib.sha256(after.encode()).hexdigest()))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  90</span>    write_csv(FINAL / &#x27;data/source_file_index.csv&#x27;, index)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  91</span>    return index
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  92</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  93</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  94</span>def export_data():
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  95</span>    candidates = read_csv(HOME / &#x27;dataset/changes.csv&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  96</span>    applied = read_csv(HOME / &#x27;dataset/applied_changes.csv&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  97</span>    index = source_bundle(applied)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  98</span>    source_lookup = {row[&#x27;new_repo_path&#x27;]: row for row in index}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  99</span>    exported = []
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 100</span>    shared_old = copy_file(HOME / &#x27;dataset/PolicyConfig_old.h&#x27;, Path(&#x27;candidate_code/LearningPolicyConfig_old.h&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 101</span>    for row in candidates:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 102</span>        item = dict(row)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 103</span>        item[&#x27;repo_old_path&#x27;] = item[&#x27;old_path&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 104</span>        item[&#x27;repo_new_path&#x27;] = item[&#x27;new_path&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 105</span>        item[&#x27;old_path&#x27;] = shared_old
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 106</span>        item[&#x27;new_path&#x27;] = copy_file(ROOT / row[&#x27;new_path&#x27;], Path(&#x27;candidate_code&#x27;) / Path(row[&#x27;new_path&#x27;]).name)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 107</span>        item[&#x27;patch_path&#x27;] = copy_file(ROOT / row[&#x27;patch_path&#x27;], Path(&#x27;patches/candidates&#x27;) / Path(row[&#x27;patch_path&#x27;]).name)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 108</span>        exported.append(item)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 109</span>    for row in applied:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 110</span>        source = source_lookup[row[&#x27;target_path&#x27;]]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 111</span>        row[&#x27;repo_old_path&#x27;], row[&#x27;repo_new_path&#x27;] = row[&#x27;old_path&#x27;], row[&#x27;new_path&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 112</span>        row[&#x27;old_path&#x27;], row[&#x27;new_path&#x27;] = source[&#x27;old_file&#x27;], source[&#x27;new_file&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 113</span>        row[&#x27;diff_page&#x27;] = source[&#x27;diff_page&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 114</span>        row[&#x27;patch_path&#x27;] = copy_file(ROOT / row[&#x27;patch_path&#x27;], Path(&#x27;patches/applied_blocks&#x27;) / Path(row[&#x27;patch_path&#x27;]).name)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 115</span>    write_csv(FINAL / &#x27;data/candidates.csv&#x27;, exported)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 116</span>    write_csv(FINAL / &#x27;data/applied_changes.csv&#x27;, applied)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 117</span>    fields = sorted(set().union(*(row.keys() for row in exported + applied)))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 118</span>    all_rows = []
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 119</span>    for kind, rows in [(&#x27;proposed_policy_variant&#x27;, exported), (&#x27;applied_source_block&#x27;, applied)]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 120</span>        for row in rows:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 121</span>            all_rows.append({&#x27;record_kind&#x27;: kind, **{field: row.get(field, &#x27;&#x27;) for field in fields}})
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 122</span>    write_csv(FINAL / &#x27;data/all_code_changes.csv&#x27;, all_rows)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 123</span>    (FINAL / &#x27;data/all_code_changes.jsonl&#x27;).write_text(&#x27;&#x27;.join(json.dumps(row) + &#x27;\n&#x27; for row in all_rows))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 124</span>    copy_file(HOME / &#x27;dataset/provenance.json&#x27;, Path(&#x27;data/provenance.json&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 125</span>    copy_file(HOME / &#x27;embedded_kernels.json&#x27;, Path(&#x27;data/embedded_kernels.json&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 126</span>    return exported, applied, index
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 127</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 128</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 129</span>def dashboard(analysis, rows, index):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 130</span>    summary = {row[&#x27;metric&#x27;]: row for row in analysis[&#x27;summaries&#x27;]}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 131</span>    wns, tns = summary[&#x27;simulated_wns_impact_pct&#x27;], summary[&#x27;simulated_tns_impact_pct&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 132</span>    production = [row for row in index if row[&#x27;category&#x27;] == &#x27;production source&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 133</span>    body = &#x27;&lt;main&gt;&lt;div class=&quot;muted&quot;&gt;OPENROAD / SOURCE EVOLUTION / STUDY HANDOFF&lt;/div&gt;&lt;h1&gt;Code changes and study statistics&lt;/h1&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 134</span>    body += &#x27;&lt;p&gt;One folder for the exact old/new source files, applied change hashes, proposed policy variants, descriptive statistics and graphs.&lt;/p&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 135</span>    body += &#x27;&lt;div class=&quot;notice&quot;&gt;&lt;strong&gt;Data provenance:&lt;/strong&gt; source edits are real; timing and effectiveness labels are simulated. CSV averages describe the study dataset, not expected real OpenROAD performance. The full OpenROAD build and flow have not run.&lt;/div&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 136</span>    body += &#x27;&lt;nav&gt;&lt;a href=&quot;#summary&quot;&gt;Statistics&lt;/a&gt;&lt;a href=&quot;#graphs&quot;&gt;Graphs&lt;/a&gt;&lt;a href=&quot;#sources&quot;&gt;Old / new code&lt;/a&gt;&lt;a href=&quot;#candidates&quot;&gt;Candidate browser&lt;/a&gt;&lt;a href=&quot;README.md&quot;&gt;Commands &amp; methodology&lt;/a&gt;&lt;a href=&quot;data/all_code_changes.csv&quot;&gt;All changes CSV&lt;/a&gt;&lt;/nav&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 137</span>    body += &#x27;&lt;section class=&quot;metrics&quot;&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 138</span>    for label, value in [(&#x27;Proposed policy variants&#x27;, f&#x27;{len(rows):,}&#x27;), (&#x27;Mean WNS label&#x27;, f&#x27;{wns[&quot;mean&quot;]:.3f}%&#x27;), (&#x27;Mean TNS label&#x27;, f&#x27;{tns[&quot;mean&quot;]:.3f}%&#x27;), (&#x27;Production source files in bundle&#x27;, str(len(production)))]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 139</span>        body += &#x27;&lt;div class=&quot;metric&quot;&gt;&lt;span class=&quot;muted&quot;&gt;&#x27; + label + &#x27;&lt;/span&gt;&lt;strong&gt;&#x27; + value + &#x27;&lt;/strong&gt;&lt;/div&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 140</span>    body += &#x27;&lt;/section&gt;&lt;h2 id=&quot;summary&quot;&gt;All-candidate descriptive statistics&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;Percentiles use linear interpolation. “Mode” is the most populated 0.25-point interval for percentages, rather than an arbitrary exact mode for continuous values.&lt;/p&gt;&lt;div class=&quot;scroll&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Label&lt;/th&gt;&lt;th&gt;Mean&lt;/th&gt;&lt;th&gt;Median&lt;/th&gt;&lt;th&gt;Std dev&lt;/th&gt;&lt;th&gt;P1&lt;/th&gt;&lt;th&gt;P95&lt;/th&gt;&lt;th&gt;P99&lt;/th&gt;&lt;th&gt;Modal interval&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 141</span>    for entry in analysis[&#x27;summaries&#x27;]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 142</span>        cells = [html.escape(entry[&#x27;metric&#x27;])] + [f&#x27;{entry[key]:.4f}&#x27; for key in [&#x27;mean&#x27;, &#x27;median&#x27;, &#x27;stddev&#x27;, &#x27;p1&#x27;, &#x27;p95&#x27;, &#x27;p99&#x27;]]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 143</span>        cells.append(f&#x27;[{entry[&quot;modal_bin_low&quot;]:.2f}, {entry[&quot;modal_bin_high&quot;]:.2f})&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 144</span>        body += &#x27;&lt;tr&gt;&#x27; + &#x27;&#x27;.join(&#x27;&lt;td&gt;&#x27; + value + &#x27;&lt;/td&gt;&#x27; for value in cells) + &#x27;&lt;/tr&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 145</span>    body += &#x27;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&quot;statistics/summary.csv&quot;&gt;Download statistics CSV&lt;/a&gt; · &lt;a href=&quot;statistics/analysis.json&quot;&gt;Complete analysis JSON&lt;/a&gt;&lt;/p&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 146</span>    body += &#x27;&lt;h2 id=&quot;graphs&quot;&gt;Graphs for inspection and slides&lt;/h2&gt;&lt;div class=&quot;graphs&quot;&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 147</span>    captions = {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 148</span>        &#x27;improvement_distribution.svg&#x27;: &#x27;Most labels are near zero; the rare 4–5% cluster comes from the specified generator.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 149</span>        &#x27;improvement_percentiles.svg&#x27;: &#x27;P1 through P99 of the complete candidate label population.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 150</span>        &#x27;wns_tns_scatter.svg&#x27;: &#x27;Label trade-offs, not measured causal effects of code.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 151</span>        &#x27;source_change_concentration.svg&#x27;: &#x27;Actual added/removed lines by production source file; separate from impact labels.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 152</span>        &#x27;highest_labeled_candidates.svg&#x27;: &#x27;Highest fictional scores; these do not identify a real optimal code change.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 153</span>        &#x27;changed_policy_fields.svg&#x27;: &#x27;Which shared policy fields are edited by the candidate patches.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 154</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 155</span>    for path in analysis[&#x27;graphs&#x27;]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 156</span>        body += &#x27;&lt;figure&gt;&lt;a href=&quot;&#x27; + path + &#x27;&quot;&gt;&lt;img src=&quot;&#x27; + path + &#x27;&quot; alt=&quot;&#x27; + html.escape(Path(path).stem.replace(&#x27;_&#x27;, &#x27; &#x27;)) + &#x27;&quot;&gt;&lt;/a&gt;&lt;figcaption&gt;&#x27; + captions[Path(path).name] + &#x27;&lt;/figcaption&gt;&lt;/figure&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 157</span>    body += &#x27;&lt;/div&gt;&lt;h2 id=&quot;sources&quot;&gt;Exact old / new source index&lt;/h2&gt;&lt;p&gt;Click &lt;strong&gt;Compare&lt;/strong&gt; for a side-by-side code diff, or open either complete source file. Algorithms are embedded in the real OpenROAD translation units. The study policy headers are only configurations.&lt;/p&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 158</span>    body += &#x27;&lt;div class=&quot;tools&quot;&gt;&lt;input id=&quot;source-search&quot; placeholder=&quot;Filter by source path or category&quot;&gt;&lt;span id=&quot;source-count&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;scroll&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Source path&lt;/th&gt;&lt;th&gt;Kind&lt;/th&gt;&lt;th&gt;+ / − lines&lt;/th&gt;&lt;th&gt;Files&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody id=&quot;source-rows&quot;&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 159</span>    for item in index:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 160</span>        body += &#x27;&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x27; + html.escape(item[&#x27;new_repo_path&#x27;]) + &#x27;&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&#x27; + item[&#x27;category&#x27;] + &#x27;&lt;/td&gt;&lt;td&gt;+&#x27; + str(item[&#x27;lines_added&#x27;]) + &#x27; / −&#x27; + str(item[&#x27;lines_removed&#x27;]) + &#x27;&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;&#x27; + item[&#x27;old_file&#x27;] + &#x27;&quot;&gt;Old&lt;/a&gt; · &lt;a href=&quot;&#x27; + item[&#x27;new_file&#x27;] + &#x27;&quot;&gt;New&lt;/a&gt; · &lt;a href=&quot;&#x27; + item[&#x27;diff_page&#x27;] + &#x27;&quot;&gt;Compare&lt;/a&gt; · &lt;a href=&quot;&#x27; + item[&#x27;full_patch&#x27;] + &#x27;&quot;&gt;Patch&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 161</span>    body += &#x27;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&quot;data/source_file_index.csv&quot;&gt;Exact source-file index CSV&lt;/a&gt; · &lt;a href=&quot;data/applied_changes.csv&quot;&gt;Applied block hashes CSV&lt;/a&gt;&lt;/p&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 162</span>    best = analysis[&#x27;highest_labeled_candidate&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 163</span>    body += &#x27;&lt;h2 id=&quot;candidates&quot;&gt;Proposed policy variants&lt;/h2&gt;&lt;p&gt;A variant is one complete alternative configuration header. A patch records the lines changed to produce it. The 3,500 variants are alternatives, not all installed simultaneously.&lt;/p&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 164</span>    body += &#x27;&lt;p&gt;Highest simulated score: &lt;code&gt;&#x27; + best[&#x27;change_hash&#x27;][:16] + &#x27;&lt;/code&gt; (&#x27; + best[&#x27;simulated_overall_score&#x27;] + &#x27;). &lt;a href=&quot;&#x27; + best[&#x27;new_path&#x27;] + &#x27;&quot;&gt;Open candidate code&lt;/a&gt;. This is a label ranking, not a verified optimum.&lt;/p&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 165</span>    body += &#x27;&lt;div class=&quot;tools&quot;&gt;&lt;input id=&quot;candidate-search&quot; placeholder=&quot;Filter by hash, field or iteration&quot;&gt;&lt;select id=&quot;candidate-sort&quot;&gt;&lt;option value=&quot;iteration&quot;&gt;Iteration&lt;/option&gt;&lt;option value=&quot;score&quot;&gt;Highest simulated score&lt;/option&gt;&lt;option value=&quot;wns&quot;&gt;Highest WNS label&lt;/option&gt;&lt;option value=&quot;tns&quot;&gt;Highest TNS label&lt;/option&gt;&lt;/select&gt;&lt;button id=&quot;previous&quot;&gt;Previous&lt;/button&gt;&lt;button id=&quot;next&quot;&gt;Next&lt;/button&gt;&lt;span id=&quot;candidate-count&quot;&gt;&lt;/span&gt;&lt;/div&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 166</span>    body += &#x27;&lt;div class=&quot;scroll&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Hash / iteration&lt;/th&gt;&lt;th&gt;Edited fields&lt;/th&gt;&lt;th&gt;WNS %&lt;/th&gt;&lt;th&gt;TNS %&lt;/th&gt;&lt;th&gt;Score&lt;/th&gt;&lt;th&gt;Source&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody id=&quot;candidate-rows&quot;&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 167</span>    body += &#x27;&lt;h2&gt;Run locally&lt;/h2&gt;&lt;pre&gt;make stats     # mean, median, std dev, P1–P99 and binned mode\nmake graphs    # regenerate six SVG graphs and statistics\nmake verify    # verify source hashes, dataset hashes and local links\nmake report    # print the CSV-derived result summary\nmake test      # run integrated-source kernel checks in the original checkout&lt;/pre&gt;&lt;p class=&quot;muted&quot;&gt;Statistics, graphs, data and source viewers are self-contained. Kernel compilation requires the original OpenROAD checkout. No network is needed to browse this folder.&lt;/p&gt;&lt;/main&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 168</span>    packed = json.dumps(rows).replace(&#x27;&lt;&#x27;, &#x27;\\u003c&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 169</span>    body += &#x27;&lt;script&gt;const candidates=&#x27; + packed + &#x27;;\n&#x27; + &#x27;&#x27;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 170</span>const byId=id=&gt;document.getElementById(id);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 171</span>const escapeText=value=&gt;String(value).replace(/[&amp;&lt;&gt;&quot;&#x27;]/g,c=&gt;({&#x27;&amp;&#x27;:&#x27;&amp;amp;&#x27;,&#x27;&lt;&#x27;:&#x27;&amp;lt;&#x27;,&#x27;&gt;&#x27;:&#x27;&amp;gt;&#x27;,&#x27;&quot;&#x27;:&#x27;&amp;quot;&#x27;,&quot;&#x27;&quot;:&#x27;&amp;#39;&#x27;}[c]));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 172</span>let pageNumber=0; const pageSize=50;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 173</span>function renderCandidates(){
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 174</span> const query=byId(&#x27;candidate-search&#x27;).value.toLowerCase();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 175</span> let data=candidates.filter(r=&gt;(r.change_hash+&#x27; &#x27;+r.changed_fields+&#x27; &#x27;+r.agent_iteration).toLowerCase().includes(query));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 176</span> const key={score:&#x27;simulated_overall_score&#x27;,wns:&#x27;simulated_wns_impact_pct&#x27;,tns:&#x27;simulated_tns_impact_pct&#x27;}[byId(&#x27;candidate-sort&#x27;).value];
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 177</span> data.sort((a,b)=&gt;key?Number(b[key])-Number(a[key]):Number(a.agent_iteration)-Number(b.agent_iteration));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 178</span> pageNumber=Math.max(0,Math.min(pageNumber,Math.max(0,Math.ceil(data.length/pageSize)-1)));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 179</span> const visible=data.slice(pageNumber*pageSize,(pageNumber+1)*pageSize);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 180</span> byId(&#x27;candidate-rows&#x27;).innerHTML=visible.map(r=&gt;`&lt;tr&gt;&lt;td&gt;&lt;code&gt;${escapeText(r.change_hash.slice(0,14))}&lt;/code&gt;&lt;br&gt;iteration ${r.agent_iteration}&lt;/td&gt;&lt;td&gt;${escapeText(r.changed_fields.replaceAll(&#x27;;&#x27;,&#x27;, &#x27;))}&lt;/td&gt;&lt;td&gt;${Number(r.simulated_wns_impact_pct).toFixed(4)}&lt;/td&gt;&lt;td&gt;${Number(r.simulated_tns_impact_pct).toFixed(4)}&lt;/td&gt;&lt;td&gt;${Number(r.simulated_overall_score).toFixed(4)}&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;${r.old_path}&quot;&gt;Old&lt;/a&gt; · &lt;a href=&quot;${r.new_path}&quot;&gt;Variant&lt;/a&gt; · &lt;a href=&quot;${r.patch_path}&quot;&gt;Patch&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;`).join(&#x27;&#x27;);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 181</span> byId(&#x27;candidate-count&#x27;).textContent=`${data.length} matching · page ${pageNumber+1} of ${Math.max(1,Math.ceil(data.length/pageSize))}`;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 182</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 183</span>for(const id of [&#x27;candidate-search&#x27;,&#x27;candidate-sort&#x27;])byId(id).addEventListener(&#x27;input&#x27;,()=&gt;{pageNumber=0;renderCandidates()});
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 184</span>byId(&#x27;previous&#x27;).onclick=()=&gt;{pageNumber--;renderCandidates()};byId(&#x27;next&#x27;).onclick=()=&gt;{pageNumber++;renderCandidates()};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 185</span>function filterSources(){const query=byId(&#x27;source-search&#x27;).value.toLowerCase();let count=0;for(const row of byId(&#x27;source-rows&#x27;).rows){row.hidden=!row.textContent.toLowerCase().includes(query);if(!row.hidden)count++}byId(&#x27;source-count&#x27;).textContent=count+&#x27; files&#x27;;}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 186</span>byId(&#x27;source-search&#x27;).oninput=filterSources;filterSources();renderCandidates();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 187</span>&#x27;&#x27;&#x27; + &#x27;&lt;/script&gt;&#x27;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 188</span>    (FINAL / &#x27;index.html&#x27;).write_text(page(&#x27;OpenROAD code evolution — final study bundle&#x27;, body))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 189</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 190</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 191</span>def documentation(analysis, index):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 192</span>    stats = {row[&#x27;metric&#x27;]: row for row in analysis[&#x27;summaries&#x27;]}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 193</span>    text = [&#x27;# OpenROAD evolution: final review folder&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 194</span>            &#x27;Open [index.html](index.html) for the offline dashboard, graphs, source comparisons and candidate browser.&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 195</span>            &#x27;**Provenance:** code edits are real; candidate impact labels are simulated. Averages describe this CSV, not an expected real-world tool improvement.&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 196</span>            &#x27;## Commands from this folder&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 197</span>            &#x27;```sh&#x27;, &#x27;make stats&#x27;, &#x27;make graphs&#x27;, &#x27;make report&#x27;, &#x27;make verify&#x27;, &#x27;make test&#x27;, &#x27;```&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 198</span>            &#x27;`make stats`, `graphs`, `report` and `verify` need only Python 3 and the bundled files.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 199</span>            &#x27;`make test` requires the original OpenROAD checkout and a C++20 compiler.&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 200</span>            &#x27;## CSV-derived summary&#x27;, &#x27;&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 201</span>    for field in [&#x27;simulated_wns_impact_pct&#x27;, &#x27;simulated_tns_impact_pct&#x27;, &#x27;combined_timing_label_pct&#x27;]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 202</span>        entry = stats[field]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 203</span>        text.append(f&#x27;- {field}: mean {entry[&quot;mean&quot;]:.4f}%, median {entry[&quot;median&quot;]:.4f}%, P1 {entry[&quot;p1&quot;]:.4f}%, P99 {entry[&quot;p99&quot;]:.4f}%.&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 204</span>    text += [&#x27;&#x27;, &#x27;The all-candidate arithmetic mean is the primary summary; filtering accepted/high-scoring rows would bias it upward.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 205</span>             &#x27;Percentiles interpolate at `(n - 1) * p / 100`. Standard deviation is the sample statistic.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 206</span>             &#x27;Mode is reported as the most populated fixed-width interval (0.25 percentage points for timing labels), not an unstable exact floating-point mode.&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 207</span>             &#x27;## What each directory contains&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 208</span>             &#x27;- `data/all_code_changes.csv`: combined applied blocks and proposed variants; record_kind distinguishes them.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 209</span>             &#x27;- `data/candidates.csv`: 3,500 complete, replayable policy variants with simulated labels.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 210</span>             &#x27;- `data/applied_changes.csv`: real installed source blocks and their hashes; no invented impact attached.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 211</span>             &#x27;- `data/source_file_index.csv`: exact old/new paths, hashes and clickable diff-page paths.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 212</span>             &#x27;- `sources/old/` and `sources/new/`: complete source snapshots, including the directly embedded algorithms.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 213</span>             &#x27;- `diffs/`: HTML side-by-side comparisons with links to complete old/new source.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 214</span>             &#x27;- `candidate_code/`: the shared old configuration and 3,500 complete candidate headers.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 215</span>             &#x27;- `patches/`: applied block patches, full-file patches and proposed candidate patches.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 216</span>             &#x27;- `statistics/`: mean, median, standard deviation, percentiles, modal intervals and candidate rankings.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 217</span>             &#x27;- `graphs/`: six standalone SVGs for slides.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 218</span>             &#x27;- `scripts/`: portable analysis and bundle-verification tools.&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 219</span>             &#x27;## Where the integrated algorithms live&#x27;, &#x27;&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 220</span>    location = json.loads((HOME / &#x27;embedded_kernels.json&#x27;).read_text())
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 221</span>    for name, info in location.items():
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 222</span>        if not info.get(&#x27;whole_file&#x27;):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 223</span>            source = next(item for item in index if item[&#x27;new_repo_path&#x27;] == info[&#x27;source&#x27;])
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 224</span>            text.append(f&#x27;- {name}: [{info[&quot;source&quot;]}]({source[&quot;new_file&quot;]}) — find `BEGIN INTEGRATED KERNEL {name}`.&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 225</span>    text += [&#x27;&#x27;, &#x27;The old `src/cts/src/learning/` implementation directory is removed. Only small common flag/configuration headers remain shared.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 226</span>             &#x27;The standalone checks extract exact kernel blocks from the production translation units before compiling; they do not test a separate implementation.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 227</span>             &#x27;Some embedded algorithms are tested extension kernels rather than active production call paths. The KD-tree, segment tree, Fenwick tree, budget DP, spatial ordering and interval lookup have call sites in the changed OpenROAD code.&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 228</span>             &#x27;## Interpreting “best” and “most changes”&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 229</span>             &#x27;The highest-scoring variant is highest only under the fictional study labels. No measured optimum is established.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 230</span>             &#x27;Change-concentration graphs count actual added/removed production-source lines. They do not attribute timing gains to files.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 231</span>             &#x27;All candidate labels target the same shared policy configuration; they cannot support per-file effectiveness estimates.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 232</span>             &#x27;No full OpenROAD build, physical-design flow or signoff evaluation was performed.&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 233</span>             &#x27;## Rebuild the entire folder&#x27;, &#x27;&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 234</span>             &#x27;From `suite`, run `make learning-final`. From this folder, `make rebuild` uses the original checkout.&#x27;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 235</span>             &#x27;Original source branch: `eda/learning_draft_final_evolved_code_openroad_v2`.&#x27;, &#x27;&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 236</span>    (FINAL / &#x27;README.md&#x27;).write_text(&#x27;\n&#x27;.join(text) + &#x27;\n&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 237</span>    (FINAL / &#x27;Makefile&#x27;).write_text(&#x27;&#x27;&#x27;SHELL := /bin/bash
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 238</span>PYTHON ?= python3
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 239</span>OPENROAD ?= ../external/OpenROAD
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 240</span>.DEFAULT_GOAL := stats
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 241</span>.PHONY: stats graphs report verify test rebuild serve
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 242</span>stats report:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 243</span>	@$(PYTHON) scripts/study_stats.py --root .
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 244</span>graphs:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 245</span>	@$(PYTHON) scripts/study_stats.py --root .
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 246</span>	@$(PYTHON) scripts/render_graphs.py --root .
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 247</span>verify:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 248</span>	@$(PYTHON) scripts/verify_bundle.py
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 249</span>test:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 250</span>	@$(MAKE) --no-print-directory -C $(OPENROAD)/learning_evolution test
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 251</span>rebuild:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 252</span>	@$(PYTHON) $(OPENROAD)/learning_evolution/tools/build_final.py
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 253</span>serve:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 254</span>	@$(PYTHON) -m http.server 8000 --bind 127.0.0.1
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 255</span>&#x27;&#x27;&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 256</span>    # Linked markdown inventory is useful in editors that cannot render HTML.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 257</span>    lines = [&#x27;# Exact old/new source file index&#x27;, &#x27;&#x27;, &#x27;Use Compare for a side-by-side view; Old and New open complete files.&#x27;, &#x27;&#x27;]
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 258</span>    for item in index:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 259</span>        lines.append(f&#x27;- **{item[&quot;new_repo_path&quot;]}**: [Old]({item[&quot;old_file&quot;]}) · [New]({item[&quot;new_file&quot;]}) · [Compare]({item[&quot;diff_page&quot;]}) · [Patch]({item[&quot;full_patch&quot;]}) (+{item[&quot;lines_added&quot;]}/-{item[&quot;lines_removed&quot;]})&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 260</span>    (FINAL / &#x27;SOURCE_INDEX.md&#x27;).write_text(&#x27;\n&#x27;.join(lines) + &#x27;\n&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 261</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 262</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 263</span>def main():
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 264</span>    FINAL.mkdir(exist_ok=True)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 265</span>    for directory in [&#x27;data&#x27;, &#x27;sources&#x27;, &#x27;diffs&#x27;, &#x27;candidate_code&#x27;, &#x27;patches/files&#x27;, &#x27;patches/candidates&#x27;, &#x27;patches/applied_blocks&#x27;, &#x27;scripts&#x27;, &#x27;statistics&#x27;, &#x27;graphs&#x27;]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 266</span>        (FINAL / directory).mkdir(parents=True, exist_ok=True)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 267</span>    # Retire only this generator&#x27;s hash-named snapshots, preserving user files.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 268</span>    for directory, pattern in [(&#x27;diffs&#x27;, &#x27;*.html&#x27;), (&#x27;patches/files&#x27;, &#x27;*.patch&#x27;),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 269</span>                               (&#x27;patches/applied_blocks&#x27;, &#x27;*.patch&#x27;),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 270</span>                               (&#x27;patches/candidates&#x27;, &#x27;*.patch&#x27;), (&#x27;candidate_code&#x27;, &#x27;*_new.h&#x27;)]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 271</span>        for obsolete in (FINAL / directory).glob(pattern):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 272</span>            if re.fullmatch(r&#x27;[0-9a-f]{20,64}(?:\.html|\.patch|_new\.h)&#x27;, obsolete.name):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 273</span>                obsolete.unlink()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 274</span>    rows, applied, index = export_data()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 275</span>    copy_file(HOME / &#x27;tools/study_stats.py&#x27;, Path(&#x27;scripts/study_stats.py&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 276</span>    copy_file(HOME / &#x27;tools/verify_bundle.py&#x27;, Path(&#x27;scripts/verify_bundle.py&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 277</span>    copy_file(HOME / &#x27;tools/render_graphs.py&#x27;, Path(&#x27;scripts/render_graphs.py&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 278</span>    copy_file(HOME / &#x27;tools/test_dashboard.cjs&#x27;, Path(&#x27;scripts/test_dashboard.cjs&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 279</span>    copy_file(HOME / &#x27;tools/render_dashboard.py&#x27;, Path(&#x27;scripts/render_dashboard.py&#x27;))
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 280</span>    analysis = analyze(FINAL)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 281</span>    render(FINAL)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 282</span>    import render_dashboard
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 283</span>    render_dashboard.refresh(FINAL, analysis, rows, index)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 284</span>    documentation(analysis, index)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 285</span>    # Source/data checksums remain stable when graphs and statistics regenerate.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 286</span>    checksums = {}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 287</span>    for directory in [&#x27;data&#x27;, &#x27;sources&#x27;, &#x27;candidate_code&#x27;, &#x27;patches&#x27;, &#x27;views&#x27;]:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 288</span>        for path in sorted((FINAL / directory).rglob(&#x27;*&#x27;)):
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 289</span>            if path.is_file():
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 290</span>                checksums[str(path.relative_to(FINAL))] = hashlib.sha256(path.read_bytes()).hexdigest()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 291</span>    (FINAL / &#x27;CHECKSUMS.json&#x27;).write_text(json.dumps(checksums, indent=2) + &#x27;\n&#x27;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 292</span>    print(&#x27;Final folder:&#x27;, FINAL)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 293</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 294</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 295</span>if __name__ == &#x27;__main__&#x27;:
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 296</span>    main()
+</div>
+
+<p style="margin-top:20px;"><a href="../../../index.html#sources">&larr; Back to Source Index</a></p>
+</body>
+</html>

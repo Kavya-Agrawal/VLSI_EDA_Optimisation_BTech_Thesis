@@ -1,0 +1,29 @@
+--- a/src/cts/src/TreeBuilder_new.cpp
++++ b/src/cts/src/TreeBuilder_new.cpp
+@@ -168,6 +254,26 @@
+   double bx = bufferLoc.getX() * scalingUnit;
+   double by = bufferLoc.getY() * scalingUnit;
+ 
++  // LEARN-CTS-04: prune blockage candidates by an indexed x interval.
++  // The index is local because upstream may rebuild blockages between calls.
++  if (ord::learning::enabled()) {
++    std::vector<ord::learning::Interval> intervals;
++    for (std::size_t i = 0; i < blockages_.size(); ++i) {
++      intervals.push_back({double(blockages_[i].xMin()), double(blockages_[i].xMax()), i});
++    }
++    const ord::learning::IntervalIndex index(std::move(intervals));
++    for (auto candidate : index.overlaps(bx, bx)) {
++      const odb::Rect& box = blockages_[candidate];
++      if (isInsideBbox(bx, by, box.xMin(), box.yMin(), box.xMax(), box.yMax())) {
++        x1 = box.xMin() / scalingUnit;
++        y1 = box.yMin() / scalingUnit;
++        x2 = box.xMax() / scalingUnit;
++        y2 = box.yMax() / scalingUnit;
++        return true;
++      }
++    }
++    return false;
++  }
+   for (odb::Rect bbox : blockages_) {
+     x1 = bbox.xMin();
+     y1 = bbox.yMin();

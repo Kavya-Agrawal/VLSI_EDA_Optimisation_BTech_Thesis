@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolved (New) Source: learning_evolution/tests/Model.cpp</title>
+<style>
+body {
+    font-family: "Latin Modern Roman", "Times New Roman", Times, Georgia, "DejaVu Serif", serif;
+    color: #111;
+    background: #fff;
+    line-height: 1.55;
+    margin: 40px auto;
+    max-width: 1060px;
+    padding: 0 24px;
+}
+h1 {
+    font-size: 25px;
+    font-weight: bold;
+    border-bottom: 2px solid #222;
+    padding-bottom: 8px;
+    margin: 12px 0 16px 0;
+}
+h2 {
+    font-size: 19px;
+    font-weight: bold;
+    border-bottom: 1px solid #888;
+    padding-bottom: 4px;
+    margin-top: 36px;
+    margin-bottom: 14px;
+}
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+p {
+    margin: 10px 0;
+    line-height: 1.55;
+}
+a {
+    color: #003399;
+    text-decoration: underline;
+}
+a:visited {
+    color: #4a154b;
+}
+a:hover {
+    color: #b00;
+}
+.academic-nav {
+    margin: 18px 0;
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-family: monospace, sans-serif;
+    font-size: 13.5px;
+}
+.academic-nav a {
+    margin-right: 18px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.academic-nav a:hover {
+    text-decoration: underline;
+}
+.summary-grid {
+    display: table;
+    width: 100%;
+    margin: 16px 0;
+    border: 1px solid #999;
+    border-collapse: collapse;
+}
+.summary-grid td {
+    border: 1px solid #bbb;
+    padding: 10px 14px;
+    vertical-align: top;
+    width: 25%;
+    background: #fafafa;
+}
+.summary-grid strong {
+    display: block;
+    font-size: 22px;
+    font-family: monospace, sans-serif;
+    margin-top: 4px;
+}
+table.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    border: 1px solid #888;
+}
+table.academic-table th, table.academic-table td {
+    border: 1px solid #bbb;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+table.academic-table th {
+    background: #ebebeb;
+    font-weight: bold;
+}
+table.academic-table tr:nth-child(even) {
+    background: #fbfbfb;
+}
+code {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    background: #f3f3f3;
+    padding: 1px 4px;
+    border: 1px solid #e0e0e0;
+}
+pre {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.scroll {
+    max-height: 540px;
+    overflow-y: auto;
+    border: 1px solid #bbb;
+}
+.tools {
+    margin: 12px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: monospace, sans-serif;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+.tools input, .tools select, .tools button {
+    font: inherit;
+    padding: 6px 10px;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 2px;
+}
+.muted {
+    color: #555;
+    font-size: 13px;
+}
+figure.academic-fig {
+    margin: 24px 0 32px 0;
+    padding: 14px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}
+figure.academic-fig img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+figcaption.academic-cap {
+    font-size: 13.5px;
+    color: #222;
+    margin-top: 10px;
+    line-height: 1.5;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+}
+.code-view {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 12px;
+}
+</style>
+</head>
+<body>
+<div class="academic-nav">
+  <a href="../../../index.html#sources">&larr; Back to Source Index</a>
+  <a href="../../../index.html">Main Review Page</a>
+  <a href="../../../graphs.html">Visualizations</a>
+  <a href="../../../diffs/b950584856814648f198.html">Compare Side-by-Side Diff</a>
+  <a href="../../../sources/new/learning_evolution/tests/Model.cpp">Raw File</a>
+</div>
+
+<h1>Evolved (New) Source: learning_evolution/tests/Model.cpp</h1>
+<p><strong>File Repository Path:</strong> <code>learning_evolution/tests/Model.cpp</code></p>
+<p><strong>Total Lines:</strong> 74 &middot; <strong>Format:</strong> Formatted HTML View (&middot; <a href="../../../sources/new/learning_evolution/tests/Model.cpp">Download Raw Source File</a>)</p>
+
+<div class="code-view">
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   1</span>// SPDX-License-Identifier: BSD-3-Clause
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   2</span>#include &quot;TestSupport.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   3</span>#include &quot;learning/BudgetDp.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   4</span>#include &quot;learning/RollbackSet.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   5</span>#include &quot;learning/SlackTree.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   6</span>#include &quot;learning/TimingDag.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   7</span>#include &lt;chrono&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   8</span>#include &lt;fstream&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   9</span>#include &lt;iomanip&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  10</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  11</span>namespace learning_test {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  12</span>void testModel()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  13</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  14</span>  using namespace ord::learning;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  15</span>  RollbackSet sets(8);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  16</span>  const auto original = sets.checkpoint();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  17</span>  sets.unite(0, 1);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  18</span>  const auto first = sets.checkpoint();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  19</span>  sets.unite(1, 2);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  20</span>  sets.unite(2, 3);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  21</span>  CHECK(sets.componentSize(0) == 4);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  22</span>  sets.rollback(first);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  23</span>  CHECK(sets.componentSize(0) == 2);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  24</span>  CHECK(sets.find(2) != sets.find(0));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  25</span>  sets.unite(4, 5);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  26</span>  sets.unite(0, 4);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  27</span>  CHECK(sets.componentSize(0) == 4);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  28</span>  sets.rollback(original);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  29</span>  for (unsigned i = 0; i &lt; 8; ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  30</span>    CHECK(sets.find(i) == i);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  31</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  32</span>  rejects([&amp;] { sets.rollback(10); });
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  33</span>  // A model-level ablation: re-evaluate selected repairs through graph timing.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  34</span>  // Unlike the slide scenario, these values come from executable arithmetic.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  35</span>  const std::vector&lt;BudgetItem&gt; items{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  36</span>    {0, 3, .10}, {1, 3, .10}, {2, 4, .13},
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  37</span>    {3, 5, .60}, {4, 5, .60}, {5, 6, .90}};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  38</span>  std::vector&lt;double&gt; delays(40);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  39</span>  for (std::size_t i = 0; i &lt; delays.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  40</span>    delays[i] = i % 2 ? 6 : 5;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  41</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  42</span>  const auto measure = [&amp;](const std::vector&lt;std::size_t&gt;&amp; selection) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  43</span>    TimingDag graph(delays);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  44</span>    for (std::size_t i = 0; i &lt; delays.size(); i += 2) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  45</span>      graph.addEdge(i, i + 1);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  46</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  47</span>    for (auto id : selection) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  48</span>      graph.setDelay(id * 2 + 1, 6 - items[id].benefit);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>    graph.compile();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  51</span>    const auto slack = graph.slacks(10);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  52</span>    std::vector&lt;double&gt; endpoints;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  53</span>    for (std::size_t i = 1; i &lt; slack.size(); i += 2) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  54</span>      endpoints.push_back(slack[i]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  55</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  56</span>    return SlackTree(endpoints).query(0, endpoints.size());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  57</span>  };
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  58</span>  const auto baseline = measure({0, 1, 2});
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  59</span>  const auto greedy = measure(budgetGreedy(items, 10).ids);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  60</span>  const auto evolved = measure(budgetDp(items, 10).ids);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  61</span>  CHECK(near(baseline.negative_sum, -19.67));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  62</span>  CHECK(near(greedy.negative_sum, -19.00));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  63</span>  CHECK(near(evolved.negative_sum, -18.80));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  64</span>  CHECK(evolved.worst == -1);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  65</span>  const double gain = 100 * (evolved.negative_sum - baseline.negative_sum)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  66</span>                      / std::abs(baseline.negative_sum);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  67</span>  CHECK(gain &gt; 4.4 &amp;&amp; gain &lt; 4.5);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  68</span>  std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(4)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  69</span>            &lt;&lt; &quot;Measured synthetic circuit: first-fit TNS &quot; &lt;&lt; baseline.negative_sum
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  70</span>            &lt;&lt; &quot;, greedy &quot; &lt;&lt; greedy.negative_sum
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  71</span>            &lt;&lt; &quot;, DP &quot; &lt;&lt; evolved.negative_sum
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  72</span>            &lt;&lt; &quot;; DP gain &quot; &lt;&lt; gain &lt;&lt; &quot;% (not OpenROAD QoR)\n&quot;;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  73</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  74</span>}  // namespace learning_test
+</div>
+
+<p style="margin-top:20px;"><a href="../../../index.html#sources">&larr; Back to Source Index</a></p>
+</body>
+</html>

@@ -1,0 +1,47 @@
+--- a/src/cts/src/TritonCTS_new.cpp
++++ b/src/cts/src/TritonCTS_new.cpp
+@@ -2564,18 +2565,32 @@
+     delete lib_iter;
+   }
+ 
+-  // Sort cells in ascending order of input cap
+-  std::ranges::sort(
+-      dummyCandidates,
+-      [](const sta::LibertyCell* cell1, const sta::LibertyCell* cell2) {
+-        const float cap1 = getInputCap(cell1);
+-        const float cap2 = getInputCap(cell2);
+-        if (cap1 != cap2) {
+-          return cap1 < cap2;
+-        }
+-        return cell1->id() < cell2->id();
+-      });
+-
++  // LEARN-CTS-08: cache each capacitance feature once per ranking pass.
++  if (ord::learning::enabled()) {
++    std::vector<std::pair<float, sta::LibertyCell*>> decorated;
++    decorated.reserve(dummyCandidates.size());
++    for (auto* cell : dummyCandidates) {
++      decorated.emplace_back(getInputCap(cell), cell);
++    }
++    std::stable_sort(decorated.begin(), decorated.end(), [](const auto& a, const auto& b) {
++      return a.first != b.first ? a.first < b.first : a.second->id() < b.second->id();
++    });
++    for (std::size_t i = 0; i < decorated.size(); ++i) {
++      dummyCandidates[i] = decorated[i].second;
++    }
++  } else {
++    // Sort cells in ascending order of input cap
++    std::ranges::sort(
++        dummyCandidates,
++        [](const sta::LibertyCell* cell1, const sta::LibertyCell* cell2) {
++          const float cap1 = getInputCap(cell1);
++          const float cap2 = getInputCap(cell2);
++          if (cap1 != cap2) {
++            return cap1 < cap2;
++          }
++          return cell1->id() < cell2->id();
++        });
++  }
+   if (logger_->debugCheck(utl::CTS, "dummy load", 1)) {
+     for (const sta::LibertyCell* libCell : dummyCandidates) {
+       // clang-format off

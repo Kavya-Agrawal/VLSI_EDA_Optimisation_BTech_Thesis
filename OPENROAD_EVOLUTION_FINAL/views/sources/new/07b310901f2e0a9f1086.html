@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolved (New) Source: src/rsz/src/CMakeLists.txt</title>
+<style>
+body {
+    font-family: "Latin Modern Roman", "Times New Roman", Times, Georgia, "DejaVu Serif", serif;
+    color: #111;
+    background: #fff;
+    line-height: 1.55;
+    margin: 40px auto;
+    max-width: 1060px;
+    padding: 0 24px;
+}
+h1 {
+    font-size: 25px;
+    font-weight: bold;
+    border-bottom: 2px solid #222;
+    padding-bottom: 8px;
+    margin: 12px 0 16px 0;
+}
+h2 {
+    font-size: 19px;
+    font-weight: bold;
+    border-bottom: 1px solid #888;
+    padding-bottom: 4px;
+    margin-top: 36px;
+    margin-bottom: 14px;
+}
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+p {
+    margin: 10px 0;
+    line-height: 1.55;
+}
+a {
+    color: #003399;
+    text-decoration: underline;
+}
+a:visited {
+    color: #4a154b;
+}
+a:hover {
+    color: #b00;
+}
+.academic-nav {
+    margin: 18px 0;
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-family: monospace, sans-serif;
+    font-size: 13.5px;
+}
+.academic-nav a {
+    margin-right: 18px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.academic-nav a:hover {
+    text-decoration: underline;
+}
+.summary-grid {
+    display: table;
+    width: 100%;
+    margin: 16px 0;
+    border: 1px solid #999;
+    border-collapse: collapse;
+}
+.summary-grid td {
+    border: 1px solid #bbb;
+    padding: 10px 14px;
+    vertical-align: top;
+    width: 25%;
+    background: #fafafa;
+}
+.summary-grid strong {
+    display: block;
+    font-size: 22px;
+    font-family: monospace, sans-serif;
+    margin-top: 4px;
+}
+table.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    border: 1px solid #888;
+}
+table.academic-table th, table.academic-table td {
+    border: 1px solid #bbb;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+table.academic-table th {
+    background: #ebebeb;
+    font-weight: bold;
+}
+table.academic-table tr:nth-child(even) {
+    background: #fbfbfb;
+}
+code {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    background: #f3f3f3;
+    padding: 1px 4px;
+    border: 1px solid #e0e0e0;
+}
+pre {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.scroll {
+    max-height: 540px;
+    overflow-y: auto;
+    border: 1px solid #bbb;
+}
+.tools {
+    margin: 12px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: monospace, sans-serif;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+.tools input, .tools select, .tools button {
+    font: inherit;
+    padding: 6px 10px;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 2px;
+}
+.muted {
+    color: #555;
+    font-size: 13px;
+}
+figure.academic-fig {
+    margin: 24px 0 32px 0;
+    padding: 14px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}
+figure.academic-fig img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+figcaption.academic-cap {
+    font-size: 13.5px;
+    color: #222;
+    margin-top: 10px;
+    line-height: 1.5;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+}
+.code-view {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 12px;
+}
+</style>
+</head>
+<body>
+<div class="academic-nav">
+  <a href="../../../index.html#sources">&larr; Back to Source Index</a>
+  <a href="../../../index.html">Main Review Page</a>
+  <a href="../../../graphs.html">Visualizations</a>
+  <a href="../../../diffs/07b310901f2e0a9f1086.html">Compare Side-by-Side Diff</a>
+  <a href="../../../sources/new/src/rsz/src/CMakeLists.txt">Raw File</a>
+</div>
+
+<h1>Evolved (New) Source: src/rsz/src/CMakeLists.txt</h1>
+<p><strong>File Repository Path:</strong> <code>src/rsz/src/CMakeLists.txt</code></p>
+<p><strong>Total Lines:</strong> 155 &middot; <strong>Format:</strong> Formatted HTML View (&middot; <a href="../../../sources/new/src/rsz/src/CMakeLists.txt">Download Raw Source File</a>)</p>
+
+<div class="code-view">
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   1</span># SPDX-License-Identifier: BSD-3-Clause
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   2</span># Copyright (c) 2019-2025, The OpenROAD Authors
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   3</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   4</span>include(&quot;openroad&quot;)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   5</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   6</span>swig_lib(NAME      rsz
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   7</span>         NAMESPACE rsz
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   8</span>         I_FILE    Resizer.i
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   9</span>         SWIG_INCLUDES ${OPENSTA_HOME}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  10</span>         SCRIPTS   Resizer.tcl
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  11</span>)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  12</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  13</span>add_library(rsz_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  14</span>    BufferedNet.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  15</span>    PreChecks.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  16</span>    RecoverPower_new.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  17</span>    RepairDesign.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  18</span>    RepairHold_new.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  19</span>    Rebuffer.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  20</span>    policy/SetupLegacyMtPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  21</span>    policy/SetupLegacyBase_new.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  22</span>    MoveCommitter.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  23</span>    MoveTracker.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  24</span>    policy/OptimizationPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  25</span>    policy/OptimizationPolicy.hh
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  26</span>    Optimizer.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  27</span>    OptimizerTypes.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  28</span>    policy/MeasuredVtSwapPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  29</span>    DelayEstimator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  30</span>    DelayEstimatorReporter.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  31</span>    LRSubproblem.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  32</span>    policy/SetupCritVtSwapPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  33</span>    policy/SetupDirectionalPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  34</span>    policy/SetupLastGaspPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  35</span>    policy/SetupLegacyPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  36</span>    policy/SetupTnsPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  37</span>    policy/SetupWnsPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  38</span>    policy/SetupMt1Policy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  39</span>    policy/SetupReroutePolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  40</span>    policy/GlobalSizingPolicy.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  41</span>    Resizer.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  42</span>    OdbCallBack.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  43</span>    ConcreteSwapArithModules.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  44</span>    RepairTargetCollector.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  45</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  46</span>    move/BufferCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  47</span>    move/BufferGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  48</span>    move/CloneCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>    move/CloneGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>    move/MeasuredVtSwapCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  51</span>    move/MeasuredVtSwapGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  52</span>    move/MoveCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  53</span>    move/MoveGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  54</span>    move/RerouteCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  55</span>    move/RerouteGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  56</span>    move/SizeDownFanoutCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  57</span>    move/SizeDownFanoutGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  58</span>    move/SizeUpCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  59</span>    move/SizeUpGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  60</span>    move/SizeUpMatchCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  61</span>    move/SizeUpMatchGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  62</span>    move/SizeUpMtCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  63</span>    move/SizeUpMtGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  64</span>    move/SplitLoadCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  65</span>    move/SplitLoadGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  66</span>    move/SwapPinsCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  67</span>    move/SwapPinsGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  68</span>    move/UnbufferCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  69</span>    move/UnbufferGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  70</span>    move/VtSwapCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  71</span>    move/VtSwapGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  72</span>    move/VtSwapMtCandidate.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  73</span>    move/VtSwapMtGenerator.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  74</span>)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  75</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  76</span>target_sources(rsz
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  77</span>  PRIVATE
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  78</span>    Graphics.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  79</span>    MakeResizer.cc
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  80</span>)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  81</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  82</span>target_include_directories(rsz
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  83</span>  PUBLIC
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  84</span>    ../include
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  85</span>  PRIVATE
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  86</span>    # A side-effect of including OpenSTA swig files
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  87</span>    ${OPENSTA_HOME}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  88</span>    ${OPENSTA_HOME}/include/sta
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  89</span>    .
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  90</span>    policy
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  91</span>)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  92</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  93</span>target_include_directories(rsz_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  94</span>  PUBLIC
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  95</span>    ../include
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  96</span>  PRIVATE
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  97</span>    .
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  98</span>    move
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  99</span>    policy
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 100</span>)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 101</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 102</span>target_link_libraries(rsz_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 103</span>  PUBLIC
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 104</span>    est_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 105</span>    stt_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 106</span>    odb
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 107</span>    OpenSTA
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 108</span>    dbSta_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 109</span>    grt_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 110</span>    utl_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 111</span>)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 112</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 113</span>target_link_libraries(rsz
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 114</span>  PUBLIC
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 115</span>    rsz_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 116</span>    est
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 117</span>    stt
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 118</span>    odb
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 119</span>    OpenSTA
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 120</span>    dbSta
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 121</span>    grt
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 122</span>    gui
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 123</span>    utl_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 124</span>)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 125</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 126</span>messages(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 127</span>  TARGET rsz
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 128</span>  OUTPUT_DIR ..
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 129</span>)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 130</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 131</span>if (Python3_FOUND AND BUILD_PYTHON)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 132</span>  swig_lib(NAME          rsz_py
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 133</span>           NAMESPACE     rsz
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 134</span>           LANGUAGE      python
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 135</span>           I_FILE        Resizer-py.i
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 136</span>           SWIG_INCLUDES ${OPENSTA_HOME}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 137</span>           SCRIPTS       ${CMAKE_CURRENT_BINARY_DIR}/rsz_py.py
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 138</span>  )
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 139</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 140</span>  target_include_directories(rsz_py
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 141</span>    PUBLIC
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 142</span>      ../include
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 143</span>    PRIVATE
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 144</span>      ${OPENSTA_HOME}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 145</span>      ${OPENSTA_HOME}/include/sta
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 146</span>  )
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 147</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 148</span>  target_link_libraries(rsz_py
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 149</span>    PUBLIC
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 150</span>      rsz_lib
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 151</span>  )
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 152</span>endif()
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 153</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 154</span># Experimental header-only learning kernels; no CTS binary dependency.
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 155</span>target_include_directories(rsz_lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../cts/src)
+</div>
+
+<p style="margin-top:20px;"><a href="../../../index.html#sources">&larr; Back to Source Index</a></p>
+</body>
+</html>

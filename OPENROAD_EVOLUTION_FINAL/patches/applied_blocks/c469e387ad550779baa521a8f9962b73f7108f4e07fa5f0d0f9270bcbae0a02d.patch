@@ -1,0 +1,80 @@
+--- a/src/cts/src/HTreeBuilder_new.cpp
++++ b/src/cts/src/HTreeBuilder_new.cpp
+@@ -22,6 +22,77 @@
+ #include "odb/db.h"
+ #include "odb/isotropy.h"
+ #include "utl/Logger.h"
++
++
++// Algorithms below belong to this production translation unit.
++#include "LearningMode.h"
++#include "LearningPolicyConfig.h"
++
++// BEGIN INTEGRATED KERNEL PartitionDp
++// SPDX-License-Identifier: BSD-3-Clause
++#include <cmath>
++#include <algorithm>
++#include <cstddef>
++#include <limits>
++#include <stdexcept>
++#include <utility>
++#include <vector>
++
++namespace ord::learning {
++struct Partition
++{
++  double cost = 0;
++  std::vector<std::pair<std::size_t, std::size_t>> groups;
++};
++
++// Ordered sink partitioning with a squared cluster-weight objective.
++// The objective is a teaching surrogate; capacitance/timing feasibility belongs
++// to CTS's original acceptance checks, not to this recurrence.
++inline Partition partitionDp(const std::vector<double>& weights,
++                              std::size_t group_count, std::size_t max_size)
++{
++  if (!group_count || !max_size || group_count > weights.size()
++      || (weights.size() + max_size - 1) / max_size > group_count) {
++    throw std::invalid_argument("Infeasible ordered partition");
++  }
++  std::vector<double> prefix(weights.size() + 1, 0);
++  for (std::size_t i = 0; i < weights.size(); ++i) {
++    if (!std::isfinite(weights[i]) || weights[i] < 0) {
++      throw std::invalid_argument("Partition needs nonnegative finite weights");
++    }
++    prefix[i + 1] = prefix[i] + weights[i];
++  }
++  const double inf = std::numeric_limits<double>::infinity();
++  std::vector<std::vector<double>> dp(group_count + 1,
++                                     std::vector<double>(weights.size() + 1, inf));
++  std::vector<std::vector<std::size_t>> previous(group_count + 1,
++                                                std::vector<std::size_t>(weights.size() + 1));
++  dp[0][0] = 0;
++  for (std::size_t group = 1; group <= group_count; ++group) {
++    for (std::size_t end = group; end <= weights.size(); ++end) {
++      const auto begin_min = end > max_size ? end - max_size : 0;
++      for (std::size_t begin = begin_min; begin < end; ++begin) {
++        const double weight = prefix[end] - prefix[begin];
++        const double proposal = dp[group - 1][begin] + weight * weight;
++        if (proposal < dp[group][end]) {
++          dp[group][end] = proposal;
++          previous[group][end] = begin;
++        }
++      }
++    }
++  }
++  Partition result{dp[group_count][weights.size()], {}};
++  std::size_t end = weights.size();
++  for (auto group = group_count; group > 0; --group) {
++    const auto begin = previous[group][end];
++    result.groups.push_back({begin, end});
++    end = begin;
++  }
++  std::reverse(result.groups.begin(), result.groups.end());
++  return result;
++}
++}  // namespace ord::learning
++// END INTEGRATED KERNEL PartitionDp
+ 
+ namespace cts {
+ 

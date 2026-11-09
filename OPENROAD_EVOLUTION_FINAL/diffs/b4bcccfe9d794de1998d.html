@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Old / new: src/cts/src/TreeBuilder.h</title><style>
+:root{font-family:Arial,sans-serif;color:#162939;background:#f5f7f9}body{margin:0}
+main{max-width:1200px;margin:auto;padding:32px}h1{font-size:30px;margin:8px 0 12px}
+h2{font-size:21px;margin-top:36px}p{line-height:1.55}a{color:#215e8c}
+nav{display:flex;gap:20px;flex-wrap:wrap;margin:24px 0;border-bottom:1px solid #ccd6df;padding-bottom:14px}
+.notice{padding:14px 18px;border-left:4px solid #b8753a;background:#faf4e9;line-height:1.5}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin:28px 0}
+.metric strong{display:block;font-size:30px;margin-top:8px}.muted{color:#526575;font-size:13px}
+.graphs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+figure{margin:0;background:white;border:1px solid #dce3e9;padding:8px}figure img{width:100%;height:auto}
+figcaption{padding:10px;font-size:13px;color:#526575}table{width:100%;border-collapse:collapse;background:white;font-size:13px}
+th,td{padding:11px 10px;border-bottom:1px solid #dce3e9;text-align:left;vertical-align:top}
+th{background:#eaf0f5;font-weight:600;position:sticky;top:0}code{font-size:12px;overflow-wrap:anywhere}
+.scroll{max-height:600px;overflow:auto;border:1px solid #dce3e9}input,select,button{font:inherit;padding:9px;border:1px solid #b9c6d0;background:white;border-radius:3px}
+input{min-width:300px}button{cursor:pointer}.tools{display:flex;gap:12px;align-items:center;margin:12px 0;flex-wrap:wrap}
+pre{white-space:pre-wrap;word-break:break-word;background:white;padding:20px;border:1px solid #dce3e9;line-height:1.45}
+.diff{font-family:monospace;font-size:12px;width:auto;min-width:100%}.diff td{padding:3px 6px;white-space:pre}.diff_header{background:#eef2f5}
+.diff_add{background:#dcecdf}.diff_sub{background:#f3deda}.diff_chg{background:#f2e8c7}
+@media(max-width:800px){main{padding:18px}.graphs,.metrics{grid-template-columns:1fr 1fr}input{min-width:180px}}
+</style></head><body><main><a href="../index.html#sources">Back to source index</a><h1>TreeBuilder.h</h1><p><a href="../views/sources/old/b4bcccfe9d794de1998d.html">Full original source (View)</a> (<a href="../sources/old/src/cts/src/TreeBuilder.h">raw</a>) &middot; <a href="../views/sources/new/b4bcccfe9d794de1998d.html">Full new source (View)</a> (<a href="../sources/new/src/cts/src/TreeBuilder.h">raw</a>)</p><p class="muted">Context view shows changed regions. Follow the source links for the complete files. An empty original denotes a newly added file.</p><div style="overflow:auto">
+    <table class="diff" id="difflib_chg_to33__top"
+           cellspacing="0" cellpadding="0" rules="groups" >
+        <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+        <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+        <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">OLD: learning_evolution/snapshots/src/cts/src/TreeBuilder_old.h</th><th class="diff_next"><br /></th><th colspan="2" class="diff_header">NEW: src/cts/src/TreeBuilder.h</th></tr></thead>
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to33__0"></td><td class="diff_header" id="from33_79">79</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;initBlockages();</td><td class="diff_next"></td><td class="diff_header" id="to33_79">79</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;initBlockages();</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_80">80</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;setTechChar(TechChar&amp;&nbsp;techChar)&nbsp;{&nbsp;techChar_&nbsp;=&nbsp;&amp;techChar;&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to33_80">80</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;setTechChar(TechChar&amp;&nbsp;techChar)&nbsp;{&nbsp;techChar_&nbsp;=&nbsp;&amp;techChar;&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_81">81</td><td nowrap="nowrap">&nbsp;&nbsp;const&nbsp;Clock&amp;&nbsp;getClock()&nbsp;const&nbsp;{&nbsp;return&nbsp;clock_;&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to33_81">81</td><td nowrap="nowrap">&nbsp;&nbsp;const&nbsp;Clock&amp;&nbsp;getClock()&nbsp;const&nbsp;{&nbsp;return&nbsp;clock_;&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_82">82</td><td nowrap="nowrap">&nbsp;&nbsp;Clock&amp;&nbsp;getClock()&nbsp;{&nbsp;return&nbsp;clock_;&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to33_82">82</td><td nowrap="nowrap">&nbsp;&nbsp;Clock&amp;&nbsp;getClock()&nbsp;{&nbsp;return&nbsp;clock_;&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_83">83</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;addChild(TreeBuilder*&nbsp;child)&nbsp;{&nbsp;children_.emplace_back(child);&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to33_83">83</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;addChild(TreeBuilder*&nbsp;child)&nbsp;{&nbsp;children_.emplace_back(child);&nbsp;}</td></tr>
+            <tr><td class="diff_next"><a href="#difflib_chg_to33__top">t</a></td><td class="diff_header"></td><td nowrap="nowrap"></td><td class="diff_next"><a href="#difflib_chg_to33__top">t</a></td><td class="diff_header" id="to33_84">84</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;//&nbsp;LEARN-API-02:&nbsp;traversal&nbsp;borrows&nbsp;the&nbsp;adjacency&nbsp;list&nbsp;instead&nbsp;of&nbsp;copying&nbsp;it.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_84">84</td><td nowrap="nowrap">&nbsp;&nbsp;std::vector&lt;TreeBuilder*&gt;&nbsp;getChildren()&nbsp;const&nbsp;{&nbsp;return&nbsp;children_;&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to33_85">85</td><td nowrap="nowrap">&nbsp;<span class="diff_add">&nbsp;const</span>&nbsp;std::vector&lt;TreeBuilder*&gt;<span class="diff_add">&amp;</span>&nbsp;getChildren()&nbsp;const&nbsp;{&nbsp;return&nbsp;children_;&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_85">85</td><td nowrap="nowrap">&nbsp;&nbsp;TreeBuilder*&nbsp;getParent()&nbsp;const&nbsp;{&nbsp;return&nbsp;parent_;&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to33_86">86</td><td nowrap="nowrap">&nbsp;&nbsp;TreeBuilder*&nbsp;getParent()&nbsp;const&nbsp;{&nbsp;return&nbsp;parent_;&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_86">86</td><td nowrap="nowrap">&nbsp;&nbsp;bool&nbsp;isLeafTree();</td><td class="diff_next"></td><td class="diff_header" id="to33_87">87</td><td nowrap="nowrap">&nbsp;&nbsp;bool&nbsp;isLeafTree();</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_87">87</td><td nowrap="nowrap">&nbsp;&nbsp;unsigned&nbsp;getTreeBufLevels()&nbsp;const&nbsp;{&nbsp;return&nbsp;treeBufLevels_;&nbsp;}</td><td class="diff_next"></td><td class="diff_header" id="to33_88">88</td><td nowrap="nowrap">&nbsp;&nbsp;unsigned&nbsp;getTreeBufLevels()&nbsp;const&nbsp;{&nbsp;return&nbsp;treeBufLevels_;&nbsp;}</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_88">88</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;addFirstLevelSinkDriver(ClockInst*&nbsp;inst)</td><td class="diff_next"></td><td class="diff_header" id="to33_89">89</td><td nowrap="nowrap">&nbsp;&nbsp;void&nbsp;addFirstLevelSinkDriver(ClockInst*&nbsp;inst)</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from33_89">89</td><td nowrap="nowrap">&nbsp;&nbsp;{</td><td class="diff_next"></td><td class="diff_header" id="to33_90">90</td><td nowrap="nowrap">&nbsp;&nbsp;{</td></tr>
+        </tbody>
+    </table></div></main></body></html>

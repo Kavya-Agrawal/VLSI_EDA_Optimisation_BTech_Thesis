@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Original (Old) Source: src/cts/src/Clustering_new.cpp</title>
+<style>
+body {
+    font-family: "Latin Modern Roman", "Times New Roman", Times, Georgia, "DejaVu Serif", serif;
+    color: #111;
+    background: #fff;
+    line-height: 1.55;
+    margin: 40px auto;
+    max-width: 1060px;
+    padding: 0 24px;
+}
+h1 {
+    font-size: 25px;
+    font-weight: bold;
+    border-bottom: 2px solid #222;
+    padding-bottom: 8px;
+    margin: 12px 0 16px 0;
+}
+h2 {
+    font-size: 19px;
+    font-weight: bold;
+    border-bottom: 1px solid #888;
+    padding-bottom: 4px;
+    margin-top: 36px;
+    margin-bottom: 14px;
+}
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+p {
+    margin: 10px 0;
+    line-height: 1.55;
+}
+a {
+    color: #003399;
+    text-decoration: underline;
+}
+a:visited {
+    color: #4a154b;
+}
+a:hover {
+    color: #b00;
+}
+.academic-nav {
+    margin: 18px 0;
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    font-family: monospace, sans-serif;
+    font-size: 13.5px;
+}
+.academic-nav a {
+    margin-right: 18px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.academic-nav a:hover {
+    text-decoration: underline;
+}
+.summary-grid {
+    display: table;
+    width: 100%;
+    margin: 16px 0;
+    border: 1px solid #999;
+    border-collapse: collapse;
+}
+.summary-grid td {
+    border: 1px solid #bbb;
+    padding: 10px 14px;
+    vertical-align: top;
+    width: 25%;
+    background: #fafafa;
+}
+.summary-grid strong {
+    display: block;
+    font-size: 22px;
+    font-family: monospace, sans-serif;
+    margin-top: 4px;
+}
+table.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    border: 1px solid #888;
+}
+table.academic-table th, table.academic-table td {
+    border: 1px solid #bbb;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+table.academic-table th {
+    background: #ebebeb;
+    font-weight: bold;
+}
+table.academic-table tr:nth-child(even) {
+    background: #fbfbfb;
+}
+code {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    background: #f3f3f3;
+    padding: 1px 4px;
+    border: 1px solid #e0e0e0;
+}
+pre {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.scroll {
+    max-height: 540px;
+    overflow-y: auto;
+    border: 1px solid #bbb;
+}
+.tools {
+    margin: 12px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: monospace, sans-serif;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+.tools input, .tools select, .tools button {
+    font: inherit;
+    padding: 6px 10px;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 2px;
+}
+.muted {
+    color: #555;
+    font-size: 13px;
+}
+figure.academic-fig {
+    margin: 24px 0 32px 0;
+    padding: 14px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}
+figure.academic-fig img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+figcaption.academic-cap {
+    font-size: 13.5px;
+    color: #222;
+    margin-top: 10px;
+    line-height: 1.5;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+}
+.code-view {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 12px;
+}
+</style>
+</head>
+<body>
+<div class="academic-nav">
+  <a href="../../../index.html#sources">&larr; Back to Source Index</a>
+  <a href="../../../index.html">Main Review Page</a>
+  <a href="../../../graphs.html">Visualizations</a>
+  <a href="../../../diffs/e8d1cbfa9f2cbd563997.html">Compare Side-by-Side Diff</a>
+  <a href="../../../sources/old/src/cts/src/Clustering.cpp">Raw File</a>
+</div>
+
+<h1>Original (Old) Source: src/cts/src/Clustering_new.cpp</h1>
+<p><strong>File Repository Path:</strong> <code>src/cts/src/Clustering_new.cpp</code></p>
+<p><strong>Total Lines:</strong> 434 &middot; <strong>Format:</strong> Formatted HTML View (&middot; <a href="../../../sources/old/src/cts/src/Clustering.cpp">Download Raw Source File</a>)</p>
+
+<div class="code-view">
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   1</span>// SPDX-License-Identifier: BSD-3-Clause
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   2</span>// Copyright (c) 2019-2025, The OpenROAD Authors
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   3</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   4</span>#include &quot;Clustering.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   5</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   6</span>#include &lt;sys/timeb.h&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   7</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   8</span>#include &lt;algorithm&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">   9</span>#include &lt;cfloat&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  10</span>#include &lt;cmath&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  11</span>#include &lt;cstdio&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  12</span>#include &lt;cstdlib&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  13</span>#include &lt;ctime&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  14</span>#include &lt;limits&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  15</span>#include &lt;string&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  16</span>#include &lt;utility&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  17</span>#include &lt;vector&gt;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  18</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  19</span>#include &quot;lemon/core.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  20</span>#include &quot;lemon/list_graph.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  21</span>#include &quot;lemon/maps.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  22</span>#include &quot;lemon/network_simplex.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  23</span>#include &quot;utl/Logger.h&quot;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  24</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  25</span>namespace cts::CKMeans {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  26</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  27</span>using lemon::INVALID;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  28</span>using lemon::ListDigraph;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  29</span>using lemon::NetworkSimplex;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  30</span>using utl::CTS;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  31</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  32</span>struct Sink
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  33</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  34</span>  Sink(const float x, const float y, const unsigned idx)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  35</span>      : x(x), y(y), sink_idx(idx)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  36</span>  {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  37</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  38</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  39</span>  // location
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  40</span>  const float x, y;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  41</span>  int cluster_idx{-1};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  42</span>  const unsigned sink_idx;  // index in sinks_
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  43</span>};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  44</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  45</span>Clustering::Clustering(const std::vector&lt;std::pair&lt;float, float&gt;&gt;&amp; sinks,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  46</span>                       utl::Logger* logger)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  47</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  48</span>  logger_ = logger;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  49</span>  sinks_.reserve(sinks.size());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  50</span>  for (size_t i = 0; i &lt; sinks.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  51</span>    sinks_.emplace_back(sinks[i].first, sinks[i].second, i);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  52</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  53</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  54</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  55</span>Clustering::Clustering(const std::vector&lt;std::pair&lt;float, float&gt;&gt;&amp; sinks,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  56</span>                       const float xBranch,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  57</span>                       const float yBranch,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  58</span>                       utl::Logger* logger)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  59</span>    : Clustering(sinks, logger)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  60</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  61</span>  branching_point_ = {xBranch, yBranch};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  62</span>  srand(56);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  63</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  64</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  65</span>Clustering::~Clustering() = default;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  66</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  67</span>/*** Capacitated K means **************************************************/
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  68</span>void Clustering::iterKmeans(const unsigned iter,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  69</span>                            const unsigned n,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  70</span>                            const unsigned cap,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  71</span>                            const unsigned max,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  72</span>                            const unsigned power,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  73</span>                            std::vector&lt;std::pair&lt;float, float&gt;&gt;&amp; means)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  74</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  75</span>  const unsigned midIdx = means.size() / 2 - 1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  76</span>  segment_length_ = std::abs(means[midIdx].first - means[midIdx + 1].first)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  77</span>                    + std::abs(means[midIdx].second - means[midIdx + 1].second);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  78</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  79</span>  std::vector&lt;int&gt; solution(sinks_.size());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  80</span>  float max_silh = -1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  81</span>  auto tmp_means = means;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  82</span>  for (unsigned i = 0; i &lt; iter; ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  83</span>    const float silh = Kmeans(n, cap, max, power, tmp_means);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  84</span>    if (silh &gt; max_silh) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  85</span>      max_silh = silh;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  86</span>      for (size_t j = 0; j &lt; sinks_.size(); ++j) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  87</span>        solution[j] = sinks_[j].cluster_idx;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  88</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  89</span>      means = tmp_means;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  90</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  91</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  92</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  93</span>  for (size_t i = 0; i &lt; sinks_.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  94</span>    sinks_[i].cluster_idx = solution[i];
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  95</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  96</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  97</span>  fixSegmentLengths(means);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  98</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;">  99</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 100</span>void Clustering::fixSegmentLengths(std::vector&lt;std::pair&lt;float, float&gt;&gt;&amp; means)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 101</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 102</span>  if (!branching_point_) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 103</span>    return;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 104</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 105</span>  // First, fix the middle positions
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 106</span>  const unsigned midIdx = means.size() / 2 - 1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 107</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 108</span>  fixSegment(branching_point_.value(), segment_length_ / 2.0, means[midIdx]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 109</span>  fixSegment(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 110</span>      branching_point_.value(), segment_length_ / 2.0, means[midIdx + 1]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 111</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 112</span>  // Fix lower branch
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 113</span>  for (unsigned i = midIdx; i &gt; 0; --i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 114</span>    fixSegment(means[i], segment_length_, means[i - 1]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 115</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 116</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 117</span>  // Fix upper branch
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 118</span>  for (size_t i = midIdx + 1; i &lt; means.size() - 1; ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 119</span>    fixSegment(means[i], segment_length_, means[i + 1]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 120</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 121</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 122</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 123</span>void Clustering::fixSegment(const std::pair&lt;float, float&gt;&amp; fixedPoint,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 124</span>                            const float targetDist,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 125</span>                            std::pair&lt;float, float&gt;&amp; movablePoint)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 126</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 127</span>  const float actualDist = calcDist(fixedPoint, movablePoint);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 128</span>  if (actualDist == 0) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 129</span>    return;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 130</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 131</span>  const float ratio = targetDist / actualDist;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 132</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 133</span>  const float dx = (movablePoint.first - fixedPoint.first) * ratio;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 134</span>  const float dy = (movablePoint.second - fixedPoint.second) * ratio;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 135</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 136</span>  movablePoint.first = fixedPoint.first + dx;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 137</span>  movablePoint.second = fixedPoint.second + dy;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 138</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 139</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 140</span>float Clustering::Kmeans(const unsigned n,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 141</span>                         const unsigned cap,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 142</span>                         const unsigned max,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 143</span>                         const unsigned power,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 144</span>                         std::vector&lt;std::pair&lt;float, float&gt;&gt;&amp; means)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 145</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 146</span>  // initialize matching indexes for sinks
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 147</span>  for (auto&amp; sink : sinks_) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 148</span>    sink.cluster_idx = -1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 149</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 150</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 151</span>  std::vector&lt;std::vector&lt;Sink*&gt;&gt; clusters;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 152</span>  bool stop = false;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 153</span>  // Kmeans optimization
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 154</span>  unsigned iter = 1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 155</span>  while (!stop) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 156</span>    fixSegmentLengths(means);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 157</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 158</span>    // sink to cluster matching based on min-cost flow
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 159</span>    minCostFlow(means, cap, 5200, power);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 160</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 161</span>    // collect results
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 162</span>    clusters.clear();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 163</span>    clusters.resize(n);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 164</span>    for (Sink&amp; sink : sinks_) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 165</span>      int position = 0;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 166</span>      if (sink.cluster_idx &gt;= 0 &amp;&amp; sink.cluster_idx &lt; n) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 167</span>        position = sink.cluster_idx;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 168</span>      } else {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 169</span>        // Added to check wrong assignment
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 170</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 171</span>        float minimumDist;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 172</span>        int minimumDistClusterIndex = -1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 173</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 174</span>        // Initialize minimumDist and minimumDistClusterIndex with a cluster
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 175</span>        // with size &lt; cap
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 176</span>        for (size_t j = 0; j &lt; means.size(); ++j) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 177</span>          if (clusters[j].size() &lt; cap) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 178</span>            minimumDist = calcDist(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 179</span>                std::make_pair(means[j].first, means[j].second), &amp;sink);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 180</span>            minimumDistClusterIndex = j;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 181</span>            break;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 182</span>          }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 183</span>        }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 184</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 185</span>        if (minimumDistClusterIndex == -1) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 186</span>          // No cluster with size &lt; cap
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 187</span>          minimumDistClusterIndex = 0;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 188</span>        } else {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 189</span>          // Nearest Cluster with size &lt; cap
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 190</span>          for (size_t j = 0; j &lt; means.size(); ++j) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 191</span>            if (clusters[j].size() &lt; cap) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 192</span>              const float currentDist = calcDist(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 193</span>                  std::make_pair(means[j].first, means[j].second), &amp;sink);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 194</span>              if (currentDist &lt; minimumDist) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 195</span>                minimumDist = currentDist;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 196</span>                minimumDistClusterIndex = j;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 197</span>              }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 198</span>            }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 199</span>          }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 200</span>        }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 201</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 202</span>        position = minimumDistClusterIndex;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 203</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 204</span>      clusters[position].push_back(&amp;sink);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 205</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 206</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 207</span>    float delta = 0;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 208</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 209</span>    // use weighted center
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 210</span>    for (unsigned i = 0; i &lt; n; ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 211</span>      float sum_x = 0, sum_y = 0;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 212</span>      for (const auto&amp; cluster : clusters[i]) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 213</span>        sum_x += cluster-&gt;x;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 214</span>        sum_y += cluster-&gt;y;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 215</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 216</span>      const float pre_x = means[i].first;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 217</span>      const float pre_y = means[i].second;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 218</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 219</span>      if (!clusters[i].empty()) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 220</span>        means[i] = std::make_pair(sum_x / clusters[i].size(),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 221</span>                                  sum_y / clusters[i].size());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 222</span>        delta += std::abs(pre_x - means[i].first)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 223</span>                 + std::abs(pre_y - means[i].second);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 224</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 225</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 226</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 227</span>    clusters_ = clusters;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 228</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 229</span>    if (iter &gt; max || delta &lt; 0.5) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 230</span>      stop = true;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 231</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 232</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 233</span>    ++iter;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 234</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 235</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 236</span>  return calcSilh(means);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 237</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 238</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 239</span>float Clustering::calcSilh(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 240</span>    const std::vector&lt;std::pair&lt;float, float&gt;&gt;&amp; means) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 241</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 242</span>  float sum_silh = 0;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 243</span>  for (const Sink&amp; sink : sinks_) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 244</span>    float in_d = 0, out_d = FLT_MAX;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 245</span>    for (size_t j = 0; j &lt; means.size(); ++j) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 246</span>      const float x = means[j].first;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 247</span>      const float y = means[j].second;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 248</span>      if (sink.cluster_idx == j) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 249</span>        // within the cluster
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 250</span>        in_d = calcDist({x, y}, &amp;sink);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 251</span>      } else {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 252</span>        // outside of the cluster
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 253</span>        const float d = calcDist({x, y}, &amp;sink);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 254</span>        out_d = std::min(d, out_d);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 255</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 256</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 257</span>    const float temp = std::max(out_d, in_d);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 258</span>    if (temp == 0) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 259</span>      if (out_d == 0) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 260</span>        sum_silh += -1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 261</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 262</span>      if (in_d == 0) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 263</span>        sum_silh += 1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 264</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 265</span>    } else {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 266</span>      sum_silh += (out_d - in_d) / temp;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 267</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 268</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 269</span>  return sum_silh / sinks_.size();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 270</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 271</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 272</span>/*** Min-Cost Flow ********************************************************/
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 273</span>void Clustering::minCostFlow(const std::vector&lt;std::pair&lt;float, float&gt;&gt;&amp; means,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 274</span>                             const unsigned cap,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 275</span>                             const float dist,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 276</span>                             const unsigned power)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 277</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 278</span>  // Builds src -&gt; [sink nodes] -&gt; [cluster nodes] - &gt; target
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 279</span>  ListDigraph graph;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 280</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 281</span>  // source and target
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 282</span>  ListDigraph::Node src = graph.addNode();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 283</span>  ListDigraph::Node target = graph.addNode();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 284</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 285</span>  // collection of nodes in the flow
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 286</span>  std::vector&lt;ListDigraph::Node&gt; sink_nodes, cluster_nodes;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 287</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 288</span>  // add nodes / edges to graph
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 289</span>  // nodes for sinks
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 290</span>  for (size_t i = 0; i &lt; sinks_.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 291</span>    sink_nodes.push_back(graph.addNode());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 292</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 293</span>  // nodes for clusters
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 294</span>  for (size_t i = 0; i &lt; means.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 295</span>    cluster_nodes.push_back(graph.addNode());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 296</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 297</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 298</span>  // collection of edges in the flow
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 299</span>  std::vector&lt;ListDigraph::Arc&gt; src_sink_edges, sink_cluster_edges,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 300</span>      cluster_sink_edges;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 301</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 302</span>  // edges between source and sinks
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 303</span>  for (auto&amp; sink : sink_nodes) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 304</span>    src_sink_edges.push_back(graph.addArc(src, sink));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 305</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 306</span>  // edges between sinks and clusters
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 307</span>  std::vector&lt;double&gt; costs;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 308</span>  for (size_t i = 0; i &lt; sinks_.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 309</span>    for (size_t j = 0; j &lt; means.size(); ++j) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 310</span>      double d = calcDist(means[j], &amp;sinks_[i]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 311</span>      if (d &lt;= dist) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 312</span>        d = std::pow(d, power);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 313</span>        if (d &lt; std::numeric_limits&lt;int&gt;::max()) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 314</span>          ListDigraph::Arc e = graph.addArc(sink_nodes[i], cluster_nodes[j]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 315</span>          sink_cluster_edges.push_back(e);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 316</span>          costs.push_back(d);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 317</span>        }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 318</span>      }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 319</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 320</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 321</span>  // edges between clusters and target
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 322</span>  for (auto&amp; cluster : cluster_nodes) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 323</span>    cluster_sink_edges.push_back(graph.addArc(cluster, target));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 324</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 325</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 326</span>  debugPrint(logger_,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 327</span>             CTS,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 328</span>             &quot;clustering&quot;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 329</span>             1,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 330</span>             &quot;Graph has {} nodes and {} edges&quot;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 331</span>             countNodes(graph),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 332</span>             countArcs(graph));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 333</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 334</span>  // formulate min-cost flow
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 335</span>  ListDigraph::ArcMap&lt;int&gt; edge_cost(graph), edge_capacity(graph);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 336</span>  for (auto&amp; edge : src_sink_edges) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 337</span>    edge_capacity[edge] = 1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 338</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 339</span>  for (size_t i = 0; i &lt; sink_cluster_edges.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 340</span>    edge_capacity[sink_cluster_edges[i]] = 1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 341</span>    edge_cost[sink_cluster_edges[i]] = costs[i];
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 342</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 343</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 344</span>  const int remaining = sinks_.size() % means.size();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 345</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 346</span>  for (size_t i = 0; i &lt; cluster_sink_edges.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 347</span>    if (i &lt; remaining) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 348</span>      edge_capacity[cluster_sink_edges[i]] = cap + 1;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 349</span>    } else {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 350</span>      edge_capacity[cluster_sink_edges[i]] = cap;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 351</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 352</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 353</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 354</span>  for (ListDigraph::ArcIt it(graph); it != INVALID; ++it) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 355</span>    debugPrint(logger_,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 356</span>               CTS,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 357</span>               &quot;clustering&quot;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 358</span>               2,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 359</span>               &quot;{}-{}&quot;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 360</span>               graph.id(graph.source(it)),
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 361</span>               graph.id(graph.target(it)));
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 362</span>    debugPrint(logger_, CTS, &quot;clustering&quot;, 2, &quot; cost = &quot;, edge_cost[it]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 363</span>    debugPrint(logger_, CTS, &quot;clustering&quot;, 2, &quot; cap = &quot;, edge_capacity[it]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 364</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 365</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 366</span>  NetworkSimplex&lt;ListDigraph, int, int&gt; flow(graph);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 367</span>  flow.costMap(edge_cost);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 368</span>  flow.upperMap(edge_capacity);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 369</span>  flow.stSupply(src, target, means.size() * cap + remaining);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 370</span>  flow.run();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 371</span>  ListDigraph::ArcMap&lt;int&gt; solution(graph);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 372</span>  flow.flowMap(solution);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 373</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 374</span>  ListDigraph::NodeMap&lt;std::pair&lt;int, int&gt;&gt; node_map(graph);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 375</span>  for (size_t i = 0; i &lt; sink_nodes.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 376</span>    node_map[sink_nodes[i]] = {i, -1};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 377</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 378</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 379</span>  for (size_t i = 0; i &lt; cluster_nodes.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 380</span>    node_map[cluster_nodes[i]] = {-1, i};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 381</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 382</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 383</span>  node_map[src] = {-2, -2};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 384</span>  node_map[target] = {-2, -2};
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 385</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 386</span>  for (ListDigraph::ArcIt it(graph); it != INVALID; ++it) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 387</span>    if (solution[it] == 0) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 388</span>      continue;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 389</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 390</span>    if (node_map[graph.source(it)].second == -1
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 391</span>        &amp;&amp; node_map[graph.target(it)].first == -1) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 392</span>      debugPrint(logger_,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 393</span>                 CTS,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 394</span>                 &quot;clustering&quot;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 395</span>                 3,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 396</span>                 &quot;Flow from: sink_{}  to cluster_{} flow = {}&quot;,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 397</span>                 node_map[graph.source(it)].first,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 398</span>                 node_map[graph.target(it)].second,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 399</span>                 solution[it]);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 400</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 401</span>      sinks_[node_map[graph.source(it)].first].cluster_idx
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 402</span>          = node_map[graph.target(it)].second;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 403</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 404</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 405</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 406</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 407</span>void Clustering::getClusters(
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 408</span>    std::vector&lt;std::vector&lt;unsigned&gt;&gt;&amp; newClusters) const
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 409</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 410</span>  newClusters.clear();
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 411</span>  newClusters.resize(clusters_.size());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 412</span>  for (size_t i = 0; i &lt; clusters_.size(); ++i) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 413</span>    newClusters[i].resize(clusters_[i].size());
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 414</span>    for (unsigned j = 0; j &lt; clusters_[i].size(); ++j) {
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 415</span>      newClusters[i][j] = clusters_[i][j]-&gt;sink_idx;
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 416</span>    }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 417</span>  }
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 418</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 419</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 420</span>/* static */
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 421</span>float Clustering::calcDist(const std::pair&lt;float, float&gt;&amp; loc, const Sink* sink)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 422</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 423</span>  return calcDist(loc, {sink-&gt;x, sink-&gt;y});
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 424</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 425</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 426</span>/* static */
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 427</span>float Clustering::calcDist(const std::pair&lt;float, float&gt;&amp; loc1,
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 428</span>                           const std::pair&lt;float, float&gt;&amp; loc2)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 429</span>{
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 430</span>  return std::abs(loc1.first - loc2.first)
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 431</span>         + std::abs(loc1.second - loc2.second);
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 432</span>}
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 433</span>
+<span style="color:#888;display:inline-block;width:45px;text-align:right;margin-right:12px;user-select:none;"> 434</span>}  // namespace cts::CKMeans
+</div>
+
+<p style="margin-top:20px;"><a href="../../../index.html#sources">&larr; Back to Source Index</a></p>
+</body>
+</html>
