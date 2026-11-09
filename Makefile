@@ -302,3 +302,9 @@ pv-all: pv-test pv-contract pv-attribution pv-compare pv-mutation
 	@echo ""
 	@echo "All PV-Evolve demos completed."
 
+pv-live:
+	$(PYTHON) -m openroad_timing_evolution.live_demo --generations $(GENERATIONS) --population $(POPULATION)
+
+pv-live-quick:
+	$(PYTHON) -m openroad_timing_evolution.live_demo --generations 1 --population 1
+

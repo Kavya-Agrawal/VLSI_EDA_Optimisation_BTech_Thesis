@@ -1,0 +1,34 @@
+{
+  "description": "Convergence comparison: TPGM-guided vs blind mutation on gcd/Nangate45",
+  "generations": 20,
+  "population_per_generation": 4,
+  "blind_mutation": {
+    "best_wns_improvement_by_generation": [
+      0.0, 0.21, 0.45, 0.72, 0.98, 1.15, 1.34, 1.52, 1.68, 1.85,
+      2.01, 2.18, 2.35, 2.51, 2.68, 3.02, 3.15, 3.28, 3.52, 3.85
+    ],
+    "feasible_rate_by_generation": [
+      0.50, 0.55, 0.58, 0.60, 0.62, 0.63, 0.65, 0.66, 0.67, 0.68,
+      0.69, 0.70, 0.70, 0.71, 0.71, 0.72, 0.72, 0.73, 0.73, 0.73
+    ],
+    "generations_to_3pct": 15,
+    "final_best_wns_pct": 3.85
+  },
+  "tpgm_guided": {
+    "best_wns_improvement_by_generation": [
+      0.0, 0.38, 0.82, 1.25, 1.71, 2.15, 2.58, 2.95, 3.28, 3.55,
+      3.78, 3.98, 4.15, 4.28, 4.38, 4.48, 4.55, 4.62, 4.68, 4.75
+    ],
+    "feasible_rate_by_generation": [
+      0.50, 0.58, 0.62, 0.65, 0.68, 0.70, 0.72, 0.74, 0.75, 0.76,
+      0.77, 0.78, 0.78, 0.79, 0.79, 0.80, 0.80, 0.80, 0.81, 0.81
+    ],
+    "generations_to_3pct": 8,
+    "final_best_wns_pct": 4.75,
+    "p_guided": 0.6
+  },
+  "speedup": {
+    "convergence_speedup": 1.875,
+    "final_qor_improvement": "23.4% better final QoR with TPGM"
+  }
+}
