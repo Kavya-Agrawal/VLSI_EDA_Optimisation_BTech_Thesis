@@ -1,0 +1,29 @@
+{
+  "description": "PV-Evolve replay: 3500 candidates through PVCC + TPGM",
+  "total_candidates": 3500,
+  "pvcc_passed": 3486,
+  "pvcc_failed": 14,
+  "pass_rate": 99.6,
+  "layer_pass_rates": {
+    "L1_compilation_regression": 100.0,
+    "L2_physical_drc": 100.0,
+    "L3_independent_sta_audit": 100.0,
+    "L4_timing_regression_gates": 100.0,
+    "L5_electrical_physical_gates": 99.6,
+    "L6_formal_equivalence": 100.0
+  },
+  "timing": {
+    "best_wns_pct": 4.9927,
+    "mean_wns_pct": 1.1507,
+    "p99_wns_pct": 4.8836,
+    "top5_mean_wns_pct": 4.9901
+  },
+  "tpgm_aggregated_weights": {
+    "load_pressure": 0.1845,
+    "fanout_shock": 0.1411,
+    "late_path_focus": 0.1903,
+    "frontload_relief": 0.1469,
+    "nonlinear_blend": 0.1411,
+    "stability_damper": 0.1961
+  }
+}

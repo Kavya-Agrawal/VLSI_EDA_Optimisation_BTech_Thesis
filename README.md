@@ -1,95 +1,94 @@
-# VLSI EDA Optimisation — BTech Thesis
+# PV-Evolve: Path-Verified Evolution of OpenROAD Physical Design Code
 
-Research code for logic synthesis, physical design, and ML-guided algorithm
-evolution using Berkeley ABC and OpenROAD.
+**B.Tech Thesis — Vedant Sinha, IIT Guwahati**
 
-## Quick start
+A framework for evolving OpenROAD physical design code with formal multi-domain
+correctness guarantees. Two novel contributions:
 
-```bash
-make doctor
-make setup
-make list
-make test
-```
+1. **Physical Verification Correctness Contract (PVCC)** — 6-layer fail-closed
+   verification spanning structural, geometric, temporal, electrical, and logical domains.
+2. **Timing-Path-Guided Mutation (TPGM)** — STA critical paths feed back into the
+   mutation operator, biasing changes toward blocks influencing timing.
 
-The top-level `Makefile` is the common entry point on every research branch.
-See [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) for the directory map, branch map,
-and commands for each framework.
-
-## OpenROAD code-evolution runs
-
-Use branch `research/openroad-evolution-suite` for the two real OpenROAD
-evolution frameworks:
+## Quick Start
 
 ```bash
-git switch research/openroad-evolution-suite
-git pull --ff-only --recurse-submodules
 git submodule update --init --recursive
-make test-placement
-make test-timing-evolution
+make test-timing-evolution    # run unit tests
+make pv-all                   # run all PV-Evolve demos
+make pv-live                  # run real OpenROAD evolution (requires Docker)
 ```
 
-Run both frameworks:
+## Repository Structure
 
-```bash
-make run-both N=1
-make results
+```
+├── openroad_timing_evolution/   # PV-Evolve framework (Resizer + PVCC + TPGM)
+│   ├── contract.py              # 6-layer PVCC formalization
+│   ├── path_attribution.py      # TPGM path-to-block attribution
+│   ├── policy.py                # SSPE mutation with guided selection
+│   ├── search.py                # Evolutionary search loop
+│   ├── runner.py                # Real OpenROAD/ORFS evaluation
+│   ├── live_demo.py             # Live demo with terminal output
+│   ├── results/                 # Results, code changes, evidence
+│   └── presentation/            # Paper (LaTeX) + presentation (PPTX)
+│
+├── openroad_evolution/          # OptMirror detailed placement evolution
+│   └── src/openroad_evolution/  # OptMirror candidate framework
+│
+├── external/
+│   ├── OpenROAD/                # Pinned OpenROAD source (submodule)
+│   └── OpenROAD-flow-scripts/   # Pinned ORFS (submodule)
+│
+├── archive/                     # Previous research, docs, ABC, ML experiments
+├── Makefile                     # All commands
+└── README.md
 ```
 
-Run only OptMirror placement:
+## Commands
 
-```bash
-make run-placement N=1
-make report-placement
-```
+| Command | Description |
+|---------|-------------|
+| `make pv-all` | Run all PVCC + TPGM demos |
+| `make pv-contract` | Show 6-layer PVCC specification |
+| `make pv-attribution` | Demo TPGM path attribution |
+| `make pv-compare` | PVCC vs ABC CEC comparison |
+| `make pv-mutation` | Guided vs blind mutation demo |
+| `make pv-live` | **Run real OpenROAD evolution** (Docker required) |
+| `make pv-live-quick` | Quick single-iteration demo |
+| `make test-timing-evolution` | Run unit tests |
 
-Run only Resizer timing closure:
+## Key Results
 
-```bash
-make run-timing N=1
-make report-timing-evolution
-```
+| Metric | Value |
+|--------|-------|
+| P99 WNS improvement | **4.88%** |
+| Mean WNS improvement | 1.15% |
+| TPGM convergence speedup | 1.9× |
+| PVCC verification layers | 6 (vs 1 in Self-Evolved ABC) |
+| Total candidates evaluated | 3,500 |
 
-Increase `N` for more new evolution attempts. The archives are append-only:
-`N=40` followed by `N=80` gives 120 attempted candidates, not an overwrite.
-Result summaries are written to:
+Results are in `openroad_timing_evolution/results/`:
+- `timing_improvement_summary.json` — full statistics
+- `pvcc_verification_evidence.json` — 6-layer evidence for champion
+- `critical_path_traces.json` — top-20 STA paths with attribution
+- `top_code_changes.json` — top 5 evolved candidates with parameter diffs
+- `code_changes/` — actual before/after C++ header files
+- `champion_code_change.cpp` — annotated stock vs evolved priority function
 
-- `openroad_evolution/.evolution/summary.md`
-- `openroad_timing_evolution/work/memory/summary.md`
+## Evolution Targets
 
-The framework evolves generated C++ policy code, not only scalar parameters.
-Both experiments use Segmented Semantic Program Evolution with a semantic
-relation graph over code blocks. See [`OPENROAD_EVOLUTION_RUNBOOK.md`](OPENROAD_EVOLUTION_RUNBOOK.md)
-for the detailed runbook and evidence locations.
+| Agent | Target File | Status |
+|-------|-------------|--------|
+| **Resizer** | `src/rsz/src/policy/SetupLegacyBase.cc` | Fully implemented |
+| **CTS** | `src/cts/src/LearningPolicyConfig.h` | Pipeline-ready, 3500 candidates evaluated |
+| **OptMirror** | `src/dpl/src/OptMirror.cpp` | Pipeline-ready |
 
-## Contents
+The pipeline (PVCC + TPGM + SSPE) is stage-agnostic — the same contract and
+mutation mechanism apply to any OpenROAD subsystem.
 
-| Directory | Description |
-|-----------|-------------|
-| [`abc/`](abc/) | Berkeley ABC — logic synthesis and verification |
-| [`macroPlace/`](macroPlace/) | Macro placement projects (challenge framework + ML experiments) |
-| [`ml_for_eda_research/`](ml_for_eda_research/) | BTP research compendium: papers, repos, and ABC deep-dive notes |
-| [`external/OpenROAD/`](external/OpenROAD/) | Pinned official OpenROAD source, with nested submodules |
-| [`external/OpenROAD-flow-scripts/`](external/OpenROAD-flow-scripts/) | Pinned official RTL-to-GDSII flow source and tool submodules |
-| [`openroad_evolution/`](openroad_evolution/) | Reproducible algorithm-evolution framework for detailed placement |
-| [`openroad_timing_evolution/`](openroad_timing_evolution/) | Correctness-gated resizer timing evolution framework |
-| [`openroad_ml/`](openroad_ml/) | ML experiments for OpenROAD congestion, timing, and gate sizing |
-| [`abc_documentation.txt`](abc_documentation.txt) | Quick links to ABC and OpenROAD resources |
+## References
 
-## Upstream sources
-
-- ABC: https://github.com/berkeley-abc/abc
-- Macro Place Challenge 2026: https://github.com/partcleda/macro-place-challenge-2026
-- Macro Placement ML for EDA: https://github.com/Kavya-Agrawal/Macro_Placement_ML_for_EDA
-
-Large benchmark datasets under `macroPlace/` are excluded from this repo via `.gitignore`. Clone or download them separately when running experiments.
-
-OpenROAD and OpenROAD-flow-scripts are included as pinned Git submodules. Initialize them after cloning this repository:
-
-```sh
-git submodule update --init --recursive
-```
-
-The evolution packages modify only bounded generated policies in isolated
-workspaces, then gate candidates with tests and full ORFS evidence. Read the
-framework's own README before starting a long experiment.
+- Self-Evolved ABC (arXiv:2604.15082) — base paper being adapted
+- VERI-SURE (arXiv:2601.19747) — contract-based RTL verification
+- VPR-Evolve (arXiv:2607.24998) — multi-agent FPGA evolution
+- EvoDRC (arXiv:2607.20019) — self-evolving DRC repair

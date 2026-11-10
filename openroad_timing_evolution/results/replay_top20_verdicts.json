@@ -1,0 +1,1242 @@
+[
+  {
+    "policy_id": "5c438ee3ee4f",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (527 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "f68bc159f605f7c3c792b69e70d422ef7fc275359fe2d1baf872624842921b31",
+        "timestamp": 1794220281.6441638
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "f68bc159f605f7c3c792b69e70d422ef7fc275359fe2d1baf872624842921b31",
+        "timestamp": 1794220281.6441684
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9927%, TNS impact 4.7307%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.64417
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9927% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.644171
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.8617 (threshold: 0.05)",
+        "evidence_hash": "f68bc159f605f7c3c792b69e70d422ef7fc275359fe2d1baf872624842921b31",
+        "timestamp": 1794220281.6441717
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "f68bc159f605f7c3c792b69e70d422ef7fc275359fe2d1baf872624842921b31",
+        "timestamp": 1794220281.6441824
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "07de97215b53",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (527 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "f2118ca40ed018c1687914d207e201a86a548676157c071a3bb8601fd52160b7",
+        "timestamp": 1794220282.0742333
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "f2118ca40ed018c1687914d207e201a86a548676157c071a3bb8601fd52160b7",
+        "timestamp": 1794220282.0742376
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9916%, TNS impact 4.0740%",
+        "evidence_hash": null,
+        "timestamp": 1794220282.0742395
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9916% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220282.0742404
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.5328 (threshold: 0.05)",
+        "evidence_hash": "f2118ca40ed018c1687914d207e201a86a548676157c071a3bb8601fd52160b7",
+        "timestamp": 1794220282.0742416
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "f2118ca40ed018c1687914d207e201a86a548676157c071a3bb8601fd52160b7",
+        "timestamp": 1794220282.0742526
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "c9e3dff76b0a",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (528 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "22cdf49c6867cb2e71948ea76fcaef43c0f61a99711bed1d90fc0b2fd5ac4e4b",
+        "timestamp": 1794220281.7116055
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "22cdf49c6867cb2e71948ea76fcaef43c0f61a99711bed1d90fc0b2fd5ac4e4b",
+        "timestamp": 1794220281.7116096
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9896%, TNS impact 4.4429%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.711611
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9896% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.7116122
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.7163 (threshold: 0.05)",
+        "evidence_hash": "22cdf49c6867cb2e71948ea76fcaef43c0f61a99711bed1d90fc0b2fd5ac4e4b",
+        "timestamp": 1794220281.711613
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "22cdf49c6867cb2e71948ea76fcaef43c0f61a99711bed1d90fc0b2fd5ac4e4b",
+        "timestamp": 1794220281.7116232
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "bcaf8f9b51ac",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (526 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "e38a217471c8ca2d3fc4d3e2ed31cb60cf48bcd4d2242e63c0dc606ac5193319",
+        "timestamp": 1794220281.877831
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "e38a217471c8ca2d3fc4d3e2ed31cb60cf48bcd4d2242e63c0dc606ac5193319",
+        "timestamp": 1794220281.8778353
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9891%, TNS impact 4.5457%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.8778367
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9891% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.877838
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.7674 (threshold: 0.05)",
+        "evidence_hash": "e38a217471c8ca2d3fc4d3e2ed31cb60cf48bcd4d2242e63c0dc606ac5193319",
+        "timestamp": 1794220281.8778389
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "e38a217471c8ca2d3fc4d3e2ed31cb60cf48bcd4d2242e63c0dc606ac5193319",
+        "timestamp": 1794220281.8778512
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "dd409bdf6176",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (528 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "ff529d44c586ec90353465e361a3e7701071b96bbdc36eac8f9500ec39e69830",
+        "timestamp": 1794220281.151804
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "ff529d44c586ec90353465e361a3e7701071b96bbdc36eac8f9500ec39e69830",
+        "timestamp": 1794220281.1518092
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9876%, TNS impact 4.9594%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.1518111
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9876% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.1518123
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.9735 (threshold: 0.05)",
+        "evidence_hash": "ff529d44c586ec90353465e361a3e7701071b96bbdc36eac8f9500ec39e69830",
+        "timestamp": 1794220281.1518137
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "ff529d44c586ec90353465e361a3e7701071b96bbdc36eac8f9500ec39e69830",
+        "timestamp": 1794220281.1518261
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "46a8f3071177",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (527 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "26b1f4aa88d3d6443e0d5ade6e7ad2cf419502b19f5ab3ceb0390928794b83b7",
+        "timestamp": 1794220282.1053514
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "26b1f4aa88d3d6443e0d5ade6e7ad2cf419502b19f5ab3ceb0390928794b83b7",
+        "timestamp": 1794220282.105356
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9861%, TNS impact 4.1593%",
+        "evidence_hash": null,
+        "timestamp": 1794220282.1053576
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9861% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220282.1053586
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.5727 (threshold: 0.05)",
+        "evidence_hash": "26b1f4aa88d3d6443e0d5ade6e7ad2cf419502b19f5ab3ceb0390928794b83b7",
+        "timestamp": 1794220282.1053596
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "26b1f4aa88d3d6443e0d5ade6e7ad2cf419502b19f5ab3ceb0390928794b83b7",
+        "timestamp": 1794220282.1053705
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "04e5daa65f26",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (526 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "9846f74641d6a40e5a9591bbfe691a153f54ac396c89e157bb868898d1dc8978",
+        "timestamp": 1794220281.6113987
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "9846f74641d6a40e5a9591bbfe691a153f54ac396c89e157bb868898d1dc8978",
+        "timestamp": 1794220281.611403
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9844%, TNS impact 4.3596%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.6114047
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9844% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.6114054
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.6720 (threshold: 0.05)",
+        "evidence_hash": "9846f74641d6a40e5a9591bbfe691a153f54ac396c89e157bb868898d1dc8978",
+        "timestamp": 1794220281.6114063
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "9846f74641d6a40e5a9591bbfe691a153f54ac396c89e157bb868898d1dc8978",
+        "timestamp": 1794220281.6114166
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "f8b998157887",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (528 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "01573ba1ff23202c0db6f72dac45b9ab7657cdf4fe6ac55846b1edc7bc36a3e2",
+        "timestamp": 1794220281.3555295
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "01573ba1ff23202c0db6f72dac45b9ab7657cdf4fe6ac55846b1edc7bc36a3e2",
+        "timestamp": 1794220281.3555348
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9837%, TNS impact 4.2874%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.355537
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9837% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.355538
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.6356 (threshold: 0.05)",
+        "evidence_hash": "01573ba1ff23202c0db6f72dac45b9ab7657cdf4fe6ac55846b1edc7bc36a3e2",
+        "timestamp": 1794220281.355539
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "01573ba1ff23202c0db6f72dac45b9ab7657cdf4fe6ac55846b1edc7bc36a3e2",
+        "timestamp": 1794220281.355554
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "6706089589f3",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (525 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "67ad500101e36f669dfda0f1d45f83c26576e67ef9ca934f980a6799d76cf750",
+        "timestamp": 1794220281.6444726
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "67ad500101e36f669dfda0f1d45f83c26576e67ef9ca934f980a6799d76cf750",
+        "timestamp": 1794220281.6444771
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9832%, TNS impact 4.1469%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.644479
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9832% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.64448
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.5650 (threshold: 0.05)",
+        "evidence_hash": "67ad500101e36f669dfda0f1d45f83c26576e67ef9ca934f980a6799d76cf750",
+        "timestamp": 1794220281.644481
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "67ad500101e36f669dfda0f1d45f83c26576e67ef9ca934f980a6799d76cf750",
+        "timestamp": 1794220281.6444921
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "10ca6daad61b",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (527 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "c674dd99b17280161597ed7edabf28fc7e50bd43165d47f14de5e54dc27d0669",
+        "timestamp": 1794220281.646368
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "c674dd99b17280161597ed7edabf28fc7e50bd43165d47f14de5e54dc27d0669",
+        "timestamp": 1794220281.6463726
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9830%, TNS impact 4.5911%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.6463745
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9830% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.6463754
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.7870 (threshold: 0.05)",
+        "evidence_hash": "c674dd99b17280161597ed7edabf28fc7e50bd43165d47f14de5e54dc27d0669",
+        "timestamp": 1794220281.6463764
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "c674dd99b17280161597ed7edabf28fc7e50bd43165d47f14de5e54dc27d0669",
+        "timestamp": 1794220281.646387
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "8b3bc925ba3a",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (496 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "e932bd5c184ed122cba45ff37f4b2c2ed68936c26a24510dbcb73054c09ac37b",
+        "timestamp": 1794220281.7127585
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "e932bd5c184ed122cba45ff37f4b2c2ed68936c26a24510dbcb73054c09ac37b",
+        "timestamp": 1794220281.712763
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9826%, TNS impact 4.3749%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.7127647
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9826% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.7127657
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.6787 (threshold: 0.05)",
+        "evidence_hash": "e932bd5c184ed122cba45ff37f4b2c2ed68936c26a24510dbcb73054c09ac37b",
+        "timestamp": 1794220281.7127666
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "e932bd5c184ed122cba45ff37f4b2c2ed68936c26a24510dbcb73054c09ac37b",
+        "timestamp": 1794220281.712777
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "f1eaf6505378",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (528 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "607f5a2e12131ff5e66a461cefd690a57da425e75b7ab2a5d927169ed698d705",
+        "timestamp": 1794220281.7124715
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "607f5a2e12131ff5e66a461cefd690a57da425e75b7ab2a5d927169ed698d705",
+        "timestamp": 1794220281.712476
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9814%, TNS impact 4.8334%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.7124774
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9814% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.7124784
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.9074 (threshold: 0.05)",
+        "evidence_hash": "607f5a2e12131ff5e66a461cefd690a57da425e75b7ab2a5d927169ed698d705",
+        "timestamp": 1794220281.712479
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "607f5a2e12131ff5e66a461cefd690a57da425e75b7ab2a5d927169ed698d705",
+        "timestamp": 1794220281.7124891
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "4912497b76c2",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (526 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "b16701e558a0118533f1bf10d36647d6aa4b59faaadc77ba3d613da1f03f6124",
+        "timestamp": 1794220281.5089803
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "b16701e558a0118533f1bf10d36647d6aa4b59faaadc77ba3d613da1f03f6124",
+        "timestamp": 1794220281.508985
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9812%, TNS impact 4.4949%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.5089867
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9812% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.5089877
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.7381 (threshold: 0.05)",
+        "evidence_hash": "b16701e558a0118533f1bf10d36647d6aa4b59faaadc77ba3d613da1f03f6124",
+        "timestamp": 1794220281.5089886
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "b16701e558a0118533f1bf10d36647d6aa4b59faaadc77ba3d613da1f03f6124",
+        "timestamp": 1794220281.508999
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "2f8dd2fa3a22",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (528 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "d6b5f9b971da447a2e87dfe16b5284f9b39ce57ef94f7e5c1bafd49d4c641bf1",
+        "timestamp": 1794220282.1060038
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "d6b5f9b971da447a2e87dfe16b5284f9b39ce57ef94f7e5c1bafd49d4c641bf1",
+        "timestamp": 1794220282.1060083
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9694%, TNS impact 4.2025%",
+        "evidence_hash": null,
+        "timestamp": 1794220282.10601
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9694% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220282.106011
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.5860 (threshold: 0.05)",
+        "evidence_hash": "d6b5f9b971da447a2e87dfe16b5284f9b39ce57ef94f7e5c1bafd49d4c641bf1",
+        "timestamp": 1794220282.1060119
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "d6b5f9b971da447a2e87dfe16b5284f9b39ce57ef94f7e5c1bafd49d4c641bf1",
+        "timestamp": 1794220282.1060221
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "e574014180a1",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (526 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "8b6268a3c89bea39da92828e291b86300f1070204043954e63d0cb9f06fce1da",
+        "timestamp": 1794220281.544563
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "8b6268a3c89bea39da92828e291b86300f1070204043954e63d0cb9f06fce1da",
+        "timestamp": 1794220281.5445683
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9677%, TNS impact 4.6746%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.5445704
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9677% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.5445714
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.8211 (threshold: 0.05)",
+        "evidence_hash": "8b6268a3c89bea39da92828e291b86300f1070204043954e63d0cb9f06fce1da",
+        "timestamp": 1794220281.5445724
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "8b6268a3c89bea39da92828e291b86300f1070204043954e63d0cb9f06fce1da",
+        "timestamp": 1794220281.5445843
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "3b7687987619",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (527 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "dcb28cacc8b0201ec4d4d18103ea448df0230d6fd67d92ade5643cdfee19de64",
+        "timestamp": 1794220281.235935
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "dcb28cacc8b0201ec4d4d18103ea448df0230d6fd67d92ade5643cdfee19de64",
+        "timestamp": 1794220281.2359428
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9660%, TNS impact 4.5321%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.2359462
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9660% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.235948
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.7491 (threshold: 0.05)",
+        "evidence_hash": "dcb28cacc8b0201ec4d4d18103ea448df0230d6fd67d92ade5643cdfee19de64",
+        "timestamp": 1794220281.2359495
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "dcb28cacc8b0201ec4d4d18103ea448df0230d6fd67d92ade5643cdfee19de64",
+        "timestamp": 1794220281.235967
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "1447a9951ab0",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (527 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "797cf19c06962b099226d864b8e3430de7011167a199de1a15547094e5ea0a31",
+        "timestamp": 1794220282.0406585
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "797cf19c06962b099226d864b8e3430de7011167a199de1a15547094e5ea0a31",
+        "timestamp": 1794220282.0406635
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9513%, TNS impact 4.5094%",
+        "evidence_hash": null,
+        "timestamp": 1794220282.0406656
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9513% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220282.0406668
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.7303 (threshold: 0.05)",
+        "evidence_hash": "797cf19c06962b099226d864b8e3430de7011167a199de1a15547094e5ea0a31",
+        "timestamp": 1794220282.0406682
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "797cf19c06962b099226d864b8e3430de7011167a199de1a15547094e5ea0a31",
+        "timestamp": 1794220282.040681
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "aeb174ef431e",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (526 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "fc4d1a56b291b2ca1e0d3c0ab775fe6e11791e415912c236fa8e466dbb5e4555",
+        "timestamp": 1794220281.4781268
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "fc4d1a56b291b2ca1e0d3c0ab775fe6e11791e415912c236fa8e466dbb5e4555",
+        "timestamp": 1794220281.4781315
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9474%, TNS impact 4.4567%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.4781332
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9474% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.4781342
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.7020 (threshold: 0.05)",
+        "evidence_hash": "fc4d1a56b291b2ca1e0d3c0ab775fe6e11791e415912c236fa8e466dbb5e4555",
+        "timestamp": 1794220281.4781353
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "fc4d1a56b291b2ca1e0d3c0ab775fe6e11791e415912c236fa8e466dbb5e4555",
+        "timestamp": 1794220281.4781477
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "f384fc96d19b",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (526 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "290d73be7ea60e51f48517161d0da0fbae2788b5191c48d765e961358d45cee9",
+        "timestamp": 1794220281.5432653
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "290d73be7ea60e51f48517161d0da0fbae2788b5191c48d765e961358d45cee9",
+        "timestamp": 1794220281.54327
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9418%, TNS impact 4.5133%",
+        "evidence_hash": null,
+        "timestamp": 1794220281.543272
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9418% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220281.543273
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.7275 (threshold: 0.05)",
+        "evidence_hash": "290d73be7ea60e51f48517161d0da0fbae2788b5191c48d765e961358d45cee9",
+        "timestamp": 1794220281.543274
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "290d73be7ea60e51f48517161d0da0fbae2788b5191c48d765e961358d45cee9",
+        "timestamp": 1794220281.5432858
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  },
+  {
+    "policy_id": "232f0693125e",
+    "all_passed": true,
+    "layers": [
+      {
+        "layer": "L1_compilation_regression",
+        "domain": "structural",
+        "passed": true,
+        "detail": "valid C++ header (527 bytes), struct PolicyConfig present, namespace check passed",
+        "evidence_hash": "bb460c5adc3b376627bf6ccf96e998bf834f66585886a477d9245ae9d5a1a098",
+        "timestamp": 1794220282.0047934
+      },
+      {
+        "layer": "L2_physical_drc",
+        "domain": "geometric",
+        "passed": true,
+        "detail": "all 10 parameters within safe physical bounds",
+        "evidence_hash": "bb460c5adc3b376627bf6ccf96e998bf834f66585886a477d9245ae9d5a1a098",
+        "timestamp": 1794220282.0048003
+      },
+      {
+        "layer": "L3_independent_sta_audit",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "STA evaluation: WNS impact 4.9335%, TNS impact 4.7309%",
+        "evidence_hash": null,
+        "timestamp": 1794220282.0048027
+      },
+      {
+        "layer": "L4_timing_regression_gates",
+        "domain": "temporal",
+        "passed": true,
+        "detail": "WNS improvement: +4.9335% (no regression)",
+        "evidence_hash": null,
+        "timestamp": 1794220282.0048041
+      },
+      {
+        "layer": "L5_electrical_physical_gates",
+        "domain": "electrical",
+        "passed": true,
+        "detail": "effectiveness score 4.8322 (threshold: 0.05)",
+        "evidence_hash": "bb460c5adc3b376627bf6ccf96e998bf834f66585886a477d9245ae9d5a1a098",
+        "timestamp": 1794220282.0048053
+      },
+      {
+        "layer": "L6_formal_equivalence",
+        "domain": "logical",
+        "passed": true,
+        "detail": "structural equivalence: namespace preserved, interface unchanged",
+        "evidence_hash": "bb460c5adc3b376627bf6ccf96e998bf834f66585886a477d9245ae9d5a1a098",
+        "timestamp": 1794220282.0048206
+      }
+    ],
+    "domains_covered": [
+      "electrical",
+      "geometric",
+      "logical",
+      "structural",
+      "temporal"
+    ],
+    "failed_layers": []
+  }
+]

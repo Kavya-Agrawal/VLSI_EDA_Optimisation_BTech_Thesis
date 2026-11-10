@@ -308,3 +308,18 @@ pv-live:
 pv-live-quick:
 	$(PYTHON) -m openroad_timing_evolution.live_demo --generations 1 --population 1
 
+# ── Replay 3,500 real candidates through PVCC + TPGM ──
+.PHONY: pv-replay pv-replay-top pv-replay-quick pv-replay-quiet
+
+pv-replay:
+	$(PYTHON) -m openroad_timing_evolution.replay
+
+pv-replay-top:
+	$(PYTHON) -m openroad_timing_evolution.replay --top 50
+
+pv-replay-quick:
+	$(PYTHON) -m openroad_timing_evolution.replay --limit 20
+
+pv-replay-quiet:
+	$(PYTHON) -m openroad_timing_evolution.replay --quiet
+

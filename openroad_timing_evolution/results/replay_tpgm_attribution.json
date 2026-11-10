@@ -1,0 +1,374 @@
+{
+  "description": "Aggregated TPGM attribution across all replayed candidates",
+  "total_candidates": 3500,
+  "aggregated_weights": {
+    "load_pressure": 0.184471350581469,
+    "fanout_shock": 0.14110881941383982,
+    "late_path_focus": 0.1902862230849875,
+    "frontload_relief": 0.1469236919173583,
+    "nonlinear_blend": 0.14110881941383982,
+    "stability_damper": 0.1961010955885056
+  },
+  "sample_traces": [
+    {
+      "candidate": "3284a34ac62b",
+      "wns_pct": 0.5316,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1858,
+        "fanout_shock": 0.1475,
+        "late_path_focus": 0.1858,
+        "frontload_relief": 0.1475,
+        "nonlinear_blend": 0.1475,
+        "stability_damper": 0.1858
+      }
+    },
+    {
+      "candidate": "dbdf4ac614f0",
+      "wns_pct": 0.8121,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1756,
+        "fanout_shock": 0.1487,
+        "late_path_focus": 0.1823,
+        "frontload_relief": 0.1555,
+        "nonlinear_blend": 0.1487,
+        "stability_damper": 0.1891
+      }
+    },
+    {
+      "candidate": "7cd034c247f5",
+      "wns_pct": 0.9958,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1983,
+        "fanout_shock": 0.1296,
+        "late_path_focus": 0.2024,
+        "frontload_relief": 0.1336,
+        "nonlinear_blend": 0.1296,
+        "stability_damper": 0.2064
+      }
+    },
+    {
+      "candidate": "6745b03a3266",
+      "wns_pct": 0.2039,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1768,
+        "fanout_shock": 0.1458,
+        "late_path_focus": 0.1848,
+        "frontload_relief": 0.1539,
+        "nonlinear_blend": 0.1458,
+        "stability_damper": 0.1929
+      }
+    },
+    {
+      "candidate": "d77de4f0de59",
+      "wns_pct": 0.3743,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1799,
+        "fanout_shock": 0.1442,
+        "late_path_focus": 0.1868,
+        "frontload_relief": 0.1512,
+        "nonlinear_blend": 0.1442,
+        "stability_damper": 0.1937
+      }
+    },
+    {
+      "candidate": "acaacc077588",
+      "wns_pct": 0.0272,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1863,
+        "fanout_shock": 0.1424,
+        "late_path_focus": 0.1898,
+        "frontload_relief": 0.1459,
+        "nonlinear_blend": 0.1424,
+        "stability_damper": 0.1933
+      }
+    },
+    {
+      "candidate": "2588293a48ed",
+      "wns_pct": 0.7748,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1868,
+        "fanout_shock": 0.1465,
+        "late_path_focus": 0.1868,
+        "frontload_relief": 0.1465,
+        "nonlinear_blend": 0.1465,
+        "stability_damper": 0.1868
+      }
+    },
+    {
+      "candidate": "e89ff60568c4",
+      "wns_pct": 0.0835,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1935,
+        "fanout_shock": 0.1399,
+        "late_path_focus": 0.1935,
+        "frontload_relief": 0.1399,
+        "nonlinear_blend": 0.1399,
+        "stability_damper": 0.1935
+      }
+    },
+    {
+      "candidate": "b90baa7e4294",
+      "wns_pct": 0.1948,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1949,
+        "fanout_shock": 0.1338,
+        "late_path_focus": 0.1984,
+        "frontload_relief": 0.1373,
+        "nonlinear_blend": 0.1338,
+        "stability_damper": 0.2019
+      }
+    },
+    {
+      "candidate": "9c7da0b5ce9f",
+      "wns_pct": 0.5518,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1954,
+        "fanout_shock": 0.1343,
+        "late_path_focus": 0.1981,
+        "frontload_relief": 0.137,
+        "nonlinear_blend": 0.1343,
+        "stability_damper": 0.2009
+      }
+    },
+    {
+      "candidate": "9f322651a29c",
+      "wns_pct": 0.3664,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1875,
+        "fanout_shock": 0.1379,
+        "late_path_focus": 0.1934,
+        "frontload_relief": 0.1439,
+        "nonlinear_blend": 0.1379,
+        "stability_damper": 0.1993
+      }
+    },
+    {
+      "candidate": "72ec82e16730",
+      "wns_pct": 0.2072,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1854,
+        "fanout_shock": 0.148,
+        "late_path_focus": 0.1854,
+        "frontload_relief": 0.148,
+        "nonlinear_blend": 0.148,
+        "stability_damper": 0.1854
+      }
+    },
+    {
+      "candidate": "3a8032eca92c",
+      "wns_pct": 0.7344,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1908,
+        "fanout_shock": 0.1328,
+        "late_path_focus": 0.1981,
+        "frontload_relief": 0.1401,
+        "nonlinear_blend": 0.1328,
+        "stability_damper": 0.2055
+      }
+    },
+    {
+      "candidate": "c764040ef72f",
+      "wns_pct": 0.1839,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1932,
+        "fanout_shock": 0.134,
+        "late_path_focus": 0.1978,
+        "frontload_relief": 0.1386,
+        "nonlinear_blend": 0.134,
+        "stability_damper": 0.2024
+      }
+    },
+    {
+      "candidate": "7a6738111d8c",
+      "wns_pct": 0.7128,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1863,
+        "fanout_shock": 0.1441,
+        "late_path_focus": 0.1885,
+        "frontload_relief": 0.1463,
+        "nonlinear_blend": 0.1441,
+        "stability_damper": 0.1907
+      }
+    },
+    {
+      "candidate": "97ed2d429e8b",
+      "wns_pct": 0.1897,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1901,
+        "fanout_shock": 0.1432,
+        "late_path_focus": 0.1901,
+        "frontload_relief": 0.1432,
+        "nonlinear_blend": 0.1432,
+        "stability_damper": 0.1901
+      }
+    },
+    {
+      "candidate": "1af2764df511",
+      "wns_pct": 0.1371,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1836,
+        "fanout_shock": 0.1351,
+        "late_path_focus": 0.1946,
+        "frontload_relief": 0.1461,
+        "nonlinear_blend": 0.1351,
+        "stability_damper": 0.2056
+      }
+    },
+    {
+      "candidate": "fb994bb54ffb",
+      "wns_pct": 0.0441,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1881,
+        "fanout_shock": 0.1453,
+        "late_path_focus": 0.1881,
+        "frontload_relief": 0.1453,
+        "nonlinear_blend": 0.1453,
+        "stability_damper": 0.1881
+      }
+    },
+    {
+      "candidate": "f96fac0f4475",
+      "wns_pct": 0.3048,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1913,
+        "fanout_shock": 0.1383,
+        "late_path_focus": 0.1941,
+        "frontload_relief": 0.1411,
+        "nonlinear_blend": 0.1383,
+        "stability_damper": 0.1969
+      }
+    },
+    {
+      "candidate": "6c7102fd44b1",
+      "wns_pct": 0.5237,
+      "paths_critical": 20,
+      "dominant_features": [
+        "load",
+        "fanout",
+        "position_late"
+      ],
+      "weights": {
+        "load_pressure": 0.1837,
+        "fanout_shock": 0.1344,
+        "late_path_focus": 0.1951,
+        "frontload_relief": 0.1458,
+        "nonlinear_blend": 0.1344,
+        "stability_damper": 0.2065
+      }
+    }
+  ]
+}
