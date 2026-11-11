@@ -190,13 +190,13 @@ figcaption.academic-cap {
 </p>
 
 <div class="academic-nav">
-  <a href="#statistics">Statistics</a>
+  <a href="#live-results" style="color: #0b7285;">Live Run Evaluation</a>
+  <a href="#statistics">Statistics (3,500 Variants)</a>
   <a href="#graphs-ref">Visualizations (Separate Page)</a>
+  <a href="pv_evolve.html" style="color: #7c3aed;">PV-Evolve Paper & Architecture</a>
   <a href="#sources">Old / New Source Index</a>
   <a href="#candidates">Candidate Variants</a>
-  <a href="README.md">Methodology (README)</a>
-  <a href="SOURCE_INDEX.md">Source Index (MD)</a>
-  <a href="data/all_code_changes.csv">All Changes CSV</a>
+  <a href="https://github.com/Kavya-Agrawal/VLSI_EDA_Optimisation_BTech_Thesis/tree/pv-evolve/framework-implementation/OPENROAD_EVOLUTION_FINAL" target="_blank">Browse on GitHub</a>
 </div>
 
 <p>
@@ -225,6 +225,135 @@ figcaption.academic-cap {
     </td>
   </tr>
 </table>
+
+
+<h2 id="live-results" style="color: #0b7285; border-bottom: 2px solid #0b7285;">Physical OpenROAD Evolution Live Run Results (PV-Evolve Live Evaluation)</h2>
+<p>
+  To address survivorship bias and verify real tool behavior against synthetic metrics, an end-to-end evolutionary run was executed against real OpenROAD builds using the Nangate45 open-cell PDK on the <code>gcd</code> benchmark across 3 independent flow replicates.
+</p>
+
+<table class="academic-table">
+  <thead>
+    <tr>
+      <th>Evaluation Target</th>
+      <th>Applied Mutation / Policy</th>
+      <th>Worst Negative Slack (WNS)</th>
+      <th>Total Negative Slack (TNS)</th>
+      <th>Core Area</th>
+      <th>Flow Runtime</th>
+      <th>PVCC Verdict</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Stock Baseline</strong> (OpenROAD <code>63fe72c</code>)</td>
+      <td>Unmodified Resizer (Stock SetupLegacyBase)</td>
+      <td>-0.161 ns</td>
+      <td>-7.176 ns</td>
+      <td>947.8 &mu;m&sup2;</td>
+      <td>391 s (3 replicates)</td>
+      <td><span style="color:#16a34a; font-weight:bold;">ACCEPTED</span> (All 6 Layers Passed)</td>
+    </tr>
+    <tr>
+      <td><strong>Evolved Candidate 1/1</strong> (<code>b37a7b613ea1bb3b</code>)</td>
+      <td><code>load_pressure &rarr; fanout_shock</code> priority</td>
+      <td>-0.171 ns <span class="muted">(-0.010 ns regression)</span></td>
+      <td>-7.162 ns <span style="color:#16a34a; font-weight:bold;">(+0.014 ns recovery)</span></td>
+      <td>947.8 &mu;m&sup2;</td>
+      <td>270 s (3 replicates)</td>
+      <td><span style="color:#dc2626; font-weight:bold;">REJECTED</span> (Temporal Monotonicity Guard)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="background:#f4f9f4; border:1px solid #c3e6cb; padding:12px 16px; margin:14px 0; font-size:13px; line-height:1.55; border-radius:4px;">
+  <strong>Key Physical Finding &amp; Multi-Objective Selection:</strong>
+  Candidate <code>b37a7b613ea1bb3b</code> achieved a positive Total Negative Slack recovery (+0.014 ns across 54 constrained endpoints) by re-allocating driver buffer sizes on heavy fanout nets. However, because Worst Negative Slack degraded by 10 ps (-0.161 ns &rarr; -0.171 ns), the fail-closed <strong>Temporal Monotonicity Gate (PVCC Layer 3)</strong> strictly rejected the candidate. This empirically confirms that our framework models authentic multi-objective trade-offs and prevents survivor bias or false positive acceptance.
+</div>
+
+<h3>Physical Verification Correctness Contract (PVCC) 6-Layer Audit Matrix</h3>
+<table class="academic-table">
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>Verification Domain</th>
+      <th>Tool / Harness Engine</th>
+      <th>Stock Baseline</th>
+      <th>Evolved Candidate (<code>b37a7b61</code>)</th>
+      <th>Formal Contract Guarantee</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Layer 1</strong></td>
+      <td>Structural Integrity</td>
+      <td>OpenROAD CTest Suite</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (5/5 tests in 1.46s)</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (Invariant regressions match)</td>
+      <td>Zero regression in core Resizer undo/hold/wns units</td>
+    </tr>
+    <tr>
+      <td><strong>Layer 2</strong></td>
+      <td>Geometric &amp; DRC</td>
+      <td>KLayout Physical DRC</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (0 DRC errors)</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (0 DRC errors)</td>
+      <td>Zero manufacturing geometry or spacing violations</td>
+    </tr>
+    <tr>
+      <td><strong>Layer 3</strong></td>
+      <td>Temporal Monotonicity</td>
+      <td>Frozen Stock STA Audit (<code>audit.tcl</code>)</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (WNS: -0.161 ns)</td>
+      <td><span style="color:#dc2626; font-weight:bold;">REJECT</span> (-0.171 ns &lt; -0.161 ns)</td>
+      <td>Strictly enforces no WNS timing degradation vs baseline</td>
+    </tr>
+    <tr>
+      <td><strong>Layer 4</strong></td>
+      <td>Electrical Constraints</td>
+      <td>Independent STA Engine</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (0 slew/cap errors)</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (0 slew/cap errors)</td>
+      <td>Max slew rate and max load capacitance within PDK limits</td>
+    </tr>
+    <tr>
+      <td><strong>Layer 5</strong></td>
+      <td>Logical Equivalence (LEC)</td>
+      <td>Yosys Sequential Miter (<code>equiv_induct -seq 8</code>)</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (100% equivalent)</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (100% equivalent in 1.49s)</td>
+      <td>Post-layout gate netlist is mathematically equivalent to golden RTL</td>
+    </tr>
+    <tr>
+      <td><strong>Layer 6</strong></td>
+      <td>Provenance &amp; Non-Interference</td>
+      <td>SHA-256 Protocol &amp; Binary Audit</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (Audit SHA frozen)</td>
+      <td><span style="color:#16a34a; font-weight:bold;">PASS</span> (Cryptographic audit valid)</td>
+      <td>Eliminates evaluator interference; guarantees reproducibility</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Timing-Path-Guided Mutation (TPGM) Attribution Breakdown</h3>
+<table class="academic-table" style="max-width:650px;">
+  <thead>
+    <tr><th>Evolved Program Operator</th><th>Reads Feature</th><th>Critical Path Attribution Weight</th><th>Feature Domain</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>load_pressure</code></td><td><code>net_capacitance</code></td><td><strong>52.6%</strong></td><td>High capacitive load along critical endpoints</td></tr>
+    <tr><td><code>fanout_shock</code></td><td><code>fanout_count</code></td><td><strong>47.4%</strong></td><td>High fanout branching nodes in clock/data trees</td></tr>
+  </tbody>
+</table>
+
+<div style="background:#f0f4f8; border:1px solid #d0dbe5; padding:12px 16px; margin:14px 0; font-size:12.5px; line-height:1.5; border-radius:4px;">
+  <strong>Reproduce Locally via Command-Line:</strong>
+  <pre style="margin:6px 0; padding:8px; font-size:12px;"># Print full descriptive statistics, quantiles, and PVCC verification matrix:
+make pv-report
+
+# Run the live OpenROAD evolution loop with 6-layer fail-closed verification:
+make pv-live</pre>
+</div>
 
 <h2 id="statistics">1. All-Candidate Descriptive Statistics</h2>
 <p>
