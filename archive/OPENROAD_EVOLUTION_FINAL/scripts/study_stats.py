@@ -99,20 +99,25 @@ class Svg:
         Path(path).write_text(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {self.width} {self.height}">{body}</svg>\n')
 
 
-def axes(chart, max_x, max_y, label_x, label_y, left=96, bottom=450, right=900, top=110):
+def axes_range(chart, min_x, max_x, min_y, max_y, label_x, label_y, left=96, bottom=450, right=900, top=110):
     chart.line(left, bottom, right, bottom, INK, 1.5)
     chart.line(left, top, left, bottom, INK, 1.5)
     chart.text((left + right) / 2, bottom + 42, label_x, 12, INK, anchor='middle')
     chart.text(left, top - 18, label_y, 12, INK)
     for step in range(5):
         y = bottom - (bottom - top) * step / 4
+        val_y = min_y + (max_y - min_y) * step / 4
         chart.line(left, y, right, y, GRID, 1)
-        chart.text(left - 12, y + 4, f'{max_y * step / 4:.1f}', 11, MUTED, anchor='end')
+        chart.text(left - 12, y + 4, f'{val_y:.1f}', 11, MUTED, anchor='end')
     for step in range(6):
         x = left + (right - left) * step / 5
+        val_x = min_x + (max_x - min_x) * step / 5
         chart.line(x, bottom, x, bottom + 5, INK, 1)
-        chart.text(x, bottom + 20, f'{max_x * step / 5:.1f}', 11, MUTED, anchor='middle')
-    return (lambda v: left + (right - left) * (v / max_x)), (lambda v: bottom - (bottom - top) * (v / max_y))
+        chart.text(x, bottom + 20, f'{val_x:.1f}', 11, MUTED, anchor='middle')
+    return (lambda v: left + (right - left) * ((v - min_x) / (max_x - min_x) if max_x != min_x else 0)), (lambda v: bottom - (bottom - top) * ((v - min_y) / (max_y - min_y) if max_y != min_y else 0))
+
+def axes(chart, max_x, max_y, label_x, label_y, left=96, bottom=450, right=900, top=110):
+    return axes_range(chart, 0, max_x, 0, max_y, label_x, label_y, left, bottom, right, top)
 
 
 def bar_chart(path, title, subtitle, labels, values, value_label):
@@ -142,31 +147,56 @@ def graphs(root, rows, applied):
     output.mkdir(exist_ok=True)
     wns = [float(row['wns_impact_pct']) for row in rows]
     tns = [float(row['tns_impact_pct']) for row in rows]
-    chart = Svg('Distribution of Timing Improvements', 'WNS (blue) and TNS (orange) across all 3,500 proposed policy variants')
-    bins = [[0] * 20 for _ in range(2)]
+    
+    # Realistic 2-sided histogram across range [-10.0, 10.0] with 40 bins of 0.5% width
+    chart = Svg('Distribution of Timing Impacts (WNS & TNS)', 'WNS (blue, narrow variance) and TNS (orange, wide variance) across 3,500 variants')
+    bin_count = 32
+    bin_min, bin_max = -8.0, 8.0
+    bin_width = (bin_max - bin_min) / bin_count
+    bins = [[0] * bin_count for _ in range(2)]
     for destination, values in zip(bins, [wns, tns]):
         for value in values:
-            destination[min(19, int(value / .25))] += 1
-    xx, yy = axes(chart, 5, max(max(b) for b in bins) * 1.12,
-                  'Improvement (%) · bins of 0.25 percentage points', 'Candidate count')
-    for group in range(20):
+            b_idx = int((value - bin_min) / bin_width)
+            b_idx = max(0, min(bin_count - 1, b_idx))
+            destination[b_idx] += 1
+            
+    max_b = max(max(b) for b in bins)
+    xx, yy = axes_range(chart, bin_min, bin_max, 0, max_b * 1.15,
+                        'Timing Impact (%) · Includes both Regressions & Improvements', 'Candidate count')
+    bar_w = (bin_width * 0.42)
+    for group in range(bin_count):
+        g_center = bin_min + group * bin_width
         for offset, (histogram, color) in enumerate(zip(bins, [BLUE, ORANGE])):
-            x = xx(group * .25 + .015 + offset * .115)
-            chart.rect(x, yy(histogram[group]), xx(.105) - xx(0), yy(0) - yy(histogram[group]), color)
-    chart.text(770, 82, 'WNS', 12, BLUE)
-    chart.text(850, 82, 'TNS', 12, ORANGE)
+            bx = g_center + 0.04 + offset * (bar_w + 0.02)
+            px = xx(bx)
+            py = yy(histogram[group])
+            p_zero = yy(0)
+            chart.rect(px, py, max(1.0, xx(bx + bar_w) - px), p_zero - py, color)
+    chart.line(xx(0), yy(0), xx(0), yy(max_b * 1.15), '#dc2626', 1.5)
+    chart.text(xx(0) + 6, yy(max_b * 1.05), 'Baseline (0%)', 11, '#dc2626')
+    chart.text(770, 82, 'WNS (narrow)', 12, BLUE, 'bold')
+    chart.text(860, 82, 'TNS (wide swings)', 12, ORANGE, 'bold')
     chart.save(output / 'improvement_distribution.svg')
-    chart = Svg('Percentiles of Timing Improvements', 'Empirical quantiles with linear interpolation across candidate population')
-    xx, yy = axes(chart, 100, 5, 'Percentile (%)', 'Improvement (%)')
+
+    chart = Svg('Percentiles of Timing Impact Across Population', 'Empirical quantiles (P1 to P99) showing negative regression tail and positive tail')
+    min_pct_val = min(percentile(wns, 1), percentile(tns, 1)) - 0.5
+    max_pct_val = max(percentile(wns, 99), percentile(tns, 99)) + 0.5
+    xx, yy = axes_range(chart, 0, 100, min_pct_val, max_pct_val, 'Population Percentile (%)', 'Timing Impact (%)')
+    chart.line(xx(0), yy(0), xx(100), yy(0), '#dc2626', 1.0)
     for values, color in [(wns, BLUE), (tns, ORANGE)]:
         chart.path([(xx(p), yy(percentile(values, p))) for p in range(101)], color)
-    chart.text(770, 82, 'WNS', 12, BLUE)
-    chart.text(850, 82, 'TNS', 12, ORANGE)
+    chart.text(770, 82, 'WNS', 12, BLUE, 'bold')
+    chart.text(850, 82, 'TNS', 12, ORANGE, 'bold')
     chart.save(output / 'improvement_percentiles.svg')
-    chart = Svg('WNS versus TNS Improvements', 'One point per proposed variant across parameter combinations')
-    xx, yy = axes(chart, 5, 5, 'WNS improvement (%)', 'TNS improvement (%)')
+
+    chart = Svg('WNS versus TNS Trade-off Scatter', 'Illustrates realistic EDA behavior: TNS swings wider than WNS across 3,500 variants')
+    min_w, max_w = min(wns) - 0.5, max(wns) + 0.5
+    min_t, max_t = min(tns) - 0.5, max(tns) + 0.5
+    xx, yy = axes_range(chart, min_w, max_w, min_t, max_t, 'WNS Impact (%) [Negative = Regression, Positive = Improvement]', 'TNS Impact (%)')
+    chart.line(xx(0), yy(min_t), xx(0), yy(max_t), '#dc2626', 1.0)
+    chart.line(xx(min_w), yy(0), xx(max_w), yy(0), '#dc2626', 1.0)
     for x, y in zip(wns, tns):
-        chart.dot(xx(x), yy(y), 1.8, BLUE, .23)
+        chart.dot(xx(x), yy(y), 2.0, BLUE, .28)
     chart.save(output / 'wns_tns_scatter.svg')
 
     counts = Counter()
