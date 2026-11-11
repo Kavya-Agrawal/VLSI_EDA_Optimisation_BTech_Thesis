@@ -260,19 +260,25 @@ show-report:
 # ──────────────────────────────────────────────────────────
 # PV-Evolve: Path-Verified OpenROAD Evolution Framework
 # ──────────────────────────────────────────────────────────
-.PHONY: pv-help pv-test pv-contract pv-attribution pv-compare pv-mutation pv-presentation pv-all
+.PHONY: pv-help pv-test pv-contract pv-attribution pv-compare pv-mutation pv-presentation pv-report report pv-all
 
 pv-help:
 	@printf '%s\n' \
 	  'PV-Evolve commands:' \
 	  '' \
+	  '  make pv-report            Print executive statistical report & PVCC contract status' \
 	  '  make pv-test              Run PVCC + TPGM import and sanity checks' \
 	  '  make pv-contract          Show PVCC 6-layer contract specification' \
 	  '  make pv-attribution       Demo TPGM path attribution on synthetic data' \
 	  '  make pv-compare           Print PVCC vs ABC comparison table' \
 	  '  make pv-mutation          Demo guided vs blind mutation side-by-side' \
 	  '  make pv-presentation      Open PV-Evolve framework presentation' \
+	  '  make pv-live              Run live OpenROAD evolution loop' \
+	  '  make pv-live-quick        Run 1 generation x 1 population quick demo' \
 	  '  make pv-all               Run all PV-Evolve demos'
+
+pv-report report:
+	@$(PYTHON) openroad_timing_evolution/report_cli.py
 
 pv-test:
 	@$(PYTHON) -c "from openroad_timing_evolution.contract import *; from openroad_timing_evolution.path_attribution import *; print('PV-Evolve modules import OK')"

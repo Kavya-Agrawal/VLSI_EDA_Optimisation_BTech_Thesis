@@ -82,7 +82,7 @@ class Workspace:
     def docker(self, argv, cwd="/experiment", name=None):
         args = ["docker", "run", "--rm", "--network", "none", "--cap-drop", "ALL",
                 "--security-opt", "no-new-privileges", "--user", f"{os.getuid()}:{os.getgid()}",
-                "--pids-limit", "1024", "--memory", "10g", "--cpus", str(self.config["jobs"]),
+                "--pids-limit", "1024", "--memory", "5g", "--cpus", str(self.config["jobs"]),
                 "-e", "HOME=/tmp", "-v", f"{self.work}:/experiment",
                 "-v", f"{ROOT}:/framework:ro", "-w", cwd]
         if name:

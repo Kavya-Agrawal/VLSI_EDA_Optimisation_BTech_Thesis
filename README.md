@@ -48,6 +48,7 @@ make pv-live                  # run real OpenROAD evolution (requires Docker)
 
 | Command | Description |
 |---------|-------------|
+| `make pv-report` | **Print executive statistical report & PVCC contract status** |
 | `make pv-all` | Run all PVCC + TPGM demos |
 | `make pv-contract` | Show 6-layer PVCC specification |
 | `make pv-attribution` | Demo TPGM path attribution |
@@ -56,6 +57,17 @@ make pv-live                  # run real OpenROAD evolution (requires Docker)
 | `make pv-live` | **Run real OpenROAD evolution** (Docker required) |
 | `make pv-live-quick` | Quick single-iteration demo |
 | `make test-timing-evolution` | Run unit tests |
+
+## Results & Code Artifacts (Direct Access)
+
+The final evaluation dataset, source files, and 3,500 generated candidate policy variants are tracked directly in the repository:
+
+- 📂 [**`OPENROAD_EVOLUTION_FINAL/`**](./OPENROAD_EVOLUTION_FINAL) — Main evaluation results and dashboard.
+- 📄 [**Original Baseline Sources (`_old`)**](./OPENROAD_EVOLUTION_FINAL/sources/old) — Original baseline C++ source files (`SetupLegacyBase.cc`, `RecoverPower.cc`, `RepairHold.cc`, `Clock.cpp`, `TritonCTS.cpp`, etc.).
+- 📄 [**Evolved New Sources (`_new`)**](./OPENROAD_EVOLUTION_FINAL/sources/new) — Evolved new C++ source files with policy modifications.
+- 🔀 [**Unified Source Diffs**](./OPENROAD_EVOLUTION_FINAL/diffs) — Side-by-side patch diffs between baseline and evolved code.
+- 🧬 [**3,500 Candidate Variants**](./OPENROAD_EVOLUTION_FINAL/candidate_code) — All 3,500 policy headers (`<hash>_new.h`) generated across generations.
+- 🌐 [**Interactive Web Dashboard**](https://kavya-agrawal.github.io/VLSI_EDA_Optimisation_BTech_Thesis/archive/OPENROAD_EVOLUTION_FINAL/index.html) — Online interactive exploration of all 3,500 variants.
 
 ## Key Results
 
