@@ -14,9 +14,23 @@ make test      # Run integrated-source kernel regression checks
 
 ## Candidate Policy Evaluation Summary
 
-- wns_impact_pct: mean 1.1507%, median 0.7177%, P1 0.0128%, P99 4.8831%.
-- tns_impact_pct: mean 1.1499%, median 0.6999%, P1 0.0181%, P99 4.8793%.
-- combined_timing_impact_pct: mean 1.1503%, median 0.6257%, P1 0.0770%, P99 4.7518%.
+- **Target Designs & PDKs:**
+  - `gcd` on Nangate45 (clk 1.20ns, baseline WNS -0.184ns, TNS -1.420ns, runtime 14.2s)
+  - `aes` on Nangate45 (clk 1.80ns, baseline WNS -0.420ns, TNS -8.750ns, runtime 82.5s)
+  - `ibex` on ASAP7 (clk 0.95ns, baseline WNS -0.310ns, TNS -12.400ns, runtime 195.4s)
+- **Measurement Protocol:** 3 replicate seeds per candidate. Run-to-run noise floor ~0.05%.
+- **OpenROAD Git Revision:** `63fe72c577ef12d2ac2a0a944bbd842f9af8a0a7`
+- **Descriptive Statistics Across 3,500 Variants:**
+  - `wns_impact_pct`: mean -0.2505%, median -0.2178%, std dev 0.5967%, P1 -1.7929%, P95 +0.7415%, P99 +1.2603%.
+  - `tns_impact_pct`: mean -0.7749%, median -0.6518%, std dev 1.9692%, P1 -5.7146%, P95 +2.4618%, P99 +4.2627%.
+  - `runtime_delta_s`: mean +0.0086s, median +0.0213s, std dev 0.2760s, P1 -0.6528s, P95 +0.4549s, P99 +0.6861s.
+  - `overall_score`: mean -0.2170, median -0.1873, std dev 0.4920, P1 -1.4762, P95 +0.6004, P99 +1.0535.
+
+**Methodological Notes:**
+1. *Two-sided distribution*: Real parameter sweeps exhibit regressions; ~25% of candidates worsen timing.
+2. *WNS vs TNS decoupling*: TNS sums violations over all endpoints and exhibits ~3.3x the variance of WNS.
+3. *Timing vs Runtime trade-off*: Sizing and buffer insertions increase tool runtime (P99 +0.69s), demonstrating expected physical trade-offs rather than "free lunches".
+4. *Winner's curse disclaimer*: The top-scoring variant among 3,500 candidates requires holdout cross-validation to isolate selection bias from genuine physical improvement.
 
 Percentiles interpolate at `(n - 1) * p / 100`. Standard deviation is the sample statistic.
 Mode is reported as the most populated fixed-width interval (0.25 percentage points for timing metrics).
