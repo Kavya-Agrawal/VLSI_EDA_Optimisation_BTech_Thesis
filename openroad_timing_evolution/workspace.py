@@ -158,9 +158,15 @@ class Workspace:
     def build(self, policy, directory):
         self.integrity(policy)
         self.execute(["cmake", "-S", "/experiment/source", "-B", "/experiment/build",
-                      "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_GUI=OFF", "-DENABLE_TESTS=ON",
+                      "-DCMAKE_BUILD_TYPE=RelWithDebInfo", "-DBUILD_GUI=OFF", "-DENABLE_TESTS=ON",
                       "-DFETCHCONTENT_SOURCE_DIR_FMT=/experiment/source/third-party/slang-elab/third_party/fmt",
-                      "-DENABLE_GPU=OFF", "-DCMAKE_CXX_FLAGS=-march=x86-64 -mtune=generic"], directory/"configure.log")
+                      "-DENABLE_GPU=OFF",
+                      "-DLINK_TIME_OPTIMIZATION=OFF",
+                      "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF",
+                      "-DCMAKE_C_FLAGS=-fno-lto -march=x86-64 -mtune=generic",
+                      "-DCMAKE_CXX_FLAGS=-fno-lto -march=x86-64 -mtune=generic",
+                      "-DCMAKE_EXE_LINKER_FLAGS=-fno-lto",
+                      "-DCMAKE_SHARED_LINKER_FLAGS=-fno-lto"], directory/"configure.log")
         self.execute(["cmake", "--build", "/experiment/build", "--target", "openroad", "-j", str(self.config["jobs"])], directory/"build.log")
         binary = self.work/"build/bin/openroad"
         if binary.stat().st_size < 10000 or not os.access(binary, os.X_OK):

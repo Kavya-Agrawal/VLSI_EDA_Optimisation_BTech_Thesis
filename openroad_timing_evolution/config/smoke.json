@@ -3,7 +3,7 @@
   "openroad_revision": "63fe72c577ef12d2ac2a0a944bbd842f9af8a0a7",
   "orfs_revision": "68cc9bc974502b4786a68e9f51a092e0fcb56e82",
   "image": "openroad/flow-ubuntu22.04-dev:latest",
-  "jobs": 2,
+  "jobs": 4,
   "timeout_seconds": 7200,
   "seed": 41,
   "replicates": 3,
