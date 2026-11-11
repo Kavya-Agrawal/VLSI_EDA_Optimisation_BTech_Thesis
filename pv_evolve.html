@@ -1,0 +1,642 @@
+<title>PV-Evolve</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single-column technical research page, compact sections, chip-design palette */
+:root {
+  --bg: #fafaf8;
+  --fg: #1a1a1f;
+  --fg2: #4a4a55;
+  --surface: #ffffff;
+  --border: #e0dfd8;
+  --accent: #2563eb;
+  --accent2: #7c3aed;
+  --green: #16a34a;
+  --red: #dc2626;
+  --amber: #d97706;
+  --novel: #7c3aed;
+  --novel-bg: #f3f0ff;
+  --table-stripe: #f5f5f2;
+  --code-bg: #f0efe8;
+  --diagram-bg: #f8f7f3;
+  --diagram-border: #d4d3cc;
+  --tag-bg: #e8e7e0;
+  --tag-fg: #3a3a42;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111116; --fg: #e8e8ec; --fg2: #9a9aa8; --surface: #1a1a22;
+  --border: #2e2e3a; --accent: #60a5fa; --accent2: #a78bfa;
+  --green: #4ade80; --red: #f87171; --amber: #fbbf24;
+  --novel: #a78bfa; --novel-bg: #1e1a2e; --table-stripe: #16161e;
+  --code-bg: #1e1e28; --diagram-bg: #16161e; --diagram-border: #2a2a36;
+  --tag-bg: #2a2a36; --tag-fg: #c8c8d0;
+  color-scheme: dark;
+}}
+:root[data-theme="dark"] {
+  --bg: #111116; --fg: #e8e8ec; --fg2: #9a9aa8; --surface: #1a1a22;
+  --border: #2e2e3a; --accent: #60a5fa; --accent2: #a78bfa;
+  --green: #4ade80; --red: #f87171; --amber: #fbbf24;
+  --novel: #a78bfa; --novel-bg: #1e1a2e; --table-stripe: #16161e;
+  --code-bg: #1e1e28; --diagram-bg: #16161e; --diagram-border: #2a2a36;
+  --tag-bg: #2a2a36; --tag-fg: #c8c8d0;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h1, h2, h3 { text-wrap: balance; line-height: 1.25; }
+h1 { font-size: 2rem; font-weight: 700; margin: 2.5rem 0 0.5rem; }
+h2 { font-size: 1.35rem; font-weight: 600; margin: 2.5rem 0 0.75rem; color: var(--accent); border-bottom: 2px solid var(--border); padding-bottom: 0.4rem; }
+h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+
+.subtitle { color: var(--fg2); font-size: 1.05rem; margin: 0 0 0.5rem; }
+.authors { color: var(--fg2); font-size: 0.9rem; margin: 0 0 2rem; }
+
+.tag { display: inline-block; background: var(--tag-bg); color: var(--tag-fg); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2em 0.6em; border-radius: 4px; }
+.tag-novel { background: var(--novel-bg); color: var(--novel); }
+.tag-existing { background: var(--tag-bg); color: var(--fg2); }
+
+.key-insight {
+  background: var(--novel-bg); border-left: 4px solid var(--novel);
+  padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+.key-insight strong { color: var(--novel); }
+
+code, .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 3px; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; margin: 1rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+th { background: var(--surface); font-weight: 600; text-align: left; padding: 0.6rem 0.75rem; border-bottom: 2px solid var(--border); white-space: nowrap; }
+td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:nth-child(even) td { background: var(--table-stripe); }
+td.pass { color: var(--green); font-weight: 600; }
+td.fail { color: var(--red); font-weight: 600; }
+td.novel-cell { color: var(--novel); font-weight: 600; }
+
+/* Architecture diagram */
+.arch-diagram {
+  background: var(--diagram-bg); border: 1px solid var(--diagram-border);
+  border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;
+  font-size: 0.8rem;
+}
+.arch-diagram .agent-box {
+  border: 2px solid var(--border); border-radius: 8px;
+  padding: 0.75rem 1rem; background: var(--surface); text-align: center;
+}
+.arch-diagram .agent-box.primary { border-color: var(--accent); }
+.arch-diagram .agent-box.verifier { border-color: var(--green); }
+.arch-diagram .agent-box.planner { border-color: var(--novel); }
+
+.agent-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem; margin: 0.75rem 0;
+}
+.agent-label { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.3rem; }
+.agent-detail { color: var(--fg2); font-size: 0.75rem; line-height: 1.4; }
+
+/* Flow arrows */
+.flow-row { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap; }
+.flow-step { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.75rem; font-size: 0.8rem; font-weight: 500; min-width: 0; }
+.flow-step.active { border-color: var(--accent); color: var(--accent); }
+.flow-arrow { color: var(--fg2); font-size: 0.9rem; flex-shrink: 0; }
+
+/* Contract layers */
+.contract-layer {
+  display: grid; grid-template-columns: 2.5rem 1fr auto;
+  gap: 0.5rem; align-items: center; padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.contract-layer:last-child { border-bottom: none; }
+.layer-num { font-weight: 700; font-size: 0.9rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+.layer-domain { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg2); }
+
+/* Comparison highlight */
+.vs-box { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; margin: 1.5rem 0; align-items: start; }
+.vs-side { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; min-width: 0; }
+.vs-center { color: var(--fg2); font-weight: 700; font-size: 1.1rem; align-self: center; text-align: center; }
+.vs-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; }
+.vs-list { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; }
+.vs-list li { padding: 0.2rem 0; }
+.vs-list li::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 0.5rem; vertical-align: middle; }
+.vs-abc li::before { background: var(--red); }
+.vs-pv li::before { background: var(--green); }
+
+/* Algorithm pseudo */
+.algo-block {
+  background: var(--code-bg); border-radius: 8px; padding: 1.25rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+  line-height: 1.7; margin: 1rem 0; overflow-x: auto;
+  white-space: pre; tab-size: 2;
+}
+.algo-kw { color: var(--accent); font-weight: 600; }
+.algo-comment { color: var(--fg2); font-style: italic; }
+
+/* Results */
+.result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+.result-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 1rem; text-align: center;
+}
+.result-num { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.result-label { font-size: 0.75rem; color: var(--fg2); margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.result-num.green { color: var(--green); }
+.result-num.accent { color: var(--accent); }
+.result-num.novel { color: var(--novel); }
+
+/* Convergence chart */
+.chart-container { background: var(--diagram-bg); border: 1px solid var(--diagram-border); border-radius: 12px; padding: 1rem; margin: 1.5rem 0; }
+
+/* References */
+.ref-list { font-size: 0.82rem; color: var(--fg2); padding-left: 1.5rem; }
+.ref-list li { margin-bottom: 0.4rem; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  h1 { font-size: 1.5rem; }
+  .vs-box { grid-template-columns: 1fr; }
+  .vs-center { display: none; }
+  .agent-grid { grid-template-columns: 1fr; }
+  .result-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<div style="margin: 20px 0; padding: 10px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">
+  <a href="index.html" style="color: var(--accent); margin-right: 18px; text-decoration: none; font-weight: 600;">&larr; Return to Results & Data Study</a>
+  <a href="graphs.html" style="color: var(--accent); margin-right: 18px; text-decoration: none; font-weight: 600;">Distribution Graphs</a>
+  <a href="https://github.com/Kavya-Agrawal/VLSI_EDA_Optimisation_BTech_Thesis/tree/pv-evolve/framework-implementation/OPENROAD_EVOLUTION_FINAL" target="_blank" style="color: var(--novel); text-decoration: none; font-weight: 600;">Browse Code on GitHub &rarr;</a>
+</div>
+<h1>PV-Evolve</h1>
+<p class="subtitle">Path-Verified Evolution of OpenROAD Physical Design Code</p>
+<p class="authors">Adapting Self-Evolved ABC for Physical Design with Multi-Domain Correctness Contracts</p>
+
+<!-- ===== MOTIVATION ===== -->
+<h2>Motivation: Why ABC's Approach Doesn't Transfer Directly</h2>
+
+<p>The <strong>Self-Evolved ABC</strong> framework (2604.15082v1) achieves 8.3% QoR improvement by evolving ABC's logic synthesis codebase using multi-agent LLM code evolution. Its correctness guarantee is <strong>Combinational Equivalence Checking (CEC)</strong> — a single logical check that the evolved code produces functionally identical outputs.</p>
+
+<div class="key-insight">
+<strong>The Gap:</strong> Physical design code evolution requires correctness across <strong>6 orthogonal domains</strong> (structural, geometric, temporal, electrical, formal, functional). A code change that preserves logical equivalence can still break DRC, degrade timing, or violate electrical constraints. No existing work formalizes this multi-domain requirement.
+</div>
+
+<div class="vs-box">
+  <div class="vs-side">
+    <div class="vs-title">Self-Evolved ABC</div>
+    <ul class="vs-list vs-abc">
+      <li>Logic synthesis only</li>
+      <li>Correctness = CEC (1 layer)</li>
+      <li>Blind mutation + rulebase</li>
+      <li>No physical awareness</li>
+      <li>No evidence provenance</li>
+    </ul>
+  </div>
+  <div class="vs-center">vs</div>
+  <div class="vs-side">
+    <div class="vs-title" style="color: var(--novel);">PV-Evolve (Ours)</div>
+    <ul class="vs-list vs-pv">
+      <li>Physical design (OpenROAD)</li>
+      <li>Correctness = PVCC (6 layers)</li>
+      <li>STA-path-guided mutation</li>
+      <li>Multi-domain verification</li>
+      <li>Cryptographic evidence chain</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== ARCHITECTURE ===== -->
+<h2>Multi-Agent Architecture</h2>
+
+<div class="arch-diagram">
+  <div style="text-align: center; margin-bottom: 0.75rem;">
+    <div class="agent-box planner" style="display: inline-block; min-width: 260px;">
+      <div class="agent-label" style="color: var(--novel);">Planning Agent (Orchestrator)</div>
+      <div class="agent-detail">Analyzes TPGM path feedback &bull; Sets attribution weights &bull; Maintains cross-campaign knowledge</div>
+    </div>
+  </div>
+  <div style="text-align: center; color: var(--fg2); font-size: 1.2rem;">&#x25BC;</div>
+  <div class="agent-grid">
+    <div class="agent-box primary">
+      <div class="agent-label" style="color: var(--accent);">Coding Agent: Resizer</div>
+      <div class="agent-detail">Evolves SetupLegacyBase.cc<br>Path-driver priority policy<br><span class="tag tag-novel">Fully Implemented</span></div>
+    </div>
+    <div class="agent-box">
+      <div class="agent-label">Coding Agent: CTS</div>
+      <div class="agent-detail">Evolves SinkClustering.cpp<br>Sink clustering strategy<br><span class="tag tag-existing">Pipeline-Ready</span></div>
+    </div>
+    <div class="agent-box">
+      <div class="agent-label">Coding Agent: OptMirror</div>
+      <div class="agent-detail">Evolves OptMirror.cpp<br>Mirror candidate ordering<br><span class="tag tag-existing">Pipeline-Ready</span></div>
+    </div>
+  </div>
+  <div style="text-align: center; color: var(--fg2); font-size: 1.2rem;">&#x25BC;</div>
+  <div style="text-align: center;">
+    <div class="agent-box verifier" style="display: inline-block; min-width: 300px;">
+      <div class="agent-label" style="color: var(--green);">Verification Agent</div>
+      <div class="agent-detail">Executes 6-layer PVCC &bull; Per-layer pass/fail with evidence chain &bull; Extracts STA paths for TPGM feedback</div>
+    </div>
+  </div>
+  <p style="text-align: center; color: var(--fg2); font-size: 0.78rem; margin: 0.75rem 0 0;">The pipeline is <strong>stage-agnostic</strong> — extending to CTS/OptMirror requires only agent compute credits, not new infrastructure.</p>
+</div>
+
+<!-- ===== PVCC ===== -->
+<h2>Novel Contribution 1: Physical Verification Correctness Contract <span class="tag tag-novel">Novel</span></h2>
+
+<h3>The 6-Layer PVCC</h3>
+<p>Each layer covers an orthogonal correctness domain. A candidate is accepted <strong>only if all 6 layers pass</strong> (fail-closed, monotonic rejection).</p>
+
+<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1rem 0;">
+  <div class="contract-layer">
+    <div class="layer-num">L1</div>
+    <div>
+      <div style="font-weight: 600;">Compilation + Regression</div>
+      <div class="layer-domain">Structural</div>
+      <div style="font-size: 0.82rem; color: var(--fg2);">Evolved C++ compiles successfully, CTest regression suite passes. Ensures structural integrity of code changes.</div>
+    </div>
+    <div><code>build + ctest</code></div>
+  </div>
+  <div class="contract-layer">
+    <div class="layer-num">L2</div>
+    <div>
+      <div style="font-weight: 600;">Physical DRC</div>
+      <div class="layer-domain">Geometric</div>
+      <div style="font-size: 0.82rem; color: var(--fg2);">Zero KLayout DRC violations on final GDS. Code changes can create geometry violations invisible to logic checks.</div>
+    </div>
+    <div><code>KLayout DRC</code></div>
+  </div>
+  <div class="contract-layer">
+    <div class="layer-num">L3</div>
+    <div>
+      <div style="font-weight: 600;">Independent STA Audit</div>
+      <div class="layer-domain">Temporal</div>
+      <div style="font-size: 0.82rem; color: var(--fg2);">Frozen stock binary re-reads final ODB+SPEF. Ensures timing numbers aren't artifacts of the evolved binary itself.</div>
+    </div>
+    <div><code>audit.tcl</code></div>
+  </div>
+  <div class="contract-layer">
+    <div class="layer-num">L4</div>
+    <div>
+      <div style="font-weight: 600;">Timing Regression Gates</div>
+      <div class="layer-domain">Temporal</div>
+      <div style="font-size: 0.82rem; color: var(--fg2);">No setup/hold WNS/TNS regression vs baseline. Logically equivalent code can still produce worse timing in physical layout.</div>
+    </div>
+    <div><code>compare()</code></div>
+  </div>
+  <div class="contract-layer">
+    <div class="layer-num">L5</div>
+    <div>
+      <div style="font-weight: 600;">Electrical/Physical Gates</div>
+      <div class="layer-domain">Electrical</div>
+      <div style="font-size: 0.82rem; color: var(--fg2);">Zero violations: max slew, max capacitance, max fanout, antenna nets/pins, placement. Manufacturing-constraint compliance.</div>
+    </div>
+    <div><code>validate()</code></div>
+  </div>
+  <div class="contract-layer">
+    <div class="layer-num">L6</div>
+    <div>
+      <div style="font-weight: 600;">Formal Equivalence</div>
+      <div class="layer-domain">Logical</div>
+      <div style="font-size: 0.82rem; color: var(--fg2);">Yosys equiv_make + equiv_simple + equiv_induct. The <em>only</em> layer that ABC's CEC also covers.</div>
+    </div>
+    <div><code>Yosys FEC</code></div>
+  </div>
+</div>
+
+<h3>Contract Properties</h3>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin: 1rem 0;">
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+    <div style="font-weight: 600; font-size: 0.9rem;">Fail-Closed</div>
+    <div style="font-size: 0.8rem; color: var(--fg2);">Any layer failure rejects the candidate. No partial credit.</div>
+  </div>
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+    <div style="font-weight: 600; font-size: 0.9rem;">Evidence-Bearing</div>
+    <div style="font-size: 0.8rem; color: var(--fg2);">Each layer produces SHA-256 hash of its evidence artifact.</div>
+  </div>
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+    <div style="font-weight: 600; font-size: 0.9rem;">Composable</div>
+    <div style="font-size: 0.8rem; color: var(--fg2);">Layers evaluate independently, parallelizable where possible.</div>
+  </div>
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+    <div style="font-weight: 600; font-size: 0.9rem;">Auditable</div>
+    <div style="font-size: 0.8rem; color: var(--fg2);">Full provenance: mutation &rarr; evidence &rarr; verdict.</div>
+  </div>
+</div>
+
+<h3>Why Physical Design Needs 6 Layers (Not Just CEC)</h3>
+<div class="key-insight">
+ABC evolves logic synthesis code where <strong>correctness = logical equivalence</strong>. OpenROAD evolves physical design code where correctness spans <strong>6 orthogonal domains</strong>. Consider: a Resizer code change might improve timing (L4 passes) and preserve logic (L6 passes) but introduce an antenna violation from changed wire lengths (L5 fails) — invisible to CEC, caught only by PVCC.
+</div>
+
+<!-- ===== TPGM ===== -->
+<h2>Novel Contribution 2: Timing-Path-Guided Mutation <span class="tag tag-novel">Novel</span></h2>
+
+<p>Current evolution uses <strong>blind mutation</strong> — random operator selection with no awareness of which code blocks affect critical timing paths. TPGM closes this loop.</p>
+
+<h3>Algorithm</h3>
+<div class="flow-row">
+  <div class="flow-step active">STA Path Extraction</div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step active">Path-to-Block Attribution</div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step active">Guided Mutation</div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step">PVCC Verification</div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step">Path Feedback</div>
+</div>
+
+<div class="algo-block"><span class="algo-kw">TIMING-PATH-GUIDED MUTATION</span>
+
+<span class="algo-comment">// Step 1: Extract top-K critical paths from STA after each evaluation</span>
+paths &larr; <span class="algo-kw">EXTRACT_PATHS</span>(audit_report, K=20)
+  <span class="algo-comment">// endpoint, slack, cell list, net capacitances, fanout per path</span>
+
+<span class="algo-comment">// Step 2: Attribute paths to policy blocks via feature dominance</span>
+<span class="algo-kw">FOR EACH</span> path <span class="algo-kw">IN</span> paths:
+  features &larr; classify(path)  <span class="algo-comment">// {load-dominated, fanout-dominated, position-dominated}</span>
+  <span class="algo-kw">FOR EACH</span> block <span class="algo-kw">IN</span> policy.program:
+    <span class="algo-kw">IF</span> BLOCK_META[block].reads &cap; features &ne; &empty;:
+      weights[block_index] += path.criticality
+
+<span class="algo-comment">// Step 3: Guided mutation with exploration balance</span>
+<span class="algo-kw">IF</span> random() &lt; p_guided (0.6):
+  target &larr; <span class="algo-kw">SAMPLE</span>(weights)  <span class="algo-comment">// weighted by attribution</span>
+  <span class="algo-kw">MUTATE_AT</span>(policy, target)  <span class="algo-comment">// replace/insert/delete near target index</span>
+<span class="algo-kw">ELSE</span>:
+  <span class="algo-kw">BLIND_MUTATE</span>(policy)       <span class="algo-comment">// existing random mutation (exploration)</span>
+
+<span class="algo-comment">// Step 4: Path-level feedback for next generation</span>
+feedback &larr; <span class="algo-kw">COMPARE_PATHS</span>(base_paths, candidate_paths)
+  <span class="algo-comment">// paths_improved, paths_regressed, path_set_stability</span>
+archive(feedback)  <span class="algo-comment">// cross-campaign learning</span></div>
+
+<h3>Feature Attribution via BLOCK_META</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Block Operation</th><th>Reads</th><th>Critical Path Signal</th><th>Attribution Trigger</th></tr></thead>
+  <tbody>
+    <tr><td><code>load_pressure</code></td><td>load</td><td>High-load nets on path</td><td>Net capacitance &gt; threshold</td></tr>
+    <tr><td><code>fanout_shock</code></td><td>load, fanout</td><td>High-fanout nets</td><td>Fanout &gt; threshold</td></tr>
+    <tr><td><code>late_path_focus</code></td><td>position, load</td><td>Late topological endpoint</td><td>Position &gt; 0.65</td></tr>
+    <tr><td><code>frontload_relief</code></td><td>position, fanout</td><td>Early path damping</td><td>Position &lt; 0.20</td></tr>
+    <tr><td><code>nonlinear_blend</code></td><td>load, fanout</td><td>Feature interaction</td><td>Mixed load+fanout</td></tr>
+    <tr><td><code>stability_damper</code></td><td>position</td><td>Oscillation control</td><td>High position variance</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== EVOLUTION PIPELINE ===== -->
+<h2>Complete Evolution Pipeline</h2>
+
+<div class="flow-row" style="justify-content: center; flex-wrap: wrap;">
+  <div class="flow-step" style="border-color: var(--novel); color: var(--novel);">Planning Agent</div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step active">SSPE Mutation</div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step" style="border-color: var(--novel); color: var(--novel);">TPGM Guidance</div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step">Build + ORFS Run</div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step" style="border-color: var(--green); color: var(--green);">6-Layer PVCC</div>
+  <div class="flow-arrow">&rarr;</div>
+  <div class="flow-step active">Archive + Feedback</div>
+</div>
+
+<p style="font-size: 0.88rem; color: var(--fg2); text-align: center; margin-top: 0.25rem;">
+  <span class="tag tag-novel">Novel</span> = PV-Evolve contributions &nbsp;&bull;&nbsp;
+  Blue = existing SSPE infrastructure
+</p>
+
+<h3>SSPE: Segmented Semantic Program Evolution</h3>
+<p style="font-size: 0.9rem;">Evolved C++ code is represented as audited blocks in a <strong>binary segment tree</strong> with a <strong>semantic relation graph</strong>. Mutation operators: <code>replace</code>, <code>insert</code>, <code>delete</code>, <code>swap</code>, <code>segment_reverse</code>, <code>segment_duplicate</code>, <code>graph_swap</code>, <code>graph_insert_bridge</code>. TPGM biases operator target selection within this structure.</p>
+
+<!-- ===== COMPARISON ===== -->
+<h2>Comparison with Prior Work</h2>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Aspect</th><th>Self-Evolved ABC</th><th>AlphaEvolve</th><th>VPR-Evolve</th><th>EvoDRC</th><th style="color: var(--novel);">PV-Evolve</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="font-weight:500;">Target</td><td>ABC (logic synth)</td><td>Isolated kernels</td><td>VTR (FPGA P&R)</td><td>DRC repair</td><td class="novel-cell">OpenROAD (phys. design)</td></tr>
+    <tr><td style="font-weight:500;">Correctness</td><td>CEC only</td><td>Test suites</td><td>Build+run</td><td>DRC only</td><td class="novel-cell">6-layer PVCC</td></tr>
+    <tr><td style="font-weight:500;">Mutation</td><td>Random + rulebase</td><td>LLM proposals</td><td>LLM proposals</td><td>Skill evolution</td><td class="novel-cell">STA-path attribution</td></tr>
+    <tr><td style="font-weight:500;">Verif. Domains</td><td>1 (logical)</td><td>0 (functional)</td><td>0 (functional)</td><td>1 (geometric)</td><td class="novel-cell">6 (all domains)</td></tr>
+    <tr><td style="font-weight:500;">Evidence Chain</td><td class="fail">&cross;</td><td class="fail">&cross;</td><td class="fail">&cross;</td><td class="fail">&cross;</td><td class="pass">&check; SHA-256</td></tr>
+    <tr><td style="font-weight:500;">Path Feedback</td><td class="fail">&cross;</td><td class="fail">&cross;</td><td class="fail">&cross;</td><td class="fail">&cross;</td><td class="pass">&check;</td></tr>
+    <tr><td style="font-weight:500;">Code Evolution</td><td class="pass">&check; Real C++</td><td>Isolated blocks</td><td>Mixed</td><td>Python scripts</td><td class="pass">&check; Real C++</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="key-insight">
+<strong>Key differentiator:</strong> VERI-SURE (2601.19747) introduced contract-based verification for RTL <em>generation</em>, but operates purely in the logical domain. PV-Evolve is the first to formalize a multi-domain correctness contract for physical design <em>code evolution</em>, spanning structural, geometric, temporal, electrical, and logical verification.
+</div>
+
+<!-- ===== RESULTS ===== -->
+<h2>Projected Results</h2>
+
+<h3>Existing Baseline (Blind Mutation, SSPE Only)</h3>
+<div class="result-grid">
+  <div class="result-card">
+    <div class="result-num accent">4.88%</div>
+    <div class="result-label">P99 WNS Impact</div>
+  </div>
+  <div class="result-card">
+    <div class="result-num accent">4.88%</div>
+    <div class="result-label">P99 TNS Impact</div>
+  </div>
+  <div class="result-card">
+    <div class="result-num accent">1.15%</div>
+    <div class="result-label">Mean WNS Impact</div>
+  </div>
+  <div class="result-card">
+    <div class="result-num" style="color: var(--fg);">3,500</div>
+    <div class="result-label">Candidates Evaluated</div>
+  </div>
+</div>
+
+<h3>Projected with TPGM (Conservative Estimates)</h3>
+<div class="result-grid">
+  <div class="result-card">
+    <div class="result-num green">4&ndash;5%</div>
+    <div class="result-label">WNS Improvement</div>
+  </div>
+  <div class="result-card">
+    <div class="result-num green">4&ndash;5%</div>
+    <div class="result-label">TNS Improvement</div>
+  </div>
+  <div class="result-card">
+    <div class="result-num novel">1.5&ndash;2&times;</div>
+    <div class="result-label">Faster Convergence</div>
+  </div>
+  <div class="result-card">
+    <div class="result-num novel">6</div>
+    <div class="result-label">Verification Layers</div>
+  </div>
+</div>
+
+<h3>Expected Convergence</h3>
+<div class="chart-container">
+  <canvas id="convergence-chart" style="width: 100%; height: 280px;"></canvas>
+</div>
+
+<!-- ===== BENCHMARKS ===== -->
+<h2>Experimental Setup</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Training designs</td><td>gcd (Nangate45)</td></tr>
+    <tr><td>Validation designs</td><td>aes (Nangate45)</td></tr>
+    <tr><td>Test designs</td><td>ibex (Nangate45)</td></tr>
+    <tr><td>Flow</td><td>ORFS (RTL &rarr; GDS)</td></tr>
+    <tr><td>Metrics format</td><td>METRICS2.1</td></tr>
+    <tr><td>Mutation framework</td><td>SSPE (segment tree + semantic graph)</td></tr>
+    <tr><td>Formal equivalence</td><td>Yosys (equiv_make/simple/induct)</td></tr>
+    <tr><td>Physical DRC</td><td>KLayout (Nangate45 DRC deck)</td></tr>
+    <tr><td>Independent audit</td><td>Frozen stock OpenROAD binary + audit.tcl</td></tr>
+    <tr><td>Evolution targets</td><td>Resizer (primary), CTS, OptMirror (pipeline-ready)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== REFERENCES ===== -->
+<h2>References</h2>
+<ol class="ref-list">
+  <li><strong>Self-Evolved ABC</strong> (2604.15082v1) — Multi-agent LLM framework for evolving ABC logic synthesis. 8.3% QoR improvement. CEC correctness.</li>
+  <li><strong>VERI-SURE</strong> (2601.19747) — Contract-aware multi-agent RTL generation with temporal tracing + formal verification. Purely logical domain.</li>
+  <li><strong>AlphaEvolve</strong> — Google DeepMind evolutionary coding agent. EVOLVE-BLOCK markers, ensemble LLMs, MAP elites.</li>
+  <li><strong>VPR-Evolve</strong> (2607.24998v1) — Multi-agent algorithm evolution for FPGA P&R. Up to 2.7% composite improvement.</li>
+  <li><strong>EvoDRC</strong> (2607.20019v1) — Self-evolving DRC repair with Knowledge DB and skill evolution. Single-domain (geometric).</li>
+  <li><strong>Agentic EDA: A Handoff Perspective</strong> (2606.19795) — Survey on multi-stage EDA handoffs. Handoff validity as organizing principle.</li>
+  <li><strong>DRC-Coder</strong> (2412.05311) — LLM autonomous agent for DRC checker code generation.</li>
+</ol>
+
+<script>
+(function() {
+  const canvas = document.getElementById('convergence-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  function draw() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    const W = rect.width, H = rect.height;
+
+    const pad = { top: 30, right: 20, bottom: 40, left: 55 };
+    const pw = W - pad.left - pad.right;
+    const ph = H - pad.top - pad.bottom;
+
+    const style = getComputedStyle(document.documentElement);
+    const fg = style.getPropertyValue('--fg').trim();
+    const fg2 = style.getPropertyValue('--fg2').trim();
+    const accent = style.getPropertyValue('--accent').trim();
+    const novel = style.getPropertyValue('--novel').trim();
+    const border = style.getPropertyValue('--border').trim();
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Axes
+    ctx.strokeStyle = border; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, pad.top + ph);
+    ctx.lineTo(pad.left + pw, pad.top + ph);
+    ctx.stroke();
+
+    // Grid
+    ctx.strokeStyle = border; ctx.lineWidth = 0.5;
+    for (let i = 1; i <= 4; i++) {
+      const y = pad.top + ph - (i / 5) * ph;
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + pw, y); ctx.stroke();
+    }
+
+    // Data: blind mutation convergence (slower)
+    const blind = [0, 0.3, 0.65, 1.0, 1.4, 1.8, 2.1, 2.4, 2.7, 2.9, 3.1, 3.2, 3.35, 3.45, 3.5, 3.6, 3.65, 3.7, 3.75, 3.8, 3.85];
+    // Data: TPGM-guided convergence (faster, higher plateau)
+    const guided = [0, 0.6, 1.3, 2.0, 2.7, 3.2, 3.7, 4.0, 4.2, 4.35, 4.45, 4.5, 4.55, 4.6, 4.62, 4.65, 4.67, 4.7, 4.72, 4.73, 4.75];
+
+    const maxGen = blind.length - 1;
+    const maxVal = 5.5;
+
+    function toX(g) { return pad.left + (g / maxGen) * pw; }
+    function toY(v) { return pad.top + ph - (v / maxVal) * ph; }
+
+    // Blind line
+    ctx.strokeStyle = fg2; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    blind.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Guided line
+    ctx.strokeStyle = novel; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    guided.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+    ctx.stroke();
+
+    // Endpoint dots
+    ctx.fillStyle = fg2;
+    ctx.beginPath(); ctx.arc(toX(maxGen), toY(blind[maxGen]), 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = novel;
+    ctx.beginPath(); ctx.arc(toX(maxGen), toY(guided[maxGen]), 4, 0, Math.PI * 2); ctx.fill();
+
+    // Labels
+    ctx.font = '12px DM Sans, sans-serif';
+    ctx.fillStyle = fg2;
+    ctx.textAlign = 'right';
+    ctx.fillText('Blind Mutation: ~3.85%', toX(maxGen) - 8, toY(blind[maxGen]) + 4);
+    ctx.fillStyle = novel;
+    ctx.fillText('TPGM-Guided: ~4.75%', toX(maxGen) - 8, toY(guided[maxGen]) + 4);
+
+    // Axis labels
+    ctx.fillStyle = fg2; ctx.font = '11px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Generation', pad.left + pw / 2, H - 5);
+    for (let i = 0; i <= maxGen; i += 5) {
+      ctx.fillText(String(i), toX(i), pad.top + ph + 18);
+    }
+
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 5; i++) {
+      ctx.fillText(i + '%', pad.left - 6, toY(i) + 4);
+    }
+
+    ctx.save();
+    ctx.translate(14, pad.top + ph / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText('WNS Improvement (%)', 0, 0);
+    ctx.restore();
+
+    // Title
+    ctx.fillStyle = fg; ctx.font = '600 13px DM Sans, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Projected Convergence: Blind vs TPGM-Guided Evolution', pad.left, pad.top - 10);
+  }
+
+  draw();
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(draw, 100); });
+
+  const observer = new MutationObserver(draw);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+})();
+</script>
+</body></html>
