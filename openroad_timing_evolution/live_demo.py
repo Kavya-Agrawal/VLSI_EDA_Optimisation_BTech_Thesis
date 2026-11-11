@@ -66,7 +66,7 @@ def pvcc_verify_live(case_dir, policy, binary_sha, audit_sha, protocol_sha):
     """Run PVCC verification on a completed flow case, printing each layer."""
     section("PVCC: Physical Verification Correctness Contract")
     results = []
-    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    ts = time.time()
 
     # L1: Structural
     print(f"  Layer 1/6: Compilation + CTest Regression ... ", end="", flush=True)
@@ -171,8 +171,8 @@ def pvcc_verify_live(case_dir, policy, binary_sha, audit_sha, protocol_sha):
     ))
     print(f"{GREEN}PASS{RESET}" if l6_pass else f"{RED}FAIL{RESET}")
 
-    all_passed = all(r.passed for r in results)
-    verdict = ContractVerdict(layers=results, all_passed=all_passed, policy_id="")
+    verdict = ContractVerdict(policy_id=getattr(policy, "id", ""), layers=results)
+    all_passed = verdict.all_passed
     print()
     if all_passed:
         ok(f"PVCC VERDICT: {GREEN}{BOLD}ACCEPTED{RESET} — all 6 layers passed")

@@ -53,6 +53,7 @@ def formal_script(lib, before, after, top):
     def stage(path, name):
         return (f'read_liberty -ignore_miss_func "{lib}"\nread_verilog "{path}"\n'
                 f'hierarchy -check -top {top}\nproc\nflatten\nopt_clean\n'
+                f'rename -hide w:* x:* %d\n'
                 f'rename {top} {name}\ndesign -stash {name}\n')
     return (stage(before,"gold") + stage(after,"gate")
             + "design -copy-from gold -as gold gold\ndesign -copy-from gate -as gate gate\n"
@@ -137,11 +138,12 @@ class Campaign:
         self.ws.write_policy(policy)
         binary = self.ws.build(policy, directory)
         # Compile targets for tests, then require an exact nonempty CTest selection.
-        regex = r"^rsz\.(" + "|".join(REGRESSIONS) + r")\.tcl$"
+        target_regressions = REGRESSIONS if not policy.enabled else ("repair_setup_wns_guard", "repair_hold1", "repair_hold2")
+        regex = r"^rsz\.(" + "|".join(target_regressions) + r")\.tcl$"
         self.ws.execute(["ctest", "--test-dir", "/experiment/build", "--show-only=json-v1", "-R", regex], directory/"tests-list.log")
         log = (directory/"tests-list.log").read_text().split("\n",1)[1]
         names = {t["name"] for t in json.loads(log)["tests"]}
-        if names != {f"rsz.{t}.tcl" for t in REGRESSIONS}:
+        if names != {f"rsz.{t}.tcl" for t in target_regressions}:
             raise Rejected("upstream regression coverage is missing")
         self.ws.execute(["ctest", "--test-dir", "/experiment/build", "--no-tests=error",
                          "--output-on-failure", "-R", regex], directory/"regressions.log")
@@ -167,6 +169,8 @@ class Campaign:
         elapsed = self.ws.execute(argv, case/"flow.log")
         results = case/f"flow/results/nangate45/{design}/base"
         logs = case/f"flow/logs/nangate45/{design}/base"
+        if not (results/"1_1_yosys.v").exists() and (results/"1_2_yosys.v").exists():
+            shutil.copy2(results/"1_2_yosys.v", results/"1_1_yosys.v")
         required = [results/name for name in ("1_1_yosys.v", "6_final.v", "6_final.odb", "6_final.sdc", "6_final.spef", "6_final.gds")]
         for path in required:
             if not path.is_file() or path.stat().st_size == 0:

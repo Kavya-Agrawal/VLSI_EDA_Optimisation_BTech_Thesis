@@ -5,10 +5,16 @@ read_db $::env(EVO_ODB)
 read_sdc $::env(EVO_SDC)
 set_cmd_units -time ns -capacitance pF -resistance kohm -distance um
 read_spef $::env(EVO_SPEF)
-set_propagated_clock [all_clocks]
-if { [llength [all_clocks]] != 1 } {
+set real_clocks {}
+foreach clk [all_clocks] {
+  if { ![$clk is_virtual] } {
+    lappend real_clocks $clk
+  }
+}
+if { [llength $real_clocks] != 1 } {
   error "Current Nangate45 adapter requires exactly one constrained clock"
 }
+set_propagated_clock $real_clocks
 if { ![check_setup -no_clock -unconstrained_endpoints -loops -generated_clocks] } {
   error "Timing constraints are incomplete or contain loops"
 }
@@ -22,7 +28,7 @@ report_erc_metrics
 report_clock_skew_metric
 report_clock_skew_metric -hold
 report_design_area_metrics
-set clock [lindex [all_clocks] 0]
+set clock [lindex $real_clocks 0]
 utl::metric_float "evo__period_ns" [sta::time_sta_ui [$clock period]]
 utl::metric_int "evo__endpoints" [llength [sta::endpoints]]
 utl::metric_int "evo__constraints_pass" 1
