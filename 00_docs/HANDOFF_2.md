@@ -51,3 +51,27 @@ A 1-page guide for a new human reader: which files to open in which order to und
 
 ## When done
 Append a short "HANDOFF 2 status" section to this file listing what was completed and anything uncertain, and commit.
+
+---
+
+## HANDOFF 2 status (Completed on 2026-11-13)
+
+All assigned documentation and portability tasks have been completed following the rules:
+- **Task 1 (`09_agent_context/00_BIG_PICTURE.md`)**: Complete (423 lines). Covers the 8 sections in specified order, citing real `file:function` signatures, full Tcl-to-C++ command mapping, and an end-to-end pseudo-code specification of `repair_timing -setup` with real function names. Starts with `<!-- hand-edited -->`.
+- **Task 2 (`09_agent_context/GLOSSARY.md`)**: Complete. Provides one precise line per term with the exact command/function where it appears. Starts with `<!-- hand-edited -->`.
+- **Task 3 (Algorithm Dossiers)**: Complete. All 6 cluster dossiers created under `09_agent_context/algorithms/` following the 6-section template:
+  - `setup_strategy.md`
+  - `buffering.md`
+  - `sizing.md`
+  - `drv.md`
+  - `hold.md`
+  - `timing_model.md`
+  Each committed separately with real code citations and literature connections.
+- **Task 4 (`00_docs/literature_notes.md`)**: Complete. Paragraphs and citations covering Lagrangian relaxation, TILOS, van Ginneken/Lillis, Zero-Slack Algorithm, timing-driven ECO, Yu & Ren DAC'26 Self-Evolved ABC, SATLUTION, and AlphaEvolve. Each paragraph concludes with "What it would change in rsz: ...".
+- **Task 5 (Tier B Input Check)**: Complete. Checked `asap7/ibex` (requires slang front-end, no macro requirements) and `nangate45/jpeg` (standard Verilog, no extra tools). Appended to `00_docs/decisions.md`.
+- **Task 6 (Docker Portability Check)**: Complete. Host is macOS arm64 without Docker Desktop installed; verified Dockerfile structure and Linux installation scripts; findings appended to `00_docs/decisions.md`.
+- **Task 7 (`00_docs/reading_order.md`)**: Complete. 1-page 30-minute guide for human engineers linking README, PLAN, architecture, EVAL_CONTRACT, 00_BIG_PICTURE, algorithm dossiers, baseline summary, and visualization reports.
+
+**Uncertainties / Notes**:
+- None. All paths, function names, and constraints adhere strictly to the live repository snapshot.
+
