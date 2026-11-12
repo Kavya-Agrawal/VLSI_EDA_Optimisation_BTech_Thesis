@@ -26,3 +26,13 @@ claude    = Claude Code CLI >= 2.1 (`claude -p`); bundled copy under VS Code ext
 
 [recorded_by_lock_versions]
 # filled in by tools/lock_versions.sh
+
+# recorded 2026-11-12T22:11Z on Darwin arm64
+openroad_head = 6932b6296c65aebaadae64850f5a23265758ead0
+orfs_head     = a47d4fdc6534cb3cdfdd9ff76737a899a5bb2ee0
+bazel         = 9.3.2
+yosys         = 0.71+post
+python        = 3.12.16
+graphify      = 0.9.105
+claude        = 2.1.322
+openroad_bin  = bazel-nostamp 
