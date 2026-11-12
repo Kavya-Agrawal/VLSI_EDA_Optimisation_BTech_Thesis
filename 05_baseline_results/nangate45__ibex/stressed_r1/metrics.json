@@ -1,0 +1,9 @@
+{
+  "clock_period_ns": 1.760000,
+  "endpoints": 5565,
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "repair_ms": 46335,
+  "placement_violations": 0,
+  "pre": {"wns_setup": -0.4124838365400831, "tns_setup": -519.0381249487216, "wns_hold": 0.04505762557261142, "tns_hold": 0.0, "setup_violations": 1662, "hold_violations": 0, "instances": 14533, "pins": 55126, "area_um2": 28364.112836243294, "util": 0.5059812188304302, "buffers": 1020, "drv_slew": 0, "drv_cap": 0, "drv_fanout": 0},
+  "post": {"wns_setup": -0.29941183713160996, "tns_setup": -416.2728946035277, "wns_hold": 0.044729221592639395, "tns_hold": 0.0, "setup_violations": 1650, "hold_violations": 0, "instances": 14608, "pins": 55284, "area_um2": 28628.781123529734, "util": 0.510702609339251, "buffers": 1091, "drv_slew": 0, "drv_cap": 0, "drv_fanout": 0}
+}

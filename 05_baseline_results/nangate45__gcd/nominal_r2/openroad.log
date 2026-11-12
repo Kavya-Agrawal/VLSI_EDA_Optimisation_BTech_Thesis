@@ -249,7 +249,7 @@ EVO_REPAIR_CMD repair_timing -setup -repair_tns 100 -verbose
 [INFO RSZ-0051] Resized 56 instances: 56 up, 0 up match, 0 down, 0 VT
 [INFO RSZ-0043] Swapped pins on 1 instances.
 [WARNING RSZ-0062] Unable to repair all setup violations.
-[INFO RSZ-0505] Runtime: 1.80s
+[INFO RSZ-0505] Runtime: 2.57s
 [INFO DPL-0006] Core area: 1076.77 um^2
 [INFO DPL-0007] Movable instances area: 832.85 um^2
 [INFO DPL-0008] Fixed instances area within core: 12.24 um^2
@@ -273,7 +273,7 @@ Iteration | Violations |    Cells |    Sites
         5 |          8 |         2 |         6
         6 |          0 |         0 |         0
 Negotiation phase 1 converged at iteration 6.
-[INFO DPL-0500] Runtime: 0.00s
+[INFO DPL-0500] Runtime: 0.01s
 Detailed Placement Analysis
 ---------------------------------
 legalizer            negotiation
@@ -306,4 +306,4 @@ EVO_METRICS post -0.14917545398963653 -6.327175851227446 0.08704174433139536 0.0
 [WARNING STA-0101] object 'NULL' not found.
 [WARNING STA-0101] object 'NULL' not found.
 EVO_PATHS wrote 38 paths to /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__gcd/nominal_r2/paths_post.json
-EVO_DONE wns_pre=-0.14995899391142573 wns_post=-0.14917545398963653 tns_pre=-6.680252540218108 tns_post=-6.327175851227446 repair_ms=1804
+EVO_DONE wns_pre=-0.14995899391142573 wns_post=-0.14917545398963653 tns_pre=-6.680252540218108 tns_post=-6.327175851227446 repair_ms=2580

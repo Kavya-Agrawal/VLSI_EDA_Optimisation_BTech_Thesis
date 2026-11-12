@@ -2,7 +2,7 @@
   "clock_period_ns": 0.225000,
   "endpoints": 72,
   "repair_args": "-setup -repair_tns 100 -verbose",
-  "repair_ms": 2080,
+  "repair_ms": 2091,
   "placement_violations": 0,
   "pre": {"wns_setup": -0.1749589966869834, "tns_setup": -8.003023359426166, "wns_hold": 0.08650024691360766, "tns_hold": 0.0, "setup_violations": 53, "hold_violations": 0, "instances": 702, "pins": 1899, "area_um2": 805.980004958684, "util": 0.7485177865612701, "buffers": 155, "drv_slew": 0, "drv_cap": 0, "drv_fanout": 0},
   "post": {"wns_setup": -0.17417545676519416, "tns_setup": -7.62617102164613, "wns_hold": 0.08703885081255561, "tns_hold": 0.0, "setup_violations": 52, "hold_violations": 0, "instances": 705, "pins": 1905, "area_um2": 848.806025466331, "util": 0.7882905138339975, "buffers": 158, "drv_slew": 0, "drv_cap": 0, "drv_fanout": 0}

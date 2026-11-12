@@ -281,7 +281,7 @@ Iteration | Violations |    Cells |    Sites
         5 |          8 |         2 |         6
         6 |          0 |         0 |         0
 Negotiation phase 1 converged at iteration 6.
-[INFO DPL-0500] Runtime: 0.00s
+[INFO DPL-0500] Runtime: 0.01s
 Detailed Placement Analysis
 ---------------------------------
 legalizer            negotiation
@@ -314,4 +314,4 @@ EVO_METRICS post -0.17417545676519416 -7.62617102164613 0.08703885081255561 0.0 
 [WARNING STA-0101] object 'NULL' not found.
 [WARNING STA-0101] object 'NULL' not found.
 EVO_PATHS wrote 38 paths to /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__gcd/stressed_r0/paths_post.json
-EVO_DONE wns_pre=-0.1749589966869834 wns_post=-0.17417545676519416 tns_pre=-8.003023359426166 tns_post=-7.62617102164613 repair_ms=2080
+EVO_DONE wns_pre=-0.1749589966869834 wns_post=-0.17417545676519416 tns_pre=-8.003023359426166 tns_post=-7.62617102164613 repair_ms=2091

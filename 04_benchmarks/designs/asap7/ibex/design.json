@@ -1,0 +1,57 @@
+{
+  "pdk": "asap7",
+  "design": "ibex",
+  "top": "ibex_core",
+  "odb": "placed.odb",
+  "sdc": {
+    "nominal": "nominal.sdc",
+    "stressed": "stressed.sdc"
+  },
+  "libs": [
+    "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/asap7/lib/NLDM/asap7sc7p5t_AO_RVT_FF_nldm_211120.lib.gz",
+    "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/asap7/lib/NLDM/asap7sc7p5t_INVBUF_RVT_FF_nldm_220122.lib.gz",
+    "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/asap7/lib/NLDM/asap7sc7p5t_OA_RVT_FF_nldm_211120.lib.gz",
+    "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/asap7/lib/NLDM/asap7sc7p5t_SIMPLE_RVT_FF_nldm_211120.lib.gz",
+    "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/asap7/lib/NLDM/asap7sc7p5t_SEQ_RVT_FF_nldm_220123.lib"
+  ],
+  "set_rc": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/asap7/setRC.tcl",
+  "dont_use": "*x1p*_ASAP7* *xp*_ASAP7* SDF* ICG*",
+  "clock_period_ns": {
+    "nominal": 900.0,
+    "stressed": 810.0
+  },
+  "provenance": {
+    "orfs_config": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/designs/asap7/ibex/config.mk",
+    "orfs_results": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs_runs/asap7__ibex/results/asap7/ibex/base",
+    "generated": "2026-11-12T22:15:21Z",
+    "openroad": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock",
+    "stage": "3_5_place_dp (ENABLE_PLACE_REPAIR_TIMING=0)",
+    "instances": null
+  },
+  "stress_calibration": {
+    "chosen_ratio": 0.9,
+    "target_wns_ratio": -0.08,
+    "table": [
+      {
+        "ratio": 1.0,
+        "period": 900.0,
+        "ok": true,
+        "wns_pre": -54.453886062494284,
+        "wns_post": -10.95723516301847,
+        "tns_post": -1163.8754451192037,
+        "wns_post_pct_period": -1.2174705736687188
+      },
+      {
+        "ratio": 0.9,
+        "period": 810.0,
+        "ok": true,
+        "wns_pre": -144.45389386874996,
+        "wns_post": -100.95724296927415,
+        "tns_post": -78044.63595483301,
+        "wns_post_pct_period": -12.463857156700513
+      }
+    ],
+    "binary": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock",
+    "when": "2026-11-12T22:16:57Z"
+  }
+}

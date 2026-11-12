@@ -1,0 +1,22 @@
+{
+	"design__instance__count__setup_buffer": 0,
+	"utilization__before__dpl": 35.6193,
+	"dpl__legalizer__type": "negotiation",
+	"dpl__total__moves": 0,
+	"dpl__negotiation__iterations__total": 0,
+	"dpl__negotiation__converge__phase": 0,
+	"dpl__negotiation__diamond__recovery__count": 0,
+	"dpl__instance__displacement__total": 5163.44,
+	"dpl__instance__displacement__mean": 0.349,
+	"dpl__instance__displacement__max": 4.75,
+	"dpl__route__wirelength__estimated": 180697,
+	"dpl__hpwl__delta": 2386.1,
+	"dpl__hpwl__delta__percent": 1,
+	"design__violations": 0,
+	"flow__warnings__count": 42,
+	"flow__errors__count": 0,
+	"flow__warnings__count:ORD-0012": 1,
+	"flow__warnings__count:STA-0101": 40,
+	"flow__warnings__count:STA-0503": 1,
+	"flow__warnings__type_count": 3
+}
