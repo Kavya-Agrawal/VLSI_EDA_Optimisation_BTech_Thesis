@@ -71,14 +71,14 @@ The core iterative loop is implemented in `src/policy/SetupLegacyBase.cc:110`:
 4. **Fast Prescreening (`rsz::DelayEstimator::estimate`)**:
    - Scans candidate moves using first-order Elmore delay and slew bias approximations (`src/DelayEstimator.cc:120`).
    - Prunes moves predicting negative or zero timing gain.
-5. **Speculative Application and Journaling (`rsz::MoveCommitter::applyCandidate`)**:
-   - Opens a transactional journal frame (`rsz::MoveTracker::pushJournal` in `src/MoveTracker.cc:85`).
+5. **Speculative Application and Journaling (`rsz::MoveCommitter::commit`)**:
+   - Opens a transactional journal frame (`rsz::MoveTracker::beginJournal` in `src/MoveTracker.cc:85`).
    - Applies the ECO change to OpenDB (`odb::dbInst::swapMaster` or net modifications).
-   - Legalizes moved or resized instances via OpenDP (`opendp::Opendp::legalizeInstance`).
+   - Legalizes moved or resized instances via OpenDP (`dpl::Opendp::legalCellPos (called from Resizer.cc:3165)`).
 6. **Incremental Timing Query and Acceptance Test**:
    - Updates local STA timing graph (`sta::Sta::updateTiming`).
    - Evaluates whether the move improved slack on the failing endpoint without causing major regressive violations on other paths (`src/policy/SetupWnsPolicy.cc:48`):
-     - If accepted: `committer.commitCandidate(candidate)` permanently integrates the modification.
+     - If accepted: `committer.commitTrackedMoves()` permanently integrates the modification.
      - If rejected: `committer.abortJournalScope()` rolls back all OpenDB mutations to the journal snapshot.
 
 ### 2.3 Heuristics, Thresholds, and Constants
@@ -136,8 +136,8 @@ The core iterative loop is implemented in `src/policy/SetupLegacyBase.cc:110`:
 ## 6. Safe-Change Checklist for `setup_strategy`
 
 When modifying code within this cluster, ensure:
-- [ ] **Transactional Journaling**: All OpenDB operations must execute within active `committer.startJournalScope()` boundaries so rejected moves roll back cleanly.
-- [ ] **Placement Legality**: Every move must call `opendp::Opendp::legalizeInstance()` before STA evaluation; unplaced or overlapping instances will corrupt parasitics.
+- [ ] **Transactional Journaling**: All OpenDB operations must execute within active `committer.beginJournal()` boundaries so rejected moves roll back cleanly.
+- [ ] **Placement Legality**: Every move must call `Resizer::legalCellPos (via dpl::Opendp::legalCellPos)` before STA evaluation; unplaced or overlapping instances will corrupt parasitics.
 - [ ] **`dont_touch` Enforcement**: Verify `rsz::Resizer::dontTouch(inst)` is checked before proposing modifications.
 - [ ] **Determinism**: Avoid iterating over `std::unordered_map` or sorting by pointer addresses; use deterministic node identifiers (`sta::Pin::name()`, `odb::dbInst::getId()`).
 - [ ] **Regression Verification**: Run test suite `test/repair_setup*.tcl` (specifically `repair_setup1.tcl`, `repair_setup4_sequence.tcl`, and `repair_setup_parallel_eval.tcl`).

@@ -90,5 +90,5 @@ Implemented in `src/move/SwapPinsGenerator.cc:55`:
 When modifying code within this cluster, ensure:
 - [ ] **Footprint Compatibility**: Replacement masters must adhere to `match_cell_footprint` flags and site row restrictions.
 - [ ] **Electrical Limits**: Ensure upsized master cells do not exceed `max_capacitance` on the driving net.
-- [ ] **Legalization**: Call `opendp::Opendp::legalizeInstance()` after swapping masters; report failures immediately to trigger rollback.
+- [ ] **Legalization**: Call `Resizer::legalCellPos (via dpl::Opendp::legalCellPos)` after swapping masters; report failures immediately to trigger rollback.
 - [ ] **Regression Tests**: Run `test/resize*.tcl`, `test/repair_setup_sizeup*.tcl`, and `test/swap_pins*.tcl`.

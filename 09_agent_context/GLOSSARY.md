@@ -30,8 +30,8 @@ One-line precise definitions with the primary command or function where each ter
 | **Size Down** | `rsz::SizeDownFanoutGenerator::generate` (`move/SizeDownFanoutGenerator.cc`) | Downsizing non-critical side-load gates to decrease load capacitance presented to an upstream critical driver. |
 | **VT Swap** | `rsz::VtSwapGenerator::generate` (`move/VtSwapGenerator.cc`) | Swapping a cell between high-VT (low-leakage, slower) and low-VT (fast, high-leakage) library variants. |
 | **Swap Pins** | `rsz::SwapPinsGenerator::generate` (`move/SwapPinsGenerator.cc`) | Permuting logically equivalent input pins on a multi-input gate to connect the critical net to the fastest internal pin. |
-| **Journal (MoveTracker)** | `rsz::MoveTracker::pushJournal` (`MoveTracker.cc`) | Transactional record of netlist and placement mutations enabling incremental rollbacks on rejected speculative moves. |
-| **MoveCommitter** | `rsz::MoveCommitter::commitCandidate` (`MoveCommitter.cc`) | Subsystem responsible for legalizing cell positions with OpenDP and committing verified beneficial moves to OpenDB. |
+| **Journal (MoveTracker)** | `rsz::MoveTracker::beginJournal` (`MoveTracker.cc`) | Transactional record of netlist and placement mutations enabling incremental rollbacks on rejected speculative moves. |
+| **MoveCommitter** | `rsz::MoveCommitter::commitTrackedMoves` (`MoveCommitter.cc`) | Subsystem responsible for legalizing cell positions with OpenDP and committing verified beneficial moves to OpenDB. |
 | **dont_touch** | `rsz::Resizer::dontTouch` (`Resizer.cc`) | Attribute marking instances or nets that the resizer is strictly forbidden from modifying, sizing, or buffering. |
 | **dont_use** | `rsz::Resizer::dontUse` (`Resizer.cc`) | Attribute specifying library master cells that must never be selected during sizing or repeater insertion. |
 | **Last Gasp** | `rsz::SetupLastGaspPolicy::execute` (`policy/SetupLastGaspPolicy.cc`) | Final aggressive optimization phase that applies speculative multi-move combinations on persistent failing endpoints. |

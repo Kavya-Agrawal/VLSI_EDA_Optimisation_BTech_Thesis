@@ -21,7 +21,7 @@ The Resizer (`src/rsz`) is the post-placement and post-routing physical and timi
 - **Outputs**:
   - Resized standard cells: Instances swapped to higher or lower drive strengths (`size_up`, `size_down`), or swapped across threshold-voltage offerings (`vt_swap`: LVT, NVT, HVT) without footprint alteration.
   - Buffered and re-buffered net topologies: Repeater buffer trees inserted along long high-resistance interconnects, load-splitting buffers separating critical from non-critical sinks, and cloned gates driving partitioned fanout branches.
-  - Re-legalized cell placements: All relocated or resized standard cells legalized using OpenDP (`opendp::Opendp::legalizeInstance`), maintaining zero overlaps and site alignment.
+  - Re-legalized cell placements: All relocated or resized standard cells legalized using OpenDP (`dpl::Opendp::legalCellPos (called from Resizer.cc:3165)`), maintaining zero overlaps and site alignment.
   - Closed or minimized setup/hold timing slacks ($WNS \ge 0, TNS \ge 0$) and eliminated electrical Design Rule Violations (DRVs) across all specified active analysis corners.
 
 ### 1.2 The Meaning of "Repair"
@@ -151,7 +151,7 @@ Every Tcl command declared in `src/Resizer.tcl` binds directly to C++ entry poin
 | `buffer_ports` | `Resizer::bufferInputs()`, `Resizer::bufferOutputs()` | `Resizer.cc` | Inserts isolation buffers on top-level input and output design ports. |
 | `remove_buffers` | `Resizer::removeBuffers()` | `Resizer.cc`, `move/UnbufferGenerator.cc` | Deletes unneeded repeater buffers and restores direct net connections. |
 | `balance_row_usage` | `Resizer::balanceRowUsage()` | `Resizer.cc` | Redistributes standard cells across rows to relieve localized placement density. |
-| `set_opt_config` | `Resizer::setOptConfig()` | `OptimizationPolicyConfig.cc` | Sets sizing area/leakage limits, VT/site preservation, and cap ratios. |
+| `set_opt_config` | `set_opt_config` (Resizer.tcl:699) -> OptimizationPolicyConfig | `OptimizationPolicyConfig.cc` | Sets sizing area/leakage limits, VT/site preservation, and cap ratios. |
 | `report_design_area` | `Resizer::designArea()`, `Resizer::utilization()` | `Resizer.cc` | Reports total cell area ($\mu m^2$) and die core utilization percentage. |
 | `report_floating_nets` | `Resizer::findFloatingNets()` | `Resizer.cc` | Audits design for unconnected floating nets and pins. |
 | `report_overdriven_nets` | `Resizer::findOverdrivenNets()` | `Resizer.cc` | Detects nets driven by multiple conflicting output drivers. |
@@ -170,9 +170,9 @@ repair_timing (Tcl)
                           --> RepairTargetCollector::collectPinsByPathEndpoint (RepairTargetCollector.cc)
                           --> MoveGenerator::generate (move/*Generator.cc)
                           --> DelayEstimator::estimate (DelayEstimator.cc)
-                          --> MoveCommitter::commitCandidate (MoveCommitter.cc)
-                                --> MoveTracker::pushJournal (MoveTracker.cc)
-                                --> opendp::Opendp::legalizeInstance
+                          --> MoveCommitter::commitTrackedMoves (MoveCommitter.cc)
+                                --> MoveTracker::beginJournal (MoveTracker.cc)
+                                --> dpl::Opendp::legalCellPos (called from Resizer.cc:3165)
 ```
 
 ---
@@ -274,14 +274,14 @@ def Optimizer_run(config):
                 
                 # 5. Speculative Move Execution and Journaling
                 for gain, candidate in scored_moves:
-                    # MoveCommitter.cc:applyCandidate()
-                    committer.startJournalScope()  # MoveTracker::pushJournal()
+                    # MoveCommitter.cc:commit()
+                    committer.beginJournal()  # MoveTracker::beginJournal()
                     success = committer.applyMove(candidate)
                     
                     if success:
                         # Re-legalize placed cells in local window
-                        # opendp/src/Opendp.cc:legalizeInstance()
-                        opendp.legalizeInstance(candidate.instance())
+                        # dpl::Opendp::legalCellPos
+                        resizer.legalCellPos(candidate.instance())
                         
                         # Incremental timer recalculation
                         # Sta.cc:updateTiming()
@@ -291,7 +291,7 @@ def Optimizer_run(config):
                         # 6. Acceptance Criteria Test
                         # policy/SetupWnsPolicy.cc:acceptsMove()
                         if policy.acceptsMove(candidate, old_slack, new_slack):
-                            committer.commitCandidate(candidate)
+                            committer.commitTrackedMoves()
                             policy.recordAcceptedMove(candidate)
                             break  # Accepted beneficial move; proceed to next endpoint
                         else:
@@ -325,7 +325,7 @@ def Optimizer_run(config):
 ### 6.2 Hold Timing Repair (`rsz::RepairHold`)
 - **Input**: Post-CTS or post-route design with negative hold slack ($WNS_{\text{hold}} < 0$).
 - **Heuristic**:
-  - Collects violating endpoints sorted from worst to least negative hold slack (`RepairHold::repairHoldPin`).
+  - Collects violating endpoints sorted from worst to least negative hold slack (`RepairHold::findHoldViolations + RepairHold::repairHoldPass`).
   - Identifies candidate insertion points on non-critical data paths.
   - Evaluates inserting delay buffers (`insertHoldBuffer`) while checking setup slack guard bands (`setup_margin`).
   - Rejects buffer additions that degrade setup slack beyond allowable margins.

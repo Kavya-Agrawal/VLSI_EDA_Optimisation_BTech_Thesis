@@ -94,6 +94,6 @@ Implemented in `src/Rebuffer.cc:210`:
 
 When modifying code within this cluster, ensure:
 - [ ] **Net Topology Integrity**: Disconnecting and reconnecting sink pins must update both `odb::dbNet` and `sta::dbNetwork` to avoid floating nets.
-- [ ] **Physical Placement Snapping**: Newly instantiated buffer cells must have coordinates snapped to valid site rows and legalized via `opendp::Opendp::legalizeInstance()`.
+- [ ] **Physical Placement Snapping**: Newly instantiated buffer cells must have coordinates snapped to valid site rows and legalized via `Resizer::legalCellPos (via dpl::Opendp::legalCellPos)`.
 - [ ] **Incremental Parasitics Guard**: Ensure `est::IncrementalParasiticsGuard` is active during rebuffering to invalidate stale parasitics.
 - [ ] **Regression Tests**: Run `test/rebuffer*.tcl`, `test/repair_design*.tcl`, and `test/buffer_ports*.tcl`.

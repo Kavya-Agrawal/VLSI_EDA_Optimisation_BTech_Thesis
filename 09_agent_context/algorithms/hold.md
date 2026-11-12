@@ -35,7 +35,7 @@ Implemented in `src/RepairHold.cc:120`:
    - If $s_{\text{avail}} \le 0$, buffer insertion is rejected to prevent turning a hold violation into a fatal setup violation.
 4. **Buffer Insertion and Placement**:
    - Inserts the buffer into OpenDB (`odb::dbInst::create`), reconnects net wiring, and places the cell close to the capture register to minimize physical wire displacement.
-   - Legalizes the buffer via OpenDP (`opendp::Opendp::legalizeInstance`).
+   - Legalizes the buffer via OpenDP (`dpl::Opendp::legalCellPos (called from Resizer.cc:3165)`).
 
 ---
 

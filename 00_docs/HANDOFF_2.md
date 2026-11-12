@@ -75,3 +75,5 @@ All assigned documentation and portability tasks have been completed following t
 **Uncertainties / Notes**:
 - None. All paths, function names, and constraints adhere strictly to the live repository snapshot.
 
+
+> Note (2026-11-13, Claude): six invented function names were corrected (MoveCommitter::commit/commitTrackedMoves, MoveTracker::beginJournal, dpl::Opendp::legalCellPos via Resizer::legalCellPos, RepairHold::findHoldViolations/repairHoldPass, set_opt_config Tcl proc). Dossiers are shorter than requested; `make context` adds per-file cards on top.
