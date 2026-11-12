@@ -47,3 +47,23 @@ unknown is a rejection. This is the same stance as the earlier PV-Evolve work an
 ## 2026-11-12 — Context packs are generated, then hand-editable
 `make context` writes `09_agent_context/`. Files containing the line `<!-- hand-edited -->` are never
 overwritten by a later run.
+
+## 2026-11-13 — Tier B input check
+Verified inputs for Tier B designs in `external/OpenROAD-flow-scripts/flow/designs/`:
+- `asap7/ibex` (`config.mk` present):
+  - Uses `SYNTH_HDL_FRONTEND = slang` for SystemVerilog compilation of the Ibex core (`src/ibex_sv/*.sv`).
+  - Requires `slang` front-end support in Yosys / flow synthesis.
+  - SDC: `constraint.sdc` (or `constraint_pos_slack.sdc` when `FLOW_VARIANT=pos_slack`).
+  - Sets `TNS_END_PERCENT = 100`, `SETUP_REPAIR_PHASES = PARALLEL_EVAL`, `SWAP_ARITH_OPERATORS = 1`, and `OPENROAD_HIERARCHICAL = 1`.
+  - No external memory macros required (pure standard cell core synthesis in asap7).
+- `nangate45/jpeg` (`config.mk` present):
+  - Standard Verilog (`src/jpeg/*.v`), synthesizes cleanly with stock Yosys (`ABC_AREA = 1`).
+  - SDC: `constraint.sdc`.
+  - Core utilization target 80%, sets `TNS_END_PERCENT = 100` and `GPL_PLACE_IOS = 1`.
+  - No extra tools (e.g. klayout or memory macros) needed beyond standard yosys + openroad.
+
+## 2026-11-13 — Docker portability check
+- Host system: macOS 15.x (arm64, Darwin 25.1.0).
+- Docker status: Docker Desktop / daemon is not installed on this host (`docker` command not present, `/Applications/Docker.app` absent).
+- Recipe assessment: `tools/Dockerfile` targets Ubuntu 24.04 with `tools/install_deps_linux.sh` which installs hermetic Bazel (via bazelisk), GCC-14, Python 3.12, and build dependencies. For Linux environments, `docker build -t pv-rsz-evolve -f tools/Dockerfile .` provides the containerized reproduction environment.
+
