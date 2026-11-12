@@ -1,0 +1,4270 @@
+{
+  "variants": {
+    "stressed": {
+      "nangate45/gcd": {
+        "ok": true,
+        "replicates": 3,
+        "failed": 0,
+        "period_ns": 0.225,
+        "endpoints": 72,
+        "pre": {
+          "wns_setup": -0.1749589966869834,
+          "tns_setup": -8.003023359426166,
+          "setup_violations": 53
+        },
+        "post": {
+          "wns_setup": {
+            "mean": -0.17417545676519416,
+            "min": -0.17417545676519416,
+            "max": -0.17417545676519416
+          },
+          "tns_setup": {
+            "mean": -7.62617102164613,
+            "min": -7.62617102164613,
+            "max": -7.62617102164613
+          },
+          "wns_hold": {
+            "mean": 0.08703885081255562,
+            "min": 0.08703885081255561,
+            "max": 0.08703885081255561
+          },
+          "tns_hold": {
+            "mean": 0.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "setup_violations": {
+            "mean": 52.0,
+            "min": 52.0,
+            "max": 52.0
+          },
+          "hold_violations": {
+            "mean": 0.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "area_um2": {
+            "mean": 848.806025466331,
+            "min": 848.806025466331,
+            "max": 848.806025466331
+          },
+          "util": {
+            "mean": 0.7882905138339975,
+            "min": 0.7882905138339975,
+            "max": 0.7882905138339975
+          },
+          "instances": {
+            "mean": 705.0,
+            "min": 705.0,
+            "max": 705.0
+          },
+          "buffers": {
+            "mean": 158.0,
+            "min": 158.0,
+            "max": 158.0
+          },
+          "drv": 0.0,
+          "placement_violations": 0.0
+        },
+        "repair_ms": {
+          "mean": 1932.0,
+          "min": 1858.0,
+          "max": 2080.0
+        },
+        "deterministic": true,
+        "dirs": [
+          "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__gcd/stressed_r0",
+          "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__gcd/stressed_r1",
+          "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__gcd/stressed_r2"
+        ],
+        "attribution": {
+          "paths": [
+            {
+              "endpoint": "dpath.a_reg.out[4]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.174175,
+              "slack_before_repair": -0.174712,
+              "stages": 16,
+              "max_fanout": 8,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_974_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 15989000.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X4",
+                "NAND2_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[12]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.173529,
+              "slack_before_repair": -0.172143,
+              "stages": 14,
+              "max_fanout": 3,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "BUF_X1",
+                "INV_X1",
+                "NAND2_X1",
+                "OAI21_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[5]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.173366,
+              "slack_before_repair": -0.173594,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND4_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[6]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.173335,
+              "slack_before_repair": -0.173613,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND4_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[10]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.172897,
+              "slack_before_repair": null,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 23333000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_763_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 23333000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_656_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 21341000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_765_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 18409002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "INV_X1",
+                "NOR2_X2",
+                "NAND2_X4",
+                "INV_X2",
+                "NAND3_X1",
+                "NAND2_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "XNOR2_X2",
+                "NAND2_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[9]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.171188,
+              "slack_before_repair": -0.172439,
+              "stages": 16,
+              "max_fanout": 5,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "place163/Z",
+                  "cell": "BUF_X2",
+                  "slew": 16519001.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X2",
+                "NAND2_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[8]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.170942,
+              "slack_before_repair": -0.172223,
+              "stages": 16,
+              "max_fanout": 8,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_974_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 15989000.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X4",
+                "NAND2_X2",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[1]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.170938,
+              "slack_before_repair": -0.171732,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND4_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[3]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.1703,
+              "slack_before_repair": -0.172508,
+              "stages": 16,
+              "max_fanout": 8,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_974_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 15989000.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X4",
+                "NAND2_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[2]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.169929,
+              "slack_before_repair": -0.171079,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND4_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[7]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.169869,
+              "slack_before_repair": null,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 30345002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_710_/Z",
+                  "cell": "XOR2_X2",
+                  "slew": 30345002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[5]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24936000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_570_/ZN",
+                  "cell": "NAND2_X1",
+                  "slew": 14857000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_553_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 14578000.0,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "OR2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "NAND2_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "XOR2_X2",
+                "NAND2_X2",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[0]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.16908,
+              "slack_before_repair": null,
+              "stages": 16,
+              "max_fanout": 5,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "place163/Z",
+                  "cell": "BUF_X2",
+                  "slew": 16519001.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X2",
+                "NAND2_X2",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[14]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.166908,
+              "slack_before_repair": null,
+              "stages": 14,
+              "max_fanout": 5,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_853_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 18194000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X2",
+                "NAND2_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[13]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.165869,
+              "slack_before_repair": -0.174959,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 29683000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[8]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 29683000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_827_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 22116000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_829_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 17250000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_828_/ZN",
+                  "cell": "NAND2_X1",
+                  "slew": 14040000.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "INV_X1",
+                "NAND2_X1",
+                "INV_X2",
+                "AND2_X1",
+                "NAND2_X1",
+                "NAND2_X2",
+                "XNOR2_X2",
+                "NAND2_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[15]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.165398,
+              "slack_before_repair": -0.172607,
+              "stages": 14,
+              "max_fanout": 5,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_607_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 16824000.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X2",
+                "NAND2_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "ctrl.state.out[2]$_DFF_P_/D",
+              "startpoint": "clk",
+              "slack": -0.164648,
+              "slack_before_repair": null,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "OAI21_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[11]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.164089,
+              "slack_before_repair": null,
+              "stages": 13,
+              "max_fanout": 8,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X4",
+                "NAND4_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[10]",
+              "startpoint": "clk",
+              "slack": -0.162698,
+              "slack_before_repair": -0.158716,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 23333000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_763_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 23333000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_656_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 21341000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_701_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 18143000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "INV_X1",
+                "NOR2_X2",
+                "NAND2_X4",
+                "INV_X2",
+                "NAND3_X1",
+                "NAND2_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[14]",
+              "startpoint": "clk",
+              "slack": -0.162038,
+              "slack_before_repair": -0.164205,
+              "stages": 14,
+              "max_fanout": 4,
+              "worst_slew": 29683000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[8]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 29683000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_968_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 12939000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_970_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 12656001.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_971_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 12447000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "OR2_X4",
+                "INV_X4",
+                "AND2_X2",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NAND2_X2",
+                "INV_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.b_reg.out[15]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.158692,
+              "slack_before_repair": -0.171541,
+              "stages": 13,
+              "max_fanout": 15,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "NAND3_X4",
+                "NAND2_X4",
+                "INV_X4",
+                "NAND2_X1",
+                "NAND3_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.b_reg.out[14]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.158539,
+              "slack_before_repair": -0.172322,
+              "stages": 13,
+              "max_fanout": 15,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "NAND3_X4",
+                "NAND2_X4",
+                "INV_X4",
+                "NAND2_X1",
+                "NAND3_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.b_reg.out[13]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.15846,
+              "slack_before_repair": -0.173197,
+              "stages": 13,
+              "max_fanout": 15,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "NAND3_X4",
+                "NAND2_X4",
+                "INV_X4",
+                "NAND2_X1",
+                "NAND3_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[13]",
+              "startpoint": "clk",
+              "slack": -0.156758,
+              "slack_before_repair": -0.164682,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 29683000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[8]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 29683000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_827_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 22116000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_818_/ZN",
+                  "cell": "NAND2_X1",
+                  "slew": 13793000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_968_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 12939000.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "INV_X1",
+                "NAND2_X1",
+                "INV_X2",
+                "AND2_X1",
+                "NAND2_X1",
+                "NAND2_X2",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[7]",
+              "startpoint": "clk",
+              "slack": -0.15624,
+              "slack_before_repair": -0.155625,
+              "stages": 11,
+              "max_fanout": 3,
+              "worst_slew": 30345002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_710_/Z",
+                  "cell": "XOR2_X2",
+                  "slew": 30345002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_562_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 16893000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_561_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 14542001.0,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "AND2_X2",
+                "NAND2_X1",
+                "NAND2_X2",
+                "XOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[12]",
+              "startpoint": "clk",
+              "slack": -0.155651,
+              "slack_before_repair": -0.152216,
+              "stages": 13,
+              "max_fanout": 3,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "BUF_X1",
+                "INV_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[15]",
+              "startpoint": "clk",
+              "slack": -0.155003,
+              "slack_before_repair": -0.165765,
+              "stages": 14,
+              "max_fanout": 3,
+              "worst_slew": 22566000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_562_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 16893000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_561_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 14542001.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_572_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 14147001.0,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "AND2_X2",
+                "NAND2_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "NAND2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[11]",
+              "startpoint": "clk",
+              "slack": -0.153872,
+              "slack_before_repair": -0.164621,
+              "stages": 14,
+              "max_fanout": 3,
+              "worst_slew": 22566000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_777_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 16960002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_562_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 16893000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_780_/ZN",
+                  "cell": "NOR2_X1",
+                  "slew": 15963000.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "AND2_X2",
+                "NAND2_X1",
+                "NOR2_X2",
+                "NOR2_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "INV_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[8]",
+              "startpoint": "clk",
+              "slack": -0.146654,
+              "slack_before_repair": -0.130721,
+              "stages": 13,
+              "max_fanout": 3,
+              "worst_slew": 25122000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_720_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 25122000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_833_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 13695000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "BUF_X1",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[9]",
+              "startpoint": "clk",
+              "slack": -0.141106,
+              "slack_before_repair": -0.1552,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 28072000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_682_/ZN",
+                  "cell": "AOI21_X1",
+                  "slew": 28072000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "dpath.a_reg.out[1]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24605002.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_512_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 19224000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_685_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 15442000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "INV_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "AOI21_X1",
+                "NAND2_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "NAND2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[6]",
+              "startpoint": "clk",
+              "slack": -0.129893,
+              "slack_before_repair": -0.139353,
+              "stages": 9,
+              "max_fanout": 4,
+              "worst_slew": 27677000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_702_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 27676000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[5]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24936000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_698_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 21695000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_701_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 18143000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "OR2_X2",
+                "NAND2_X2",
+                "INV_X1",
+                "AOI21_X2",
+                "NAND2_X2",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[5]",
+              "startpoint": "clk",
+              "slack": -0.119329,
+              "slack_before_repair": -0.142502,
+              "stages": 10,
+              "max_fanout": 3,
+              "worst_slew": 27053002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_686_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 27052000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_562_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 16893000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_685_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 15442000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "NAND3_X2",
+                "NAND2_X2",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[3]",
+              "startpoint": "clk",
+              "slack": -0.118654,
+              "slack_before_repair": -0.123983,
+              "stages": 11,
+              "max_fanout": 4,
+              "worst_slew": 24605002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[1]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24605002.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_664_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 20598000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_512_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 19224000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_550_/ZN",
+                  "cell": "NAND2_X1",
+                  "slew": 15151000.0,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "INV_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "BUF_X2",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[4]",
+              "startpoint": "clk",
+              "slack": -0.107831,
+              "slack_before_repair": -0.123918,
+              "stages": 11,
+              "max_fanout": 3,
+              "worst_slew": 20591000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_673_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 20591000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_833_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 13695000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "BUF_X4",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[2]",
+              "startpoint": "clk",
+              "slack": -0.081016,
+              "slack_before_repair": -0.08747,
+              "stages": 7,
+              "max_fanout": 4,
+              "worst_slew": 29163000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_655_/ZN",
+                  "cell": "XNOR2_X1",
+                  "slew": 29163000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[1]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24605002.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_545_/ZN",
+                  "cell": "OAI21_X4",
+                  "slew": 22151002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_512_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 19224000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "OAI21_X4",
+                "BUF_X1",
+                "XNOR2_X1",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[1]",
+              "startpoint": "clk",
+              "slack": -0.058385,
+              "slack_before_repair": -0.052441,
+              "stages": 7,
+              "max_fanout": 3,
+              "worst_slew": 27651002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_646_/ZN",
+                  "cell": "XNOR2_X1",
+                  "slew": 27651002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[0]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 27182000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_523_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 24326002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "place190/Z",
+                  "cell": "BUF_X1",
+                  "slew": 10072001.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X4",
+                "INV_X2",
+                "BUF_X1",
+                "XNOR2_X1",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_val",
+              "startpoint": "clk",
+              "slack": -0.020022,
+              "slack_before_repair": -0.03606,
+              "stages": 6,
+              "max_fanout": 5,
+              "worst_slew": 21035002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "ctrl.state.out[0]$_DFF_P_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 21035002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_528_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 17472002.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "place261/Z",
+                  "cell": "BUF_X4",
+                  "slew": 15573000.0,
+                  "fanout": 5
+                },
+                {
+                  "pin": "_529_/ZN",
+                  "cell": "AND2_X2",
+                  "slew": 7848000.5,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "BUF_X4",
+                "NOR2_X4",
+                "AND2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[0]",
+              "startpoint": "clk",
+              "slack": -0.016967,
+              "slack_before_repair": -0.022771,
+              "stages": 5,
+              "max_fanout": 3,
+              "worst_slew": 27182000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[0]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 27182000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_630_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 21698000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "place255/Z",
+                  "cell": "BUF_X4",
+                  "slew": 7840000.5,
+                  "fanout": 3
+                },
+                {
+                  "pin": "output37/Z",
+                  "cell": "BUF_X1",
+                  "slew": 5186000.0,
+                  "fanout": 0
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "BUF_X4",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "req_rdy",
+              "startpoint": "clk",
+              "slack": 0.001005,
+              "slack_before_repair": -0.055062,
+              "stages": 5,
+              "max_fanout": 6,
+              "worst_slew": 21035002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained",
+                "near_zero"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "ctrl.state.out[0]$_DFF_P_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 21035002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "place261/Z",
+                  "cell": "BUF_X4",
+                  "slew": 15573000.0,
+                  "fanout": 5
+                },
+                {
+                  "pin": "place259/Z",
+                  "cell": "BUF_X8",
+                  "slew": 7131000.5,
+                  "fanout": 6
+                },
+                {
+                  "pin": "output36/Z",
+                  "cell": "BUF_X1",
+                  "slew": 4125000.0,
+                  "fanout": 0
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "BUF_X4",
+                "BUF_X8",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            }
+          ],
+          "tag_histogram": {
+            "high_fanout": 7,
+            "slow_slew": 38,
+            "io_constrained": 38,
+            "near_zero": 1
+          },
+          "endpoints_no_longer_in_worst_list": [
+            "dpath.b_reg.out[10]$_DFFE_PP_/D",
+            "dpath.b_reg.out[5]$_DFFE_PP_/D",
+            "dpath.b_reg.out[0]$_DFFE_PP_/D",
+            "dpath.b_reg.out[8]$_DFFE_PP_/D",
+            "dpath.b_reg.out[1]$_DFFE_PP_/D",
+            "dpath.b_reg.out[6]$_DFFE_PP_/D"
+          ]
+        }
+      }
+    },
+    "nominal": {
+      "nangate45/gcd": {
+        "ok": true,
+        "replicates": 3,
+        "failed": 0,
+        "period_ns": 0.25,
+        "endpoints": 72,
+        "pre": {
+          "wns_setup": -0.14995899391142573,
+          "tns_setup": -6.680252540218108,
+          "setup_violations": 52
+        },
+        "post": {
+          "wns_setup": {
+            "mean": -0.14917545398963653,
+            "min": -0.14917545398963653,
+            "max": -0.14917545398963653
+          },
+          "tns_setup": {
+            "mean": -6.327175851227447,
+            "min": -6.327175851227446,
+            "max": -6.327175851227446
+          },
+          "wns_hold": {
+            "mean": 0.08704174433139537,
+            "min": 0.08704174433139536,
+            "max": 0.08704174433139536
+          },
+          "tns_hold": {
+            "mean": 0.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "setup_violations": {
+            "mean": 50.0,
+            "min": 50.0,
+            "max": 50.0
+          },
+          "hold_violations": {
+            "mean": 0.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "area_um2": {
+            "mean": 845.0820043748308,
+            "min": 845.0820043748308,
+            "max": 845.0820043748308
+          },
+          "util": {
+            "mean": 0.7848320158102821,
+            "min": 0.7848320158102821,
+            "max": 0.7848320158102821
+          },
+          "instances": {
+            "mean": 704.0,
+            "min": 704.0,
+            "max": 704.0
+          },
+          "buffers": {
+            "mean": 157.0,
+            "min": 157.0,
+            "max": 157.0
+          },
+          "drv": 0.0,
+          "placement_violations": 0.0
+        },
+        "repair_ms": {
+          "mean": 1804.0,
+          "min": 1769.0,
+          "max": 1839.0
+        },
+        "deterministic": true,
+        "dirs": [
+          "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__gcd/nominal_r0",
+          "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__gcd/nominal_r1",
+          "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__gcd/nominal_r2"
+        ],
+        "attribution": {
+          "paths": [
+            {
+              "endpoint": "dpath.a_reg.out[4]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.149175,
+              "slack_before_repair": -0.149712,
+              "stages": 16,
+              "max_fanout": 8,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_974_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 15989000.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X4",
+                "NAND2_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[12]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.148529,
+              "slack_before_repair": -0.147143,
+              "stages": 14,
+              "max_fanout": 3,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "BUF_X1",
+                "INV_X1",
+                "NAND2_X1",
+                "OAI21_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[5]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.148366,
+              "slack_before_repair": -0.148594,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND4_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[6]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.148335,
+              "slack_before_repair": -0.148613,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND4_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[10]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.147897,
+              "slack_before_repair": null,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 23333000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_763_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 23333000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_656_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 21341000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_765_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 18409002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "INV_X1",
+                "NOR2_X2",
+                "NAND2_X4",
+                "INV_X2",
+                "NAND3_X1",
+                "NAND2_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "XNOR2_X2",
+                "NAND2_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[9]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.146188,
+              "slack_before_repair": -0.147439,
+              "stages": 16,
+              "max_fanout": 5,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "place163/Z",
+                  "cell": "BUF_X2",
+                  "slew": 16519001.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X2",
+                "NAND2_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[8]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.145942,
+              "slack_before_repair": -0.147223,
+              "stages": 16,
+              "max_fanout": 8,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_974_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 15989000.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X4",
+                "NAND2_X2",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[1]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.145938,
+              "slack_before_repair": -0.146732,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND4_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[3]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.1453,
+              "slack_before_repair": -0.147508,
+              "stages": 16,
+              "max_fanout": 8,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_974_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 15989000.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X4",
+                "NAND2_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[2]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.144929,
+              "slack_before_repair": -0.146079,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND4_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[7]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.144868,
+              "slack_before_repair": null,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 30345002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_710_/Z",
+                  "cell": "XOR2_X2",
+                  "slew": 30345002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[5]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24936000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_570_/ZN",
+                  "cell": "NAND2_X1",
+                  "slew": 14857000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_553_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 14578000.0,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "OR2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "NAND2_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "XOR2_X2",
+                "NAND2_X2",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[0]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.144518,
+              "slack_before_repair": null,
+              "stages": 16,
+              "max_fanout": 5,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "place163/Z",
+                  "cell": "BUF_X2",
+                  "slew": 16519001.0,
+                  "fanout": 5
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X2",
+                "NAND2_X2",
+                "NAND3_X1",
+                "NAND2_X1",
+                "INV_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[14]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.141908,
+              "slack_before_repair": null,
+              "stages": 14,
+              "max_fanout": 5,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_853_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 18194000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X2",
+                "NAND2_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[13]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.140869,
+              "slack_before_repair": -0.149959,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 29683000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[8]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 29683000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_827_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 22116000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_829_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 17250000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_828_/ZN",
+                  "cell": "NAND2_X1",
+                  "slew": 14040000.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "INV_X1",
+                "NAND2_X1",
+                "INV_X2",
+                "AND2_X1",
+                "NAND2_X1",
+                "NAND2_X2",
+                "XNOR2_X2",
+                "NAND2_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[15]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.140398,
+              "slack_before_repair": -0.147607,
+              "stages": 14,
+              "max_fanout": 5,
+              "worst_slew": 21531002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_604_/ZN",
+                  "cell": "AOI21_X4",
+                  "slew": 21531002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_607_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 16824000.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "AOI21_X4",
+                "BUF_X2",
+                "NAND2_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "dpath.a_reg.out[11]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.139089,
+              "slack_before_repair": null,
+              "stages": 13,
+              "max_fanout": 8,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X4",
+                "NAND4_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "AOI21_X2"
+              ]
+            },
+            {
+              "endpoint": "ctrl.state.out[2]$_DFF_P_/D",
+              "startpoint": "clk",
+              "slack": -0.138655,
+              "slack_before_repair": null,
+              "stages": 13,
+              "max_fanout": 7,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "BUF_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "OAI21_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[10]",
+              "startpoint": "clk",
+              "slack": -0.137698,
+              "slack_before_repair": -0.133716,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 23333000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_763_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 23333000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_656_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 21341000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_701_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 18143000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "INV_X1",
+                "NOR2_X2",
+                "NAND2_X4",
+                "INV_X2",
+                "NAND3_X1",
+                "NAND2_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[14]",
+              "startpoint": "clk",
+              "slack": -0.137038,
+              "slack_before_repair": -0.139205,
+              "stages": 14,
+              "max_fanout": 4,
+              "worst_slew": 29683000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[8]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 29683000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_968_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 12939000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_970_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 12656001.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_971_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 12447000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "OR2_X4",
+                "INV_X4",
+                "AND2_X2",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NAND2_X2",
+                "INV_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.b_reg.out[15]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.133691,
+              "slack_before_repair": -0.146541,
+              "stages": 13,
+              "max_fanout": 15,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "NAND3_X4",
+                "NAND2_X4",
+                "INV_X4",
+                "NAND2_X1",
+                "NAND3_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.b_reg.out[14]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.133538,
+              "slack_before_repair": -0.147322,
+              "stages": 13,
+              "max_fanout": 15,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "NAND3_X4",
+                "NAND2_X4",
+                "INV_X4",
+                "NAND2_X1",
+                "NAND3_X1"
+              ]
+            },
+            {
+              "endpoint": "dpath.b_reg.out[13]$_DFFE_PP_/D",
+              "startpoint": "clk",
+              "slack": -0.133459,
+              "slack_before_repair": -0.148197,
+              "stages": 13,
+              "max_fanout": 15,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "NAND2_X2",
+                "NAND2_X4",
+                "INV_X8",
+                "NAND3_X4",
+                "NAND2_X4",
+                "INV_X4",
+                "NAND2_X1",
+                "NAND3_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[13]",
+              "startpoint": "clk",
+              "slack": -0.131758,
+              "slack_before_repair": -0.139682,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 29683000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[8]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 29683000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_827_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 22116000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_818_/ZN",
+                  "cell": "NAND2_X1",
+                  "slew": 13793000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_968_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 12939000.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "INV_X1",
+                "NAND2_X1",
+                "INV_X2",
+                "AND2_X1",
+                "NAND2_X1",
+                "NAND2_X2",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[7]",
+              "startpoint": "clk",
+              "slack": -0.13124,
+              "slack_before_repair": -0.130625,
+              "stages": 11,
+              "max_fanout": 3,
+              "worst_slew": 30345002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_710_/Z",
+                  "cell": "XOR2_X2",
+                  "slew": 30345002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_562_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 16893000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_561_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 14542001.0,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "AND2_X2",
+                "NAND2_X1",
+                "NAND2_X2",
+                "XOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[12]",
+              "startpoint": "clk",
+              "slack": -0.130651,
+              "slack_before_repair": -0.127216,
+              "stages": 13,
+              "max_fanout": 3,
+              "worst_slew": 31418000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_950_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 31417002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_977_/ZN",
+                  "cell": "INV_X1",
+                  "slew": 20363000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[11]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 20006000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_976_/ZN",
+                  "cell": "OAI21_X1",
+                  "slew": 19214002.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X2",
+                "OAI21_X1",
+                "INV_X1",
+                "OAI21_X4",
+                "BUF_X1",
+                "INV_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "NAND3_X1",
+                "NAND2_X1",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[15]",
+              "startpoint": "clk",
+              "slack": -0.130003,
+              "slack_before_repair": -0.140765,
+              "stages": 14,
+              "max_fanout": 3,
+              "worst_slew": 22566000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_562_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 16893000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_561_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 14542001.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_572_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 14147001.0,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "AND2_X2",
+                "NAND2_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "NAND2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[11]",
+              "startpoint": "clk",
+              "slack": -0.128872,
+              "slack_before_repair": -0.139621,
+              "stages": 14,
+              "max_fanout": 3,
+              "worst_slew": 22566000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_777_/ZN",
+                  "cell": "NOR2_X2",
+                  "slew": 16960002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_562_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 16893000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_780_/ZN",
+                  "cell": "NOR2_X1",
+                  "slew": 15963000.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "AND2_X2",
+                "NAND2_X1",
+                "NOR2_X2",
+                "NOR2_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "INV_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[8]",
+              "startpoint": "clk",
+              "slack": -0.121653,
+              "slack_before_repair": -0.105721,
+              "stages": 13,
+              "max_fanout": 3,
+              "worst_slew": 25122000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_720_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 25122000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_833_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 13695000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "BUF_X1",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[9]",
+              "startpoint": "clk",
+              "slack": -0.116106,
+              "slack_before_repair": -0.1302,
+              "stages": 13,
+              "max_fanout": 4,
+              "worst_slew": 28072000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_682_/ZN",
+                  "cell": "AOI21_X1",
+                  "slew": 28072000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "dpath.a_reg.out[1]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24605002.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_512_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 19224000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_685_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 15442000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "INV_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "AOI21_X1",
+                "NAND2_X2",
+                "NAND2_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "NAND2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[6]",
+              "startpoint": "clk",
+              "slack": -0.104893,
+              "slack_before_repair": -0.114353,
+              "stages": 9,
+              "max_fanout": 4,
+              "worst_slew": 27677000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_702_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 27676000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[5]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24936000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_698_/ZN",
+                  "cell": "AOI21_X2",
+                  "slew": 21695000.0,
+                  "fanout": 1
+                },
+                {
+                  "pin": "_701_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 18143000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "OR2_X2",
+                "NAND2_X2",
+                "INV_X1",
+                "AOI21_X2",
+                "NAND2_X2",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[5]",
+              "startpoint": "clk",
+              "slack": -0.094329,
+              "slack_before_repair": -0.117502,
+              "stages": 10,
+              "max_fanout": 3,
+              "worst_slew": 27053002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_686_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 27052000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[4]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22566000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_562_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 16893000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_685_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 15442000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "NAND2_X2",
+                "NOR2_X4",
+                "NAND3_X2",
+                "NAND2_X2",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[3]",
+              "startpoint": "clk",
+              "slack": -0.093654,
+              "slack_before_repair": -0.098983,
+              "stages": 11,
+              "max_fanout": 4,
+              "worst_slew": 24605002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "dpath.a_reg.out[1]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24605002.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_664_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 20598000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_512_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 19224000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_550_/ZN",
+                  "cell": "NAND2_X1",
+                  "slew": 15151000.0,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "INV_X1",
+                "NAND2_X1",
+                "NAND2_X1",
+                "INV_X1",
+                "NAND2_X2",
+                "BUF_X2",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[4]",
+              "startpoint": "clk",
+              "slack": -0.082831,
+              "slack_before_repair": -0.098918,
+              "stages": 11,
+              "max_fanout": 3,
+              "worst_slew": 20591000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_673_/ZN",
+                  "cell": "XNOR2_X2",
+                  "slew": 20591000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[3]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18275000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_501_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 18167000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_833_/ZN",
+                  "cell": "NAND2_X4",
+                  "slew": 13695000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "INV_X2",
+                "NAND2_X4",
+                "NAND2_X4",
+                "NOR2_X4",
+                "NAND2_X4",
+                "NAND2_X4",
+                "BUF_X4",
+                "XNOR2_X2",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[2]",
+              "startpoint": "clk",
+              "slack": -0.056016,
+              "slack_before_repair": -0.06247,
+              "stages": 7,
+              "max_fanout": 4,
+              "worst_slew": 29163000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_655_/ZN",
+                  "cell": "XNOR2_X1",
+                  "slew": 29163000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[1]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 24605002.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "_545_/ZN",
+                  "cell": "OAI21_X4",
+                  "slew": 22151002.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "_512_/ZN",
+                  "cell": "NAND2_X2",
+                  "slew": 19224000.0,
+                  "fanout": 3
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NAND2_X2",
+                "OAI21_X4",
+                "BUF_X1",
+                "XNOR2_X1",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[1]",
+              "startpoint": "clk",
+              "slack": -0.031161,
+              "slack_before_repair": -0.027441,
+              "stages": 7,
+              "max_fanout": 3,
+              "worst_slew": 27651002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_646_/ZN",
+                  "cell": "XNOR2_X1",
+                  "slew": 27651002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_523_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 25004000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "dpath.a_reg.out[0]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22531002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "place190/Z",
+                  "cell": "BUF_X1",
+                  "slew": 10072001.0,
+                  "fanout": 1
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "NOR2_X4",
+                "INV_X2",
+                "BUF_X1",
+                "XNOR2_X1",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_msg[0]",
+              "startpoint": "clk",
+              "slack": 0.000522,
+              "slack_before_repair": 0.002229,
+              "stages": 5,
+              "max_fanout": 3,
+              "worst_slew": 32655002.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained",
+                "near_zero"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_630_/ZN",
+                  "cell": "XNOR2_X1",
+                  "slew": 32655002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "dpath.a_reg.out[0]$_DFFE_PP_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 22531002.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "place255/Z",
+                  "cell": "BUF_X2",
+                  "slew": 9717000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "output37/Z",
+                  "cell": "BUF_X1",
+                  "slew": 5695000.0,
+                  "fanout": 0
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "BUF_X2",
+                "XNOR2_X1",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "req_rdy",
+              "startpoint": "clk",
+              "slack": 0.003093,
+              "slack_before_repair": -0.030062,
+              "stages": 5,
+              "max_fanout": 12,
+              "worst_slew": 21262000.0,
+              "tags": [
+                "high_fanout",
+                "slow_slew",
+                "io_constrained",
+                "near_zero"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "ctrl.state.out[0]$_DFF_P_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 21262000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "place259/Z",
+                  "cell": "CLKBUF_X3",
+                  "slew": 20229002.0,
+                  "fanout": 12
+                },
+                {
+                  "pin": "place261/Z",
+                  "cell": "BUF_X4",
+                  "slew": 10891000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "output36/Z",
+                  "cell": "BUF_X1",
+                  "slew": 4485000.0,
+                  "fanout": 0
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "BUF_X4",
+                "CLKBUF_X3",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            },
+            {
+              "endpoint": "resp_val",
+              "startpoint": "clk",
+              "slack": 0.005797,
+              "slack_before_repair": -0.01106,
+              "stages": 6,
+              "max_fanout": 4,
+              "worst_slew": 19388000.0,
+              "tags": [
+                "slow_slew",
+                "io_constrained"
+              ],
+              "worst_cells": [
+                {
+                  "pin": "_528_/ZN",
+                  "cell": "NOR2_X4",
+                  "slew": 19388000.0,
+                  "fanout": 4
+                },
+                {
+                  "pin": "ctrl.state.out[2]$_DFF_P_/Q",
+                  "cell": "DFF_X1",
+                  "slew": 18577000.0,
+                  "fanout": 3
+                },
+                {
+                  "pin": "place257/Z",
+                  "cell": "BUF_X4",
+                  "slew": 9540000.0,
+                  "fanout": 2
+                },
+                {
+                  "pin": "_529_/ZN",
+                  "cell": "AND2_X4",
+                  "slew": 7296000.5,
+                  "fanout": 2
+                }
+              ],
+              "cells_on_path": [
+                "DFF_X1",
+                "BUF_X4",
+                "NOR2_X4",
+                "AND2_X4",
+                "BUF_X1",
+                "BUF_X1"
+              ]
+            }
+          ],
+          "tag_histogram": {
+            "high_fanout": 8,
+            "slow_slew": 38,
+            "io_constrained": 38,
+            "near_zero": 2
+          },
+          "endpoints_no_longer_in_worst_list": [
+            "dpath.b_reg.out[10]$_DFFE_PP_/D",
+            "dpath.b_reg.out[5]$_DFFE_PP_/D",
+            "dpath.b_reg.out[0]$_DFFE_PP_/D",
+            "dpath.b_reg.out[8]$_DFFE_PP_/D",
+            "dpath.b_reg.out[1]$_DFFE_PP_/D",
+            "dpath.b_reg.out[6]$_DFFE_PP_/D"
+          ]
+        }
+      }
+    }
+  },
+  "binary": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock",
+  "openroad_commit": "6932b6296c65aebaadae64850f5a23265758ead0",
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "updated": "2026-11-12T21:26:24Z"
+}

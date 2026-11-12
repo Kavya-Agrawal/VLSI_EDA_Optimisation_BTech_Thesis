@@ -1,0 +1,603 @@
+# Extract cell names
+proc get_liberty_cell_names { } {
+  return [tee -q -s result.string select -list-mod =A:liberty_cell]
+}
+
+proc log_cmd { cmd args } {
+  # log the command, escape arguments with spaces
+  set log_cmd "$cmd[join [lmap arg $args { format " %s" [expr { [string match {* *} $arg] ? "\"$arg\"" : "$arg" }] }] ""]" ;# tclint-disable-line line-length
+  puts $log_cmd
+  # Tcl's `clock` lives in clock.tcl, auto-loaded from TCL_LIBRARY. Hermetic
+  # build environments (e.g. Bazel linking yosys against @tcl_lang) don't
+  # always ship the Tcl library in runfiles, so `clock` may be undefined.
+  # The timing log is cosmetic — skip it when `clock` isn't available.
+  set has_clock [expr { [info commands clock] ne "" }]
+  if { $has_clock } {
+    set start [clock seconds]
+  }
+  set result [uplevel 1 [list $cmd {*}$args]]
+  if { $has_clock } {
+    set time [expr { [clock seconds] - $start }]
+    if { $time >= 5 } {
+      # Ideally we'd use a single line, but the command can output text
+      # and we don't want to mix it with the log, so output the time it took afterwards.
+      puts "Took $time seconds: $log_cmd"
+    }
+  }
+  return $result
+}
+
+proc repair_timing_helper { args } {
+  set additional_args {}
+  append_env_var additional_args SETUP_SLACK_MARGIN -setup_margin 1
+  append_env_var additional_args HOLD_SLACK_MARGIN -hold_margin 1
+  append_env_var additional_args SETUP_MOVE_SEQUENCE -sequence 1
+  append_env_var additional_args SETUP_REPAIR_PHASES -phases 1
+  append_env_var additional_args TNS_END_PERCENT -repair_tns 1
+  append_env_var additional_args SKIP_PIN_SWAP -skip_pin_swap 0
+  append_env_var additional_args SKIP_GATE_CLONING -skip_gate_cloning 0
+  append_env_var additional_args SKIP_BUFFER_REMOVAL -skip_buffer_removal 0
+  append_env_var additional_args SKIP_LAST_GASP -skip_last_gasp 0
+  append_env_var additional_args SKIP_VT_SWAP -skip_vt_swap 0
+  append_env_var additional_args SKIP_CRIT_VT_SWAP -skip_crit_vt_swap 0
+  append_env_var additional_args MATCH_CELL_FOOTPRINT -match_cell_footprint 0
+  lappend additional_args {*}$args -verbose
+
+  log_cmd repair_timing {*}$additional_args
+}
+
+# Every detailed_placement in the flow goes through here, so the design's
+# DETAIL_PLACEMENT_ARGS (the legalizer and its window, say) apply to the
+# placement stage and to every re-legalization after it alike.
+proc detailed_placement_helper { args } {
+  log_cmd detailed_placement {*}[env_var_or_empty DETAIL_PLACEMENT_ARGS] {*}$args
+}
+
+proc repair_design_helper { } {
+  puts "Perform buffer insertion and gate resizing..."
+
+  set additional_args "-verbose"
+  append_env_var additional_args CAP_MARGIN -cap_margin 1
+  append_env_var additional_args SLEW_MARGIN -slew_margin 1
+  append_env_var additional_args MATCH_CELL_FOOTPRINT -match_cell_footprint 0
+  log_cmd repair_design {*}$additional_args
+}
+
+proc recover_power_helper { } {
+  if { $::env(RECOVER_POWER) == 0 } {
+    return
+  }
+  puts "Downsizing/switching to higher Vt for non critical gates for power recovery"
+  puts "Percent of paths optimized $::env(RECOVER_POWER)"
+  report_tns
+  report_wns
+  report_power
+  set additional_args "-verbose"
+  append_env_var additional_args RECOVER_POWER -recover_power 1
+  append_env_var additional_args MATCH_CELL_FOOTPRINT -match_cell_footprint 0
+  log_cmd repair_timing {*}$additional_args
+  report_tns
+  report_wns
+  report_power
+}
+
+proc extract_stage { input_file } {
+  # Match the stage prefix on the basename, not the full path: an ancestor
+  # dir like ".../4_something/3_place.odb" would otherwise match "4_" -> stage 4.
+  set stage_file [file tail $input_file]
+  if { ![regexp {^([0-9])_(?:([0-9])_)?} $stage_file match num1 num2] } {
+    puts "Error: Could not determine design stage from $input_file"
+    exit 1
+  }
+  lappend number_groups $num1
+  if { $num2 != "" } {
+    lappend number_groups $num2
+  } else {
+    lappend number_groups "0"
+  }
+}
+
+# The stem ends at the first dot of the file name, so 4_cts.odb,
+# 4_cts.odb.def and 4_cts.odb.v all have 4_cts.sdc
+proc sdc_file_of { design_file } {
+  regsub {\.[^/]*$} $design_file .sdc sdc_file
+  return $sdc_file
+}
+
+proc env_var_equals { env_var value } {
+  return [expr { [info exists ::env($env_var)] && $::env($env_var) == $value }]
+}
+
+proc env_var_exists_and_non_empty { env_var } {
+  return [expr { [info exists ::env($env_var)] && ![string equal $::env($env_var) ""] }]
+}
+
+# AUTO_MEMORIES: do-auto-memories writes into $RESULTS_DIR/memories the
+# lists below, and every later step reads the files they name, never
+# what a directory happens to hold.
+#
+# blackboxes.txt, `<module> <area>` a line: the macros, each with its
+# <module>.lib and <module>.lef, and the area synthesis costs it by.
+proc auto_memories_areas { } {
+  if { ![env_var_equals AUTO_MEMORIES 1] } {
+    return {}
+  }
+  set f "$::env(RESULTS_DIR)/memories/blackboxes.txt"
+  set fh [open $f r]
+  set content [string map {\r ""} [read $fh]]
+  close $fh
+  set areas [dict create]
+  foreach line [split $content "\n"] {
+    if { [string trim $line] == "" } {
+      continue
+    }
+    set fields [regexp -all -inline {\S+} $line]
+    if {
+      [llength $fields] != 2
+      || ![string is double -strict [lindex $fields 1]]
+    } {
+      error "$f: expected `<module> <area>`, got `$line`"
+    }
+    dict set areas {*}$fields
+  }
+  return $areas
+}
+
+# A list of module names, one a line:
+# - inline.txt: register files whose generated netlist (<module>.v)
+#   replaces the RTL module's body in synthesis.
+# - regfile_cores.txt: the RAMs the register file wrappers instantiate
+#   as macros; in blackboxes.txt, but no module of the sources.
+# - regfiles.txt: register files that dissolve into their cells after
+#   macro placement (<module>.v, <module>.place).
+proc auto_memories_names { list } {
+  if { ![env_var_equals AUTO_MEMORIES 1] } {
+    return {}
+  }
+  set f "$::env(RESULTS_DIR)/memories/$list"
+  set fh [open $f r]
+  set content [read $fh]
+  close $fh
+  return [regexp -all -inline {\S+} $content]
+}
+
+# The view of every macro in blackboxes.txt, by extension (.lib, .lef).
+proc auto_memories_views { ext } {
+  return [lmap m [dict keys [auto_memories_areas]] {
+    file join $::env(RESULTS_DIR) memories $m$ext
+  }]
+}
+
+proc append_env_var { list_name var_name prefix has_arg } {
+  upvar $list_name list
+  if {
+    (!$has_arg && [env_var_equals $var_name 1]) ||
+    ($has_arg && [env_var_exists_and_non_empty $var_name])
+  } {
+    lappend list $prefix
+    if { $has_arg } {
+      lappend list $::env($var_name)
+    }
+  }
+}
+
+# Non-empty defaults should go into variables.yaml, generally
+proc env_var_or_empty { env_var } {
+  if { [env_var_exists_and_non_empty $env_var] } {
+    return $::env($env_var)
+  }
+  return ""
+}
+
+proc pins_fixed_in_floorplan { } {
+  return [expr {
+    [env_var_exists_and_non_empty FLOORPLAN_DEF] ||
+    [env_var_exists_and_non_empty FOOTPRINT] ||
+    [env_var_exists_and_non_empty FOOTPRINT_TCL]
+  }]
+}
+
+# set_place_config arguments for global_placement -place_ios, from the
+# place_pins settings.
+proc place_pins_args_to_place_config { } {
+  set config_args [list \
+    -io_pin_hor_layers $::env(IO_PLACER_H) \
+    -io_pin_ver_layers $::env(IO_PLACER_V)]
+  set pins_args [env_var_or_empty PLACE_PINS_ARGS]
+  for { set i 0 } { $i < [llength $pins_args] } { incr i } {
+    set arg [lindex $pins_args $i]
+    switch -- $arg {
+      -corner_avoidance -
+      -min_distance {
+        lappend config_args -io_pin_[string range $arg 1 end] \
+          [lindex $pins_args [incr i]]
+      }
+      -min_distance_in_tracks {
+        lappend config_args -io_pin_min_distance_in_tracks
+      }
+      default {
+        utl::warn FLW 25 "PLACE_PINS_ARGS $arg is not used with GPL_PLACE_IOS."
+        if { ![string match -* [lindex $pins_args [expr { $i + 1 }]]] } {
+          incr i
+        }
+      }
+    }
+  }
+  return $config_args
+}
+
+proc find_macros { } {
+  set macros ""
+
+  set db [ord::get_db]
+  set block [[$db getChip] getBlock]
+  foreach inst [$block getInsts] {
+    set inst_master [$inst getMaster]
+
+    # BLOCK means MACRO cells
+    if { [string match [$inst_master getType] "BLOCK"] } {
+      append macros " " $inst
+    }
+  }
+  return $macros
+}
+
+proc erase_non_stage_variables { stage_name } {
+  if { $::env(KEEP_VARS) } {
+    return
+  }
+  # "$::env(SCRIPTS_DIR)/stage_variables.py stage_name" returns list of
+  # variables to erase.
+  #
+  # Tcl yaml package can't be imported in the sta/openroad environment:
+  #
+  # https://github.com/The-OpenROAD-Project/OpenROAD/issues/5875
+  set variables [exec -- $::env(PYTHON_EXE) \
+    $::env(SCRIPTS_DIR)/non_stage_variables.py $stage_name]
+  foreach var $variables {
+    if { [info exists ::env($var)] } {
+      unset ::env($var)
+    }
+  }
+}
+
+set global_route_congestion_report $::env(REPORTS_DIR)/congestion.rpt
+
+proc place_density_with_lb_addon { } {
+  if { [env_var_exists_and_non_empty PLACE_DENSITY_LB_ADDON] } {
+    # check the lower boundary of the PLACE_DENSITY and add PLACE_DENSITY_LB_ADDON
+    set place_density_lb [gpl::get_global_placement_uniform_density \
+      -pad_left $::env(CELL_PAD_IN_SITES_GLOBAL_PLACEMENT) \
+      -pad_right $::env(CELL_PAD_IN_SITES_GLOBAL_PLACEMENT)]
+    set place_density \
+      [expr $place_density_lb + ((1.0 - $place_density_lb) * $::env(PLACE_DENSITY_LB_ADDON)) + 0.01]
+    if { $place_density > 1.0 } {
+      utl::error FLW 24 \
+        "Place density exceeds 1.0 (current PLACE_DENSITY_LB_ADDON = \
+         $::env(PLACE_DENSITY_LB_ADDON)). Please check if the value of \
+         PLACE_DENSITY_LB_ADDON is between 0 and 0.99."
+    }
+    puts "Placement density is $place_density, computed from PLACE_DENSITY_LB_ADDON \
+      $::env(PLACE_DENSITY_LB_ADDON) and lower bound $place_density_lb"
+  } else {
+    set place_density $::env(PLACE_DENSITY)
+  }
+  return $place_density
+}
+
+proc source_env_var_if_exists { env_var } {
+  if { [env_var_exists_and_non_empty $env_var] } {
+    log_cmd source $::env($env_var)
+  }
+}
+
+
+# Feature toggle for now, eventually the -hier option
+# will be default and this code will be deleted.
+proc hier_options { } {
+  if {
+    ([env_var_equals SYNTH_WRAPPED_OPERATORS 1] ||
+      [env_var_equals SWAP_ARITH_OPERATORS 1]) &&
+    !$::env(OPENROAD_HIERARCHICAL)
+  } {
+    error "SYNTH_WRAPPED_OPERATORS or SWAP_ARITH_OPERATORS require OPENROAD_HIERARCHICAL to be set."
+  }
+  if { $::env(OPENROAD_HIERARCHICAL) } {
+    return "-hier"
+  } else {
+    return ""
+  }
+}
+
+proc is_physical_only_master { master } {
+  set physical_only_type_patterns [list \
+    "COVER" \
+    "COVER_BUMP" \
+    "RING" \
+    "PAD_SPACER" \
+    "CORE_FEEDTHROUGH" \
+    "CORE_SPACER" \
+    "CORE_ANTENNACELL" \
+    "CORE_WELLTAP" \
+    "ENDCAP*"]
+  set master_type [$master getType]
+  foreach pattern $physical_only_type_patterns {
+    if { [string match $pattern $master_type] } {
+      return 1
+    }
+  }
+  return 0
+}
+
+# Returns 1 if the master has no signal pins (only power/ground or none).
+proc has_signal_pins { master } {
+  foreach mterm [$master getMTerms] {
+    set sig_type [$mterm getSigType]
+    if { $sig_type != "POWER" && $sig_type != "GROUND" } {
+      return 1
+    }
+  }
+  return 0
+}
+
+# Returns 1 if the master has a corresponding liberty cell.
+proc has_liberty_cell { master } {
+  set master_name [$master getName]
+  set lib_cells [get_lib_cells -quiet */$master_name]
+  if { $lib_cells == {} } {
+    return 0
+  }
+  return 1
+}
+
+# Finds all physical-only masters in the current database and
+# returns their names.
+proc find_physical_only_masters { } {
+  set db [::ord::get_db]
+  set libs [$db getLibs]
+  set physical_only_masters [list]
+  foreach lib $libs {
+    foreach master [$lib getMasters] {
+      set master_name [$master getName]
+      if { [is_physical_only_master $master] } {
+        lappend physical_only_masters $master_name
+        continue
+      }
+
+      # Consider cells with no signal pins and no liberty cell as physical-only
+      if { [has_liberty_cell $master] == 0 } {
+        if { [has_signal_pins $master] == 0 } {
+          lappend physical_only_masters $master_name
+        } else {
+          puts "Warning: master $master_name has signal pins but no liberty cell"
+        }
+      }
+    }
+  }
+  return $physical_only_masters
+}
+
+proc endpoint_slack_file { step } {
+  return $::env(REPORTS_DIR)/${step}_endpoint_slack.json
+}
+
+# The final stage extracts parasitics into 6_final.spef when the platform
+# has OpenRCX rules and the design is detail routed. 6_final.odb is timed
+# with that SPEF; whether a .spef file exists says nothing.
+proc final_extracts_parasitics { } {
+  return [expr {
+    [env_var_exists_and_non_empty RCX_RULES]
+    && !$::env(SKIP_DETAILED_ROUTE)
+  }]
+}
+
+# Load the parasitics that step is timed with and return where they came
+# from: the extracted 6_final.spef when final writes one, else, once the
+# design is placed, what OpenROAD estimates (global routes if there are
+# any, else placement), else none.
+proc orfs_load_parasitics { step } {
+  if { $step == "6_final" && [final_extracts_parasitics] } {
+    log_cmd read_spef $::env(RESULTS_DIR)/6_final.spef
+  } elseif { [grt::design_is_placed] } {
+    log_cmd estimate_parasitics
+  } else {
+    return none
+  }
+  return [est::parasitics_source]
+}
+
+# Write the setup and hold slack of every endpoint at the end of a flow
+# step so they can be compared across steps with
+# flow/util/endpointSlack.py. load_parasitics 0 is for a caller that has
+# just loaded the parasitics itself, e.g. 6_final after extraction.
+proc write_endpoint_slack { step { load_parasitics 1 } } {
+  if { !$::env(REPORT_ENDPOINT_SLACK) || [string match "*-failed" $step] } {
+    return
+  }
+  set filename [endpoint_slack_file $step]
+  puts "Writing endpoint slack to $filename"
+
+  if { $load_parasitics } {
+    set parasitics [orfs_load_parasitics $step]
+  } else {
+    set parasitics [est::parasitics_source]
+  }
+  # Update timing before sta::endpoints: the endpoint set is cached the
+  # first time it is requested and misses gated clock enable checks if the
+  # clock network has not been found yet.
+  sta::find_timing
+
+  set fileId [open $filename w]
+  puts $fileId "{"
+  puts $fileId "\"design\": \"$::env(DESIGN_NAME)\","
+  puts $fileId "\"step\": \"$step\","
+  puts $fileId "\"parasitics\": \"$parasitics\","
+  # Seconds per reported time unit
+  puts $fileId "\"time_unit\": [sta::time_ui_sta 1],"
+  # endpoint: [setup slack, hold slack], null if unconstrained
+  puts $fileId "\"endpoints\": {"
+  set sep ""
+  foreach pin [sta::endpoints] {
+    set name [string map {\\ \\\\ \" \\\"} [get_full_name $pin]]
+    set slacks {}
+    foreach min_max {max min} {
+      set slack [get_property $pin slack_$min_max]
+      if { $slack eq "INF" || $slack eq "-INF" } {
+        set slack null
+      }
+      lappend slacks $slack
+    }
+    puts -nonewline $fileId "$sep\"$name\": \[[join $slacks ,]\]"
+    set sep ",\n"
+  }
+  puts $fileId "\n}"
+  puts $fileId "}"
+  close $fileId
+}
+
+# A step that copies its input .odb leaves the design unchanged, so
+# re-time it if it is loaded, otherwise copy the input step's snapshot.
+proc copy_endpoint_slack { input_file output_file } {
+  if { !$::env(REPORT_ENDPOINT_SLACK) } {
+    return
+  }
+  set step [file rootname [file tail $output_file]]
+  set chip [[ord::get_db] getChip]
+  if { $chip != "NULL" && [$chip getBlock] != "NULL" } {
+    write_endpoint_slack $step
+    return
+  }
+  set input [endpoint_slack_file [file rootname [file tail $input_file]]]
+  if { ![file exists $input] } {
+    return
+  }
+  set fileId [open $input r]
+  set json [read $fileId]
+  close $fileId
+  regsub {"step": "[^"]*"} $json "\"step\": \"$step\"" json
+  set fileId [open [endpoint_slack_file $step] w]
+  puts -nonewline $fileId $json
+  close $fileId
+}
+
+# endpoint_slack 0 is for callers that write the endpoint slack snapshot
+# themselves, e.g. 6_final after parasitic extraction.
+proc orfs_write_db { output_file { endpoint_slack 1 } } {
+  if { $endpoint_slack } {
+    write_endpoint_slack [file rootname [file tail $output_file]]
+  }
+  if { !$::env(WRITE_ODB_AND_SDC_EACH_STAGE) } {
+    return
+  }
+  orfs_write_sdc [sdc_file_of $output_file]
+  log_cmd write_db $output_file
+}
+
+proc orfs_write_sdc { output_file } {
+  if { !$::env(WRITE_ODB_AND_SDC_EACH_STAGE) } {
+    return
+  }
+  log_cmd write_sdc -no_timestamp $output_file
+}
+
+# For a stage that leaves the design unchanged, copying the input .odb
+# and .sdc forward is much faster than serializing the in-memory database
+# again with write_db. Gated like orfs_write_db: in a single-process flow
+# (WRITE_ODB_AND_SDC_EACH_STAGE=0) the input file may not exist and no
+# stage file should be produced.
+#
+# exec cp rather than Tcl's file copy: file copy sets the destination
+# mtime with second resolution, which breaks make's timestamp-based
+# up-to-date checks for fast builds.
+proc orfs_copy_db { input_file output_file } {
+  copy_endpoint_slack $input_file $output_file
+  if { !$::env(WRITE_ODB_AND_SDC_EACH_STAGE) } {
+    return
+  }
+  log_cmd exec cp [sdc_file_of $input_file] [sdc_file_of $output_file]
+  log_cmd exec cp $input_file $output_file
+}
+
+proc source_step_tcl { hook_type step_name } {
+  set env_var "${hook_type}_${step_name}_TCL"
+  source_env_var_if_exists $env_var
+}
+
+# The Verilog files synthesis reads: VERILOG_FILES or, with
+# SYNTH_VERILOG_SURGERY, the copies its script writes. The script runs
+# here, as the RTL is read, into $(OBJECTS_DIR)/surgery: one copy per
+# source under the same file name, kept so a diff against the original
+# shows what the surgery changed. They are no make target and no build
+# output.
+proc synth_verilog_files { } {
+  if { ![env_var_exists_and_non_empty SYNTH_VERILOG_SURGERY] } {
+    return $::env(VERILOG_FILES)
+  }
+  set names [lmap f $::env(VERILOG_FILES) { file tail $f }]
+  if { [llength [lsort -unique $names]] != [llength $names] } {
+    error "SYNTH_VERILOG_SURGERY: VERILOG_FILES has two files of one name;\
+      the copies are named after the originals"
+  }
+  set dir [file join $::env(OBJECTS_DIR) surgery]
+  file delete -force $dir
+  file mkdir $dir
+  set cmd {}
+  if { [file extension [lindex $::env(SYNTH_VERILOG_SURGERY) 0]] eq ".py" } {
+    lappend cmd $::env(PYTHON_EXE)
+  }
+  lappend cmd {*}$::env(SYNTH_VERILOG_SURGERY) \
+    {*}[env_var_or_empty SYNTH_VERILOG_SURGERY_ARGS] \
+    --out-dir $dir -- {*}$::env(VERILOG_FILES)
+  puts "SYNTH_VERILOG_SURGERY: [join $cmd]"
+  exec {*}$cmd >@ stdout 2>@ stderr
+  set copies [lmap name $names { file join $dir $name }]
+  foreach copy $copies {
+    if { ![file exists $copy] } {
+      error "SYNTH_VERILOG_SURGERY wrote no $copy"
+    }
+  }
+  return $copies
+}
+
+# Entry of lib_file in the binary liberty (.blib) cache shared by all designs:
+# objects/binary_libs/<platform>/<library>@<size>-<mtime>-<dirhash>.blib, so a
+# changed library gets a new entry and same-named libraries from different
+# directories don't collide. Libraries in the design's directory and those the
+# flow generates are cached per run.
+proc binary_lib_path { lib_file } {
+  set source [file normalize $lib_file]
+  set objects [file join $::env(WORK_HOME) objects]
+  set root [file join $objects binary_libs $::env(PLATFORM)]
+  set run_dirs [list $::env(DESIGN_DIR) $objects [file join $::env(WORK_HOME) results]]
+  foreach dir $run_dirs {
+    if { [string first "[file normalize $dir]/" $source] == 0 } {
+      set root [file join $::env(OBJECTS_DIR) binary_libs]
+      break
+    }
+  }
+  set name [file tail $source]
+  regsub {\.gz$} $name "" name
+  set name [file rootname $name]
+  set dir_hash [format %08x [zlib crc32 [file dirname $source] 0]]
+  return [file join $root "$name@[file size $source]-[file mtime $source]-$dir_hash.blib"]
+}
+
+# Whether this OpenROAD reads blib. An entry missing or written by another
+# version is expected, so its error is not reported.
+proc binary_lib_usable { blib } {
+  suppress_message STA 1900
+  suppress_message STA 1902
+  set usable [expr { ![catch { liberty_binary_info $blib }] }]
+  unsuppress_message STA 1900
+  unsuppress_message STA 1902
+  return $usable
+}
+
+# The cached .blib for lib_file, or lib_file when there is no usable .blib
+proc lib_file_to_read { lib_file } {
+  set blib [binary_lib_path $lib_file]
+  if { [binary_lib_usable $blib] } {
+    return $blib
+  }
+  return $lib_file
+}

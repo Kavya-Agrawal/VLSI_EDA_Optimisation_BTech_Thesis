@@ -1,0 +1,83 @@
+{
+  "stressed": {
+    "nangate45/gcd": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 0.225,
+      "endpoints": 72,
+      "pre": {
+        "wns_setup": -0.1749589966869834,
+        "tns_setup": -8.003023359426166,
+        "setup_violations": 53
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.17417545676519416,
+          "min": -0.17417545676519416,
+          "max": -0.17417545676519416
+        },
+        "tns_setup": {
+          "mean": -7.62617102164613,
+          "min": -7.62617102164613,
+          "max": -7.62617102164613
+        },
+        "wns_hold": {
+          "mean": 0.08703885081255561,
+          "min": 0.08703885081255561,
+          "max": 0.08703885081255561
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 52.0,
+          "min": 52.0,
+          "max": 52.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 848.806025466331,
+          "min": 848.806025466331,
+          "max": 848.806025466331
+        },
+        "util": {
+          "mean": 0.7882905138339975,
+          "min": 0.7882905138339975,
+          "max": 0.7882905138339975
+        },
+        "instances": {
+          "mean": 705.0,
+          "min": 705.0,
+          "max": 705.0
+        },
+        "buffers": {
+          "mean": 158.0,
+          "min": 158.0,
+          "max": 158.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 1923.0,
+        "min": 1923.0,
+        "max": 1923.0
+      },
+      "deterministic": true,
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/selftest_original/runs/nangate45__gcd/stressed_r0"
+      ]
+    }
+  },
+  "tier": "A",
+  "replicates": 1,
+  "when": "2026-11-12T21:33:10Z",
+  "rsz_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz"
+}

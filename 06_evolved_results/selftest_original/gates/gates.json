@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "unit_tests": {
+    "//src/rsz/test:TestInsertBuffer": "PASSED",
+    "//src/rsz/test:TestNestedJournal": "PASSED",
+    "//src/rsz/test:TestPreChecks": "PASSED",
+    "//src/rsz/test:TestResizer": "PASSED",
+    "//src/rsz/test:TestSkewBudget": "PASSED",
+    "//src/rsz/test:cpp_tests": "PASSED"
+  },
+  "smoke_tests": {
+    "repair_setup1": "ok",
+    "repair_setup2": "ok",
+    "repair_setup3": "ok",
+    "repair_setup4": "ok",
+    "repair_setup5": "ok",
+    "repair_hold1": "ok",
+    "repair_hold2": "ok",
+    "repair_hold3": "ok",
+    "repair_design1": "ok",
+    "repair_design2": "ok"
+  },
+  "notes": []
+}

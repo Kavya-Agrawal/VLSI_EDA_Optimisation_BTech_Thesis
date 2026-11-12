@@ -1,0 +1,28 @@
+{
+  "accepted": false,
+  "score": 0.0,
+  "reasons": [
+    "score +0.00000 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.0,
+      "wns_cand": -0.17417545676519416,
+      "wns_ref": -0.17417545676519416,
+      "tns_cand": -7.62617102164613,
+      "tns_ref": -7.62617102164613,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.08703885081255561,
+      "hold_ref": 0.08703885081255562,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 848.806025466331,
+      "area_ref": 848.806025466331,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  }
+}
