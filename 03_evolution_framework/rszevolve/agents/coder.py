@@ -32,7 +32,9 @@ def new_candidate_dir(iteration: int, cluster: str) -> Path:
     if cand.exists():
         shutil.rmtree(cand)
     cand.mkdir(parents=True)
-    shutil.copytree(PATHS.champion, cand / "rsz")
+    # OpenROAD's rsz tests contain relative symlinks whose targets live outside
+    # this isolated snapshot. Preserve the links instead of dereferencing them.
+    shutil.copytree(PATHS.champion, cand / "rsz", symlinks=True)
     return cand
 
 
@@ -47,7 +49,14 @@ def _cluster_pack(cluster: str) -> tuple[dict[str, Any], str, str, str]:
 
 
 def make_patch(cand_rsz: Path) -> str:
-    return subprocess.run(["diff", "-ruN", str(PATHS.champion), str(cand_rsz)], capture_output=True, text=True).stdout
+    # BSD diff reports dangling symlinks as "unknown type" on stdout, which
+    # looks like a non-empty patch. Git's no-index diff compares link objects
+    # correctly and uses the usual 0=same, 1=different return codes.
+    res = subprocess.run(["git", "diff", "--no-index", "--", str(PATHS.champion), str(cand_rsz)],
+                         capture_output=True, text=True)
+    if res.returncode not in (0, 1):
+        raise RuntimeError(f"candidate diff failed: {(res.stderr or res.stdout)[-1000:]}")
+    return res.stdout
 
 
 def code(iteration: int, h: Hypothesis, knobs: Knobs, *, log_dir: Path, budget_cap_usd: float | None = None) -> CodeResult:

@@ -1,0 +1,111 @@
+{
+  "duration_api_ms": 63561,
+  "stop_reason": "end_turn",
+  "session_id": "d5825cea-362f-4a80-b914-270d8673ed3c",
+  "total_cost_usd": 0.47295799999999993,
+  "usage": {
+    "input_tokens": 16,
+    "cache_creation_input_tokens": 86266,
+    "cache_read_input_tokens": 375520,
+    "output_tokens": 9031,
+    "output_tokens_details": {
+      "thinking_tokens": 109
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 86266,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 6540,
+        "cache_read_input_tokens": 90499,
+        "cache_creation_input_tokens": 8241,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 8241
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-sonnet-5-5": {
+      "inputTokens": 16,
+      "outputTokens": 9031,
+      "cacheReadInputTokens": 375520,
+      "cacheCreationInputTokens": 86266,
+      "webSearchRequests": 0,
+      "costUSD": 0.47295799999999993,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 109,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 86266,
+      "canonicalModel": "claude-sonnet-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01D5W1Nzg5RtUMsbMrrNJ85u",
+      "tool_input": {
+        "command": "cat DelayEstimatorReporter.hh | head -150; grep -n \"^[A-Za-z].*DelayEstimator::\\|^[a-zA-Z].*(.*)$\\|^namespace\\|^static\\|^struct\\|^class\" DelayEstimatorReporter.cc | head -150"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 15,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "# DelayEstimatorReporter.cc\n\n## Purpose\nA diagnostic-only layer in the Resizer. It measures how well the rsz delay estimators predict real STA results. For one instance it takes the estimator's predicted timing gain from a cell swap or a planned rebuffer tree. It then applies the change inside an OpenDB ECO journal, re-times with STA, undoes the ECO, and prints predicted vs. golden stage tables. It is not part of any repair or optimisation loop and runs on the main thread only. It backs the Tcl commands `report_delay_estimator_accuracy` and `report_delay_estimator_accuracy_for_rebuffering`.\n\n## Public entry points\nDeclared in `DelayEstimatorReporter.hh`.\n- `static const std::vector<std::string_view>& knownEstimatorNames()` returns `{\"legacy\",\"stage_window\"}`. `Resizer.cc:~1994` iterates it for Tcl validation.\n- `static std::optional<EstimatorKind> parseEstimatorKind(const std::string&)` maps a name to `kLegacy` or `kStageWindow`, else `nullopt`. `Resizer.cc:1987` uses it as a validity check.\n- `explicit DelayEstimatorReporter(Resizer&)` caches `sta()`, `network()`, `graph()`, `logger()`, `maxAnalysisMode()` and `resizer.block_`. It is a `friend` of `Resizer` (`Resizer.hh:1227`).\n- `void reportAccuracyForSizing(sta::Instance* inst, sta::LibertyCell* replacement, const std::string& estimator, int delay_levels)` compares the predicted vs. STA-measured gain of a temporary cell swap. `Resizer.cc:~1972` calls it, via `Resizer.i` `report_delay_estimator_accuracy_cmd`.\n- `void reportAccuracyForRebufferTree(sta::Instance* inst, sta::Pin* driver_pin, int delay_levels)` plans a RebufferMt tree on the worst path through `inst` and compares target-path and per-side-path estimates with STA. `Resizer.cc:~1981` calls it, via `report_delay_estimator_accuracy_for_rebuffering_cmd`.\n\nEverything else is private. A fresh reporter object is created per command.\n\n## Inputs and outputs, precisely\n**Reads**\n- STA graph, arrivals, slews, arc delays, `loadCap` and wire-arc delays. It uses `sta_->findPathEnds` with an `ExceptionThru`, `PathExpanded`, `graph_->arcDelay`/`wireArcDelay`/`slew`, `GraphDelayCalc::loadCap`/`edgeFromSlew`, and `sta_->arrival`.\n- Liberty data: `sceneCell`, `scenePort`, `findLibertyPort`, `bufferPorts`.\n- OpenDB connectivity via `dbNetwork::staToDb`/`dbToSta` (`dbNetDriver`).\n- Policy config: `OptimizationPolicyConfig::forParallelEval(RepairEffort::kHigh)`, with `delay_estimation_levels` overridden.\n- `kStaSlewBias = OptimizationPolicyConfig{}.sta_slew_bias`, passed to every `DelayEstimator::buildContext`.\n\n**Mutates**\n- Trial netlist edits (`Resizer::replaceCell`, `rebuffer().applyRebufferTreePlan(plan, \"delay_estimator_rebuffer\")`), always inside `EcoJournalScope`.\n- Side effects before the ECO: `resizer_.init()`, `resizePreamble()` and `sta_->findRequireds()`. These also set up Resizer-wide state.\n- It refreshes `block_ = resizer_.block_` after `init()`.\n\n**Output**\n- Text to `logger_->report`, in ps and fF scale (`kSecondsToPicoseconds = 1e12`, `kFaradsToFemtofarads = 1e15`).\n- Nothing is returned. Errors are `logger_->error` (throws) with RSZ ids 3200\u20133241: 3200 unknown estimator, 3201 no setup path stage, 3202 replace failed, 3209 replacement lacks the driver port, 3211 bad `-driver_pin`, 3212 undo-failure warning, 3213 arrival pin not found, 3224 no arrival vertex, 3234 context build failed, 3235 no fixed stages, 3236 no tree plan, 3237 tree not applied, 3241 no target load pin.\n\n## Algorithm / control flow\n**`reportAccuracyForSizing`**\n1. Parse the estimator kind.\n2. Call `init()`, `resizePreamble()`, refresh `block_`, and call `findRequireds()`.\n3. Clamp `delay_levels` to `[0, kMaxDelayLevels=2]`. Legacy forces `report_levels = 0`.\n4. `findWorstTargetForInstance`: a through-pin search over the instance's output pins (`findPathEndsThrough`, count `kReporterPathSearchCount=1000`, setup/max, all scenes). For each path end it expands the path and finds the first stage pin that is a requested output with non-null `prevArc` and `prevEdge`. It builds the target with `makePathDriverTarget` and attaches an `EstimatorContext` via `prepareTargetContext`. The minimum slack wins. No match calls `errorNoSetupPathStage`.\n5. Check that the replacement has the driver port (3209).\n6. Estimator profile (no DB mutation):\n   - **Legacy** (`buildLegacyProfile`) is a single target row. delay = `gateDelay(port, load_cap)` + `prev_drive \u00d7 input_pin_cap`, where `prev_drive = resizer_.driveResistance(prev_driver_pin)`. It is \"legal\" iff `current \u2212 candidate > 0`, giving `kEstimateLegal` or `kEstimateNonImproving`. Failure reasons are `kMissingCurrentPortMap` and `kMissingCandidatePort`. Stage rows are best-effort and skipped if the context is unavailable. The fanin penalty goes in `extra_delay`.\n   - **Stage window** (`buildDelayEstimatorProfile`) calls `DelayEstimator::estimate(ctx, replacement, &trace)` and turns the trace into candidate rows. If illegal and `trace.size() < stages.size()`, it sets `candidate_stages_incomplete`. If illegal with an empty trace, it skips the tables.\n7. `captureFixedStages` snapshots stage pin identities and names while the path handles are valid. This must happen before any later STA search. `assignNextPins` resolves each stage's `next_pin`.\n8. Golden before: the arrival at `fixed_stages.back().driver_pin_name`, plus `buildGoldenStageRows`.\n9. `EcoJournalScope` begins the ECO. `replaceCell` and `updateParasiticsAndTiming` run, then `measureGoldenAfterSwap` (arrival and the same fixed stages). The scope destructor does `initForJournalRestore()`, `undoEco`, `updateParasiticsAndTiming`, and swallows exceptions with warn 3212. A failed replace is reported after the scope exits (3202).\n10. `printSummary`.\n\n**`reportAccuracyForRebufferTree`**\n1. Validate that `driver_pin` is an output of `inst` (3211), then run the same preamble.\n2. Find the worst target (optionally pinned to `driver_pin`) and `captureFixedStages`. The target load pin comes from `target.load_pin`.\n3. `rebufferReportContext` builds the PARALLEL_EVAL context via `OptimizationPolicy::buildPolicyContext`. It uses `include_latch_fanin=false`, so every side load counts fully.\n4. `planRebufferReport` builds a `MoveCommitter`, a default `OptimizerRunConfig` and a `RebufferMtGenerator`. It runs `startPhase(0)`, `prepareInputs` and `generate`. The best candidate is the legal one with the highest `estimate().score`, else the first candidate; none gives error 3236. It calls `finishPhase()`.\n5. `captureSideGoldenRows` records per-side-load pre-ECO rows and arrivals.\n6. `RebufferMtCandidate::estimateTree` produces the estimate, a trace and side evaluations.\n7. `buildRebufferProfiles` builds the estimated current and candidate rows and the golden-before rows.\n   - Trace layout: indices up to `target_index` are path stages, then `tree_stage_count` tree stages, then the fanout stages.\n   - Contiguous wire/via tree stages are folded into the preceding row via `foldWire`.\n   - If the target load is the last captured stage (`split_target_load_wire`), its wire becomes a separate `<target-load wire>` row.\n   - Missing rows (placeholders) are inserted for tree buffers that do not exist pre-ECO.\n8. `applyRebufferTreeForGolden` runs inside an ECO scope. It applies the plan, re-times, and takes the golden after-arrival. It then re-captures the target and side stages via `captureSidePathFixedStages`. This must happen before undo, because the inserted-buffer pins exist only during the ECO. It reads each side load's after-arrival and rows, and aligns candidate row names to the golden pin names.\n9. Print the summary, the side-path table (est vs. golden delta and slack; \"legal\"/\"reject\") and per-side stage details.\n\n**Arc matching in `buildGoldenStageRow`**\n- It first looks for the edge input\u2192driver with `findMatchingTimingArc(ref_arc, ...)`.\n- For `kTarget` rows only, it falls back to `pickWorstArc` with `relaxed_only=true`, then with `false`. This picks the worst arc by `min_max->compare`.\n- If there is still no arc for a target, it uses `cell_delay = arrival(driver) \u2212 arrival(input)` and sets `arc_match_relaxed`.\n- Wire delay comes from `fixedStageWireDelay`: the wire arc to `next_pin`, else an arrival difference.\n\n**Side-path capture**\n- `captureSidePathFixedStages` finds path ends through `load_pin` and takes the lowest-slack path that has the driver before the load.\n- `collectSidePathStages` takes stages from the driver through the load, plus `delay_levels` fanout stages. It builds contexts with `buildContext(..., 0, ..., kStaSlewBias)`.\n- `captureSidePathConnectivityFixedStages` then walks the OpenDB net drivers backwards from `load_pin`, at most 32 hops, through buffer cells only, until it reaches `driver_pin`. This makes inserted buffers visible. If it fails, it falls back to the STA path stages.\n\n**Score arithmetic**\n- `estimatedStageScoreDelay = cell + (extra_delay if nonzero else wire)`. `goldenStagePathDelay = cell + wire`. Non-finite values count as 0 (`finiteOrZero`). Rows with `valid=false` are skipped in sums.\n- Rows whose wire or delta delay is under `kTinyStageDelayComparison = 1e-12 s` in both columns print as \"-\".\n\n## Key data structures\n- `EstimatorKind {kLegacy, kStageWindow}`; `Role {kFanin, kTarget, kFanout}`, assigned by `roleFor(stage_index, target_index)`.\n- `TargetMatch {Target, endpoint_name, slack}`.\n- `StageProfileRow {valid, path_index, role, pin_name, cell_name, input_slew, cell_delay, wire_delay, load_cap, output_slew, extra_delay, arc_match_relaxed}`. Missing data is NaN (`kMissingValue`) and prints as \"-\".\n- `EstimatorProfile {current_stages, candidate_stages, legal, fail_reason, candidate_stages_incomplete}`.\n- `GoldenProfile {before_stages, after_stages, arrival_reference_pin_name, before/after_arrival, arrival_impr}`.\n- `FixedStage {DelayStageState state, role, input/driver/next pin and *_name}`. Names are stored so pins can be re-found after the ECO via `findPin`.\n- `SideGoldenRow`, `SidePathReport`, `WorstSidePath`.\n- `RebufferRun`, and `RebufferReportPlan {Target, CandidateVector, best}`. The candidates hold references to `target`, so the struct must not move.\n- `EcoJournalScope`: RAII, non-copyable.\n\n## Callers and callees (verified by reading)\n**Callers**\n- `Resizer.cc` only (`Resizer::reportDelayEstimatorAccuracy*`, `isKnownEstimator`, `knownEstimators`). The Tcl commands in `Resizer.tcl` reach it through `Resizer.i`.\n\n**Callees**\n- `DelayEstimator.cc`: `DelayEstimator::buildContext` (all overloads) and `estimate`.\n- `MoveCommitter.cc` and `MoveGenerator.cc`: constructing the committer and the `GeneratorContext`.\n- `RebufferMtGenerator.cc`: `startPhase`, `prepareInputs`, `generate`, `finishPhase`.\n- `RebufferMtCandidate.cc`: `estimate()`, `estimateTree`, `plan()`, `sideContexts()`.\n- `Rebuffer.cc`: `resizer_.rebuffer().applyRebufferTreePlan`.\n- `OptimizationPolicyConfig.cc`: `forParallelEval`, `sta_slew_bias`.\n- `OptimizerTypes.cc`: `makePathDriverTarget`, `failReasonName`, `Target::activeScene`, `minMax`, `inputPath`, `prevDriverPath`.\n- `OptimizationPolicy`: `buildPolicyContext`.\n- `Resizer`: `init`, `resizePreamble`, `replaceCell`, `updateParasiticsAndTiming`, `initForJournalRestore`, `gateDelay`, `driveResistance`.\n- STA and OpenDB: `Sta.cc`, `Graph.cc`, `GraphDelayCalc.cc`, `PathEnd.cc`, `Delay.cc`, `dbNetwork`, `odb::dbDatabase::beginEco`/`undoEco`.\n\n## Invariants and \"do not break\"\n- **Always undo trial edits.** Every mutation must be inside `EcoJournalScope`. The destructor does `initForJournalRestore()` \u2192 `undoEco` \u2192 `updateParasiticsAndTiming()`, so STA/parasitics are valid again on exit. If the undo throws, only a warning is issued and the design may keep the edits.\n- **Capture stage identities before STA is re-run.** Through-filtered `PathEnd`/`Path` handles are invalidated by the next search or `arrivalAtDriver`. Hence the capture order: fixed stages first, then arrival, then ECO. `PathExpanded` must outlive its captured path handles.\n- **Golden-after must use the pre-ECO fixed stages.** Re-selecting the worst path post-ECO would mix paths.\n- **Materialise rows before undo.** The inserted-buffer pins exist only while the ECO is active.\n- **Do not cache STA pointers across the ECO.** Names are stored and re-resolved with `findPin`. `replaceCell` may invalidate old handles.\n- **Main thread only.** The generator is started with `startPhase(0)`, i.e. a phase without worker threads.\n- **Deterministic.** There is no randomness. Ties are resolved by first-found order: the slack `<` comparison for targets, and `>` on score for the best candidate.\n- **Keep estimator and golden configuration matched.** Both use `kStaSlewBias`, and the estimator uses the PARALLEL_EVAL / `kHigh` policy config.\n- **Estimated and golden rows are aligned positionally.** `splitFinalLoadWire`, `insertRebufferTreePlaceholders`, `insertSidePathPlaceholders` and `alignSidePathCandidateNames` exist to keep them aligned. Changing the row layout in one place requires changing the others.\n- It does not itself check `dont_touch`. It relies on `replaceCell` and the generators.\n\n## Weak spots / assumptions an algorithm designer should know\n- **Window limit.** `kMaxDelayLevels = 2`. Deeper windows are silently clamped (the comment cites accumulating table-cascade error).\n- **Single worst path.** The report measures one path through the instance (min slack among up to 1000 path ends). Other paths, and other endpoints through the changed net, are not included. Only setup/max is analysed.\n- **Reference arrival.** For sizing, the reference is the last captured stage's driver pin. For rebuffering, it is `next_pin_name` of the last stage, falling back to its driver pin. \"Golden delta\" is an arrival change at that pin, not an endpoint slack change.\n- **Legacy ignores the window.** It models only the target stage: `gateDelay` plus a fanin-resistance \u00d7 input-cap term. It does not model slew propagation or fanout effects.\n- **Relaxed arc fallback only for `kTarget` rows.** Estimator and golden may compare different arcs (conditional / non-unate such as XOR). This is flagged with `arc_match_relaxed`, but the error can look larger or smaller than it is. The fallback \"worst arc\" is chosen by min/max compare, which may not be the arc STA used.\n- **Connectivity-based side-path capture.** It assumes the chain from the load back to the driver passes only through buffer cells and is at most 32 hops. Otherwise it falls back to the STA path, which may not show the inserted buffers.\n- **Placeholder and name alignment.** Name alignment copies pin names only for `kTarget` rows at indices \u2265 1 and requires valid golden rows, so a mismatch in row counts silently truncates the alignment.\n- **Candidate choice.** The \"best\" tree is the legal one with the highest estimate score. It falls back to `first_tree` even if no tree is legal, so the report may describe a tree the policy would not commit.\n- **Silent skips.** Side paths with `evaluation == nullptr` (target estimate failed) are omitted from the detail tables. Estimates that fail mid-walk show \"(incomplete)\" and suppress sums.\n- **Tiny deltas are hidden.** A comparison below 1e-12 s on both sides prints \"-\". Errors at that scale cannot be seen.\n- **Resizer side effects.** `init()` and `resizePreamble()` run before every report, so the command is not a pure read of the design state even though the netlist is restored.\n- **Exact legacy score.** There is a `kLegacy` `legal` flag (`arrival_impr > 0`) but no threshold or margin. A tiny positive gain counts as legal.",
+  "ttft_ms": 2094,
+  "type": "result",
+  "duration_ms": 64186,
+  "uuid": "0dba5ac3-49bb-4d2d-9824-ff9dacc47959",
+  "ttft_stream_ms": 1459,
+  "time_to_request_ms": 429,
+  "first_content_frame_ms": 1459,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "credential_expires_at": "2026-12-11T07:53:35.249Z",
+  "stderr_tail": ""
+}

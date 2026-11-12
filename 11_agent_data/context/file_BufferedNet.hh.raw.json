@@ -1,0 +1,103 @@
+{
+  "duration_api_ms": 44009,
+  "stop_reason": "end_turn",
+  "session_id": "bc0d0331-e92b-4b49-8ea6-d28ea4bfd229",
+  "total_cost_usd": 0.26858519999999997,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 48774,
+    "cache_read_input_tokens": 72972,
+    "output_tokens": 6618,
+    "output_tokens_details": {
+      "thinking_tokens": 27
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 48774,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 5892,
+        "cache_read_input_tokens": 36392,
+        "cache_creation_input_tokens": 22956,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 22956
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-sonnet-5-5": {
+      "inputTokens": 6,
+      "outputTokens": 6618,
+      "cacheReadInputTokens": 72972,
+      "cacheCreationInputTokens": 48774,
+      "webSearchRequests": 0,
+      "costUSD": 0.26858519999999997,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 27,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 48774,
+      "canonicalModel": "claude-sonnet-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 5,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "# BufferedNet.hh\n\n## Purpose\nDeclares `BufferedNet`, the immutable-ish binary-tree model of a buffered net. It is the shared representation used by Rebuffer, RepairDesign and Resizer to evaluate wire/buffer delay and capacitance. Leaves are sinks, internal nodes are Steiner junctions, and the root is the driver. The header also declares `FixedDelay`, a fixed-point femtosecond delay type, and `visitTree`, a recursive-lambda helper. Tree construction from Steiner/global-route data lives in `BufferedNet.cc`, as `Resizer::` members.\n\n## Public entry points\n- `enum class BufferedNetType {load, junction, wire, via, buffer}`.\n- `BufferedNetPtr = std::shared_ptr<BufferedNet>`; `Requireds = std::array<sta::Required, RiseFall::index_count>`.\n- **Five constructors**, one per type. The first argument `type` must match the constructor, otherwise `logger->critical` (RSZ 78/79/80/81/87).\n  - load: `(type, loc, load_pin, corner, resizer)`\n  - wire: `(type, loc, layer, ref, corner, resizer, estimate_parasitics)`\n  - via: `(type, loc, layer, ref_layer, ref, corner, resizer)`\n  - junction: `(type, loc, ref, ref2, resizer)`\n  - buffer: `(type, loc, buffer_cell, ref, corner, resizer, estimate_parasitics)`\n  - Callers: `Rebuffer.cc` (about 180 mentions), `RepairDesign.cc`, `Resizer.cc`, `BufferedNet.cc`, and `move/RebufferMt*`.\n- Accessors: `type()`, `location()`, `cap()`, `fanout()`, `maxLoadSlew()`, `loadPin()`, `layer()`, `refLayer()`, `bufferCell()`, `ref()`, `ref2()`, `area()`, `corner()`, `metrics()`.\n- Recursive queries: `length()`, `bufferCount()`, `loadCount()`, `maxLoadWireLength()`.\n  - `maxLoadWireLength` is used by RepairDesign.cc:1235 and Resizer.cc:4442.\n- RC helpers:\n  - `wireRC(corner, resizer, est, res&, cap&)` per-meter R and C for a wire node. It is called from Rebuffer.cc, RepairDesign.cc:1508 and Resizer.cc:~8313.\n  - `viaResistance(corner, resizer, est)` is called from Rebuffer.cc, RepairDesign.cc:1462 and Resizer.cc:~8294.\n- Rebuffer annotations with setters/getters:\n  - `slack`/`setSlack`, `delay`/`setDelay`, `arrivalDelay`/`setArrivalDelay`\n  - `slackTransition`/`setSlackTransition`\n  - `setCapacitance`, `setFanout`, `setMaxLoadSlew`\n- `fitsEnvelope(Metrics target)` is used by Rebuffer.cc (about lines 1514, 1546, 1970-2089) for the \"assured envelope\" test.\n- Debug: `to_string(resizer)`, `reportTree(...)`.\n- `FixedDelay`: `toSeconds()`, comparison and arithmetic operators, `lerp`, and the constants `INF` (100 s) and `ZERO`.\n- `visitor<F>` / `visitTree(f, args...)`. The lambda receives `(recurse, level, node...)`.\n- `BufferedNet::null_layer = -1`.\n\nDefined in `BufferedNet.cc` (not in the header):\n- `Resizer::makeBufferedNet(drvr_pin, corner)` dispatches on `estimate_parasitics_->getParasiticsSrc()`:\n  - `kPlacement` \u2192 `makeBufferedNetSteiner`\n  - `kGlobalRouting` / `kDetailedRouting` \u2192 `makeBufferedNetGroute`\n  - `kNone` \u2192 `nullptr`\n- `Resizer::makeBufferedNetSteinerOverBnets(root, sinks, corner)`.\n- `Resizer::stitchTrees(outer, stitching_load, inner)`.\n\n## Inputs and outputs, precisely\n- **Constructors** read:\n  - Child nodes: cap, fanout, max_load_slew, area.\n  - Resizer: `portCapacitance(port, corner)`, `portFanoutLoad`, `maxInputSlew`, `dbuToMeters`.\n  - STA SDC: `corner->sdc()->portExtCap` for top-level-port loads, using the max over rise/fall.\n  - Liberty: `buffer_cell->bufferPorts` and `area()`.\n  - Parasitics: the wire constructor calls `wireRC`.\n- **Constructor outputs** (fields set at construction):\n  - load: `cap_` = port cap, `fanout_` = `portFanoutLoad`, `max_load_slew_` = `maxInputSlew`.\n  - junction: `cap_` and `fanout_` are summed, `max_load_slew_` is the min of the children, `area_` is summed.\n  - wire: `cap_ = ref.cap + dbuToMeters(length) * wire_cap`, and the rest is inherited from `ref`.\n  - via: everything is inherited from `ref`.\n  - buffer: `cap_`, `fanout_` and `max_load_slew_` are the buffer input pin's values, so they do not inherit from `ref`. `area_ = ref.area + cell area`.\n- **`wireRC`**:\n  - If `layer_ == null_layer`, it uses the direction-weighted blend `dx*H + dy*V` of `wireSignalH/VResistance/Capacitance(corner)`. `dx` and `dy` are the fractions of the segment length along each axis.\n  - Otherwise it calls `estimate_parasitics->layerRC(routing layer)`.\n  - It returns per-meter res and cap.\n- **`viaResistance`**: sums `layerRC` of each cut layer from `min(layer, ref_layer)` to `max(layer, ref_layer)`. If that gives 0 it falls back to `cut_layer->getResistance()`. It raises an error (RSZ 93) if the cut layer is missing.\n- **Builders** read:\n  - `est->makeSteinerTree` (placement-based), or `global_router_->getPinGridPositions` and `getRoutes()` (global-routing-based).\n  - `network->isLoad(pin)`, plus odb net lookup (`findFlatDbNet`).\n- **Builder output**: a `BufferedNetPtr`, or `nullptr`.\n- Nothing mutates odb, STA or parasitics.\n\n## Algorithm / control flow\n- **`FixedDelay`**:\n  - The constructor does `value_fs_ = float * 1e15`, truncating to int64. It errors (RSZ 1008) if |value| > 100 s, but only when a non-null resizer is passed.\n  - `INF` and `ZERO` are built with a null resizer.\n  - `toSeconds` goes through `float`.\n  - `lerp(a, b, t)` returns `b` exactly when `t == 1.0f`.\n- **`makeBufferedNetSteiner`**:\n  1. Build an `est::SteinerTree` for the driver pin. Return null if there is no driver point.\n  2. Build bidirectional adjacency lists from `branch(i).n`.\n  3. Run `makeBufferedNetFromTree`, a DFS from `drvrPt` with `from = kNullPt`.\n  4. At each node, attach `load` leaves for pins that satisfy `network->isLoad`. A `pins_visited` set keyed by location means only the first Steiner node at a location contributes its pins.\n  5. Combine multiple loads and child subtrees with left-leaning `junction` nodes.\n  6. If `to_loc != from_loc` and the subtree is non-null, wrap it in a `wire` node placed at `from` and pointing to `to`. `layer = null_layer`.\n  7. Delete the tree.\n- **`makeBufferedNetSteinerOverBnets`**: the same as above, but the leaves are caller-supplied `BufferedNetPtr` sinks. They are grouped by location in a `std::map<Point, vector>`, and the tree comes from `makeSteinerTree(root, sink_points)`.\n- **`makeBufferedNetGroute`**:\n  1. Look up the odb net. If it is missing, error RSZ 106. If it has only 1 term, warn RSZ 104 and return null.\n  2. Map grid points to pins, keyed by `(x, y, conn_layer)`. Locate the driver's route point.\n  3. Build adjacency from `GSegment`s.\n  4. DFS with a `visited` set. A loop returns `nullptr` for that branch (\"Loop found in groute\").\n  5. A wire node is emitted when the xy position changes. When only the layer changes it emits a `via` node. Wire nodes carry `to.layer()`.\n  6. Check `loadCount() == pin_grid_locs.size() - 1`. If not, it errors (RSZ 74).\n  7. If the driver is not found, warn RSZ 73 and return null.\n- **`stitchTrees`**:\n  - It replaces the `load` node whose pin is `stitching_load` (typically a buffer input being removed) with `inner_tree`.\n  - Unchanged subtrees are shared (pointer equality), not copied. Changed nodes are rebuilt through the constructors, so cap and area are recomputed.\n  - If the layers are equal but the locations differ, it inserts a wire.\n  - If the layers differ, it inserts a via stack plus a wire.\n  - If either layer is below 1 (incomplete layer assignment), it returns `inner_tree` unchanged with no connecting wire.\n- **`fitsEnvelope`**: `slack >= target.slack && cap <= target.cap && maxLoadSlew >= target.max_load_slew && fanout <= target.fanout`. The last three use `sta::fuzzyLessEqual` / `fuzzyGreaterEqual`.\n- **`bufferCount`, `loadCount`, `maxLoadWireLength`**: plain recursion. `maxLoadWireLength` sums wire lengths down to the next buffer or load and takes the max over junction branches. It stops at `buffer`, which returns 0.\n\n## Key data structures\n- **`BufferedNet` fields**:\n  - Structure: `type_`, `location_`, `load_pin_`, `buffer_cell_`, `layer_`, `ref_layer_`, `ref_`, `ref2_`, `corner_`.\n  - Electrical: `cap_`, `fanout_` (float), `max_load_slew_` (init `sta::INF`).\n  - Aggregate: `area_`, the sum of buffer area downstream.\n  - Rebuffer annotations: `slack_transitions_`, `slack_`, `delay_`, `arrival_delay_`.\n- **`Metrics`**: `{slack, cap, max_load_slew, fanout}` with `withSlack` and `withCap`. The last three fields are uninitialised by default.\n- **`FixedDelay`**: int64 femtoseconds.\n- **Meaning of `location_` by type**:\n  - wire: the near/driver end. The wire runs from `location` to `ref->location`.\n  - buffer: the buffer's driver (output) pin location. `ref` is the subtree it drives.\n  - junction: the Steiner point.\n- **Tree shape**: junctions have `ref` as the left child and `ref2` as the right child. `ref2_` is null for every other non-load type.\n\n## Callers and callees (verified by reading)\n- Callers are the Rebuffer, RepairDesign and Resizer files above, plus `move/RebufferMt*.cc`.\n- Callees:\n  - Resizer: `portCapacitance`, `portFanoutLoad`, `maxInputSlew`, `dbuToMeters`, `network()`, `logger()`, `db_` (private member, so `BufferedNet` must be a friend or the access is via `db_`).\n  - `est::EstimateParasitics`: `wireSignal{H,V}{Resistance,Capacitance}`, `layerRC`, `makeSteinerTree`, `getParasiticsSrc`.\n  - `grt::GlobalRouter`: `getPinGridPositions`, `getRoutes`.\n  - `dbNetwork`: `findFlatDbNet`, `dbToSta`, `staToDb`.\n  - `sta::Sdc::portExtCap`, and Liberty `bufferPorts`.\n\n## Invariants and \"do not break\"\n- **Cached aggregates**: `cap_`, `fanout_`, `max_load_slew_` and `area_` are computed once in the constructor.\n  - There is no recomputation, so any mutation through `setCapacitance`, `setFanout` or `setMaxLoadSlew` must keep parents consistent. Parents are not updated.\n  - Rebuild bottom-up through the constructors, as `stitchTrees` does.\n- **Sharing**: subtrees are shared via `shared_ptr` across candidate options in Rebuffer's DP. Do not mutate a node in place after it has been shared. The annotation setters (`setSlack`, `setDelay` and so on) are the exception, so annotate only nodes you own.\n- **Node/ref contract**: `ref()` must be non-null for wire, via, buffer and junction. `ref2()` is non-null only for junction.\n- **Error paths**:\n  - `wireRC` aborts via `critical` if called on a non-wire node, and `viaResistance` likewise on a non-via node.\n  - `FixedDelay` errors above 100 s.\n- **Determinism**: construction depends on `SteinerTree` branch order and on the ordering of `pins` and `adjacents`.\n  - The `std::map<Point,\u2026>` ordering is deterministic.\n  - The sinks of the `makeBufferedNetSteinerOverBnets` path are ordered by input vector order.\n- **dont_touch / journaling**: none here. The structure is read-only with respect to odb and STA.\n  - Callers own journaling and rollback.\n  - Dont_touch is also the caller's concern, since the builders do not filter it.\n- **Parasitics**: `makeBufferedNet` returns null when `ParasiticsSrc` is `kNone`. The tree is a snapshot at the time of the call, and later placement changes do not update it.\n\n## Weak spots / assumptions an algorithm designer should know\n- **Buffer cap model**: the buffer node's `cap_` and `max_load_slew_` ignore `ref`, which is intended for upstream-visible values.\n  - The downstream cap is stored only in the child.\n  - `fitsEnvelope` therefore sees the buffer input, not the load behind it.\n- **`FixedDelay` precision**:\n  - Float truncation toward zero gives a resolution of 1 fs, but the `float` round trip limits `toSeconds()` precision (about 7 significant digits).\n  - `operator*` is absent and `lerp` goes through float.\n  - Values that are legitimate but above 100 s error out. `INF` is only 100 s.\n- **`Metrics` fields** other than `slack` are uninitialised by default, so construct all four explicitly.\n- **`wireRC` with `null_layer`** applies the average H/V layer RC. It ignores the actual layer and any non-Manhattan detail.\n  - Placement-based trees (Steiner) therefore always use `null_layer`.\n  - Only the global-route trees carry real layers and via nodes.\n- **Steiner builder drops pins**: a Steiner node at a location already in `pins_visited` contributes no pins. This assumes the tree places all pins of a point on the first node visited.\n  - Non-load pins (drivers, other outputs) are skipped by `isLoad`.\n- **`makeBufferedNetGroute` strictness**: a loop in the route yields a null branch, which can cause the later `loadCount` mismatch error (RSZ 74). A route with fewer reachable pins aborts the flow rather than falling back.\n- **`stitchTrees` with incomplete layers** (layer < 1) drops the wire and via between the removed buffer's input and output. This slightly misestimates RC.\n  - The wire-connection code reads `node->layer()` of a load node, which is `null_layer` (\u22121) for a load node.\n  - In practice, with Steiner (non-groute) trees, this means the \"different layers\" branch is not taken. Both layers are `null_layer` and a wire is added.\n- **`reportTree`** takes `level` as the indent width, with no cap on depth. The recursion is unbounded, so very deep trees (long chains) could stack-overflow in `visitTree` and constructors-by-recursion such as `bufferCount`.\n- **`fanout` semantics**: it is a float seeded from `portFanoutLoad`, which is not the sink count. Use `loadCount()` for the actual sink count.\n- **Slack/delay annotations** are only meaningful after Rebuffer sets them. The defaults are `ZERO`, and `fitsEnvelope` on an unannotated tree compares 0 slack.",
+  "ttft_ms": 2097,
+  "type": "result",
+  "duration_ms": 44760,
+  "uuid": "a32b3203-bf41-4214-a441-20c4bb585d03",
+  "ttft_stream_ms": 1525,
+  "time_to_request_ms": 686,
+  "first_content_frame_ms": 1526,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "credential_expires_at": "2026-12-11T07:53:35.249Z",
+  "stderr_tail": ""
+}

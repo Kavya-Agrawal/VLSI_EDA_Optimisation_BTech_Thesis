@@ -1,0 +1,2 @@
+/Users/kavyaagrawal/.local/bin/claude -p --output-format json --model sonnet --max-turns 20 --permission-mode acceptEdits --allowedTools Read Grep Glob LS --add-dir '/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results' --add-dir '/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/09_agent_context'
+# cwd=/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0002_setup_strategy

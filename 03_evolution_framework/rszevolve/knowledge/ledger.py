@@ -106,7 +106,9 @@ def promote_champion(candidate_rsz: Path, iteration: int, candidate_results_dir:
     champ.parent.mkdir(parents=True, exist_ok=True)
     if champ.exists():
         shutil.rmtree(champ)
-    shutil.copytree(candidate_rsz, champ)
+    # Candidate trees preserve OpenROAD's relative test symlinks. Keep them as
+    # links when promoting so copytree does not follow snapshot-external paths.
+    shutil.copytree(candidate_rsz, champ, symlinks=True)
     rec = {"source": str(candidate_rsz), "iteration": iteration, "score_vs_baseline": score_vs_baseline,
            "aggregate_path": str(candidate_results_dir / "aggregate.json"), "results_dir": str(candidate_results_dir),
            "hypothesis": hypothesis[:500], "updated": now_iso()}

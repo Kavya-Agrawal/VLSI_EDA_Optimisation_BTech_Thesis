@@ -1,0 +1,103 @@
+{
+  "duration_api_ms": 49963,
+  "stop_reason": "end_turn",
+  "session_id": "1cf768c9-aa8f-431d-ad71-ba1d5a1043a0",
+  "total_cost_usd": 0.3048503,
+  "usage": {
+    "input_tokens": 12,
+    "cache_creation_input_tokens": 51555,
+    "cache_read_input_tokens": 237263,
+    "output_tokens": 7488,
+    "output_tokens_details": {
+      "thinking_tokens": 199
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 51555,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 5146,
+        "cache_read_input_tokens": 60892,
+        "cache_creation_input_tokens": 3137,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 3137
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-sonnet-5-5": {
+      "inputTokens": 12,
+      "outputTokens": 7488,
+      "cacheReadInputTokens": 237263,
+      "cacheCreationInputTokens": 51555,
+      "webSearchRequests": 0,
+      "costUSD": 0.3048503,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 199,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 51555,
+      "canonicalModel": "claude-sonnet-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 14,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Reading is done. I'm writing the card now.\n\n# DelayEstimatorInternal.hh\n\n## Purpose\nThis is a private header shared by two translation units: `DelayEstimator.cc` and `DelayEstimatorBufferTree.cc`. It declares the small table-model helpers that both estimators use, in namespace `rsz::estimator_detail`. The helpers look up Liberty arc delay and slew, calibrate output slew against STA's baseline, scale receiver input slew across a net, compute lumped-RC Elmore wire delay, and build a `DelayEstimate`. The header says it is \"Not an API for other files\". Everything else in the estimator, including the public `DelayEstimator` class, lives in `DelayEstimator.hh`.\n\n## Public entry points\nAll functions are in `rsz::estimator_detail`. The header includes only `OptimizerTypes.hh` and forward-declares `sta::LibertyCell`.\n\n- **`inline constexpr float kMinSlewRatioDenominator = 1.0e-15f`** is the floor for a slew used as a divisor. It guards the division in `estimateReceiverInputSlew`. The buffer-tree file uses it to guard `boundBufferTreeDownstreamStageDelay`.\n- **`inline constexpr float kElmoreSlewFactor = 1.39f`** is the Elmore delay-to-slew factor. It is used only in `DelayEstimatorBufferTree.cc` (`wireOutputSlewFromDelay`, for wire delay at or above `kBufferTreeWireDelayScaleThreshold`).\n- **`bool lookupArcDelayAndSlew(const SelectedArc&, float input_slew, float load_cap, const sta::LibertyCell* cell, float& delay, float& output_slew, ArcMatchMode = kExact, bool* match_relaxed_out = nullptr)`**\n  - It evaluates the Liberty table model of `cell` on the arc matching `arc.ref_arc`, using the scene, min/max and PVT carried in `arc`.\n  - It is a thin wrapper over the anonymous-namespace `lookupArcDelayAndSlewForArc` (`DelayEstimator.cc:291`).\n  - Callers are `DelayEstimator.cc` (the window walk near line 1996, and `findArcDelay` at line 2058) and `DelayEstimatorBufferTree.cc` (lines 198 and 419).\n- **`bool lookupBufferDelayAndSlew(const DelayStageState& target_stage, const LibertyCell* buffer_cell, float input_slew, float load_cap, float& delay, float& output_slew)`**\n  - It gives the delay and slew of an inserted buffer on the target's output transition.\n  - Callers are `DelayEstimator::findBufferDelay` (`DelayEstimator.cc:2203`) and `DelayEstimatorBufferTree.cc:276`.\n- **`float estimateOutputSlew(const DelayStageState& stage, const LibertyCell* cell, float path_input_slew, float load_cap, float selected_output_slew, ArcMatchMode merge_arc_mode = kExact, bool* slew_relaxed_out = nullptr)`**\n  - It returns the calibrated post-ECO driver output slew.\n  - Callers are `DelayEstimator.cc:2011` and `DelayEstimatorBufferTree.cc:433`.\n- **`float estimateReceiverInputSlew(const DelayStageState& driver_stage, const DelayStageState& receiver_stage, float candidate_driver_output_slew)`**\n  - It returns the receiver input slew for a new driver output slew.\n  - Callers are `DelayEstimator.cc:1980` and `DelayEstimatorBufferTree.cc:414`.\n- **`float wireElmoreDelay(const WireRC&, float load_cap)`** is called by `bufferTreeWireDelay` (`DelayEstimatorBufferTree.cc:117`).\n- **`DelayEstimate makeEstimate(float current_delay, float candidate_delay)`** is called at `DelayEstimator.cc:2036` and `DelayEstimatorBufferTree.cc:447` and `:472`.\n\n## Inputs and outputs, precisely\n**Reads**\n- Liberty data only, through the scene and PVT in `SelectedArc`:\n  - `LibertyCell::sceneCell(scene, min_max)`\n  - the timing arc sets of the cell\n  - NLDM/CCS tables, through `gateDelayAndSlewFromTableModel` (`DelayEstimator.cc:72`)\n- `DelayStageState` snapshot fields, which are prepared earlier on the main thread:\n  - `current_slew`, `current_model_slew`, `input_slew`\n  - `output_slew_merge_arcs`\n  - `sta_slew_bias`\n  - `arc`\n- These helpers do not touch odb, parasitics, the STA graph or options. The STA graph is read only when `DelayEstimator.cc` prepares the snapshots, for example `edgeFromSlew` and `arcDelay`.\n\n**Writes and returns**\n- All functions are pure. They mutate nothing global.\n- Outputs go through reference parameters (`delay`, `output_slew`) and the optional `*match_relaxed_out` / `*slew_relaxed_out` flags.\n- The relaxed flags are OR-set only. They are never reset to false, so callers can chain several lookups on one flag.\n- `lookupArcDelayAndSlewForArc` initialises `delay = -sta::INF` and `output_slew = 0` before searching.\n- `lookupBufferDelayAndSlew` initialises both to `0`.\n- Outputs are in STA's internal units (seconds, farads).\n\n## Algorithm / control flow\n**`lookupArcDelayAndSlew`** (`DelayEstimator.cc:291`)\n1. It returns false if `cell` is null or `sceneCell(scene, min_max)` is null.\n2. It finds the cell's arc sets between the ports named like `ref_arc->from()` and `->to()`, matched by port name. If either port is missing, the arc-set list is empty.\n3. It skips timing-check arc sets.\n4. It takes the first arc found by `findMatchingTimingArc(ref_arc, arc_set)` (the exact matcher) and returns the table-model result.\n5. If nothing matched and the mode is not `kRelaxedCandidate`, it returns false.\n6. In relaxed mode it scans every non-check arc with `matchTimingArc(..., kRelaxedCandidate) == kRelaxed`. It keeps the arc with the worst output slew, using `min_max->compare`. The reported delay comes from that same arc. If any arc is kept, it sets `*match_relaxed_out`.\n\n**`lookupBufferDelayAndSlew`** (`DelayEstimator.cc:398`)\n1. It resolves the scene cell and its `bufferPorts`.\n2. It scans non-check arcs of the buffer's input-to-output arc sets.\n3. It keeps only arcs whose input and output edges both equal `target_stage.arc.outputRiseFall()`. This assumes a non-inverting buffer on that transition.\n4. Among the arcs that evaluate, it keeps the worst delay for the min/max sense. The slew is the slew of that same arc.\n\n**`estimateOutputSlew`** (`DelayEstimator.cc:1151`)\n1. If `canUseSlewBias` holds, it uses the slew-bias path:\n   - `canUseSlewBias` requires `sta_slew_bias.valid`, `cell == stage.arc.currentCell()`, and `slewsMatch(input_slew, stage.input_slew)`.\n   - It evaluates the model's `table_worst_arc` at `sta_slew_bias.input_slew` and the new load.\n   - It adds `interpolateStaSlewBias(model, load_cap)`, a three-sample interpolation, and clamps at 0.\n   - If the lookup fails, it falls through to the merge path.\n2. Otherwise it runs the merge path:\n   - It starts from `selected_output_slew`.\n   - For each `OutputSlewMergeArc`, it uses `path_input_slew` if the arc shares the selected input port and edge, and the arc's own stored `input_slew` otherwise. It looks the arc up and keeps the worst slew.\n   - It returns `max(current_slew + (model_slew - current_model_slew), 0)`. This is a delta calibration against STA's merged vertex slew.\n\n**`estimateReceiverInputSlew`**\n- It returns `max(cand,0) * max(receiver.input_slew,0) / max(driver.current_slew, 1e-15)`, which keeps the current wire degradation ratio.\n\n**`wireElmoreDelay`**\n- It returns 0 if `res <= 0`, `cap < 0` or `load_cap < 0`. Otherwise it returns `res * (load_cap + 0.5 * cap)`.\n\n**`makeEstimate`**\n- `arrival_impr = current - candidate`.\n- `legal = arrival_impr > 0`, with strict inequality.\n- `reason` is `kEstimateLegal` or `kEstimateNonImproving`.\n- `side_paths_evaluated` and `side_loss` stay at 0. Later passes fill them in (`applyDualRfCheck`, `applyFaninSideLoss`, in `DelayEstimator.cc`).\n\n## Key data structures\nAll are defined in `OptimizerTypes.hh`.\n- **`SelectedArc`** holds `scene`, `min_max`, `pvt` and `ref_arc`, plus accessors `inputPort`, `outputPort`, `inputRiseFall`, `outputRiseFall` and `currentCell`.\n- **`DelayStageState`** is the per-stage electrical snapshot. It holds `arc`, `driver_pin`, `input_slew`, `load_cap`, `current_model_delay`, `current_delay`, `current_wire_delay`, `current_model_slew` and `current_slew`. It also holds `output_slew_merge_arcs`, `sta_slew_bias`, `opposite_rf_arcs` and `path_index`.\n- **`SlewBiasModel`** holds `valid`, `table_worst_arc`, `input_slew` and `samples[3]` of `{load_cap, table_slew, sta_slew}`.\n- **`OutputSlewMergeArc`** is `{ref_arc, input_slew, current_model_slew}`.\n- **`WireRC`** is `{length, res, cap}`.\n- **`DelayEstimate`** is `{legal, candidate_delay, arrival_impr, side_paths_evaluated, side_loss, reason}`.\n- **`ArcMatchMode`** is `kExact` or `kRelaxedCandidate`.\n- **`FailReason`** is the reason enum.\n\n## Callers and callees (verified by reading)\n- **Callers** (verified by grep): only `DelayEstimator.cc` and `DelayEstimatorBufferTree.cc`, through `using estimator_detail::...` declarations near the top of each file.\n- **Definitions:**\n  - `DelayEstimator.cc:376` (`lookupArcDelayAndSlew`)\n  - `DelayEstimator.cc:398` (`lookupBufferDelayAndSlew`)\n  - `DelayEstimator.cc:1151` (`estimateOutputSlew`)\n  - `DelayEstimator.cc:1217` (`estimateReceiverInputSlew`)\n  - `DelayEstimator.cc:1240` (`wireElmoreDelay`)\n  - `DelayEstimator.cc:1576` (`makeEstimate`)\n- **Callees:**\n  - `lookupArcDelayAndSlewForArc`\n  - `gateDelayAndSlewFromTableModel`\n  - `findMatchingTimingArc`\n  - `matchTimingArc`\n  - `canUseSlewBias`\n  - `interpolateStaSlewBias`\n  - `LibertyCell::sceneCell`, `bufferPorts` and `timingArcSets`\n- I did not read the bodies of `gateDelayAndSlewFromTableModel` or the matcher functions in detail.\n\n## Invariants and \"do not break\"\n- Keep these helpers free of STA analysis calls (`Resizer`, graph, parasitics). Worker threads call them on a `Target`'s prepared snapshot, and the snapshot is prepared on the main thread. The estimators are used by Mt policies, so a mutable or STA-touching helper would introduce data races.\n- They have no journaling or rollback duty, because they never change the netlist.\n- They are deterministic. The only tie-breaks are `min_max->compare` over arcs, which depends on arc iteration order.\n- Relaxed matching must stay target-candidate only. Callers use `kExact` for fanin, fanout and downstream stages.\n- The `*_relaxed_out` flags are accumulate-only. Do not reset them inside these helpers.\n- The slew calibration baseline pairs `current_slew` with `current_model_slew`. A new caller must supply both from the same snapshot.\n- `legal` means strictly positive arrival improvement. Policies treat `legal=false` as a skip.\n- dont_touch and legality are not checked here. They are handled upstream in the generators and candidates.\n- Parasitics validity is also not handled here. `WireRC` values come from the callers.\n\n## Weak spots / assumptions an algorithm designer should know\n- Delays are table lookups with lumped load and no wire-RC or CCS waveform effects. `DelayEstimator.cc` partly compensates by adding the table delta to STA's baseline (`current_delay + model_delta`) and by the slew-bias model.\n- `lookupBufferDelayAndSlew` ignores inverting buffers and unequal input and output edges. It requires both edges to equal the target output transition.\n- When the relaxed arc search finds several arcs, it picks the worst slew, not the best delay. That is deliberately conservative for slew but can misreport delay.\n- Exact arc matching takes the first matching arc set. Conditional (`when`) arcs may therefore pick one condition arbitrarily.\n- Slew-bias interpolation is valid only at a matching input slew (`slewsMatch`) and for the unchanged cell. Cell swaps always use merge calibration.\n- `estimateReceiverInputSlew` assumes the net's slew degradation ratio stays constant after the ECO. A buffer or split changes the wire, so this is only approximate. The buffer-tree estimator adds its own scale factors and the `boundBufferTreeDownstreamStageDelay` bound for that reason.\n- `wireElmoreDelay` returns 0 for non-positive resistance and also for negative caps. Bad `WireRC` data therefore yields an optimistic zero silently.\n- The `kElmoreSlewFactor` of 1.39 is a fixed constant, with no technology dependence.",
+  "ttft_ms": 2083,
+  "type": "result",
+  "duration_ms": 50532,
+  "uuid": "42d0e6be-9268-4710-8ce1-b9b5e80c495a",
+  "ttft_stream_ms": 1259,
+  "time_to_request_ms": 444,
+  "first_content_frame_ms": 1260,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "credential_expires_at": "2026-12-11T07:53:35.249Z",
+  "stderr_tail": ""
+}

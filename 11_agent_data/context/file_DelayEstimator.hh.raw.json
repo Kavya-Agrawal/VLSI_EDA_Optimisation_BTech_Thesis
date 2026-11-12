@@ -1,0 +1,111 @@
+{
+  "duration_api_ms": 56493,
+  "stop_reason": "end_turn",
+  "session_id": "7820f356-8992-4be5-b72a-8bdddfa16048",
+  "total_cost_usd": 0.33316060000000003,
+  "usage": {
+    "input_tokens": 18,
+    "cache_creation_input_tokens": 53416,
+    "cache_read_input_tokens": 368706,
+    "output_tokens": 8259,
+    "output_tokens_details": {
+      "thinking_tokens": 119
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 53416,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 6672,
+        "cache_read_input_tokens": 62999,
+        "cache_creation_input_tokens": 2891,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2891
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-sonnet-5-5": {
+      "inputTokens": 18,
+      "outputTokens": 8259,
+      "cacheReadInputTokens": 368706,
+      "cacheCreationInputTokens": 53416,
+      "webSearchRequests": 0,
+      "costUSD": 0.33316060000000003,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 119,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 53416,
+      "canonicalModel": "claude-sonnet-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_015wNenCoYM2GH8twamTvDqp",
+      "tool_input": {
+        "command": "cd /Users/kavyaagrawal/Desktop/Github\\ repos\\ and\\ Projects/VLSI_EDA_Optimisation_BTech_Thesis/01_openroad_original/rsz_snapshot/src && sed -n 55,335p OptimizerTypes.hh; cat DelayEstimatorInternal.hh; grep -rln \"DelayEstimator::\\|DelayEstimatorCache\" . "
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "# DelayEstimator.hh\n\n## Purpose\nThis header is the delay model for the multithreaded (MT) optimizer moves: size-up, VT swap, split-load, size-down-fanout and rebuffer. On the main thread, `buildContext()` snapshots a path-local window of STA timing into an `EstimatorContext`. Worker threads then score candidates from that snapshot and the Liberty tables alone, without touching STA. The score is the table-model change in arrival time, plus a penalty for slack lost on other paths that share the target's fanin nets. It also holds `DelayEstimatorCache`, which reuses preparation work across targets in one policy run.\n\n## Public entry points\n- `static bool DelayEstimator::findArcDelay(const SelectedArc&, float input_slew, float load_cap, const sta::LibertyCell*, float& delay)`\n  - Gives the Liberty table delay of one arc.\n  - It uses exact arc matching only.\n  - Caller: `move/SplitLoadMtCandidate.cc`.\n- `static std::optional<EstimatorContext> buildContext(Resizer&, const Target&, int delay_levels, FailReason*, bool use_sta_slew_bias, bool include_latch_fanin, DelayEstimatorCache*, const FaninSideLoadOptions*, bool dual_rf_eval)`\n  - This is the main-thread-only preparation step.\n  - Callers: `OptimizationPolicy::buildPolicyContext` (`policy/OptimizationPolicy.cc:263`) and `SequentialTimingEstimator.cc:227`, which uses the lower-level overload.\n- `static std::optional<EstimatorContext> buildContext(Resizer&, sta::Instance*, sta::Pin* driver_pin, const sta::PathExpanded&, int path_index, const sta::Scene*, const sta::MinMax*, int delay_levels, ...same trailing args)`\n  - This is the lower-level overload. The `Target` overload unpacks `target.endpoint_path` into it.\n- `static DelayEstimate estimate(const EstimatorContext&, const sta::LibertyCell* candidate_cell, std::vector<StageEvaluation>* trace=nullptr)`\n  - Scores swapping the target cell for `candidate_cell`.\n  - Callers: `SizeUpMtCandidate.cc:39` and `VtSwapMtCandidate.cc:59`.\n  - `DelayEstimatorReporter.cc` also calls it.\n- `static DelayEstimate estimateLoadChange(const EstimatorContext&, float target_load_delta)`\n  - Scores a change in the target's load cap while the target keeps its cell.\n  - Callers: `SplitLoadMtCandidate.cc:45` and `SizeDownFanoutMtCandidate.cc:37`.\n- `static bool findBufferDelay(const EstimatorContext&, const sta::LibertyCell* buffer, float input_slew, float load_cap, float& delay)`\n  - Gives the delay of a buffer on the target's output transition.\n  - Caller: `SplitLoadMtCandidate.cc:64`.\n- `static void chargeMovedLoads(const EstimatorContext&, const std::vector<SideLoad>&, float delay_delta, DelayEstimate&)`\n  - Charges the loads a split moves to the new driver.\n  - Caller: `SplitLoadMtCandidate.cc:76`.\n- `static DelayEstimate estimateBufferTreeWithSidePaths(const EstimatorContext&, const RebufferTreePlan&, const std::vector<BufferTreeSidePathContext>&, trace*, side_evaluations*)`\n  - Defined in `DelayEstimatorBufferTree.cc:477`.\n  - Caller: `RebufferMtCandidate.cc:97`.\n- `float oppositeRfSideLoss(float opposite_slack, float delay_delta)`: free function for the dual-RF check.\n- `inline float sideLoadWeight(pin, critical_load_pins, off_path_weight)`: returns 1 for pins in the critical set (or when the set is null), otherwise `off_path_weight`. Callers: `SplitLoadMtGenerator.cc:125` and `RebufferMtGenerator.cc:131`.\n- `class DelayEstimatorCache`\n  - `clear()`.\n  - `maxEquivalentInputCapIncrease(Resizer&, const DelayStageState&)`.\n  - `getOrSampleSlewBias(Resizer&, const DelayStageState&, float max_load_delta)`.\n  - It is held as `OptimizationPolicy::estimator_cache_` (`mutable`).\n\n## Inputs and outputs, precisely\n**`buildContext` reads**\n- The expanded worst path (`PathExpanded`), scene, min/max, and the target's driver pin and instance.\n- Per-stage `inputSlewOrZero`, STA graph arc delay and slew, and path wire delay.\n- Liberty arcs and tables.\n- Driver vertex edges and the opposite-transition slack.\n- Slacks of fanin-net load vertices (`sta->slack(vertex, min_max)`).\n- `resizer.driveResistance(driver)`, and `resizer.equivCells()` for the cap envelope.\n- The reduced Pi parasitic, in the slew-bias case.\n- Clock status (`sta->isClock`), dont-use and link-cell status.\n\n**`buildContext` mutates**\n- Only when `use_sta_slew_bias` is set. It temporarily calls `parasitics->setPiModel(...)` on the fanin driver's live Pi model and calls `arcDelayCalc()->gateDelay` / `finishDrvrPin`. A `PiModelRestore` guard restores the model afterwards.\n- This is documented as single-threaded only.\n\n**`buildContext` returns**\n- `nullopt` plus a `FailReason`, or an `EstimatorContext`.\n\n**`estimate*` functions**\n- They read only the context and Liberty tables, and mutate nothing. The one exception is `chargeMovedLoads`, which updates the `DelayEstimate&` you pass in.\n- They return a `DelayEstimate`: `legal`, `candidate_delay`, `arrival_impr`, `side_paths_evaluated`, `side_loss` and `reason`.\n- Callers later turn `arrival_impr - side_loss` into a policy-level score. The score formula is not in this file.\n\n**Context fields the caller sets after `buildContext`**\n`OptimizationPolicy::buildPolicyContext` sets these when `fanin_side_loss`, `dual_rf_eval` or `rebuffer_mt_side_loads` is on:\n- `side_slack_floor`, from `worstSlack(maxAnalysisMode())`.\n- `side_floor_margin`.\n- `fanin_side_loss_weight`.\n\nIf the caller never sets them, the floor stays at `-inf` and no side path can violate it.\n\n## Algorithm / control flow\n**`buildContext`**\n1. Build the target `DelayStageState`. This must succeed; failures map to `FailReason` values.\n2. `collectPathStages` adds up to `delay_levels` stages on each side of the target. Negative levels are clamped to 0. The context always has at least the target stage.\n3. If `include_latch_fanin` is set, `includeLatchFaninStages` stitches in the D-side driver of a latch at the path start, with `path_index -1`. If that fails, `buildContext` fails.\n4. If `use_sta_slew_bias` is set, `prepareFaninNeighborSlewBias` samples only the immediate fanin driver (`target_stage_index > 0`).\n   - `max_load_delta` is the largest input-cap increase over all non-dont-use, link-cell equivalent cells.\n   - It takes 3 sample loads: `load`, `load + \u0394/2` and `load + \u0394`.\n   - It needs a stable table-worst arc at all three loads, and a valid Pi model.\n   - Each sample records the gap between the STA slew and the table slew.\n   - Anything unstable or missing gives `valid=false` and the model is not used.\n5. If `fanin_side_loads` is non-null, `collectFaninSideLoads` records every input net of the target.\n   - For each net it records the other load pins and their slack.\n   - Infinite-slack loads are skipped.\n   - Each load gets a `sideLoadWeight`.\n   - A net off the selected arc takes `delay_per_cap = driveResistance(driver)`. If that value is \u2264 0 or the driver has no Liberty port, the net is skipped.\n6. If `dual_rf_eval` is set, `collectOppositeRfArcs` finds target arcs from the same input to the same output on the opposite output transition. It also records their table delay and the driver's opposite-transition slack.\n\n**`estimateWindow`** (shared by `estimate` and `estimateLoadChange`)\n1. Find the candidate's scene cell and input port. If either is missing, return `kMissingCandidatePort`.\n2. Compute `target_input_cap_delta`.\n3. Walk the stages.\n   - Stages before `target-1` are unchanged and reuse `current_delay`.\n   - The fanin neighbour gets `load_cap += target_input_cap_delta`.\n   - The target uses the candidate cell and `max(load + target_load_delta, 0)`.\n   - Downstream stages keep their current cell.\n   - Slew is propagated stage to stage. `estimateReceiverInputSlew` scales the new driver slew by the current receiver/driver slew ratio, using `kMinSlewRatioDenominator` = 1e-15.\n4. Per stage, the delay is `current_delay + (table_delay - current_model_delay)`. This keeps the STA baseline and applies a model delta on top.\n5. Output slew: if the cell is unchanged, the input slew matches and `sta_slew_bias.valid` holds, use the table slew plus the interpolated STA bias. Otherwise take the worst slew over `output_slew_merge_arcs` (merged slew), then calibrate to `current_slew + (model - current_model_slew)`, floored at 0.\n6. Target-stage arc lookup uses `kRelaxedCandidate` matching: same port name and rise/fall when no exact arc is found. All other stages use `kExact`. A missing arc gives `kMissingCandidateTimingArc` for the target and `kMissingCurrentTimingArc` elsewhere.\n7. `makeEstimate`: `arrival_impr = current_total_delay - candidate_total_delay`. `legal` means `arrival_impr > 0`, otherwise `kEstimateNonImproving`.\n8. If legal, `applyDualRfCheck` runs.\n   - It takes the worst increase in opposite-transition delay over the opposite-RF arcs.\n   - `side_loss += oppositeRfSideLoss`.\n   - It sets `kDualRfNonImproving` if the slack after falls below `sideSlackFloor(arrival_impr)`.\n9. `applyFaninSideLoss` runs.\n   - On the selected net it uses the window's exact fanin delay delta. Otherwise it uses `delay_per_cap * \u0394 input_cap` and a slew delta of `kSideSlewPerDelay` (1.4) \u00d7 that delay.\n   - It adds `kSideSlewDelayFactor` (0.3) \u00d7 the slew growth to the delay delta.\n   - Deltas \u2264 0 are skipped.\n   - Each load adds `weight * (min(slack,0) - min(slack_after,0))` to the loss. This counts only slack below zero.\n   - `chargeSideLoss` adds `loss * fanin_side_loss_weight` to `side_loss`.\n   - If the worst slack after falls below `sideSlackFloor(arrival_impr)`, it sets `legal=false` with `kSideSlackFloorViolation`.\n\n**`sideSlackFloor(gain) = side_slack_floor - side_floor_margin * max(gain, 0)`**. A side path may therefore drop below the global worst slack by at most `side_floor_margin` times the candidate's gain.\n\n**`chargeMovedLoads`** applies the same loss and floor logic to loads moved by a split.\n\n**`estimateBufferTreeWithSidePaths`**\n1. Estimate the target path through the tree (`estimateBufferTreeWindow`). If that estimate is unavailable, return it as is.\n2. For each side context, estimate the side path (`estimateSidePathWindow`).\n3. Compute `slack_after = current_slack + side_arrival_impr`.\n4. Add `weight * negative-region loss` to `side_loss`.\n5. A side path below the floor, or one with no available estimate, makes the plan illegal.\n6. Side effective load uses `kBufferTreeSideEffectiveLoadCapFactor`.\n\n## Key data structures\nDefined in `OptimizerTypes.hh` unless stated.\n- `EstimatorContext`:\n  - `path_stages` and `target_stage_index`.\n  - `fanin_side_nets`.\n  - `side_slack_floor`, `side_floor_margin` and `fanin_side_loss_weight`.\n  - `opposite_rf_slack`.\n  - `current_total_delay`, which is cached.\n- `DelayStageState`:\n  - The selected arc, driver pin, input slew and load cap.\n  - Baseline model and STA delays and slews.\n  - `output_slew_merge_arcs`.\n  - `sta_slew_bias`.\n  - `opposite_rf_arcs`.\n  - `path_index`.\n- `SelectedArc` holds scene, min/max, pvt and `ref_arc`.\n- `SlewBiasModel` holds three `SlewBiasSample`s.\n- `SideLoad` and `FaninSideNet`.\n- `DelayEstimate`.\n- `FaninSideLoadOptions`.\n- `StageEvaluation`, `BufferTreeSidePathContext` and `BufferTreeSidePathEvaluation` (this header).\n- `DelayEstimatorCache::SlewBiasModelKey`:\n  - Driver pin, arc, scene, min/max, cell, input slew, load cap, `max_load_delta`, Pi (c2, r, c1) and merge arcs.\n  - It has its own hash.\n  - Maps: `max_equiv_input_cap_increase_by_port`, keyed by `LibertyPort*`, and `slew_bias_models`.\n- `DelayEstimatorInternal.hh` shares helpers with the buffer-tree file only: `lookupArcDelayAndSlew`, `estimateOutputSlew`, `makeEstimate`, `wireElmoreDelay` and `kElmoreSlewFactor` = 1.39.\n\n## Callers and callees (verified by reading)\n- **Callers:** `policy/OptimizationPolicy.{cc,hh}`, `SequentialTimingEstimator.cc`, `move/{SizeUp,VtSwap,SplitLoad,SizeDownFanout,Rebuffer}Mt{Candidate,Generator}.cc`, and `DelayEstimatorReporter.cc`.\n- **Callees:**\n  - STA: `graph`, `slack`, `worstSlack` (the last is called by the policy), `graphDelayCalc()->edgeFromSlew`, `arcDelayCalc()->gateDelay`, parasitics `piModel` / `setPiModel`.\n  - Resizer: `driveResistance`, `equivCells`, `dontUse`, `isLinkCell`, `maxAnalysisMode`.\n  - Liberty table lookup via `lookupArcDelayAndSlew`.\n  - Profiling and logging: `ProfileScope`, `RepairSetupProfiler::event` and `debugPrint` under the \"delay_estimator\" group.\n\n## Invariants and \"do not break\"\n- **Thread safety**\n  - `buildContext`, `getOrSampleSlewBias` and `maxEquivalentInputCapIncrease` must run on the main thread only. Slew-bias sampling mutates live Pi parasitics and the delay-calc state.\n  - `estimate*`, `findBufferDelay`, `findArcDelay` and `chargeMovedLoads` must not touch STA.\n  - `DelayEstimatorCache` is not thread-safe, so the policy must call it from the prepare stage only.\n- **Pi restore:** `PiModelRestore` must run on every exit path, or parasitics are left corrupted.\n- **Cache lifetime:** call `DelayEstimatorCache::clear()` at the start of each policy run. The key covers electrical state, but a netlist change would leave stale `Pin*` / `TimingArc*` entries.\n- **No journaling:** this file does no netlist edits, so there is nothing to roll back. All mutations are made by the moves that use it.\n- **Determinism:** it relies on `unordered_*` containers only for cache lookups, and on iteration order of STA iterators. `drivers->begin()` picks an arbitrary driver on multi-driver nets.\n- **dont_touch:** it is not checked here. Only `dontUse` is checked, for the cap envelope. The generators are responsible for dont_touch and legality.\n- **Context validity:** the context is a snapshot. Any netlist or parasitic change after `buildContext` makes it stale.\n- **Unset side-floor fields:** if the caller forgets to set `side_slack_floor` after `buildContext`, the check is silently off.\n- **Arc matching:** keep `kRelaxedCandidate` limited to the target candidate.\n\n## Weak spots / assumptions an algorithm designer should know\n- **Interconnect slew:** the model approximates interconnect slew degradation with the current receiver/driver ratio, and ignores wire RC delay changes. The source calls this a speed/accuracy trade-off.\n- **Window size:** only the stages within `delay_levels` of the target are re-scored, and the load cap of downstream stages never changes. Effects beyond the window are invisible.\n- **Slew bias coverage:** it applies only to the immediate fanin driver, only when the cell and input slew are unchanged, and only if a stable table-worst arc exists. It is skipped silently (debug level 3) otherwise.\n- **Side-load approximation:**\n  - Off-path nets use a linear `delay_per_cap` (the driver's drive resistance).\n  - The 1.4 and 0.3 constants are heuristic.\n  - Only increases in fanin delay are charged. A cell that lowers input cap gets no credit for helping siblings.\n  - Only slack below zero is counted, as a TNS proxy.\n  - `weight` depends on whether the pin lies on a worst path of a violating endpoint.\n- **Floor choice:** the global worst slack at prepare time is a coarse bound. Other moves accepted in the same run can invalidate it.\n- **Dual RF:** the check applies only if the primary estimate is legal. It uses relaxed arc matching and checks only the worst-delta arc.\n- **Legality:** `legal` is strictly `arrival_impr > 0`. A move that is neutral on the path but helps elsewhere is rejected.\n- **Wide fanin nets:** nets with many loads cost O(loads) per candidate.\n- **Cache key:** it includes floats compared exactly, so near-identical states miss the cache.\n- **Skipped nets:** fanin nets whose driver has no Liberty port or a zero drive resistance are skipped, so those loads pay nothing.\n- **Latch fanin:** `include_latch_fanin` fails the whole context if the D-side driver cannot be stitched in.",
+  "ttft_ms": 2034,
+  "type": "result",
+  "duration_ms": 57225,
+  "uuid": "8f7e0ac7-6837-4630-bed3-1132864c8e13",
+  "ttft_stream_ms": 1286,
+  "time_to_request_ms": 410,
+  "first_content_frame_ms": 1286,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "credential_expires_at": "2026-12-11T07:53:35.249Z",
+  "stderr_tail": ""
+}

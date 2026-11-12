@@ -1,0 +1,236 @@
+{
+  "stressed": {
+    "nangate45/gcd": {
+      "ok": true,
+      "replicates": 2,
+      "failed": 0,
+      "period_ns": 0.225,
+      "endpoints": 72,
+      "pre": {
+        "wns_setup": -0.1749589966869834,
+        "tns_setup": -8.003023359426166,
+        "setup_violations": 53
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.17417545676519416,
+          "min": -0.17417545676519416,
+          "max": -0.17417545676519416
+        },
+        "tns_setup": {
+          "mean": -7.62617102164613,
+          "min": -7.62617102164613,
+          "max": -7.62617102164613
+        },
+        "wns_hold": {
+          "mean": 0.08703885081255561,
+          "min": 0.08703885081255561,
+          "max": 0.08703885081255561
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 52.0,
+          "min": 52.0,
+          "max": 52.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 848.806025466331,
+          "min": 848.806025466331,
+          "max": 848.806025466331
+        },
+        "util": {
+          "mean": 0.7882905138339975,
+          "min": 0.7882905138339975,
+          "max": 0.7882905138339975
+        },
+        "instances": {
+          "mean": 705.0,
+          "min": 705.0,
+          "max": 705.0
+        },
+        "buffers": {
+          "mean": 158.0,
+          "min": 158.0,
+          "max": 158.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 1776.0,
+        "min": 1673.0,
+        "max": 1879.0
+      },
+      "deterministic": true,
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0002_setup_strategy/runs/nangate45__gcd/stressed_r0",
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0002_setup_strategy/runs/nangate45__gcd/stressed_r1"
+      ]
+    },
+    "nangate45/aes": {
+      "ok": true,
+      "replicates": 2,
+      "failed": 0,
+      "period_ns": 0.656,
+      "endpoints": 1248,
+      "pre": {
+        "wns_setup": -0.16098328681313692,
+        "tns_setup": -21.23573554886486,
+        "setup_violations": 160
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.10828860337159199,
+          "min": -0.10828860337159199,
+          "max": -0.10828860337159199
+        },
+        "tns_setup": {
+          "mean": -14.773421126812009,
+          "min": -14.773421126812009,
+          "max": -14.773421126812009
+        },
+        "wns_hold": {
+          "mean": 0.10201455247075145,
+          "min": 0.10201455247075145,
+          "max": 0.10201455247075145
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 160.0,
+          "min": 160.0,
+          "max": 160.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 20271.860634579753,
+          "min": 20271.860634579753,
+          "max": 20271.860634579753
+        },
+        "util": {
+          "mean": 0.3840455553315244,
+          "min": 0.3840455553315244,
+          "max": 0.3840455553315244
+        },
+        "instances": {
+          "mean": 15197.0,
+          "min": 15197.0,
+          "max": 15197.0
+        },
+        "buffers": {
+          "mean": 3220.0,
+          "min": 3220.0,
+          "max": 3220.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 23417.5,
+        "min": 18622.0,
+        "max": 28213.0
+      },
+      "deterministic": true,
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0002_setup_strategy/runs/nangate45__aes/stressed_r0",
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0002_setup_strategy/runs/nangate45__aes/stressed_r1"
+      ]
+    },
+    "nangate45/ibex": {
+      "ok": true,
+      "replicates": 2,
+      "failed": 0,
+      "period_ns": 1.76,
+      "endpoints": 5565,
+      "pre": {
+        "wns_setup": -0.4124838365400831,
+        "tns_setup": -519.0381249487216,
+        "setup_violations": 1662
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.29941183713160996,
+          "min": -0.29941183713160996,
+          "max": -0.29941183713160996
+        },
+        "tns_setup": {
+          "mean": -416.2728946035277,
+          "min": -416.2728946035277,
+          "max": -416.2728946035277
+        },
+        "wns_hold": {
+          "mean": 0.044729221592639395,
+          "min": 0.044729221592639395,
+          "max": 0.044729221592639395
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 1650.0,
+          "min": 1650.0,
+          "max": 1650.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 28628.781123529734,
+          "min": 28628.781123529734,
+          "max": 28628.781123529734
+        },
+        "util": {
+          "mean": 0.510702609339251,
+          "min": 0.510702609339251,
+          "max": 0.510702609339251
+        },
+        "instances": {
+          "mean": 14608.0,
+          "min": 14608.0,
+          "max": 14608.0
+        },
+        "buffers": {
+          "mean": 1091.0,
+          "min": 1091.0,
+          "max": 1091.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 38647.0,
+        "min": 36904.0,
+        "max": 40390.0
+      },
+      "deterministic": true,
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0002_setup_strategy/runs/nangate45__ibex/stressed_r0",
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0002_setup_strategy/runs/nangate45__ibex/stressed_r1"
+      ]
+    }
+  },
+  "tier": "A",
+  "replicates": 2,
+  "when": "2026-11-12T22:43:10Z",
+  "rsz_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0002_setup_strategy/rsz"
+}

@@ -1,0 +1,103 @@
+{
+  "duration_api_ms": 50299,
+  "stop_reason": "end_turn",
+  "session_id": "3e44d671-96f7-4a76-8b8c-59d2f7158a7b",
+  "total_cost_usd": 0.27625900000000003,
+  "usage": {
+    "input_tokens": 14,
+    "cache_creation_input_tokens": 44231,
+    "cache_read_input_tokens": 269570,
+    "output_tokens": 7235,
+    "output_tokens_details": {
+      "thinking_tokens": 144
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 44231,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 5835,
+        "cache_read_input_tokens": 55796,
+        "cache_creation_input_tokens": 909,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 909
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-sonnet-5-5": {
+      "inputTokens": 14,
+      "outputTokens": 7235,
+      "cacheReadInputTokens": 269570,
+      "cacheCreationInputTokens": 44231,
+      "webSearchRequests": 0,
+      "costUSD": 0.27625900000000003,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 144,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 44231,
+      "canonicalModel": "claude-sonnet-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 8,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "# DelayEstimatorBufferTree.cc\n\n## Purpose\nThis file times a `RebufferMt` buffer-tree plan with Liberty table lookups and Elmore wire delays, with no STA call. It estimates the arrival gain along the target path (driver \u2192 tree \u2192 downstream path stages). It also estimates the delay change on each \"side path\", meaning another load pin the tree rewires. The result is a `DelayEstimate` that ranks candidate trees. The header comment says STA times each batch before a tree is kept, so a wrong estimate costs QoR, not correctness.\n\n## Public entry points\nOnly one symbol is exported. Everything else is in an anonymous namespace.\n\n```cpp\nstatic DelayEstimate DelayEstimator::estimateBufferTreeWithSidePaths(\n    const EstimatorContext& context,\n    const RebufferTreePlan& plan,\n    const std::vector<BufferTreeSidePathContext>& side_contexts,\n    std::vector<StageEvaluation>* trace = nullptr,\n    std::vector<BufferTreeSidePathEvaluation>* side_evaluations = nullptr);\n```\n- **Purpose:** returns the target-path arrival improvement, minus the weighted negative-slack loss of the side paths. It marks the estimate illegal if any side path falls below the side slack floor.\n- **Caller:** only `RebufferMtCandidate::estimateTree` (`move/RebufferMtCandidate.cc:90-98`). That is called from the candidate's estimate step (`RebufferMtCandidate.cc:59`). The result goes through `raw_score_ = arrival_impr - side_loss` and a `min_score_` check.\n- **Reporting:** `trace` and `side_evaluations` are for the accuracy report. The report code is probably `DelayEstimatorReporter.cc`; I did not open it.\n- **Declared at:** `DelayEstimator.hh:265`.\n\n## Inputs and outputs, precisely\n**Reads**, all as precomputed snapshots (no live STA or odb access in this file):\n- **`EstimatorContext`:**\n  - `path_stages`, `target_stage_index`, `target()`.\n  - `current_total_delay`.\n  - `sideSlackFloor(gain)`, which is `side_slack_floor - side_floor_margin * max(gain, 0)`.\n- **`DelayStageState`** fields used:\n  - `arc` (`SelectedArc`: scene, min_max, pvt, ref_arc).\n  - `input_slew`, `load_cap`, `current_delay`, `current_model_delay`, `current_slew`, `current_wire_delay`, `path_index`.\n- **`RebufferTreePlan`:**\n  - `tree_input_cap`.\n  - `targetPath()`, which is dereferenced without a null check.\n  - `loadPath(pin)`, also dereferenced unchecked.\n  - Each `BufferTreeLoadPath` holds stages with `type` (wire/via/buffer), `buffer_cell`, `wire_rc`, `downstream_cap` and `drives_distributed_load`.\n- **`BufferTreeSidePathContext`:** `load_pin`, `current_driver_to_load_delay`, `current_slack`, `weight`.\n- **Liberty tables:** read through `estimator_detail::lookupArcDelayAndSlew` and `lookupBufferDelayAndSlew` (in `DelayEstimator.cc`). The buffer lookup uses `cell->sceneCell(scene, min_max)`, `bufferPorts`, and `gateDelayAndSlewFromTableModel`.\n\n**Writes:** only the output parameters.\n- **Returns** a `DelayEstimate`:\n  - `legal`, `candidate_delay`, `arrival_impr`.\n  - `side_paths_evaluated`, `side_loss`.\n  - `reason`: `kEstimateLegal`, `kEstimateNonImproving`, `kInvalidBufferInsertion`, `kMissingCurrentTimingArc`, `kMissingBufferTimingArc`, `kSideSlackFloorViolation`.\n- **`trace`:** cleared, then filled with one `StageEvaluation` per pre-target, driver, tree and post-target stage.\n- **`side_evaluations`:** cleared and reserved, then one entry per side path.\n- **Not touched:** odb, STA, parasitics, the journal, and the Resizer.\n\n## Algorithm / control flow\n\n### 1. Entry (`estimateBufferTreeWithSidePaths`)\n1. Clear the outputs and create an empty `BranchTimingCacheNode` (the root of the cache).\n2. Run `estimateBufferTreeWindow`.\n3. If its reason is neither `kEstimateLegal` nor `kEstimateNonImproving`, return it immediately and skip the side paths. A non-improving target (`arrival_impr <= 0`) still proceeds to the side paths.\n4. For each side context:\n   - Call `estimateSidePathWindow`.\n   - `side_impr` is the estimate's `arrival_impr`, or `-inf` if the estimate failed.\n   - `slack_after = current_slack + side_impr`.\n   - Increment `side_paths_evaluated`.\n   - If the side estimate failed, set `legal=false` with the side's reason.\n   - Otherwise add `weight * (min(current_slack, 0) - min(slack_after, 0))` to `side_loss`. Only slack in the negative region counts as loss, so a side path that stays positive costs nothing.\n   - If `slack_after < context.sideSlackFloor(estimate.arrival_impr)`, set `legal=false` and `kSideSlackFloorViolation`.\n   - Loop on after a failure; later sides can overwrite the reason. This is deliberate, so every side is still evaluated and appears in `side_evaluations`.\n5. Return the estimate. `side_loss` is not subtracted here; `RebufferMtCandidate` does that.\n\n### 2. Target window (`estimateBufferTreeWindow`)\n1. Reject with `kInvalidBufferInsertion` if `tree_input_cap` is not finite.\n2. Take `current_total_delay = context.current_total_delay + target.current_wire_delay`.\n3. Replay the stages before the target at `current_delay`, unchanged.\n4. Time the driver plus the target load path with `estimateBranchTiming`, using `kBufferTreeTargetEffectiveLoadCapFactor`.\n5. For each stage after the target:\n   - **Input slew:** the first one takes the tree's `load_slew` directly. Later ones use `estimateReceiverInputSlew(prev, stage, propagated_slew)`, which scales by the existing receiver/driver slew ratio.\n   - **Stage delay:**\n     - Look up the model delay with `lookupArcDelayAndSlew`.\n     - Compute `stage.current_delay + (model_delay - stage.current_model_delay)`, which adds the table-model delta to the STA baseline.\n     - Pass the result through `boundBufferTreeDownstreamStageDelay`.\n   - **Output slew:** `estimateOutputSlew(...)`.\n6. Return `makeEstimate(current_total_delay, candidate_total_delay)`. It is legal only if `arrival_impr > 0`.\n\n### 3. Side path window (`estimateSidePathWindow`)\n- Time the side load's path with `estimateBranchTiming` and `kBufferTreeSideEffectiveLoadCapFactor`.\n- Compare the result to `target.current_delay + side.current_driver_to_load_delay` via `makeEstimate`.\n- The side window ends at the load pin; there is no downstream propagation.\n\n### 4. Branch timing (`estimateBranchTiming`, `branchDriverTiming`, `treeStageTiming`)\n- **Driver:**\n  - Delay comes from the plain table lookup at `plan.tree_input_cap`.\n  - The propagated slew is not the table slew. It is `loadRatioSlewFloor`, which is `current_slew * clamp(tree_input_cap / stage.load_cap, 0, 1)^0.85`, or 0 if any input is non-positive.\n- **Wire and via stages:**\n  - `bufferTreeWireDelay` is raw Elmore (`res * (downstream_cap + 0.5 * wire.cap)`). The raw value is scaled by 0.78 if it is at least 20 ps; below 20 ps it is left unscaled.\n  - Output slew is `hypot(input_slew, factor * wire_delay)`, where factor is 1.35 below 20 ps and 1.39 (`kElmoreSlewFactor`) otherwise.\n- **Buffer stages:**\n  - Effective load is `downstream_cap * f`, where f is the path factor (0.675 target, 0.875 side) if `drives_distributed_load`, else 0.60 (direct load).\n  - The delay and slew come from the buffer lookup on that load, using the arc whose input and output transitions both equal the target's output transition.\n  - A missing buffer arc gives `kMissingBufferTimingArc`.\n- **Trie cache:** branch prefixes are memoized per plan in a `BranchTimingCacheNode` trie. It is a dummy root plus children keyed by `sameBufferTreePathStage`, which compares type, `downstream_cap`, `drives_distributed_load`, `buffer_cell`, and, for wire and via stages, the `WireRC`. The driver is cached at the root. Cache hits also append the cached trace entry, so traces stay complete.\n\n### Constants\n| Constant | Value |\n|---|---|\n| Target effective-load factor | 0.675 |\n| Side effective-load factor | 0.875 |\n| Direct-load factor | 0.60 |\n| Load-ratio slew-floor exponent | 0.85 |\n| Wire-delay scale threshold | 20 ps |\n| Wire-delay scale | 0.78 |\n| Short-wire slew factor | 1.35 |\n| Elmore slew factor | 1.39 |\n\n### Downstream bound (`boundBufferTreeDownstreamStageDelay`)\n- Result is `max(stage_delay, current_delay * r)`, where `r = max(0.5, 0.45 + 0.35 * sqrt(clamp(input_slew / current_input_slew, 0, 1)))`.\n- `r` reaches 0.8 when the input slew is unchanged and falls to 0.5 as it sharpens.\n- The comment says this limits credit given to slews that come from the approximate tree model.\n\n## Key data structures\n- **`BranchTiming`:** `{legal, delay, load_slew, reason}`. Cumulative delay and slew at a point in the tree.\n- **`BranchTimingCacheNode`:** trie node holding `valid`, `stage`, `prefix` (`BranchTiming`), `trace_entry`, and `children`. It is a `std::vector` of nodes, so child pointers are invalidated by `push_back`. The code re-points `parent` after each push, which is correct, but it keeps no pointer across one.\n- **Reused types:**\n  - `RebufferTreePlan`, `BufferTreeLoadPath`, `BufferTreePathStage` (from `Rebuffer.hh`).\n  - `EstimatorContext`, `DelayStageState`, `DelayEstimate`, `WireRC`, `FailReason` (from `OptimizerTypes.hh`).\n  - `StageEvaluation`, `BufferTreeSidePathContext`, `BufferTreeSidePathEvaluation` (from `DelayEstimator.hh`).\n\n## Callers and callees (verified by reading)\n- **Called by:** `RebufferMtCandidate::estimateTree`, and only that. The \"called by unknown\" in the graph is resolved by grep. There are no other call sites.\n- **Calls (via `DelayEstimatorInternal.hh`, defined in `DelayEstimator.cc`):**\n  - `lookupArcDelayAndSlew`, `lookupBufferDelayAndSlew`.\n  - `estimateOutputSlew`, `estimateReceiverInputSlew`.\n  - `wireElmoreDelay`, `makeEstimate`.\n- **Other dependencies:**\n  - `SelectedArc::currentCell()` (`OptimizerTypes.cc`).\n  - `RebufferTreePlan::targetPath()` and `loadPath()` (`Rebuffer.cc`).\n  - `EstimatorContext::sideSlackFloor` (inline in `OptimizerTypes.hh`).\n  - STA headers: `LibertyCell::sceneCell`, `TimingArc`, `MinMax::compare`, and others.\n- **Graph edges to not trust:** the graph lists `Graph.cc`, `Path.cc`, `PathExpanded.cc`, `Scene.cc`, `Delay.cc` and `EstimateParasitics.h`. These come from includes (`EstimateParasitics.h` is not even included here). This file makes no direct graph or path traversal.\n\n## Invariants and \"do not break\"\n- **No side effects:**\n  - The functions are pure over their inputs and safe on worker threads. `DelayStageState` is documented as a prepared snapshot, and workers do not touch STA analysis state.\n  - Keep it that way: do not add STA graph or parasitics reads here.\n- **No journaling or rollback:** nothing is mutated, so there is nothing to undo. The plan (`plan.tree`) is applied elsewhere, after STA checks the batch.\n- **Determinism:**\n  - There is no randomness, and the cache is a pure memo, so results depend only on inputs and stage order.\n  - Cache keys omit the effective-load factor (the file says so). A prefix the target path shares with a side path therefore reuses whichever was computed first. Since the target is always evaluated first, shared prefixes always use the target factor 0.675 for buffers. Reordering the evaluation changes numbers.\n- **`dont_touch`, legality, parasitics:** not checked here. Eligibility and placement legality are upstream (`Rebuffer` planning and candidate generation). \"Legal\" in this file means only a finite estimate that improves arrival and keeps side slack above the floor.\n- **Trace consistency:** `trace` order is pre-target stages, driver, tree stages along the target path, then post-target stages. The accuracy report depends on that. Cache hits must keep pushing entries.\n- **Calibration:** the constants were fitted on the Nangate45 `report_delay_estimator_rebuffer_*` tests, so change them only with that report.\n\n## Weak spots / assumptions an algorithm designer should know\n- **Hard-coded calibration:**\n  - The constants are Nangate45 fits. The source says the target factor was checked on another platform and raised estimate error in some Nangate45 cases.\n  - Effective cap factors below 1 mean the estimator systematically under-loads buffers relative to a lumped model.\n- **Cache key vs. factor:** side-path buffers that share a prefix with the target reuse the target-factor timing instead of 0.875. This slightly misprices side delay.\n- **Driver slew is a heuristic:** `loadRatioSlewFloor` is a floor that falls with the load ratio. The table slew is discarded, and the result can be 0 if `stage.current_slew` or `stage.load_cap` is non-positive. That makes downstream slews and delays optimistic.\n- **Side windows stop at the load pin:** the side estimate ignores any further slew effect past the load, and receiver pin cap changes. `current_driver_to_load_delay` is assumed to include wire delay.\n- **Side-slack gating uses the target gain:** the floor is `side_slack_floor - margin * max(arrival_impr, 0)`. For a non-improving target (`arrival_impr <= 0`), the floor is not lowered. The `weight` is ignored by the floor and used only for `side_loss`.\n- **Unchecked pointers:** `plan.targetPath()` and `plan.loadPath(side.load_pin)` are dereferenced directly, so the caller must guarantee they are non-null. The comments assert it.\n- **Reason overwriting:** with several failing side paths, the final reason is the last failure; the first is not kept.\n- **`kEstimateNonImproving` still gets side evaluation:** wasted work if the target does not improve. It is kept so the accuracy report sees the sides.\n- **Stage delay uses an additive baseline:** post-target stages are `current_delay + (model_new - model_current)`, so STA's CCS or waveform effects are carried only in the baseline. The 0.5-0.8 floor can mask real gains from a much sharper slew.\n- **Buffer arc selection:** `lookupBufferDelayAndSlew` takes the worst delay, using `min_max->compare`, over arcs with the target output transition on both the input and output sides. It assumes a non-inverting buffer and an input edge equal to the target output edge, and it ignores the buffer's other timing arc sets.\n- **Dual-RF not modeled here:** `opposite_rf_slack` and `fanin_side_nets` in the context are unused by this file, so only the tree's own path is checked.",
+  "ttft_ms": 1896,
+  "type": "result",
+  "duration_ms": 51004,
+  "uuid": "6e829d2a-1e76-4a57-8b19-07957cc911e6",
+  "ttft_stream_ms": 1314,
+  "time_to_request_ms": 420,
+  "first_content_frame_ms": 1314,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "credential_expires_at": "2026-12-11T07:53:35.249Z",
+  "stderr_tail": ""
+}

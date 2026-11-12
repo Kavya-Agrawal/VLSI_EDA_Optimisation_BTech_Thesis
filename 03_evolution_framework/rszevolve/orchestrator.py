@@ -25,6 +25,17 @@ from .knowledge.ledger import (append_ledger, append_section, champion_record, e
 from .util import log, now_iso, read_json, write_json, write_text
 
 
+class AgentUnavailable(RuntimeError):
+    """A required Claude call failed before producing usable work."""
+
+
+def _require_agent(role: str, raw: dict[str, Any]) -> None:
+    if not raw.get("is_error") and not raw.get("api_error"):
+        return
+    reason = str(raw.get("result") or raw.get("api_error") or raw.get("stderr") or "unknown agent error").strip()
+    raise AgentUnavailable(f"{role} unavailable: {reason[:500]}")
+
+
 def latest_feedback() -> str:
     d = load_lineage()
     for it in reversed(d.get("iterations", [])):
@@ -66,6 +77,7 @@ def run_iteration(iteration: int, tier: str, designs: list[str], knobs: Knobs, b
     h, raw = plan(iteration, knobs, feedback=latest_feedback(), tier=tier, designs=designs, budget_summary=budget.summary(),
                   log_dir=log_dir, forced_cluster=forced_cluster)
     budget.charge(role="planner", iteration=iteration, result=raw)
+    _require_agent("planner", raw)
     mark("planned", cluster=h.cluster, title=h.title)
     tag = f"{iteration:04d}_{h.cluster}"
 
@@ -73,6 +85,7 @@ def run_iteration(iteration: int, tier: str, designs: list[str], knobs: Knobs, b
     remaining = budget.remaining_usd()
     cr = coder_mod.code(iteration, h, knobs, log_dir=log_dir, budget_cap_usd=(remaining if remaining else None))
     budget.charge(role=f"coder:{h.cluster}", iteration=iteration, result=cr.raw)
+    _require_agent(f"coder:{h.cluster}", cr.raw)
     mark("coded", files=cr.files_changed)
     if not cr.patch.strip():
         verdict = Verdict(False, 0.0, ["coder produced no change"])
@@ -87,6 +100,7 @@ def run_iteration(iteration: int, tier: str, designs: list[str], knobs: Knobs, b
         log(f"build failed; asking coder to fix (attempt {attempt}/{knobs.repair_attempts})")
         cr = coder_mod.fix(cr, build.diagnostics(), knobs, log_dir=log_dir, attempt=attempt)
         budget.charge(role="coder:fix", iteration=iteration, result=cr.raw)
+        _require_agent("coder:fix", cr.raw)
         build = build_candidate(cr.rsz_dir, knobs, tag=f"{tag}_fix{attempt}")
     mark("built", ok=build.ok, attempts=attempt, seconds=round(build.seconds))
     write_text(cr.rsz_dir.parent / "build_diagnostics.txt", build.diagnostics())
@@ -144,6 +158,7 @@ def evolve(*, iterations: int, budget_usd: float, max_tokens: int, tier: str, re
     start = next_iteration_number()
     log(f"evolve: {iterations} iteration(s) from #{start}, tier {tier} ({', '.join(designs)}), {budget.summary()}")
     done = 0
+    agent_unavailable = False
     for i in range(start, start + iterations):
         why = budget.exhausted()
         if why:
@@ -153,6 +168,11 @@ def evolve(*, iterations: int, budget_usd: float, max_tokens: int, tier: str, re
             run_iteration(i, tier, designs, knobs, budget, replicates=replicates, forced_cluster=cluster if done == 0 else None)
         except KeyboardInterrupt:
             raise
+        except AgentUnavailable as e:
+            log(f"stopping at iteration {i}: {e}")
+            log("no candidate was evaluated or recorded; resume after the agent limit/error clears")
+            agent_unavailable = True
+            break
         except Exception as e:  # keep the loop alive; the failure is recorded
             log(f"iteration {i} crashed: {type(e).__name__}: {e}")
             record_iteration({"iteration": i, "status": "crashed", "error": f"{type(e).__name__}: {e}", "when": now_iso()})
@@ -160,4 +180,4 @@ def evolve(*, iterations: int, budget_usd: float, max_tokens: int, tier: str, re
         log(f"budget: {budget.summary()}")
     from .report.summary import print_status
     print_status()
-    return 0
+    return 2 if agent_unavailable else 0

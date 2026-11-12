@@ -2,12 +2,17 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from rszevolve.budget import Budget
 from rszevolve.config import Knobs
 from rszevolve.eval.build import _parse
 from rszevolve.eval.paths import classify, diff_against
 from rszevolve.eval.score import judge
 from rszevolve.agents.claude_runner import extract_json_block
+from rszevolve.agents.coder import make_patch, new_candidate_dir
+from rszevolve.config import PATHS
+from rszevolve.orchestrator import AgentUnavailable, _require_agent
 
 
 def agg(wns, tns, hold=0.05, drv=0, area=100.0, pv=0, det=True):
@@ -66,3 +71,39 @@ def test_path_classify_and_diff(tmp_path):
 def test_extract_json_block():
     assert extract_json_block("text\n```json\n{\"cluster\": \"sizing\"}\n```\n")["cluster"] == "sizing"
     assert extract_json_block("no json") is None
+
+
+def test_candidate_copy_preserves_dangling_symlinks(tmp_path, monkeypatch):
+    champion = tmp_path / "champion"
+    champion.mkdir()
+    (champion / "source.cc").write_text("// candidate source\n")
+    (champion / "external-test-data").symlink_to("../../missing/test-data")
+    monkeypatch.setattr(PATHS, "champion", champion)
+    monkeypatch.setattr(PATHS, "candidates", tmp_path / "candidates")
+
+    candidate = new_candidate_dir(1, "buffering") / "rsz"
+
+    copied_link = candidate / "external-test-data"
+    assert copied_link.is_symlink()
+    assert copied_link.readlink() == Path("../../missing/test-data")
+    assert (candidate / "source.cc").read_text() == "// candidate source\n"
+
+
+def test_candidate_diff_handles_dangling_symlinks(tmp_path, monkeypatch):
+    champion = tmp_path / "champion"
+    candidate = tmp_path / "candidate"
+    for tree in (champion, candidate):
+        tree.mkdir()
+        (tree / "external-test-data").symlink_to("../../missing/test-data")
+    monkeypatch.setattr(PATHS, "champion", champion)
+
+    assert make_patch(candidate) == ""
+    (candidate / "source.cc").write_text("// real change\n")
+    assert "source.cc" in make_patch(candidate)
+
+
+def test_required_agent_error_stops_iteration():
+    with pytest.raises(AgentUnavailable, match="5-hour limit"):
+        _require_agent("planner", {"is_error": True, "api_error": "usage_limit_reached",
+                                   "result": "You've hit your 5-hour limit"})
+    _require_agent("planner", {"is_error": False, "result": "usable plan"})

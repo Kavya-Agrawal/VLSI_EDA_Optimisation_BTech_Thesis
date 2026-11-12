@@ -1,0 +1,81 @@
+# Iteration 1 — Criticality-ordered gain-buffer tree move for critical nets with fanout >= 20 (currently unrepairable in repair_timing)
+
+cluster: `buffering`
+
+## Plan: iteration 1, Planning Agent
+
+### Observation
+
+Source: `05_baseline_results/SUMMARY.md`, stressed SDC. I checked the cited code against `01_openroad_original/rsz_snapshot`.
+
+- **ibex** (WNS −0.4125 → −0.2994, TNS −519 → −416, 5565 endpoints). All 60 of the worst 60 paths are tagged `high_fanout`, and every listed worst path passes through the same net. It is driven by `AND2_X1@_26153_/ZN`, has **fanout 943**, and a reported worst slew of 2 087 753 088. That is about 35–50× the next-worst driver on the same paths (57–65 M). The paths have 35 stages and end at `rf_reg[*]` D pins. Repair barely touched this net: its slew is the same before and after.
+- **aes** (−0.161 → −0.108): the slow drivers are spread out (XOR, AOI221, OAI33), with max fanout 5–16 and no single bottleneck.
+- **gcd** (−0.175 → −0.174): repair has almost no effect. Post-repair slacks are within about 1 ps of pre-repair. Fanout is at most 8. This looks like a search/acceptance problem (`setup_strategy`), not a fanout problem.
+
+**Why repair_timing cannot touch the ibex net** (verified in the snapshot):
+- `src/move/BufferGenerator.cc:19,31` (and `RebufferMtGenerator.cc:38,144`): `kRebufferMaxFanout = 20`, and `isApplicable` requires `target.fanout < 20`. So the van Ginneken rebuffer move is never generated for this net.
+- `src/move/SplitLoadGenerator.cc:115-128,159`: `chooseSplitLoads` takes the less critical half of the sinks (about 471 here) and puts them behind **one** `lowestDriveBufferCell()`. A BUF_X1 driving about 471 loads is much slower than the original net, so the move is always rejected.
+- `src/move/CloneGenerator.cc`: cloning an AND2 still leaves about 471 loads per copy. It barely helps.
+- Upsizing AND2_X1 tops out at X4, which can't drive 943 loads at 1.76 ns.
+
+So the dominant cause on ibex is a net that no setup move in the current move set can fix.
+
+### Cluster choice and why
+
+**`buffering`.** On the largest design, every worst path shares one net that none of the existing buffering moves can handle. Fixing it should improve the shared stage on all the `rf_reg` endpoints, so WNS and TNS both move. The score normalises TNS by endpoints, and ibex WNS has about 0.3 ns of room at a 1.76 ns period. gcd's stall is a separate `setup_strategy` problem; I'm deferring it to iteration 2 or 3, not bundling it in, to keep one hypothesis per iteration.
+
+### Hypothesis
+
+- **Problem:** critical nets with fanout ≥ 20 cannot be repaired. Rebuffer is gated off. Split-load is a crude 50/50 split behind a minimum-size buffer. Clone only halves the load.
+- **Current heuristic:** van Ginneken rebuffer only below fanout 20. Above that, split-load (half the sinks behind a BUF_X1) or clone, and both fail on a net this large.
+- **New approach:** add a setup move for high-fanout nets that builds a **criticality-ordered, gain-based buffer tree**, the same algorithm `RepairDesign::performGainBuffering` (`src/RepairDesign.cc:651`) already uses during early sizing:
+  1. Sort the sinks by required time, most critical first.
+  2. Keep the most critical group directly on the driver.
+  3. Group the remaining sinks into chunks, each bounded by `max_buf_load = bufferCin(largest) * buffer_sizing_cap_ratio_`. Within each chunk, break ties by location so groups stay compact.
+  4. Drive each chunk with the smallest buffer that meets the gain condition (`bufferCin > load / buffer_sizing_cap_ratio_`).
+  5. Treat each new buffer input as a sink and repeat, so the tree is built recursively until the driver load is within `cin_driver * sizing_cap_ratio_`.
+
+  The tree is applied inside the existing journal, so the committer accepts or rolls it back by real STA endpoint slack, exactly like `BufferCandidate`.
+- **Why WNS/TNS improves:** the 943-load stage drops from roughly ns-scale delay and slew to a few buffer stages of about 30–60 ps each. That stage is shared by the worst ibex paths. Its slew also feeds the downstream stages, so their delays fall too. This should lift ibex WNS substantially and cut TNS across hundreds of `rf_reg` endpoints. aes and gcd have no nets with fanout ≥ 20 on their worst paths, so they should be unchanged (no regression).
+- **Risks:**
+  - Area and buffer count grow by tens of buffers per net.
+  - Placement density near the register file could make legalisation harder; `detailed_placement` must still pass.
+  - Hold could get worse on paths through the new buffers, but ibex hold is +0.045 and setup-side buffering only adds delay to short paths a little.
+  - Runtime increases, but it is only subject to the timeout.
+  - Determinism: sorting must break ties by `pathName`, as `PinRequiredHigher` already does.
+
+### Implementation sketch
+
+1. **New generator/candidate pair** `src/move/FanoutTreeGenerator.{cc,hh}` and `src/move/FanoutTreeCandidate.{cc,hh}`, modelled on `BufferGenerator` and `BufferCandidate`.
+   - `isApplicable`: `target.fanout >= kRebufferMaxFanout`, `okToBufferNet(driver_pin)`, and the driver is neither a clock nor a constant.
+   - `apply()`: build the tree described above using `Resizer` buffer insertion APIs inside the journal, and return a `MoveResult` with `move_count` equal to the number of buffers inserted.
+2. **Factor out the algorithm.** Move the core of `RepairDesign::performGainBuffering` (`src/RepairDesign.hh:91`, `.cc:651-~900`) into a reusable helper, for example a static function or a `Resizer` method `gainBufferNet(drvr_pin, max_fanout, critical_only)`. Call it from both `RepairDesign` (behaviour unchanged) and the new candidate, rather than copying it. The new candidate should:
+   - leave top-level ports where they are,
+   - skip `dontTouch` sinks,
+   - add a location tie-break inside each required-time bucket so buffer groups don't stretch across the die.
+3. **Register the move type.** Either add it to `MoveType` in `src/OptimizerTypes.hh` and the move sequence in `src/policy/SetupLegacyBase.cc:~184-216`, placed **before** `kSplitLoad` and gated by `!config_.skip_buffering`, or reuse `MoveType::kBuffer` so reporting needs no change.
+4. **Leave SplitLoad and Clone alone.** They stay as fallbacks.
+5. Run the tests in `test/gain_buffering*.tcl`, `test/repair_setup*.tcl` and `test/rebuffer*.tcl`.
+
+### Success criteria
+
+- **ibex (stressed):** WNS better than −0.27 (≥ 30 ps gain) and TNS better than −380. The worst-path table should no longer show `AND2_X1@_26153_` with fanout 943 and slew around 2.09e9. Max fanout on the worst paths should be ≤ about 30 and worst slew in the 6e7 range.
+- **aes and gcd:** within ±1 ps WNS of the baseline, with any difference treated as noise.
+- **Guards:**
+  - hold WNS ≥ reference − tolerance
+  - DRV count ≤ reference (should go down)
+  - `check_placement` clean
+  - area growth within tolerance (expect < 1% on ibex)
+  - deterministic across replicates
+  - tier score > 0
+
+### Fallback if it fails
+
+- **Move rejected or no gain:** read the verbose log for the new move type.
+  - If the tree is built but rejected, the acceptance test may be too narrow, because it only looks at the target endpoint. Iteration 2 would accept on a TNS delta over the driver's fanout cone (`setup_strategy`).
+  - If legalisation fails, cap tree depth and use region-based grouping (`RepairDesign::findLoadRegions`/`subdivideRegion`, `.cc:1986-2108`).
+- **Net is dont_touch or not bufferable:** if `okToBufferNet` is false for this net, record this in `dead_ends` and switch to the gcd stall (`setup_strategy`: why first-move acceptance stops making progress).
+
+```json
+{"cluster": "buffering", "title": "Criticality-ordered gain-buffer tree move for critical nets with fanout >= 20 (currently unrepairable in repair_timing)", "hypothesis": "Every worst ibex path runs through one AND2_X1 net with fanout 943 and a worst slew of about 2.09e9, roughly 40x the other drivers on those paths, and repair_timing leaves it unchanged. BufferGenerator and RebufferMtGenerator only apply below fanout 20 (kRebufferMaxFanout). SplitLoad puts half the sinks behind one minimum-size buffer, and Clone only halves the load, so neither can fix a net this large. Add a setup move for fanout >= 20 critical nets that reuses RepairDesign::performGainBuffering's algorithm (sinks sorted by required time, most critical group kept on the driver, the rest grouped by buffer gain limits with a location tie-break, built recursively), applied inside the journal and accepted by real STA like BufferCandidate. Shrinking the 943-load stage to a few buffer stages should lift ibex WNS by 30 ps or more and cut TNS across the rf_reg endpoints, with aes and gcd unaffected.", "files": ["src/move/FanoutTreeGenerator.cc", "src/move/FanoutTreeGenerator.hh", "src/move/FanoutTreeCandidate.cc", "src/move/FanoutTreeCandidate.hh", "src/RepairDesign.cc", "src/RepairDesign.hh", "src/policy/SetupLegacyBase.cc", "src/OptimizerTypes.hh", "src/move/BufferGenerator.cc"], "success_criteria": "ibex stressed WNS > -0.27 and TNS > -380, fanout-943 AND2_X1 stage gone from the worst paths; aes and gcd within 1 ps; hold, DRV, placement and area guards pass; tier score > 0", "risk": "Buffer tree is legalisation-heavy near the register file, or is rejected by single-endpoint acceptance; small area and hold side effects", "rule_updates": "Add under Method: 'Before choosing a cluster, check which move generators are even applicable to the dominant worst-path driver (fanout or type gates such as kRebufferMaxFanout); a cause no generator can address beats tuning one that already applies.'"}
+```

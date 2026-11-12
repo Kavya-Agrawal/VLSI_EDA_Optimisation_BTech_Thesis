@@ -1,0 +1,35 @@
+[
+  {
+    "step": "planned",
+    "t": 2.3,
+    "ts": "2026-11-12T22:40:35Z",
+    "cluster": "setup_strategy",
+    "title": ""
+  },
+  {
+    "step": "coded",
+    "t": 5.1,
+    "ts": "2026-11-12T22:40:38Z",
+    "files": []
+  },
+  {
+    "step": "built",
+    "t": 17.0,
+    "ts": "2026-11-12T22:40:50Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 12
+  },
+  {
+    "step": "evaluated",
+    "t": 157.3,
+    "ts": "2026-11-12T22:43:10Z",
+    "accepted": false,
+    "score": 3.525860723530096e-18
+  },
+  {
+    "step": "feedback",
+    "t": 159.5,
+    "ts": "2026-11-12T22:43:13Z"
+  }
+]
