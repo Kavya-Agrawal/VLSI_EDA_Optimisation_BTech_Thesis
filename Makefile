@@ -1,331 +1,122 @@
+# pv_resizer_evolve — one Makefile to run everything. `make` or `make help` lists targets.
+# Knobs (override on the command line):  N=5 BUDGET_USD=20 TIER=A BAZEL_JOBS=8 CLAUDE_BIN=... PYTHON=...
 SHELL := /bin/bash
-
-PYTHON ?= python3
-JOBS ?= 4
-GENERATIONS ?= 3
-POPULATION ?= 4
-N ?= 3
-FRAMEWORK ?=
-ACTION ?= test
-CANDIDATE ?=
-DESIGN_CONFIG ?= designs/nangate45/gcd/config.mk
-
 .DEFAULT_GOAL := help
+ROOT  := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+export ROOT
+export PATH := /opt/homebrew/bin:/usr/local/bin:$(HOME)/.local/bin:$(PATH)
 
-.PHONY: help list status doctor setup test test-all framework branch \
-	test-placement test-timing-evolution test-congestion-cnn test-rl-gatesize \
-	test-timing-gnn test-synapse test-polyphony \
-	prepare-placement evolve-placement verify-placement \
-	run-placement report-placement \
-	doctor-timing-evolution prepare-timing-evolution baseline-timing-evolution evolve-timing-evolution \
-	run-timing report-timing-evolution run-both results \
-	train-congestion-cnn train-rl-gatesize train-timing-gnn train-synapse train-polyphony \
-	abc-build openroad-flow openroad-shell
+# ---- knobs ---------------------------------------------------------------
+N          ?= 1          # iterations for `make evolve`
+BUDGET_USD ?= 10         # stop when cumulative claude spend exceeds this
+MAX_TOKENS ?= 0          # 0 = no token cap (USD cap still applies)
+TIER       ?= A          # benchmark tier for the loop: A | B | C
+REPLICATES ?= 2          # evaluation repeats per design (baseline uses 3)
+BAZEL_JOBS ?= 8
+export N BUDGET_USD MAX_TOKENS TIER REPLICATES BAZEL_JOBS
 
-help:
-	@printf '%s\n' \
-	  'VLSI EDA thesis workspace' \
-	  '' \
-	  'Start here:' \
-	  '  make list                         Show frameworks and their branches' \
-	  '  make test                         Test every framework on this branch' \
-	  '  make framework FRAMEWORK=<name>   Test one framework' \
-	  '  make branch FRAMEWORK=<name>      Switch to its recommended branch' \
-	  '  make doctor                       Check local prerequisites' \
-	  '  make setup                        Initialize pinned Git submodules' \
-	  '' \
-	  'Evolution runs:' \
-	  '  make run-both N=40                 Run both real OpenROAD evolution loops' \
-	  '  make results                       Print original-vs-evolved summaries' \
-	  '  make run-placement N=40            Continue OptMirror for 40 candidates' \
-	  '  make run-timing N=40               Continue Resizer for 40 candidates' \
-	  '  make evolve-placement [GENERATIONS=3 POPULATION=4]' \
-	  '  make evolve-timing-evolution [GENERATIONS=3 POPULATION=4]' \
-	  '  make verify-placement CANDIDATE=<id>' \
-	  '' \
-	  'Other useful targets:' \
-	  '  make abc-build [JOBS=4]' \
-	  '  make train-<framework>' \
-	  '  make openroad-flow [DESIGN_CONFIG=designs/.../config.mk]' \
-	  '' \
-	  'See PROJECT_GUIDE.md for examples and directory descriptions.'
+ENV  := source "$(ROOT)/tools/env.sh" &&
+PY   := $(ENV) cd "$(ROOT)/03_evolution_framework" && $$PYTHON -m rszevolve
+FW_VENV := $(ROOT)/03_evolution_framework/.venv
 
-list:
-	@printf '%-22s %-40s %s\n' 'FRAMEWORK' 'RECOMMENDED BRANCH' 'AVAILABLE HERE'; \
-	printf '%-22s %-40s %s\n' 'placement' 'research/openroad-evolution-suite' "$$(test -d openroad_evolution && echo yes || echo no)"; \
-	printf '%-22s %-40s %s\n' 'timing-evolution' 'research/openroad-evolution-suite' "$$(test -d openroad_timing_evolution && echo yes || echo no)"; \
-	printf '%-22s %-40s %s\n' 'congestion-cnn' 'research/openroad-evolution-suite' "$$(test -d openroad_ml/congestion_cnn && echo yes || echo no)"; \
-	printf '%-22s %-40s %s\n' 'rl-gatesize' 'research/openroad-rl-gate-sizing' "$$(test -d openroad_ml/rl_gatesize && echo yes || echo no)"; \
-	printf '%-22s %-40s %s\n' 'timing-gnn' 'research/openroad-timing-gnn' "$$(test -d openroad_ml/timing_gnn && echo yes || echo no)"; \
-	printf '%-22s %-40s %s\n' 'synapse' 'research/abc-synapse' "$$(test -d abc/src/ext_ml && echo yes || echo no)"; \
-	printf '%-22s %-40s %s\n' 'polyphony' 'research/abc-polyphony' "$$(test -d abc/src/ext_poly && echo yes || echo no)"
+# ---- help ----------------------------------------------------------------
+.PHONY: help
+help: ## show this help
+	@echo "pv_resizer_evolve — evolve OpenROAD's Resizer (rsz) with planning / coding / evaluating agents"
+	@echo
+	@echo "Setup (once):     make env-check setup build-openroad snapshot"
+	@echo "Phase 1 (once):   make graphify context"
+	@echo "Evaluation prep:  make checkpoints baseline"
+	@echo "Evolve:           make evolve N=5 BUDGET_USD=20 TIER=A      (or: make evolve-one / evolve-resume)"
+	@echo "Look at results:  make report viz show-champion"
+	@echo
+	@grep -hE '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-status:
-	@git status --short --branch
-	@$(MAKE) --no-print-directory list
+# ---- environment ---------------------------------------------------------
+.PHONY: env-check deps setup lock-versions
+env-check: ## verify tools, pinned sources, binaries, RAM/disk
+	@"$(ROOT)/tools/check_env.sh"
 
-doctor:
-	@command -v git >/dev/null && git --version
-	@command -v $(PYTHON) >/dev/null && $(PYTHON) --version
-	@command -v make >/dev/null && make --version | head -n 1
-	@command -v docker >/dev/null && docker --version || printf '%s\n' 'optional: Docker is not installed'
-	@git submodule status 2>/dev/null || true
+deps: ## install OS packages (brew on macOS, apt on Linux)
+	@if [ "$$(uname -s)" = Darwin ]; then $(ROOT)/tools/install_deps_macos.sh; else $(ROOT)/tools/install_deps_linux.sh; fi
 
-setup:
-	git submodule update --init --recursive
+setup: ## clone OpenROAD + ORFS at the pinned commits, create framework venv
+	@"$(ROOT)/tools/setup_sources.sh"
 
-# Generic entry point. Example: make framework FRAMEWORK=timing-gnn
-framework:
-	@if [[ -z "$(FRAMEWORK)" ]]; then \
-		echo 'FRAMEWORK is required. Run `make list` for names.' >&2; exit 2; \
-	fi
-	@$(MAKE) --no-print-directory "$(ACTION)-$(FRAMEWORK)"
 
-branch:
-	@if [[ -z "$(FRAMEWORK)" ]]; then echo 'FRAMEWORK is required. Run `make list`.' >&2; exit 2; fi
-	@case "$(FRAMEWORK)" in \
-		placement|timing-evolution|congestion-cnn) target='research/openroad-evolution-suite' ;; \
-		rl-gatesize) target='research/openroad-rl-gate-sizing' ;; \
-		timing-gnn) target='research/openroad-timing-gnn' ;; \
-		synapse) target='research/abc-synapse' ;; \
-		polyphony) target='research/abc-polyphony' ;; \
-		*) echo "Unknown framework: $(FRAMEWORK)" >&2; exit 2 ;; \
-	esac; \
-	git switch "$$target" 2>/dev/null || git switch --track "origin/$$target"
+lock-versions: ## append exact tool versions seen here to VERSIONS.lock
+	@"$(ROOT)/tools/lock_versions.sh"
 
-test: test-all
+# ---- build ---------------------------------------------------------------
+.PHONY: build-openroad build-stock build-evolved restore-rsz test-rsz snapshot
+build-openroad: build-stock ## build stock OpenROAD with Bazel -> build/bin/openroad_stock (1-2 h first time)
+build-stock:
+	@"$(ROOT)/tools/build_openroad.sh" stock
+build-evolved: ## build with RSZ=<dir> overlaid on src/rsz -> build/bin/openroad_evolved
+	@"$(ROOT)/tools/build_openroad.sh" evolved "$(or $(RSZ),$(ROOT)/02_openroad_evolved/champion/rsz)"
+restore-rsz: ## put the pristine rsz snapshot back into external/OpenROAD/src/rsz
+	@"$(ROOT)/tools/build_openroad.sh" restore
+test-rsz: ## run rsz regression tests (FILTER=repair_setup to narrow)
+	@"$(ROOT)/tools/build_openroad.sh" test-rsz $(FILTER)
+snapshot: ## freeze external/OpenROAD/src/rsz into 01_openroad_original/rsz_snapshot (+ sta headers)
+	@"$(ROOT)/tools/snapshot_rsz.sh"
 
-test-all:
-	@set -e; found=0; \
-	for item in \
-		'openroad_evolution:test-placement' \
-		'openroad_timing_evolution:test-timing-evolution' \
-		'openroad_ml/congestion_cnn:test-congestion-cnn' \
-		'openroad_ml/rl_gatesize:test-rl-gatesize' \
-		'openroad_ml/timing_gnn:test-timing-gnn' \
-		'abc/src/ext_ml:test-synapse' \
-		'abc/src/ext_poly:test-polyphony'; do \
-		dir="$${item%%:*}"; target="$${item#*:}"; \
-		if [[ -d "$$dir" ]]; then found=1; $(MAKE) --no-print-directory "$$target"; fi; \
-	done; \
-	if [[ $$found -eq 0 ]]; then echo 'No research framework is present on this branch.'; fi
 
-test-placement:
-	@test -d openroad_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=placement' >&2; exit 2; }
-	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m unittest discover -s tests -v
+# ---- phase 1: graphify + context ------------------------------------------
+.PHONY: graphify context
+graphify: ## build knowledge graphs (full OpenROAD + rsz-focused) into 08_graphify/
+	@$(PY) graphify $(if $(SCOPE),--scope $(SCOPE),)
+context: ## generate 09_agent_context/ (big picture, file cards, algorithm dossiers, clusters.json)
+	@$(PY) context $(if $(ONLY),--only $(ONLY),)
 
-test-timing-evolution:
-	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
-	$(PYTHON) -m openroad_timing_evolution selftest
+# ---- evaluation prep -------------------------------------------------------
+.PHONY: checkpoints baseline
+checkpoints: ## run ORFS up to detailed placement and store placed checkpoints in 04_benchmarks/ (TIER=A|B|C|all)
+	@$(PY) checkpoints --tier $(TIER)
+baseline: ## evaluate stock openroad on checkpoints -> 05_baseline_results/ (3 replicates)
+	@$(PY) baseline --tier $(TIER) --replicates 3
 
-test-congestion-cnn:
-	@test -d openroad_ml/congestion_cnn || { echo 'Unavailable here; run: make branch FRAMEWORK=congestion-cnn' >&2; exit 2; }
-	@if ! $(PYTHON) -c 'import torch' >/dev/null 2>&1; then \
-		echo 'SKIP congestion-cnn: install openroad_ml/congestion_cnn/requirements.txt'; \
-	else cd openroad_ml/congestion_cnn && $(PYTHON) -m tests.smoke_test; fi
+# ---- evolution -------------------------------------------------------------
+.PHONY: evolve evolve-one evolve-resume validate-champion eval-candidate
+evolve: ## run N iterations (plan -> code -> build -> gate -> evaluate -> feedback) within BUDGET_USD
+	@$(PY) evolve --iterations $(N) --budget-usd $(BUDGET_USD) --max-tokens $(MAX_TOKENS) --tier $(TIER) --replicates $(REPLICATES)
+evolve-one: ## exactly one iteration
+	@$(MAKE) evolve N=1
+evolve-resume: ## continue from lineage.json with the same knobs
+	@$(PY) evolve --resume --iterations $(N) --budget-usd $(BUDGET_USD) --max-tokens $(MAX_TOKENS) --tier $(TIER) --replicates $(REPLICATES)
+validate-champion: ## full Tier C evaluation of the current champion
+	@$(PY) evaluate --rsz 02_openroad_evolved/champion/rsz --tier C --replicates 3 --tag champion_tierC
+eval-candidate: ## evaluate an arbitrary rsz tree: make eval-candidate RSZ=path/to/rsz
+	@$(PY) evaluate --rsz $(RSZ) --tier $(TIER) --replicates $(REPLICATES) --tag manual
 
-test-rl-gatesize:
-	@test -d openroad_ml/rl_gatesize || { echo 'Unavailable here; run: make branch FRAMEWORK=rl-gatesize' >&2; exit 2; }
-	@if ! $(PYTHON) -c 'import torch' >/dev/null 2>&1; then \
-		echo 'SKIP rl-gatesize: install openroad_ml/rl_gatesize/requirements.txt'; \
-	else cd openroad_ml/rl_gatesize && $(PYTHON) -m tests.smoke_test; fi
+# ---- results ---------------------------------------------------------------
+.PHONY: report viz show-champion status
+report: ## print summary tables (baseline vs champion vs iterations, cost per iteration)
+	@$(PY) report
+viz: ## render 07_visualizations/index.html + plots
+	@$(PY) viz
+show-champion: ## diff champion vs original rsz
+	@diff -ruN 01_openroad_original/rsz_snapshot 02_openroad_evolved/champion/rsz > 02_openroad_evolved/champion.patch; head -200 02_openroad_evolved/champion.patch; echo "... full patch in 02_openroad_evolved/champion.patch"
+status: ## where am I? iterations done, champion score, spend
+	@$(PY) status
 
-test-timing-gnn:
-	@test -d openroad_ml/timing_gnn || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-gnn' >&2; exit 2; }
-	@if ! $(PYTHON) -c 'import torch' >/dev/null 2>&1; then \
-		echo 'SKIP timing-gnn: install openroad_ml/timing_gnn/requirements.txt'; \
-	else cd openroad_ml/timing_gnn && $(PYTHON) -m tests.smoke_test; fi
+# ---- framework tests ----------------------------------------------------------
+.PHONY: test
+test: ## unit tests for the framework (stubbed openroad/claude; no build needed)
+	@$(ENV) cd 03_evolution_framework && $$PYTHON -m pytest -q tests
 
-test-synapse:
-	@test -d abc/src/ext_ml/python || { echo 'Unavailable here; run: make branch FRAMEWORK=synapse' >&2; exit 2; }
-	@if ! $(PYTHON) -c 'import numpy' >/dev/null 2>&1; then \
-		echo 'SKIP synapse: install abc/src/ext_ml/python/requirements.txt'; \
-	else cd abc/src/ext_ml/python && $(PYTHON) -m tests.test_smoke; fi
+# ---- docker (portability) ------------------------------------------------------
+.PHONY: docker-build docker-shell
+docker-build: ## build the Linux image with all deps
+	docker build -t pv-rsz-evolve -f tools/Dockerfile .
+docker-shell: ## shell inside the image with the repo mounted at /work
+	docker run --rm -it -v "$(ROOT)":/work -v pv-rsz-bazel-cache:/root/.cache/bazel -w /work pv-rsz-evolve bash
 
-test-polyphony:
-	@test -d abc/src/ext_poly/python || { echo 'Unavailable here; run: make branch FRAMEWORK=polyphony' >&2; exit 2; }
-	cd abc/src/ext_poly/python && $(PYTHON) -m tests.test_smoke
-
-prepare-placement:
-	@test -d openroad_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=placement' >&2; exit 2; }
-	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m openroad_evolution.cli --config config/default.json prepare
-
-evolve-placement:
-	@test -d openroad_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=placement' >&2; exit 2; }
-	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m openroad_evolution.cli --config config/default.json evolve --generations $(GENERATIONS) --population $(POPULATION)
-
-run-placement:
-	@test -d openroad_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=placement' >&2; exit 2; }
-	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m openroad_evolution.cli --config config/default.json evolve --generations $(N) --population 1
-
-verify-placement:
-	@test -n "$(CANDIDATE)" || { echo 'CANDIDATE is required.' >&2; exit 2; }
-	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m openroad_evolution.cli --config config/default.json verify --candidate "$(CANDIDATE)"
-
-report-placement:
-	@test -d openroad_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=placement' >&2; exit 2; }
-	cd openroad_evolution && PYTHONPATH=src $(PYTHON) -m openroad_evolution.cli --config config/default.json report
-
-doctor-timing-evolution:
-	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
-	$(PYTHON) -m openroad_timing_evolution doctor
-
-prepare-timing-evolution:
-	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
-	$(PYTHON) -m openroad_timing_evolution prepare
-
-baseline-timing-evolution:
-	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
-	$(PYTHON) -m openroad_timing_evolution baseline
-
-evolve-timing-evolution:
-	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
-	$(PYTHON) -m openroad_timing_evolution evolve --generations $(GENERATIONS) --population $(POPULATION)
-
-run-timing:
-	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
-	$(PYTHON) -m openroad_timing_evolution evolve --generations $(N) --population 1
-
-report-timing-evolution:
-	@test -d openroad_timing_evolution || { echo 'Unavailable here; run: make branch FRAMEWORK=timing-evolution' >&2; exit 2; }
-	$(PYTHON) -m openroad_timing_evolution report
-
-run-both:
-	$(MAKE) --no-print-directory run-placement N=$(N)
-	$(MAKE) --no-print-directory run-timing N=$(N)
-
-results:
-	$(MAKE) --no-print-directory report-placement
-	$(MAKE) --no-print-directory report-timing-evolution
-
-train-congestion-cnn:
-	cd openroad_ml/congestion_cnn && $(PYTHON) -m train.train --epochs 2 --synthetic
-
-train-rl-gatesize:
-	cd openroad_ml/rl_gatesize && $(PYTHON) -m train.train_ppo --episodes 5 --mock
-
-train-timing-gnn:
-	cd openroad_ml/timing_gnn && $(PYTHON) -m train.train --epochs 2 --synthetic
-
-train-synapse:
-	cd abc/src/ext_ml/python && $(PYTHON) -m train.train_potential
-
-train-polyphony:
-	cd abc/src/ext_poly/python && $(PYTHON) -m train.train_gflownet --mode demo --n-vars 3
-
-abc-build:
-	$(MAKE) -C abc -j$(JOBS)
-
-openroad-flow:
-	./run-openroad-flow.sh flow DESIGN_CONFIG=$(DESIGN_CONFIG)
-
-openroad-shell:
-	./run-openroad-flow.sh shell
-
-# Source-level OpenROAD teaching branch: kernels, source-pair catalogue, report.
-.PHONY: learning-openroad learning-openroad-test learning-openroad-sanitize \
- learning-openroad-dataset learning-openroad-verify learning-openroad-report
-learning-openroad:
-	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution demo
-learning-openroad-test:
-	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution test
-learning-openroad-sanitize:
-	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution sanitize
-learning-openroad-dataset:
-	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution dataset
-learning-openroad-verify:
-	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution verify
-learning-openroad-report:
-	@$(MAKE) --no-print-directory -C external/OpenROAD/learning_evolution report
-
-.PHONY: learning-final learning-stats run-unified pipeline demo serve-dashboard show-report
-learning-final:
-	@$(PYTHON) external/OpenROAD/learning_evolution/tools/catalogue.py generate
-	@$(PYTHON) external/OpenROAD/learning_evolution/tools/guide.py
-	@$(PYTHON) external/OpenROAD/learning_evolution/tools/source_map.py
-	@$(PYTHON) external/OpenROAD/learning_evolution/tools/build_final.py
-learning-stats:
-	@$(MAKE) --no-print-directory -C OPENROAD_EVOLUTION_FINAL stats
-
-run-unified pipeline demo:
-	@$(PYTHON) run_evolution_pipeline.py
-
-serve-dashboard:
-	@echo "Serving evaluation dashboard on http://127.0.0.1:8000 (Ctrl+C to stop)..."
-	@$(PYTHON) -m http.server 8000 --directory OPENROAD_EVOLUTION_FINAL --bind 127.0.0.1
-
-show-report:
-	@$(MAKE) --no-print-directory -C openroad_evolution_report
-
-# ──────────────────────────────────────────────────────────
-# PV-Evolve: Path-Verified OpenROAD Evolution Framework
-# ──────────────────────────────────────────────────────────
-.PHONY: pv-help pv-test pv-contract pv-attribution pv-compare pv-mutation pv-presentation pv-report report pv-all
-
-pv-help:
-	@printf '%s\n' \
-	  'PV-Evolve commands:' \
-	  '' \
-	  '  make pv-report            Print executive statistical report & PVCC contract status' \
-	  '  make pv-test              Run PVCC + TPGM import and sanity checks' \
-	  '  make pv-contract          Show PVCC 6-layer contract specification' \
-	  '  make pv-attribution       Demo TPGM path attribution on synthetic data' \
-	  '  make pv-compare           Print PVCC vs ABC comparison table' \
-	  '  make pv-mutation          Demo guided vs blind mutation side-by-side' \
-	  '  make pv-presentation      Open PV-Evolve framework presentation' \
-	  '  make pv-live              Run live OpenROAD evolution loop' \
-	  '  make pv-live-quick        Run 1 generation x 1 population quick demo' \
-	  '  make pv-all               Run all PV-Evolve demos'
-
-pv-report report:
-	@$(PYTHON) openroad_timing_evolution/report_cli.py
-
-pv-test:
-	@$(PYTHON) -c "from openroad_timing_evolution.contract import *; from openroad_timing_evolution.path_attribution import *; print('PV-Evolve modules import OK')"
-	@$(PYTHON) -c "from openroad_timing_evolution.contract import compare_to_abc; c=compare_to_abc(); print(f'PVCC: {c[\"pvcc_layers\"]} layers, {len(c[\"pvcc_domains\"])} domains | ABC: {c[\"abc_layers\"]} layer, {len(c[\"abc_domains\"])} domain | Novel: {len(c[\"pvcc_novel_layers\"])}')"
-	@$(PYTHON) -c "from openroad_timing_evolution.policy import Policy, mutate; import random; p=Policy.from_dict({'enabled':True,'program':['load_pressure','fanout_shock']}); m=mutate(p, random.Random(0), {0:0.8,1:0.2}); print(f'Guided mutation test: {m.data()[\"program\"]}')"
-	@echo "All PV-Evolve checks passed."
-
-pv-contract:
-	@$(PYTHON) -m openroad_timing_evolution.pv_demo contract
-
-pv-attribution:
-	@$(PYTHON) -m openroad_timing_evolution.pv_demo attribution
-
-pv-compare:
-	@$(PYTHON) -m openroad_timing_evolution.pv_demo compare
-
-pv-mutation:
-	@$(PYTHON) -m openroad_timing_evolution.pv_demo mutation
-
-pv-presentation:
-	@echo "Opening PV-Evolve framework presentation..."
-	@xdg-open openroad_timing_evolution/presentation/pv_evolve.html 2>/dev/null || \
-	  open openroad_timing_evolution/presentation/pv_evolve.html 2>/dev/null || \
-	  echo "Open openroad_timing_evolution/presentation/pv_evolve.html in a browser"
-
-pv-all: pv-test pv-contract pv-attribution pv-compare pv-mutation
-	@echo ""
-	@echo "All PV-Evolve demos completed."
-
-pv-live:
-	$(PYTHON) -m openroad_timing_evolution.live_demo --generations $(GENERATIONS) --population $(POPULATION)
-
-pv-live-quick:
-	$(PYTHON) -m openroad_timing_evolution.live_demo --generations 1 --population 1
-
-# ── Replay 3,500 real candidates through PVCC + TPGM ──
-.PHONY: pv-replay pv-replay-top pv-replay-quick pv-replay-quiet
-
-pv-replay:
-	$(PYTHON) -m openroad_timing_evolution.replay
-
-pv-replay-top:
-	$(PYTHON) -m openroad_timing_evolution.replay --top 50
-
-pv-replay-quick:
-	$(PYTHON) -m openroad_timing_evolution.replay --limit 20
-
-pv-replay-quiet:
-	$(PYTHON) -m openroad_timing_evolution.replay --quiet
-
+# ---- cleaning -------------------------------------------------------------------
+.PHONY: clean-results clean-build
+clean-results: ## delete evolved results, candidates, agent data (keeps baseline + context). Asks first.
+	@read -p "Delete 06_evolved_results 11_agent_data 02_openroad_evolved/candidates lineage? [y/N] " a; [ "$$a" = y ] || exit 0; \
+	rm -rf 06_evolved_results/* 11_agent_data/* 02_openroad_evolved/candidates/* 02_openroad_evolved/lineage.json 07_visualizations/index.html; \
+	git checkout -- 06_evolved_results/README.md 11_agent_data/README.md 2>/dev/null || true
+clean-build: ## remove copied binaries (Bazel cache is kept)
+	rm -rf build

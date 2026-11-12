@@ -1,0 +1,21 @@
+{
+  "_comment": "Knobs for rszevolve. Keys mirror rszevolve.config.Knobs. CLI flags override these.",
+  "planner_model": "opus",
+  "coder_model": "opus",
+  "evaluator_model": "sonnet",
+  "context_model": "sonnet",
+  "planner_max_turns": 30,
+  "coder_max_turns": 80,
+  "evaluator_max_turns": 20,
+  "repair_attempts": 3,
+  "repair_timing_args": "-setup -repair_tns 100 -verbose",
+  "eval_timeout_s": 1800,
+  "build_timeout_s": 7200,
+  "path_count": 20,
+  "sdc_variant": "stressed",
+  "stressed_wns_target_ratio": -0.08,
+  "min_score_gain": 0.002,
+  "hold_wns_tolerance_ns": 0.005,
+  "drv_tolerance": 0,
+  "area_tolerance_pct": 10.0
+}

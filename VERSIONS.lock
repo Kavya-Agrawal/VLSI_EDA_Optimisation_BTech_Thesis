@@ -1,0 +1,28 @@
+# Pinned versions for pv_resizer_evolve. `make env-check` verifies these.
+# Change deliberately, then re-run `make setup && make build-openroad && make baseline`.
+
+[openroad]
+repo      = https://github.com/The-OpenROAD-Project/OpenROAD.git
+commit    = 6932b6296c65aebaadae64850f5a23265758ead0
+note      = OpenROAD submodule pinned by ORFS master on 2026-11-11. Bazel-only build (CMake removed 2026-11-01).
+bazel     = 9.3.2            # from external/OpenROAD/.bazelversion, fetched automatically by bazelisk
+
+[orfs]
+repo      = https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts.git
+commit    = a47d4fdc6534cb3cdfdd9ff76737a899a5bb2ee0
+note      = master on 2026-11-11; used for platforms (Nangate45/ASAP7), designs, and flow Tcl up to detailed placement.
+
+[fallback_pins]
+openroad  = 63fe72c577ef12d2ac2a0a944bbd842f9af8a0a7   # previously known-good pair (CMake era)
+orfs      = 68cc9bc974502b4786a68e9f51a092e0fcb56e82
+
+[tools]
+bazelisk  = brew (any; reads .bazelversion)
+yosys     = brew yosys 0.71
+python    = brew python@3.12 (3.12.x); framework requires >= 3.10
+pipx      = brew pipx
+graphify  = pipx graphifyy (version recorded below by tools/lock_versions.sh)
+claude    = Claude Code CLI >= 2.1 (`claude -p`); bundled copy under VS Code extension is accepted
+
+[recorded_by_lock_versions]
+# filled in by tools/lock_versions.sh

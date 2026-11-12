@@ -1,106 +1,63 @@
-# PV-Evolve: Path-Verified Evolution of OpenROAD Physical Design Code
+# pv_resizer_evolve — agentic evolution of OpenROAD's Resizer (`rsz`)
 
-**B.Tech Thesis — Vedant Sinha, IIT Guwahati**
+Branch `pv_resizer_evolve` is a clean-slate project with one goal: let a team of LLM agents
+(planner → cluster-scoped coding sub-agents → evaluator) **re-think the algorithms and heuristics
+inside OpenROAD's timing repair / resizer** and keep only changes that measurably improve
+WNS / TNS on placed designs, judged with OpenROAD's own pre-route timing commands.
 
-A framework for evolving OpenROAD physical design code with formal multi-domain
-correctness guarantees. Two novel contributions:
+Not the goal: micro-optimisations, data-structure tweaks, runtime wins. The agents are asked for a
+different heuristic, a different approximation paradigm, a different way of looking at the problem.
 
-1. **Physical Verification Correctness Contract (PVCC)** — 6-layer fail-closed
-   verification spanning structural, geometric, temporal, electrical, and logical domains.
-2. **Timing-Path-Guided Mutation (TPGM)** — STA critical paths feed back into the
-   mutation operator, biasing changes toward blocks influencing timing.
+## Repository map (numbered = reading order)
 
-## Quick Start
+| Folder | What is in it |
+|---|---|
+| [00_docs/](00_docs/) | approved plan, architecture, how to reproduce, decisions log |
+| [01_openroad_original/](01_openroad_original/) | frozen, read-only copy of stock `src/rsz` (+ STA headers) at the pinned commit |
+| [02_openroad_evolved/](02_openroad_evolved/) | champion rsz tree, every candidate, patches, `lineage.json` |
+| [03_evolution_framework/](03_evolution_framework/) | the `rszevolve` Python package: agents, evaluator, orchestrator, Tcl |
+| [04_benchmarks/](04_benchmarks/) | placed checkpoints + SDCs per design, `tiers.json` |
+| [05_baseline_results/](05_baseline_results/) | stock OpenROAD WNS/TNS/paths per design (3 replicates) |
+| [06_evolved_results/](06_evolved_results/) | per-iteration metrics, path reports, deltas, evaluator feedback |
+| [07_visualizations/](07_visualizations/) | generated dashboard and plots |
+| [08_graphify/](08_graphify/) | Graphify knowledge graphs (whole OpenROAD + rsz-focused) |
+| [09_agent_context/](09_agent_context/) | curated context the agents read: big picture, per-file cards, algorithm dossiers |
+| [10_agent_knowledge/](10_agent_knowledge/) | what the agents learned: rulebase, lessons, hypothesis ledger, dead ends |
+| [11_agent_data/](11_agent_data/) | raw prompts / responses / token usage per iteration |
+| [tools/](tools/) | env check, dependency installers, Bazel build wrapper, Dockerfile |
+| `external/` | OpenROAD and OpenROAD-flow-scripts, pinned in `VERSIONS.lock` |
+
+## Quick start
 
 ```bash
-git submodule update --init --recursive
-make test-timing-evolution    # run unit tests
-make pv-all                   # run all PV-Evolve demos
-make pv-live                  # run real OpenROAD evolution (requires Docker)
+make help                       # every target with a one-line description
+make deps                       # brew / apt packages (once)
+make setup                      # clone OpenROAD + ORFS at pinned commits, python venv
+make env-check                  # PASS/WARN/FAIL table
+make build-openroad snapshot    # Bazel build of stock OpenROAD (1-2 h first time), freeze src/rsz
+make graphify context           # Phase 1: knowledge graph + agent context packs
+make checkpoints baseline       # placed checkpoints via ORFS, stock WNS/TNS numbers
+make evolve N=5 BUDGET_USD=20   # Phase 2: five plan→code→build→evaluate iterations
+make report viz show-champion   # tables, dashboard, champion diff
 ```
 
-## Repository Structure
+Knobs: `N` iterations, `BUDGET_USD` / `MAX_TOKENS` spend caps, `TIER=A|B|C` benchmark set,
+`BAZEL_JOBS` for small-RAM machines, `CLAUDE_BIN`, `PYTHON`. See [00_docs/how_to_reproduce.md](00_docs/how_to_reproduce.md).
 
-```
-├── openroad_timing_evolution/   # PV-Evolve framework (Resizer + PVCC + TPGM)
-│   ├── contract.py              # 6-layer PVCC formalization
-│   ├── path_attribution.py      # TPGM path-to-block attribution
-│   ├── policy.py                # SSPE mutation with guided selection
-│   ├── search.py                # Evolutionary search loop
-│   ├── runner.py                # Real OpenROAD/ORFS evaluation
-│   ├── live_demo.py             # Live demo with terminal output
-│   ├── results/                 # Results, code changes, evidence
-│   └── presentation/            # Paper (LaTeX) + presentation (PPTX)
-│
-├── openroad_evolution/          # OptMirror detailed placement evolution
-│   └── src/openroad_evolution/  # OptMirror candidate framework
-│
-├── external/
-│   ├── OpenROAD/                # Pinned OpenROAD source (submodule)
-│   └── OpenROAD-flow-scripts/   # Pinned ORFS (submodule)
-│
-├── archive/                     # Previous research, docs, ABC, ML experiments
-├── Makefile                     # All commands
-└── README.md
-```
+## How an iteration works
 
-## Commands
+1. **Planner** reads the last evaluator feedback, the knowledge base and the hypothesis ledger, picks one
+   algorithm cluster (setup strategy, sizing, buffering, hold, DRV, timing model) and writes a hypothesis.
+2. **Coding sub-agent** for that cluster edits a copy of the champion `rsz` tree with only its cluster's
+   context in view, and writes `HYPOTHESIS.md` (problem → current heuristic → new approach → why → risks).
+3. **Build + gates**: Bazel incremental build, rsz regression tests, placement legality, DRV / hold guards.
+4. **Evaluate**: on each benchmark checkpoint run `estimate_parasitics -placement` → `repair_timing` →
+   `report_wns / report_tns / report_checks`. No routing, no GDS. Seconds to minutes per design.
+5. **Evaluator agent** turns metrics and the worst paths into `feedback.md` with attributed causes.
+6. **Record**: accept into champion or reject, update `lineage.json`, knowledge base, cost ledger.
 
-| Command | Description |
-|---------|-------------|
-| `make pv-report` | **Print executive statistical report & PVCC contract status** |
-| `make pv-all` | Run all PVCC + TPGM demos |
-| `make pv-contract` | Show 6-layer PVCC specification |
-| `make pv-attribution` | Demo TPGM path attribution |
-| `make pv-compare` | PVCC vs ABC CEC comparison |
-| `make pv-mutation` | Guided vs blind mutation demo |
-| `make pv-live` | **Run real OpenROAD evolution** (Docker required) |
-| `make pv-live-quick` | Quick single-iteration demo |
-| `make test-timing-evolution` | Run unit tests |
+Everything is logged under `06_evolved_results/<iter>/` and `11_agent_data/<iter>/`.
 
-## Results & Code Artifacts (Direct Access)
+## Status
 
-The final evaluation dataset, source files, and 3,500 generated candidate policy variants are tracked directly in the repository:
-
-- 📂 [**`OPENROAD_EVOLUTION_FINAL/`**](./OPENROAD_EVOLUTION_FINAL) — Main evaluation results and dashboard.
-- 📄 [**Original Baseline Sources (`_old`)**](./OPENROAD_EVOLUTION_FINAL/sources/old) — Original baseline C++ source files (`SetupLegacyBase.cc`, `RecoverPower.cc`, `RepairHold.cc`, `Clock.cpp`, `TritonCTS.cpp`, etc.).
-- 📄 [**Evolved New Sources (`_new`)**](./OPENROAD_EVOLUTION_FINAL/sources/new) — Evolved new C++ source files with policy modifications.
-- 🔀 [**Unified Source Diffs**](./OPENROAD_EVOLUTION_FINAL/diffs) — Side-by-side patch diffs between baseline and evolved code.
-- 🧬 [**3,500 Candidate Variants**](./OPENROAD_EVOLUTION_FINAL/candidate_code) — All 3,500 policy headers (`<hash>_new.h`) generated across generations.
-- 🌐 [**Interactive Web Dashboard**](https://kavya-agrawal.github.io/VLSI_EDA_Optimisation_BTech_Thesis/archive/OPENROAD_EVOLUTION_FINAL/index.html) — Online interactive exploration of all 3,500 variants.
-
-## Key Results
-
-| Metric | Value |
-|--------|-------|
-| P99 WNS improvement | **4.88%** |
-| Mean WNS improvement | 1.15% |
-| TPGM convergence speedup | 1.9× |
-| PVCC verification layers | 6 (vs 1 in Self-Evolved ABC) |
-| Total candidates evaluated | 3,500 |
-
-Results are in `openroad_timing_evolution/results/`:
-- `timing_improvement_summary.json` — full statistics
-- `pvcc_verification_evidence.json` — 6-layer evidence for champion
-- `critical_path_traces.json` — top-20 STA paths with attribution
-- `top_code_changes.json` — top 5 evolved candidates with parameter diffs
-- `code_changes/` — actual before/after C++ header files
-- `champion_code_change.cpp` — annotated stock vs evolved priority function
-
-## Evolution Targets
-
-| Agent | Target File | Status |
-|-------|-------------|--------|
-| **Resizer** | `src/rsz/src/policy/SetupLegacyBase.cc` | Fully implemented |
-| **CTS** | `src/cts/src/LearningPolicyConfig.h` | Pipeline-ready, 3500 candidates evaluated |
-| **OptMirror** | `src/dpl/src/OptMirror.cpp` | Pipeline-ready |
-
-The pipeline (PVCC + TPGM + SSPE) is stage-agnostic — the same contract and
-mutation mechanism apply to any OpenROAD subsystem.
-
-## References
-
-- Self-Evolved ABC (arXiv:2604.15082) — base paper being adapted
-- VERI-SURE (arXiv:2601.19747) — contract-based RTL verification
-- VPR-Evolve (arXiv:2607.24998) — multi-agent FPGA evolution
-- EvoDRC (arXiv:2607.20019) — self-evolving DRC repair
+See `make status`. Pinned OpenROAD / ORFS commits and tool versions: [VERSIONS.lock](VERSIONS.lock).

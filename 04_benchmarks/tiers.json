@@ -1,0 +1,7 @@
+{
+  "_comment": "Tier A runs every iteration. Tier B runs when a candidate beats the champion on A (or every 5th iteration). Tier C validates the final champion only. Each entry is <pdk>/<design>; SDC variants are listed per design in design.json.",
+  "A": ["nangate45/gcd", "nangate45/aes", "nangate45/ibex"],
+  "B": ["nangate45/jpeg", "asap7/ibex"],
+  "C": ["nangate45/gcd", "nangate45/aes", "nangate45/ibex", "nangate45/jpeg", "nangate45/dynamic_node", "nangate45/swerv", "nangate45/black_parrot", "nangate45/bp_fe", "nangate45/bp_be", "nangate45/bp_multi", "nangate45/tinyRocket", "nangate45/ariane133", "nangate45/ariane136"],
+  "sdc_variant_default": "stressed"
+}
