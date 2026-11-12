@@ -18,36 +18,96 @@ from ..config import PATHS, Knobs, designs_for_tier
 from ..util import log, now_iso, read_json, run, write_json, write_text
 from .run_eval import Design, run_one
 
-STRESS_RATIOS = [0.90, 0.80, 0.70, 0.60, 0.50, 0.40]
+STRESS_RATIOS = [1.00, 0.90, 0.80, 0.70, 0.60, 0.50, 0.40]
+
+
+def orfs_env(flow_dir: Path) -> dict[str, str]:
+    """PATH for ORFS: framework venv first (pyyaml etc.), GNU coreutils (GNU realpath), Homebrew, then the rest."""
+    import os, subprocess
+    venv = PATHS.workdir / "venv"
+    if not (venv / "bin" / "python").exists():
+        venv.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run([PATHS_PY(), "-m", "venv", str(venv)], check=True)
+        subprocess.run([str(venv / "bin" / "pip"), "install", "-q", "pyyaml"], check=True)
+    parts = [str(venv / "bin"), "/opt/homebrew/opt/coreutils/libexec/gnubin",
+             "/opt/homebrew/opt/make/libexec/gnubin", "/opt/homebrew/bin", "/usr/local/bin", os.environ.get("PATH", "")]
+    return {"PATH": ":".join(p for p in parts if p), "PWD": str(flow_dir), "PYTHON_EXE": str(venv / "bin" / "python")}
+
+
+def PATHS_PY() -> str:
+    import os, shutil
+    for c in (os.environ.get("PYTHON"), "python3.12", "python3.13", "python3.11", "python3"):
+        if c and shutil.which(c):
+            return c
+    return "python3"
+
+
+def orfs_flow_dir() -> Path:
+    """ORFS flow dir usable by make/bash: the submodule itself, or (repo path has spaces) a git worktree of the
+    pinned commit under PATHS.workdir/orfs sharing the submodule's objects."""
+    flow = PATHS.orfs_src / "flow"
+    if " " not in str(PATHS.orfs_src):
+        return flow
+    wt = PATHS.workdir / "orfs"
+    sha = run(["git", "-C", PATHS.orfs_src, "rev-parse", "HEAD"], timeout=60).stdout.strip()
+    if not (wt / "flow" / "Makefile").exists():
+        wt.parent.mkdir(parents=True, exist_ok=True)
+        log(f"ORFS: creating space-free worktree at {wt} @ {sha[:12]}")
+        r = run(["git", "-C", PATHS.orfs_src, "worktree", "add", "--detach", wt, sha], timeout=1800)
+        if not r.ok:
+            raise RuntimeError("git worktree add failed: " + r.stdout[-800:])
+    else:
+        cur = run(["git", "-C", wt, "rev-parse", "HEAD"], timeout=60).stdout.strip()
+        if cur != sha:
+            run(["git", "-C", wt, "checkout", "--detach", sha], timeout=600)
+    return wt / "flow"
+
+
+def stock_binary_nospace() -> Path:
+    """ORFS realpath()s OPENROAD_EXE; keep a copy of the stock binary at a space-free path."""
+    src = PATHS.openroad_stock
+    if " " not in str(src):
+        return src
+    dst = PATHS.workdir / "bin" / "openroad_stock"
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    if not dst.exists() or dst.stat().st_mtime < src.stat().st_mtime or dst.stat().st_size != src.stat().st_size:
+        shutil.copy2(src, dst)
+    return dst
 
 
 def orfs_make(design_key: str, target: str, *, extra: dict[str, str] | None = None, timeout: int = 7200) -> tuple[Path, Path, "RunResult"]:
     pdk, name = design_key.split("/")
-    flow = PATHS.orfs_src / "flow"
+    flow = orfs_flow_dir()
     cfg = flow / "designs" / pdk / name / "config.mk"
     if not cfg.exists():
         raise FileNotFoundError(f"no ORFS design config at {cfg}")
-    work = PATHS.orfs_runs / f"{pdk}__{name}"
+    work = PATHS.workdir / "orfs_runs" / f"{pdk}__{name}"
     work.mkdir(parents=True, exist_ok=True)
-    cmd = ["make", "-C", flow, f"DESIGN_CONFIG={cfg}", f"WORK_HOME={work}",
-           f"OPENROAD_EXE={PATHS.openroad_stock}", f"YOSYS_EXE={PATHS.yosys}", "ENABLE_PLACE_REPAIR_TIMING=0"]
+    cmd = [PATHS.gmake, "-f", flow / "Makefile", f"FLOW_HOME={flow}", f"DESIGN_CONFIG={cfg}", f"WORK_HOME={work}",
+           f"OPENROAD_EXE={stock_binary_nospace()}", f"YOSYS_EXE={PATHS.yosys}", "ENABLE_PLACE_REPAIR_TIMING=0"]
     for k, v in (extra or {}).items():
         cmd.append(f"{k}={v}")
     cmd.append(target)
-    log(f"ORFS {design_key}: make {target} (work={work.relative_to(PATHS.root)})")
-    res = run(cmd, timeout=timeout, log_file=work / f"make_{target}.log")
+    log(f"ORFS {design_key}: make {target} (work={work})")
+    res = run(cmd, cwd=flow, env=orfs_env(flow), timeout=timeout, log_file=work / f"make_{target}.log")
+    # keep the make log next to the repo's benchmark folder too
+    mirror = PATHS.orfs_runs / f"{pdk}__{name}"
+    mirror.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(work / f"make_{target}.log", mirror / f"make_{target}.log")
     return work, cfg, res
 
 
 def orfs_var(design_key: str, var: str) -> str:
     """Ask the ORFS Makefile for a resolved variable (print-% target)."""
     pdk, name = design_key.split("/")
-    flow = PATHS.orfs_src / "flow"
+    flow = orfs_flow_dir()
     cfg = flow / "designs" / pdk / name / "config.mk"
-    res = run(["make", "-s", "-C", flow, f"DESIGN_CONFIG={cfg}", f"print-{var}"], timeout=120)
+    res = run([PATHS.gmake, "-s", "-f", flow / "Makefile", f"FLOW_HOME={flow}", f"DESIGN_CONFIG={cfg}", f"print-{var}"],
+              cwd=flow, env=orfs_env(flow), timeout=120)
     for line in res.stdout.splitlines():
-        if line.startswith(f"{var} = "):
-            return line[len(var) + 3:].strip()
+        for pre in (f"{var}: ", f"{var} = "):
+            if line.startswith(pre):
+                return line[len(pre):].strip()
     return ""
 
 

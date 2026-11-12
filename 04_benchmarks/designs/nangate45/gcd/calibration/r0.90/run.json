@@ -1,0 +1,10 @@
+{
+  "design": "nangate45/gcd",
+  "variant": "nominal",
+  "replicate": 0,
+  "ok": true,
+  "seconds": 2.43,
+  "error": "",
+  "binary": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock",
+  "repair_args": "-setup -repair_tns 100 -verbose"
+}

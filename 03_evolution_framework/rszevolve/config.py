@@ -70,6 +70,47 @@ class Paths:
     def yosys(self) -> str:
         return os.environ.get("YOSYS_EXE") or "yosys"
 
+    @property
+    def gmake(self) -> str:
+        """GNU make >= 4.3 is required by ORFS (grouped targets). macOS ships 3.81."""
+        import shutil
+        for c in (os.environ.get("GMAKE"), "gmake", "/opt/homebrew/bin/gmake", "/usr/local/bin/gmake", "make"):
+            if c and shutil.which(c):
+                return c
+        return "make"
+
+    @property
+    def nospace_root(self) -> Path:
+        """ORFS make/Tcl break on paths with spaces. If the repo path has any, use a symlink in $HOME."""
+        if " " not in str(self.root):
+            return self.root
+        link = Path(os.environ.get("PV_NOSPACE_LINK", Path.home() / ".pv_rsz_evolve_root"))
+        if not link.exists() or link.resolve() != self.root.resolve():
+            try:
+                if link.is_symlink() or link.exists():
+                    link.unlink()
+                link.symlink_to(self.root)
+            except OSError:
+                return self.root
+        return link
+
+    @property
+    def workdir(self) -> Path:
+        """Real (not symlinked) space-free scratch area for tools that cannot handle spaces (ORFS).
+        Same as build/ when the repo path has no spaces."""
+        if " " not in str(self.root):
+            return self.build / "work"
+        return Path(os.environ.get("PV_WORKDIR", Path.home() / "pv_rsz_evolve_work"))
+
+    def nospace(self, p: Path) -> Path:
+        """Re-express a path inside the repo through nospace_root."""
+        p = Path(p).resolve()
+        try:
+            rel = p.relative_to(self.root.resolve())
+        except ValueError:
+            return p
+        return self.nospace_root / rel
+
 
 @dataclass
 class Knobs:

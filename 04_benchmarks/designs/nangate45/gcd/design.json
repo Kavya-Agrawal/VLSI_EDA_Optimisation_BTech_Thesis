@@ -1,0 +1,44 @@
+{
+  "pdk": "nangate45",
+  "design": "gcd",
+  "top": "gcd",
+  "odb": "placed.odb",
+  "sdc": {
+    "nominal": "nominal.sdc",
+    "stressed": "stressed.sdc"
+  },
+  "libs": [
+    "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib"
+  ],
+  "set_rc": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/nangate45/setRC.tcl",
+  "dont_use": "TAPCELL_X1 FILLCELL_X1 AOI211_X1 OAI211_X1",
+  "clock_period_ns": {
+    "nominal": 0.25,
+    "stressed": 0.225
+  },
+  "provenance": {
+    "orfs_config": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/designs/nangate45/gcd/config.mk",
+    "orfs_results": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs_runs/nangate45__gcd/results/nangate45/gcd/base",
+    "generated": "2026-11-12T21:25:55Z",
+    "openroad": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock",
+    "stage": "3_5_place_dp (ENABLE_PLACE_REPAIR_TIMING=0)",
+    "instances": null
+  },
+  "stress_calibration": {
+    "chosen_ratio": 0.9,
+    "target_wns_ratio": -0.08,
+    "table": [
+      {
+        "ratio": 0.9,
+        "period": 0.225,
+        "ok": true,
+        "wns_pre": -0.1749589966869834,
+        "wns_post": -0.17417545676519416,
+        "tns_post": -7.62617102164613,
+        "wns_post_pct_period": -77.41131411786408
+      }
+    ],
+    "binary": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock",
+    "when": "2026-11-12T21:25:57Z"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "generated": "2026-11-12T21:25:57Z",
+  "designs": {
+    "nangate45/gcd": {
+      "periods": {
+        "nominal": 0.25,
+        "stressed": 0.225
+      },
+      "ready": true
+    }
+  }
+}
