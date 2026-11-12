@@ -16,7 +16,7 @@ BAZEL_JOBS ?= 8
 export N BUDGET_USD MAX_TOKENS TIER REPLICATES BAZEL_JOBS
 
 ENV  := source "$(ROOT)/tools/env.sh" &&
-PY   := $(ENV) cd "$(ROOT)/03_evolution_framework" && $$PYTHON -m rszevolve
+PY   := $(ENV) cd "$(ROOT)/03_evolution_framework" && { [ -x .venv/bin/python ] && P=.venv/bin/python || P=$$PYTHON; } && $$P -m rszevolve
 FW_VENV := $(ROOT)/03_evolution_framework/.venv
 
 # ---- help ----------------------------------------------------------------
@@ -103,7 +103,7 @@ status: ## where am I? iterations done, champion score, spend
 # ---- framework tests ----------------------------------------------------------
 .PHONY: test
 test: ## unit tests for the framework (stubbed openroad/claude; no build needed)
-	@$(ENV) cd 03_evolution_framework && $$PYTHON -m pytest -q tests
+	@$(ENV) cd 03_evolution_framework && { [ -x .venv/bin/python ] && P=.venv/bin/python || P=$$PYTHON; } && $$P -m pytest -q tests
 
 # ---- docker (portability) ------------------------------------------------------
 .PHONY: docker-build docker-shell
