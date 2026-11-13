@@ -213,7 +213,8 @@ def _run_codex(call: AgentCall) -> _Attempt:
 def _run_antigravity(call: AgentCall) -> _Attempt:
     mode = "accept-edits" if _editable(call) else "plan"
     actual_cmd = [PATHS.antigravity_bin, "--output-format", "json", "--model", _model_for(call, "antigravity"),
-                  "--mode", mode, "--print-timeout", f"{max(1, call.timeout_s)}s"]
+                  "--mode", mode, "--print-timeout", f"{max(1, call.timeout_s)}s",
+                  "--dangerously-skip-permissions"]
     for directory in call.add_dirs:
         actual_cmd += ["--add-dir", str(directory)]
     if session := _session_for(call, "antigravity"):
