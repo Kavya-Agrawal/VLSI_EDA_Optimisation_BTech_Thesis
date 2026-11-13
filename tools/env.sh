@@ -27,4 +27,15 @@ if [ -z "${CLAUDE_BIN:-}" ]; then
 fi
 export CLAUDE_BIN="${CLAUDE_BIN:-claude}"
 
+# Headless-agent fallback chain. Each CLI uses its own existing login; credentials are never copied
+# between providers. Override the order or models before invoking make when required.
+export AGENT_PROVIDERS="${AGENT_PROVIDERS:-claude,codex,antigravity}"
+if [ -z "${CODEX_BIN:-}" ]; then
+  CODEX_BIN="$(command -v codex 2>/dev/null || ls -d "$HOME"/.vscode/extensions/openai.chatgpt-*/bin/macos-*/codex 2>/dev/null | sort -V | tail -1)"
+fi
+export CODEX_BIN="${CODEX_BIN:-codex}"
+export CODEX_AGENT_MODEL="${CODEX_AGENT_MODEL:-gpt-6.1-sol}"
+export ANTIGRAVITY_BIN="${ANTIGRAVITY_BIN:-$(command -v agy 2>/dev/null || echo "$HOME/.local/bin/agy")}"
+export ANTIGRAVITY_AGENT_MODEL="${ANTIGRAVITY_AGENT_MODEL:-gemini-3.8-flash-high}"
+
 export YOSYS_EXE="${YOSYS_EXE:-$(command -v yosys 2>/dev/null || echo /opt/homebrew/bin/yosys)}"

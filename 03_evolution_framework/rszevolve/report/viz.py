@@ -96,6 +96,7 @@ def render_all() -> None:
 <style>body{{font-family:system-ui;margin:24px;max-width:1100px}}table{{border-collapse:collapse}}td,th{{border:1px solid #ccc;padding:4px 8px;font-size:13px}}img{{max-width:100%}}</style>
 <h1>OpenROAD Resizer evolution — {html.escape(knobs.sdc_variant)} SDC</h1>
 <p>champion: iteration {champ.get('iteration', 0)} · {html.escape(str(champ.get('hypothesis') or 'original rsz')[:200])}</p>
+<p><strong><a href='rsz_mentor_overview.html'>Open the mentor-friendly RSZ architecture walkthrough →</a></strong></p>
 {''.join(f"<h2>{m}</h2><img src='{m}'>" for m in made)}
 <h2>Iterations</h2><table><tr><th>#</th><th>status</th><th>cluster</th><th>score vs champion</th><th>title</th><th>links</th></tr>{''.join(rows)}</table>
 <p><a href='../05_baseline_results/SUMMARY.md'>baseline summary</a> · <a href='../10_agent_knowledge/hypotheses_ledger.md'>hypotheses ledger</a> · <a href='../08_graphify/rsz_focus/graphify-out/graph.html'>knowledge graph</a></p>"""

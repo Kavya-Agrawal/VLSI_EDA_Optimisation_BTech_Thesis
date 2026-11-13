@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A mentor-friendly visual explanation of OpenROAD Resizer architecture, generated from the project Graphify analysis.">
+  <title>Inside OpenROAD Resizer · Graphify Briefing</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #657087;
+      --paper: #f5f2ea;
+      --card: #fffdf8;
+      --line: #d9d4c8;
+      --blue: #2457d6;
+      --cyan: #15a6a6;
+      --orange: #f07c3e;
+      --purple: #7857c8;
+      --green: #2f8c62;
+      --red: #c54b55;
+      --shadow: 0 18px 55px rgba(23, 32, 51, .11);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 90% 4%, rgba(36,87,214,.09), transparent 27rem),
+        radial-gradient(circle at 8% 30%, rgba(21,166,166,.07), transparent 24rem),
+        var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .progress { position: fixed; inset: 0 auto auto 0; height: 4px; width: 0; z-index: 20; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+    .topbar {
+      position: sticky; top: 0; z-index: 15;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: .8rem clamp(1rem, 4vw, 4rem);
+      background: rgba(245,242,234,.88); backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(23,32,51,.08);
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: -.02em; }
+    .brand-mark { width: 2rem; height: 2rem; border-radius: 10px; display: grid; place-items: center; color: white; background: var(--ink); font-size: .72rem; }
+    .nav { display: flex; gap: .35rem; flex-wrap: wrap; justify-content: flex-end; }
+    .nav a, .action {
+      text-decoration: none; border: 0; border-radius: 999px; padding: .55rem .85rem;
+      color: var(--muted); background: transparent; cursor: pointer; font-size: .85rem; font-weight: 700;
+    }
+    .nav a:hover, .nav a.active, .action:hover { background: white; color: var(--ink); box-shadow: 0 4px 18px rgba(23,32,51,.08); }
+    .action.primary { color: white; background: var(--ink); }
+    main { overflow: hidden; }
+    .wrap { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+    section { padding: clamp(4rem, 8vw, 8rem) 0; scroll-margin-top: 4rem; }
+    .hero { min-height: 88vh; display: grid; align-items: center; padding-top: 3rem; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: .55rem; text-transform: uppercase; letter-spacing: .13em; font-size: .75rem; font-weight: 850; color: var(--blue); }
+    .eyebrow::before { content: ""; width: 2rem; height: 2px; background: currentColor; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin: 1.2rem 0 1.35rem; font-size: clamp(3.3rem, 8vw, 7.7rem); line-height: .88; letter-spacing: -.075em; max-width: 9ch; }
+    h1 span { color: var(--blue); }
+    .lede { max-width: 58ch; font-size: clamp(1.05rem, 1.7vw, 1.3rem); color: var(--muted); }
+    .hero-actions { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 2rem; }
+    .hero-actions a { text-decoration: none; padding: .8rem 1.1rem; border-radius: 12px; font-weight: 800; border: 1px solid var(--line); background: var(--card); }
+    .hero-actions a:first-child { color: white; background: var(--ink); border-color: var(--ink); }
+    .hero-visual { position: relative; min-height: 35rem; }
+    .orbit { position: absolute; inset: 2rem; border: 1px dashed rgba(36,87,214,.25); border-radius: 50%; animation: rotate 50s linear infinite; }
+    .orbit.two { inset: 6rem; animation-direction: reverse; animation-duration: 35s; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    .core {
+      position: absolute; inset: 50% auto auto 50%; transform: translate(-50%,-50%);
+      width: 13rem; aspect-ratio: 1; border-radius: 38px; color: white;
+      display: grid; place-items: center; text-align: center; padding: 1rem;
+      background: linear-gradient(145deg, #172033, #2d3b5d); box-shadow: 0 30px 75px rgba(23,32,51,.28);
+    }
+    .core strong { display: block; font-size: 2.5rem; letter-spacing: -.08em; }
+    .satellite { position: absolute; width: 10.5rem; padding: 1rem; border-radius: 18px; background: rgba(255,253,248,.95); border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .satellite b { display: block; margin-bottom: .2rem; }
+    .satellite small { color: var(--muted); }
+    .s1 { top: 0; left: 4%; } .s2 { top: 7%; right: 0; } .s3 { bottom: 8%; right: 1%; } .s4 { bottom: 0; left: 5%; }
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: -1rem; position: relative; z-index: 2; }
+    .stat { padding: 1.4rem; border: 1px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: 0 10px 30px rgba(23,32,51,.06); }
+    .stat strong { display: block; font-size: clamp(1.8rem,4vw,3rem); line-height: 1; letter-spacing: -.055em; }
+    .stat span { display: block; margin-top: .45rem; color: var(--muted); font-size: .86rem; }
+    .section-head { display: grid; grid-template-columns: .7fr 1.3fr; gap: 2rem; align-items: end; margin-bottom: 3rem; }
+    .section-head h2 { margin: .7rem 0 0; font-size: clamp(2.3rem,5vw,4.8rem); line-height: .96; letter-spacing: -.06em; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 1.05rem; max-width: 65ch; }
+    .boundary { background: var(--ink); color: white; }
+    .boundary .eyebrow { color: #8ee3df; }
+    .boundary .section-head p { color: #b6bfd1; }
+    .system-map { display: grid; grid-template-columns: 1fr 1.45fr 1fr; gap: 1rem; align-items: stretch; }
+    .system-column { display: grid; gap: .8rem; }
+    .system-title { color: #a9b4ca; font-size: .75rem; text-transform: uppercase; letter-spacing: .14em; font-weight: 850; }
+    .io-card { border: 1px solid rgba(255,255,255,.13); border-radius: 16px; padding: 1rem; background: rgba(255,255,255,.055); }
+    .io-card b { display: block; } .io-card span { display: block; color: #aeb8ca; font-size: .85rem; margin-top: .2rem; }
+    .brain { padding: 1.5rem; border-radius: 24px; background: linear-gradient(150deg, rgba(36,87,214,.9), rgba(120,87,200,.82)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+    .brain h3 { font-size: 1.5rem; }
+    .brain-flow { display: grid; gap: .65rem; counter-reset: brain; }
+    .brain-flow div { counter-increment: brain; display: flex; gap: .7rem; align-items: center; padding: .65rem .75rem; border-radius: 12px; background: rgba(255,255,255,.1); }
+    .brain-flow div::before { content: counter(brain); display: grid; place-items: center; flex: 0 0 1.55rem; height: 1.55rem; border-radius: 50%; background: white; color: var(--blue); font-weight: 900; font-size: .75rem; }
+    .loop-layout { display: grid; grid-template-columns: .7fr 1.3fr; gap: 2rem; }
+    .steps { display: grid; gap: .65rem; align-content: start; }
+    .step { width: 100%; text-align: left; padding: 1rem; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,253,248,.6); cursor: pointer; color: var(--muted); }
+    .step strong { color: var(--ink); margin-right: .4rem; }
+    .step.active { border-color: var(--blue); background: white; color: var(--ink); box-shadow: 0 10px 30px rgba(36,87,214,.12); transform: translateX(.4rem); }
+    .step-detail { min-height: 27rem; display: grid; align-content: center; padding: clamp(2rem,5vw,4rem); border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .detail-number { font-size: 5rem; line-height: 1; font-weight: 900; color: rgba(36,87,214,.12); letter-spacing: -.08em; }
+    .step-detail h3 { font-size: clamp(1.8rem,4vw,3.4rem); letter-spacing: -.05em; margin: -.6rem 0 1rem; }
+    .step-detail p { color: var(--muted); font-size: 1.05rem; }
+    .file-chip { display: inline-flex; margin: .25rem .25rem 0 0; padding: .35rem .6rem; border-radius: 8px; background: #edf1fb; color: #244899; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .77rem; }
+    .atlas { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .cluster { min-height: 19rem; padding: 1.35rem; border-radius: 19px; border: 1px solid var(--line); background: var(--card); position: relative; overflow: hidden; transition: .25s ease; }
+    .cluster:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+    .cluster::after { content: ""; position: absolute; width: 9rem; height: 9rem; border-radius: 50%; right: -4rem; bottom: -4rem; background: var(--accent); opacity: .12; }
+    .cluster-icon { width: 2.7rem; height: 2.7rem; border-radius: 13px; display: grid; place-items: center; color: white; background: var(--accent); font-weight: 900; }
+    .cluster h3 { margin: 1rem 0 .55rem; font-size: 1.35rem; }
+    .cluster p { color: var(--muted); font-size: .92rem; }
+    .cluster .question { padding-top: .7rem; border-top: 1px solid var(--line); font-size: .8rem; color: var(--ink); font-weight: 750; }
+    .evidence { background: #e8edf8; }
+    .evidence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .panel { padding: clamp(1.4rem,3vw,2rem); border-radius: var(--radius); background: var(--card); border: 1px solid rgba(23,32,51,.1); }
+    .panel h3 { margin-bottom: .3rem; } .panel > p { color: var(--muted); font-size: .9rem; }
+    .bar-list { display: grid; gap: .7rem; margin-top: 1.4rem; }
+    .bar-row { display: grid; grid-template-columns: 7.5rem 1fr 3.4rem; gap: .7rem; align-items: center; font-size: .82rem; }
+    .bar-track { height: .7rem; border-radius: 999px; background: #e9e6dd; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--blue),var(--cyan)); }
+    .hub-list { display: grid; grid-template-columns: 1fr auto; gap: .6rem 1rem; margin-top: 1.2rem; font-size: .86rem; }
+    .hub-list div:nth-child(odd) { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hub-list code { color: var(--muted); font-size: .75rem; }
+    .hub-list strong { color: var(--blue); }
+    .legend { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: .6rem; }
+    .legend span { padding: .35rem .6rem; border-radius: 8px; background: #eef1f7; font-size: .74rem; }
+    .thesis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+    .thesis-copy h2 { font-size: clamp(2.4rem,5vw,4.8rem); letter-spacing: -.06em; line-height: .96; }
+    .thesis-copy p { color: var(--muted); }
+    .evolution { padding: 1.25rem; border-radius: 24px; background: var(--ink); color: white; box-shadow: var(--shadow); }
+    .evo-row { display: grid; grid-template-columns: 2.3rem 1fr auto; gap: .8rem; align-items: center; padding: .9rem; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .evo-row:last-child { border: 0; }
+    .evo-num { height: 2.3rem; border-radius: 10px; display: grid; place-items: center; font-weight: 900; background: rgba(255,255,255,.09); }
+    .evo-row small { color: #aeb8ca; display: block; }
+    .evo-row em { font-style: normal; color: #8ee3df; font-size: .75rem; font-weight: 800; }
+    .talk-track { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .talk { padding: 1.5rem; border-radius: 18px; color: white; min-height: 14rem; }
+    .talk:nth-child(1) { background: var(--blue); } .talk:nth-child(2) { background: var(--purple); } .talk:nth-child(3) { background: var(--green); }
+    .talk span { font-size: 2rem; font-weight: 900; opacity: .4; }
+    .talk h3 { margin: 1.8rem 0 .5rem; }
+    .talk p { opacity: .82; font-size: .9rem; }
+    footer { padding: 2rem 0 4rem; color: var(--muted); border-top: 1px solid var(--line); }
+    footer .wrap { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .presenting .topbar { display: none; }
+    .presenting section { min-height: 100vh; display: grid; align-items: center; padding-block: 4rem; }
+    .presenting .progress { display: none; }
+    @media (max-width: 850px) {
+      .nav a { display: none; }
+      .hero-grid, .section-head, .loop-layout, .thesis-grid { grid-template-columns: 1fr; }
+      .hero { min-height: auto; }
+      .hero-visual { min-height: 29rem; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .system-map { grid-template-columns: 1fr; }
+      .atlas { grid-template-columns: 1fr 1fr; }
+      .evidence-grid { grid-template-columns: 1fr; }
+      .talk-track { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      h1 { font-size: 3.4rem; }
+      .hero-visual { transform: scale(.84); margin-inline: -2rem; }
+      .stats, .atlas { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 6rem 1fr 3rem; }
+    }
+    @media print {
+      body { background: white; }
+      .topbar, .progress, .hero-actions { display: none !important; }
+      section { page-break-before: always; padding: 2rem 0; }
+      .hero { page-break-before: auto; }
+      .cluster, .panel, .stat { break-inside: avoid; box-shadow: none; }
+      .orbit { animation: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">RSZ</span><span>Graphify briefing</span></div>
+    <nav class="nav" aria-label="Page sections">
+      <a href="#system">System</a><a href="#loop">Repair loop</a><a href="#atlas">Algorithms</a><a href="#evidence">Evidence</a><a href="#thesis">Thesis</a>
+      <button class="action" id="printButton">Print / PDF</button>
+      <button class="action primary" id="presentButton">Present</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">OpenROAD · Resizer subsystem</div>
+            <h1>From negative slack to a <span>legal ECO.</span></h1>
+            <p class="lede">A visual tour of how <strong>RSZ</strong> finds timing problems, proposes physical changes, predicts their value, and safely commits only the useful moves.</p>
+            <div class="hero-actions"><a href="#system">Start the walkthrough</a><a href="../08_graphify/rsz_focus/graphify-out/graph.html">Open full Graphify explorer ↗</a></div>
+          </div>
+          <div class="hero-visual" aria-label="Resizer and its four surrounding systems">
+            <div class="orbit"></div><div class="orbit two"></div>
+            <div class="core"><div><strong>RSZ</strong><span>timing repair engine</span></div></div>
+            <div class="satellite s1"><b>OpenSTA</b><small>arrival, required time, slack</small></div>
+            <div class="satellite s2"><b>OpenDB</b><small>cells, nets, physical design</small></div>
+            <div class="satellite s3"><b>OpenDP</b><small>legal placement after moves</small></div>
+            <div class="satellite s4"><b>Parasitics</b><small>wire resistance &amp; capacitance</small></div>
+          </div>
+        </div>
+        <div class="stats" aria-label="Graphify summary statistics">
+          <div class="stat"><strong>10,950</strong><span>Graphify nodes</span></div>
+          <div class="stat"><strong>22,828</strong><span>relationships</span></div>
+          <div class="stat"><strong>368</strong><span>detected communities</span></div>
+          <div class="stat"><strong>97%</strong><span>relationships extracted directly</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="boundary" id="system">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="eyebrow">The 30-second explanation</div><h2>RSZ is the decision layer between timing and geometry.</h2></div>
+          <p>It reads a placed design and its timing constraints, repeatedly asks “what is failing?”, tests legal netlist transformations, and writes back a faster—but functionally equivalent—physical implementation.</p>
+        </div>
+        <div class="system-map">
+          <div class="system-column">
+            <div class="system-title">Inputs</div>
+            <div class="io-card"><b>Placed database</b><span>instances, nets, coordinates</span></div>
+            <div class="io-card"><b>Liberty cells</b><span>delay, slew, capacitance tables</span></div>
+            <div class="io-card"><b>SDC constraints</b><span>clocks, required arrival times</span></div>
+            <div class="io-card"><b>Wire parasitics</b><span>estimated or routed RC</span></div>
+          </div>
+          <div class="brain">
+            <h3>The RSZ decision engine</h3>
+            <div class="brain-flow">
+              <div>Collect worst paths and violating endpoints</div>
+              <div>Generate candidate physical moves</div>
+              <div>Estimate delay gain cheaply</div>
+              <div>Speculatively apply and re-time</div>
+              <div>Commit improvement—or roll it back</div>
+            </div>
+          </div>
+          <div class="system-column">
+            <div class="system-title">Outputs</div>
+            <div class="io-card"><b>Resized cells</b><span>stronger or weaker drive</span></div>
+            <div class="io-card"><b>Buffered nets</b><span>new repeaters and load splits</span></div>
+            <div class="io-card"><b>VT / pin swaps</b><span>faster equivalent choices</span></div>
+            <div class="io-card"><b>Legal placement</b><span>site-aligned, zero overlap</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="loop">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="eyebrow">Core control flow</div><h2>One repair iteration, step by step.</h2></div>
+          <p>Click each step. This is the important conceptual loop behind <code>repair_timing -setup</code>: measure, propose, predict, verify, then commit or undo.</p>
+        </div>
+        <div class="loop-layout">
+          <div class="steps" id="steps"></div>
+          <article class="step-detail" id="stepDetail" aria-live="polite"></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="atlas">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="eyebrow">Algorithm atlas</div><h2>Six places where a heuristic can change the outcome.</h2></div>
+          <p>The thesis framework divides the codebase by the decision being made—not merely by directory. Each cluster is a distinct research surface for improving WNS and TNS.</p>
+        </div>
+        <div class="atlas">
+          <article class="cluster" style="--accent:var(--blue)"><div class="cluster-icon">01</div><h3>Setup strategy</h3><p>Chooses which endpoints and paths to attack, in what order, with which move sequence and stopping rule.</p><div class="question">Research question: how should WNS and TNS effort be budgeted?</div></article>
+          <article class="cluster" style="--accent:var(--orange)"><div class="cluster-icon">02</div><h3>Cell sizing</h3><p>Selects a drive strength, VT variant, or equivalent input-pin assignment for a critical driver.</p><div class="question">Research question: which discrete cell choice gives the best true path gain?</div></article>
+          <article class="cluster" style="--accent:var(--green)"><div class="cluster-icon">03</div><h3>Buffering</h3><p>Builds or selects buffer trees, splits loads, clones drivers, and removes counterproductive buffers.</p><div class="question">Research question: where should topology change, and which loads belong together?</div></article>
+          <article class="cluster" style="--accent:var(--red)"><div class="cluster-icon">04</div><h3>Hold repair</h3><p>Adds controlled data delay while protecting setup timing and avoiding unnecessary area growth.</p><div class="question">Research question: how can delay be inserted with minimum setup damage?</div></article>
+          <article class="cluster" style="--accent:var(--purple)"><div class="cluster-icon">05</div><h3>DRV repair</h3><p>Repairs excessive slew, capacitance, fanout, or wire length before and during timing closure.</p><div class="question">Research question: which electrical violation is the true timing bottleneck?</div></article>
+          <article class="cluster" style="--accent:var(--cyan)"><div class="cluster-icon">06</div><h3>Timing model</h3><p>Predicts delay and slew gains cheaply enough to rank many moves before invoking precise STA.</p><div class="question">Research question: which approximation best predicts the eventual committed gain?</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="evidence" id="evidence">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="eyebrow">What Graphify measured</div><h2>The architecture is backed by extracted code relationships.</h2></div>
+          <p>The overview simplifies the graph for communication. The numbers below come directly from <code>rsz_focus/graph.json</code>; the full explorer remains available for symbol-level evidence.</p>
+        </div>
+        <div class="evidence-grid">
+          <article class="panel">
+            <h3>Relationship vocabulary</h3><p>Most links encode static structure; 1,610 are direct call relationships.</p>
+            <div class="bar-list">
+              <div class="bar-row"><span>references</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><b>11,182</b></div>
+              <div class="bar-row"><span>contains</span><div class="bar-track"><div class="bar-fill" style="width:41.5%"></div></div><b>4,636</b></div>
+              <div class="bar-row"><span>imports</span><div class="bar-track"><div class="bar-fill" style="width:33.2%"></div></div><b>3,710</b></div>
+              <div class="bar-row"><span>calls</span><div class="bar-track"><div class="bar-fill" style="width:14.4%"></div></div><b>1,610</b></div>
+              <div class="bar-row"><span>methods</span><div class="bar-track"><div class="bar-fill" style="width:8.7%"></div></div><b>968</b></div>
+              <div class="bar-row"><span>inherits</span><div class="bar-track"><div class="bar-fill" style="width:1.1%"></div></div><b>117</b></div>
+            </div>
+          </article>
+          <article class="panel">
+            <h3>RSZ structural hubs</h3><p>Degree counts expose files and concepts that connect unusually large parts of the subsystem.</p>
+            <div class="hub-list">
+              <div><b>Pin</b> <code>BufferedNet.cc</code></div><strong>605</strong>
+              <div><b>Resizer.cc</b> <code>command façade</code></div><strong>362</strong>
+              <div><b>Rebuffer.cc</b> <code>buffer-tree search</code></div><strong>146</strong>
+              <div><b>RepairTargetCollector.cc</b> <code>target selection</code></div><strong>142</strong>
+              <div><b>DelayEstimatorReporter.cc</b> <code>model evidence</code></div><strong>117</strong>
+              <div><b>SetupParallelEvalPolicy.cc</b> <code>policy</code></div><strong>114</strong>
+              <div><b>DelayEstimator.cc</b> <code>move prediction</code></div><strong>111</strong>
+              <div><b>MoveCommitter.cc</b> <code>safe mutation</code></div><strong>92</strong>
+            </div>
+          </article>
+          <article class="panel">
+            <h3>Indexed source groups</h3><p>The focused graph includes RSZ plus the timing, database, parasitic, and placement systems it depends on.</p>
+            <div class="bar-list">
+              <div class="bar-row"><span>RSZ</span><div class="bar-track"><div class="bar-fill" style="width:96.5%"></div></div><b>1,945</b></div>
+              <div class="bar-row"><span>STA search</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><b>2,015</b></div>
+              <div class="bar-row"><span>STA delay</span><div class="bar-track"><div class="bar-fill" style="width:33.1%"></div></div><b>667</b></div>
+              <div class="bar-row"><span>dbSta</span><div class="bar-track"><div class="bar-fill" style="width:33%"></div></div><b>665</b></div>
+              <div class="bar-row"><span>Parasitics</span><div class="bar-track"><div class="bar-fill" style="width:17.4%"></div></div><b>351</b></div>
+              <div class="bar-row"><span>OpenDP</span><div class="bar-track"><div class="bar-fill" style="width:13.2%"></div></div><b>266</b></div>
+            </div>
+          </article>
+          <article class="panel">
+            <h3>How to read the full graph</h3><p>Start at a hub, filter by relation, then follow the evidence back to source locations.</p>
+            <div class="legend"><span>node = symbol or concept</span><span>edge = relationship</span><span>community = cohesive code region</span><span>EXTRACTED = AST evidence</span><span>INFERRED = high-confidence semantic link</span></div>
+            <p style="margin-top:1.3rem"><strong>Recommended path:</strong> <code>repair_timing</code> → <code>Optimizer::run</code> → policy → move generator → <code>DelayEstimator</code> → <code>MoveCommitter</code> → OpenSTA update.</p>
+            <div class="hero-actions"><a href="../08_graphify/rsz_focus/graphify-out/graph.html">Launch full explorer ↗</a><a href="../08_graphify/rsz_focus/graphify-out/GRAPH_REPORT.md">Read graph report</a></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="thesis">
+      <div class="wrap">
+        <div class="thesis-grid">
+          <div class="thesis-copy">
+            <div class="eyebrow">Where the thesis fits</div>
+            <h2>The framework evolves decisions, then demands physical evidence.</h2>
+            <p>Graphify supplies the structural map. The evolution loop uses that map to scope one hypothesis, edit the relevant RSZ cluster, rebuild OpenROAD, and measure post-repair WNS/TNS on placed benchmarks.</p>
+            <p><strong>The key distinction:</strong> an idea is not a result. Only a deterministic candidate that passes build, unit, smoke, placement, hold, DRV, and area guards can become the next champion.</p>
+          </div>
+          <div class="evolution" aria-label="Evolution framework stages">
+            <div class="evo-row"><div class="evo-num">1</div><div><b>Observe</b><small>Worst paths and dominant structural causes</small></div><em>Graph + metrics</em></div>
+            <div class="evo-row"><div class="evo-num">2</div><div><b>Hypothesize</b><small>One algorithmic decision to change</small></div><em>Planner</em></div>
+            <div class="evo-row"><div class="evo-num">3</div><div><b>Implement</b><small>Cluster-scoped C++ modification</small></div><em>Coder</em></div>
+            <div class="evo-row"><div class="evo-num">4</div><div><b>Verify</b><small>Build, regression gates, repeated evaluations</small></div><em>OpenROAD</em></div>
+            <div class="evo-row"><div class="evo-num">5</div><div><b>Select</b><small>Accept only measurable WNS/TNS gain</small></div><em>Champion</em></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="talking-points">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="eyebrow">Mentor-ready summary</div><h2>Three sentences to anchor the discussion.</h2></div>
+          <p>Use these as the narrative while moving from this overview into the full Graphify explorer and then into benchmark results.</p>
+        </div>
+        <div class="talk-track">
+          <article class="talk"><span>01</span><h3>Why RSZ matters</h3><p>RSZ is where timing analysis becomes physical action: sizing, buffering, cloning, VT swapping, and legal placement.</p></article>
+          <article class="talk"><span>02</span><h3>What Graphify adds</h3><p>It turns thousands of symbols and relationships into a traceable map of policy, estimation, mutation, and timing dependencies.</p></article>
+          <article class="talk"><span>03</span><h3>What the thesis tests</h3><p>Whether changing one heuristic decision can produce repeatable post-repair WNS/TNS gains without violating physical safeguards.</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap"><span>OpenROAD RSZ · Graphify mentor briefing</span><span>Graph built from commit <code>10150e86</code> · Graphify 0.9.105</span></div></footer>
+
+  <script>
+    const stepData = [
+      {title:"Collect targets", summary:"OpenSTA identifies violating endpoints and expands their worst paths.", body:"The policy begins with measured slack, not a guessed hotspot. RepairTargetCollector asks OpenSTA for path ends, groups them, and decides which critical cones receive attention in this pass.", files:["RepairTargetCollector.cc","PathExpanded.cc","SetupWnsPolicy.cc"]},
+      {title:"Generate moves", summary:"Several legal transformations compete for each critical location.", body:"Move generators propose sizing, VT swaps, pin swaps, load splits, buffering, cloning, rerouting, or buffer removal. The active policy controls which move types are available and their ordering.", files:["move/MoveGenerator.cc","move/SizeUpGenerator.cc","move/SplitLoadGenerator.cc"]},
+      {title:"Estimate gain", summary:"A fast model ranks candidates before expensive exact timing.", body:"DelayEstimator predicts changes in cell delay, load, slew, and downstream arrival. This approximation is crucial: a better ranking model lets the engine spend exact evaluation effort on more promising moves.", files:["DelayEstimator.cc","DelayEstimatorBufferTree.cc","LRSubproblem.cc"]},
+      {title:"Apply speculatively", summary:"The candidate is journaled, applied, legalized, and re-timed.", body:"MoveTracker records every database edit. OpenDP checks legal cell placement, parasitics are invalidated where needed, and OpenSTA incrementally updates delays and slack in the affected timing cone.", files:["MoveTracker.cc","MoveCommitter.cc","Opendp.h"]},
+      {title:"Accept or roll back", summary:"Measured policy benefit decides whether the ECO survives.", body:"If the precise timing result satisfies the policy objective and guards, the journal is committed. Otherwise the netlist and placement are restored exactly, preventing speculative experiments from corrupting the design.", files:["MoveCommitter.cc","OptimizationPolicy.cc","SetupTnsPolicy.cc"]},
+      {title:"Converge and report", summary:"The loop stops on closure, budget, stagnation, or policy criteria.", body:"ProgressReporter records WNS, TNS, move counts, and termination reasons. The next phase can then optimize a different objective—such as broad TNS cleanup after protecting the single worst path.", files:["ProgressReporter.cc","Optimizer.cc","RepairSetupProfiler.cc"]}
+    ];
+    const steps = document.getElementById('steps');
+    const detail = document.getElementById('stepDetail');
+    function renderStep(index) {
+      [...steps.children].forEach((el,i)=>el.classList.toggle('active',i===index));
+      const s=stepData[index];
+      detail.innerHTML=`<div class="detail-number">0${index+1}</div><h3>${s.title}</h3><p><strong>${s.summary}</strong></p><p>${s.body}</p><div>${s.files.map(f=>`<span class="file-chip">${f}</span>`).join('')}</div>`;
+    }
+    stepData.forEach((s,i)=>{const b=document.createElement('button');b.className='step';b.innerHTML=`<strong>0${i+1}</strong> ${s.title}<br><small>${s.summary}</small>`;b.onclick=()=>renderStep(i);steps.appendChild(b)});
+    renderStep(0);
+
+    const progress=document.getElementById('progress');
+    const links=[...document.querySelectorAll('.nav a')];
+    const sections=links.map(a=>document.querySelector(a.getAttribute('href')));
+    addEventListener('scroll',()=>{
+      const max=document.documentElement.scrollHeight-innerHeight;
+      progress.style.width=(max ? scrollY/max*100 : 0)+'%';
+      let active=0; sections.forEach((s,i)=>{if(s && s.getBoundingClientRect().top<innerHeight*.38) active=i});
+      links.forEach((a,i)=>a.classList.toggle('active',i===active));
+    },{passive:true});
+    document.getElementById('printButton').onclick=()=>print();
+    document.getElementById('presentButton').onclick=()=>{
+      document.body.classList.toggle('presenting');
+      document.getElementById('presentButton').textContent=document.body.classList.contains('presenting')?'Exit':'Present';
+      document.getElementById('top').scrollIntoView();
+    };
+    addEventListener('keydown',e=>{if(e.key==='Escape') document.body.classList.remove('presenting')});
+  </script>
+</body>
+</html>

@@ -10,6 +10,7 @@ from rszevolve.eval.build import _parse
 from rszevolve.eval.paths import classify, diff_against
 from rszevolve.eval.score import judge
 from rszevolve.agents.claude_runner import extract_json_block
+from rszevolve.agents import claude_runner
 from rszevolve.agents.coder import make_patch, new_candidate_dir
 from rszevolve.config import PATHS
 from rszevolve.orchestrator import AgentUnavailable, _require_agent
@@ -107,3 +108,47 @@ def test_required_agent_error_stops_iteration():
         _require_agent("planner", {"is_error": True, "api_error": "usage_limit_reached",
                                    "result": "You've hit your 5-hour limit"})
     _require_agent("planner", {"is_error": False, "result": "usable plan"})
+
+
+def test_codex_jsonl_is_normalized():
+    output = "\n".join([
+        '{"type":"thread.started","thread_id":"thread-1"}',
+        '{"type":"turn.started"}',
+        '{"type":"item.completed","item":{"type":"agent_message","text":"READY"}}',
+        '{"type":"turn.completed","usage":{"input_tokens":12,"cached_input_tokens":4,"output_tokens":2}}',
+    ])
+    raw = claude_runner._parse_codex(output, "", 0)
+    assert not raw["is_error"] and raw["result"] == "READY" and raw["session_id"] == "thread-1"
+    assert raw["usage"] == {"input_tokens": 12, "output_tokens": 2, "cache_read_input_tokens": 4}
+
+
+def test_agent_falls_back_only_for_availability(tmp_path, monkeypatch):
+    monkeypatch.setenv("AGENT_PROVIDERS", "claude,codex,antigravity")
+    unavailable = claude_runner._Attempt(
+        "claude", {"is_error": True, "api_error_status": 429, "result": "usage limit reached"}, 0, 0.1, ["claude"])
+    success = claude_runner._Attempt(
+        "codex", {"is_error": False, "result": "READY", "session_id": "thread-2", "usage": {}}, 0, 0.1, ["codex"])
+    gemini_called = False
+
+    monkeypatch.setattr(claude_runner, "_run_claude", lambda call: unavailable)
+    monkeypatch.setattr(claude_runner, "_run_codex", lambda call: success)
+
+    def unexpected_gemini(call):
+        nonlocal gemini_called
+        gemini_called = True
+        raise AssertionError("Gemini must not run after Codex succeeds")
+
+    monkeypatch.setattr(claude_runner, "_run_antigravity", unexpected_gemini)
+    call = claude_runner.AgentCall("test", "respond", tmp_path, "opus", 1)
+    result = claude_runner.run_agent(call, log_dir=tmp_path / "logs", tag="probe")
+
+    assert result.ok and result.text == "READY" and result.session_id == "codex:thread-2"
+    assert result.raw["provider"] == "codex" and not gemini_called
+    assert [attempt["provider"] for attempt in result.raw["fallback_attempts"]] == ["claude", "codex"]
+
+
+def test_expired_oauth_is_an_availability_failure():
+    attempt = claude_runner._Attempt(
+        "claude", {"is_error": True, "result": "Failed to authenticate: OAuth session expired and could not be refreshed"},
+        0, 0.1, ["claude"])
+    assert claude_runner._unavailable(attempt)

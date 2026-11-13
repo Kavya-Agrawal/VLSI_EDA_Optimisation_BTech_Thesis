@@ -67,6 +67,28 @@ class Paths:
         return cands[-1] if cands else "claude"
 
     @property
+    def codex_bin(self) -> str:
+        v = os.environ.get("CODEX_BIN")
+        if v:
+            return v
+        import shutil, glob
+        if shutil.which("codex"):
+            return "codex"
+        cands = sorted(glob.glob(os.path.expanduser("~/.vscode/extensions/openai.chatgpt-*/bin/macos-*/codex")))
+        return cands[-1] if cands else "codex"
+
+    @property
+    def antigravity_bin(self) -> str:
+        v = os.environ.get("ANTIGRAVITY_BIN")
+        if v:
+            return v
+        import shutil
+        for cand in ("agy", os.path.expanduser("~/.local/bin/agy")):
+            if shutil.which(cand):
+                return cand
+        return "agy"
+
+    @property
     def yosys(self) -> str:
         return os.environ.get("YOSYS_EXE") or "yosys"
 

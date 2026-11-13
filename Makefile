@@ -1,5 +1,5 @@
 # pv_resizer_evolve — one Makefile to run everything. `make` or `make help` lists targets.
-# Knobs (override on the command line):  N=5 BUDGET_USD=20 TIER=A BAZEL_JOBS=8 CLAUDE_BIN=... PYTHON=...
+# Knobs (override on the command line): N=5 BUDGET_USD=20 TIER=A BAZEL_JOBS=8 AGENT_PROVIDERS=... PYTHON=...
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 ROOT  := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -22,7 +22,7 @@ FW_VENV := $(ROOT)/03_evolution_framework/.venv
 # ---- help ----------------------------------------------------------------
 .PHONY: help
 help: ## show this help
-	@echo "pv_resizer_evolve — evolve OpenROAD's Resizer (rsz) with planning / coding / evaluating agents"
+	@echo "pv_resizer_evolve — evolve OpenROAD's Resizer (rsz) with Claude -> Codex -> Gemini fallback agents"
 	@echo
 	@echo "Setup (once):     make env-check setup build-openroad snapshot"
 	@echo "Phase 1 (once):   make graphify context"
