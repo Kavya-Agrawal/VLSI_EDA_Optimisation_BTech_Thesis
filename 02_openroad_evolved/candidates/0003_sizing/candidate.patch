@@ -1,0 +1,472 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/HYPOTHESIS.md
+new file mode 100644
+index 0000000..d56ed87
+--- /dev/null
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/HYPOTHESIS.md	
+@@ -0,0 +1,32 @@
++# Delay-gain driven multi-candidate gate sizing
++
++## Problem
++Critical drivers can remain too weak when a larger delay reduction loses to a smaller replacement after cost normalization. Returning only one replacement also prevents trying another eligible size if that replacement is rejected.
++
++## Current heuristic (file:function)
++`src/move/SizeUpGenerator.cc:SizeUpGenerator::upsizeCell` previously selected one cell by estimated stage delay gain divided by a cost inflation ratio (leakage when available, otherwise LEF or Liberty area). The stage estimate includes the preceding driver's resistance times the selected input pin capacitance. Both output transition resistances must be no worse than the original. `SizeUpGenerator::generate` checked max-cap preservation only for that one winner.
++
++## New approach
++Rank every eligible replacement by positive, finite stage delay reduction, with no area or leakage divisor. Keep the upstream input-capacitance delay term and the existing rise/fall resistance eligibility checks. Preserve family, footprint, dont-use, site, VT, and configured area/leakage restrictions through `getSwappableCells`. Check `replacementPreservesMaxCap` separately for every ranked replacement and return all survivors as ordinary `SizeUpCandidate` moves.
++
++The existing serial policy tries these moves in order and stops at the first accepted replacement. Generation performs no netlist edits; application still uses `Resizer::replaceCell` under the existing journal, preserving rollback and accounting. No flags or Tcl changes are introduced. Equal gains are ordered by cell name, then library name; a stable sort preserves original order for exact ties. Non-finite gains are excluded.
++
++## Why WNS/TNS should improve
++Ranking by timing gain allows stronger critical drivers to win when their larger delay improvement previously lost to cost normalization. Lower driver delay and potentially sharper output transitions should improve downstream arrival times. Charging the previous stage for additional input capacitance avoids selecting a stronger driver whose estimated upstream cost erases its benefit. Returning other viable sizes also avoids losing all sizing opportunities when the top choice fails the max-cap check or a reported replacement attempt.
++
++## What to look for in the path report
++Look for stronger cells on the critical stages, lower stage delays and output slews, and improved endpoint slack across aes, gcd, and ibex. Check preceding-stage delay and slew for regressions from increased input capacitance. Compare WNS, TNS, endpoint violations, hold slack, DRV counts, legal placement, and total area against the champion; the intended score gain is at least +0.00200 with area growth at most 10%.
++
++## Risks
++Removing cost normalization can increase area and leakage; configured per-replacement limits remain enforced, but this change adds no global 10% area budget. The resistance-based upstream estimate is approximate and does not guarantee improved slew, hold timing, side-path slack, or all-corner behavior. Larger cells can increase placement pressure. These require the parent evaluator's timing, DRV, area, and placement checks.
++
++The provided `Resizer::replaceCell` calls OpenDP legalization for routed parasitic modes but does not propagate legalization failure as a rejected move; for placement parasitics, legalization occurs later in the evaluation flow. The ranked list supports fallback for failures reported through the existing replacement API, but cannot recover an unreported OpenDP failure. Changing that behavior would require edits outside the permitted files. Existing journaling and placement handling are preserved.
++
++## Files changed
++- `src/move/SizeUpGenerator.cc`: Replace cost-normalized single selection with deterministic delay-gain ranking and per-candidate max-cap filtering.
++- `src/move/SizeUpGenerator.hh`: Declare multi-replacement selection helpers and document the candidate sequence.
++- `src/move/SizeUpCandidate.hh`: Update the generator description to reflect ranked replacements.
++- `HYPOTHESIS.md`: Record the algorithm, expected benefits, validation targets, and limitations.
++
++## Validation
++Only lightweight source inspection, formatting, and whitespace checks were performed. No builds, OpenROAD runs, unit tests, or benchmark commands were run; the parent orchestrator owns those checks.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpCandidate.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/src/move/SizeUpCandidate.hh
+index adc23b0..3529ba8 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpCandidate.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/src/move/SizeUpCandidate.hh	
+@@ -16,13 +16,12 @@ namespace rsz {
+ 
+ // Candidate that replaces a path driver with a stronger same-family cell.
+ //
+-// The legacy SizeUpGenerator picks one replacement using drive-strength
+-// heuristics.  This move uses the base legal placeholder estimate; apply()
++// SizeUpGenerator ranks replacements by estimated stage delay gain.
++// This move uses the base legal placeholder estimate; apply()
+ // performs Resizer::replaceCell and reports the touched instance.  Unlike
+ // SizeUpMtCandidate, this variant runs single-threaded and resolves its driver
+ // cell lazily via prepare().
+-class SizeUpCandidate : public MoveCandidate
+-{
++class SizeUpCandidate : public MoveCandidate {
+  public:
+   // === Construction =========================================================
+   SizeUpCandidate(Resizer& resizer,
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpGenerator.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/src/move/SizeUpGenerator.cc
+index 1570d0f..15af023 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpGenerator.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/src/move/SizeUpGenerator.cc	
+@@ -4,19 +4,17 @@
+ #include "SizeUpGenerator.hh"
+ 
+ #include <algorithm>
+-#include <array>
++#include <cmath>
+ #include <memory>
+-#include <optional>
+ #include <string>
++#include <utility>
+ #include <vector>
+ 
+ #include "MoveCandidate.hh"
+ #include "MoveGenerator.hh"
+ #include "OptimizerTypes.hh"
+ #include "SizeUpCandidate.hh"
+-#include "db_sta/dbNetwork.hh"
+ #include "db_sta/dbSta.hh"
+-#include "odb/db.h"
+ #include "rsz/Resizer.hh"
+ #include "sta/GraphDelayCalc.hh"
+ #include "sta/Liberty.hh"
+@@ -40,7 +38,7 @@ std::vector<std::unique_ptr<MoveCandidate>> SizeUpGenerator::generate(
+     const Target& target)
+ {
+   std::vector<std::unique_ptr<MoveCandidate>> candidates;
+-  // Build one conventional size-up candidate from the active timing stage.
++  // Rank viable size-up candidates from the active timing stage.
+   sta::Pin* drvr_pin = nullptr;
+   sta::Instance* inst = nullptr;
+   sta::LibertyPort* drvr_port = nullptr;
+@@ -67,16 +65,21 @@ std::vector<std::unique_ptr<MoveCandidate>> SizeUpGenerator::generate(
+     return candidates;
+   }
+ 
+-  sta::LibertyCell* replacement = selectReplacement(
+-      in_port, in_rf, drvr_port, drvr_rf, load_cap, prev_drive, scene, min_max);
+-  if (replacement == nullptr
+-      || !resizer_.replacementPreservesMaxCap(
+-          inst, replacement, scene != nullptr ? scene->mode() : nullptr)) {
+-    return candidates;
++  for (sta::LibertyCell* replacement : selectReplacements(in_port,
++                                                          in_rf,
++                                                          drvr_port,
++                                                          drvr_rf,
++                                                          load_cap,
++                                                          prev_drive,
++                                                          scene,
++                                                          min_max)) {
++    if (!resizer_.replacementPreservesMaxCap(
++            inst, replacement, scene != nullptr ? scene->mode() : nullptr)) {
++      continue;
++    }
++    candidates.push_back(std::make_unique<SizeUpCandidate>(
++        resizer_, target, drvr_pin, inst, replacement));
+   }
+-
+-  candidates.push_back(std::make_unique<SizeUpCandidate>(
+-      resizer_, target, drvr_pin, inst, replacement));
+   return candidates;
+ }
+ 
+@@ -116,14 +119,13 @@ bool SizeUpGenerator::loadStageContext(const Target& target,
+   // Use the current path stage and the upstream driver to estimate delay gain.
+   scene = target.activeScene(resizer_);
+   min_max = target.minMax(resizer_);
+-  load_cap
+-      = resizer_.sta()->graphDelayCalc()->loadCap(drvr_pin, scene, min_max);
++  load_cap =
++      resizer_.sta()->graphDelayCalc()->loadCap(drvr_pin, scene, min_max);
+ 
+   const sta::Path* prev_drvr_path = target.prevDriverPath(resizer_);
+   const sta::Path* drvr_path = target.driverPath(resizer_);
+-  const sta::TimingArc* in_arc = drvr_path != nullptr
+-                                     ? drvr_path->prevArc(resizer_.staState())
+-                                     : nullptr;
++  const sta::TimingArc* in_arc =
++      drvr_path != nullptr ? drvr_path->prevArc(resizer_.staState()) : nullptr;
+   in_port = in_arc != nullptr ? in_arc->from() : nullptr;
+   if (in_port == nullptr) {
+     return false;
+@@ -134,15 +136,15 @@ bool SizeUpGenerator::loadStageContext(const Target& target,
+   prev_drive = 0.0f;
+   if (prev_drvr_path != nullptr) {
+     sta::Pin* prev_drvr_pin = prev_drvr_path->pin(resizer_.staState());
+-    sta::LibertyPort* prev_drvr_port
+-        = prev_drvr_pin != nullptr
+-              ? resizer_.network()->libertyPort(prev_drvr_pin)
+-              : nullptr;
++    sta::LibertyPort* prev_drvr_port =
++        prev_drvr_pin != nullptr
++            ? resizer_.network()->libertyPort(prev_drvr_pin)
++            : nullptr;
+     if (prev_drvr_port != nullptr) {
+       const int lib_ap = scene->libertyIndex(min_max);
+-      const sta::LibertyPort* scene_prev_drvr_port
+-          = static_cast<const sta::LibertyPort*>(prev_drvr_port)
+-                ->scenePort(lib_ap);
++      const sta::LibertyPort* scene_prev_drvr_port =
++          static_cast<const sta::LibertyPort*>(prev_drvr_port)
++              ->scenePort(lib_ap);
+       if (scene_prev_drvr_port != nullptr) {
+         prev_drive = scene_prev_drvr_port->driveResistance(in_rf, min_max);
+       } else {
+@@ -153,7 +155,7 @@ bool SizeUpGenerator::loadStageContext(const Target& target,
+   return true;
+ }
+ 
+-sta::LibertyCell* SizeUpGenerator::selectReplacement(
++std::vector<sta::LibertyCell*> SizeUpGenerator::selectReplacements(
+     sta::LibertyPort* in_port,
+     const sta::RiseFall* in_rf,
+     sta::LibertyPort* drvr_port,
+@@ -163,29 +165,23 @@ sta::LibertyCell* SizeUpGenerator::selectReplacement(
+     const sta::Scene* scene,
+     const sta::MinMax* min_max) const
+ {
+-  return upsizeCell(
++  return upsizeCells(
+       in_port, in_rf, drvr_port, drvr_rf, load_cap, prev_drive, scene, min_max);
+ }
+ 
+-enum class CostType
+-{
+-  kLeakage,
+-  kLefArea,
+-  kLibArea
+-};
+-
+-sta::LibertyCell* SizeUpGenerator::upsizeCell(sta::LibertyPort* in_port,
+-                                              const sta::RiseFall* in_rf,
+-                                              sta::LibertyPort* drvr_port,
+-                                              const sta::RiseFall* drvr_rf,
+-                                              const float load_cap,
+-                                              const float prev_drive,
+-                                              const sta::Scene* scene,
+-                                              const sta::MinMax* min_max) const
++std::vector<sta::LibertyCell*> SizeUpGenerator::upsizeCells(
++    sta::LibertyPort* in_port,
++    const sta::RiseFall* in_rf,
++    sta::LibertyPort* drvr_port,
++    const sta::RiseFall* drvr_rf,
++    const float load_cap,
++    const float prev_drive,
++    const sta::Scene* scene,
++    const sta::MinMax* min_max) const
+ {
+   if (scene == nullptr || min_max == nullptr || in_port == nullptr
+       || drvr_port == nullptr) {
+-    return nullptr;
++    return {};
+   }
+ 
+   const int lib_ap = scene->libertyIndex(min_max);
+@@ -199,86 +195,36 @@ sta::LibertyCell* SizeUpGenerator::upsizeCell(sta::LibertyPort* in_port,
+              cell->name(),
+              swappable_cells.size());
+   if (swappable_cells.empty()) {
+-    return nullptr;
++    return {};
+   }
+ 
+-  // Cost of a nominal cell under one metric; nullopt if unavailable.
+-  auto cost_of = [this](sta::LibertyCell* c,
+-                        const CostType type) -> std::optional<float> {
+-    switch (type) {
+-      case CostType::kLeakage: {
+-        const std::optional<float> leak = resizer_.cellLeakage(c);
+-        return (leak && *leak > 0.0f) ? leak : std::nullopt;
+-      }
+-      case CostType::kLefArea: {
+-        auto* db_network = resizer_.dbNetwork();
+-        if (db_network != nullptr) {
+-          const odb::dbMaster* master = db_network->staToDb(c);
+-          if (master != nullptr && master->getArea() > 0) {
+-            return static_cast<float>(master->getArea());
+-          }
+-        }
+-        return std::nullopt;
+-      }
+-      case CostType::kLibArea:
+-        return c->area() > 0.0f ? std::optional<float>(c->area())
+-                                : std::nullopt;
+-    }
+-    return std::nullopt;
+-  };
+-
+-  // Original cell costs under each metric, precomputed once: `cell` is constant
+-  // across the candidate loop, so this avoids repeating the staToDb/cellLeakage
+-  // lookups for the old cell on every swappable candidate.
+-  const std::array<std::optional<float>, 3> cell_costs
+-      = {cost_of(cell, CostType::kLeakage),
+-         cost_of(cell, CostType::kLefArea),
+-         cost_of(cell, CostType::kLibArea)};
+-
+-  // new/old cost on the first metric BOTH cells support (never mixes units).
+-  auto cost_ratio = [&](sta::LibertyCell* new_cell) -> std::optional<float> {
+-    for (const CostType type :
+-         {CostType::kLeakage, CostType::kLefArea, CostType::kLibArea}) {
+-      const std::optional<float>& old_cost = cell_costs[static_cast<int>(type)];
+-      const std::optional<float> new_cost = cost_of(new_cell, type);
+-      if (old_cost && new_cost) {
+-        return *new_cost / *old_cost;
+-      }
+-    }
+-    return std::nullopt;
+-  };
+-
+-  // Evaluate weaker equivalent cells first so iteration favors the smallest
+-  // adequate size-up step.
+   const std::string& in_port_name = in_port->name();
+   const std::string& drvr_port_name = drvr_port->name();
+-  const sta::LibertyPort* scene_drvr_port
+-      = static_cast<const sta::LibertyPort*>(drvr_port)->scenePort(lib_ap);
+-  const sta::LibertyPort* scene_input_port
+-      = static_cast<const sta::LibertyPort*>(in_port)->scenePort(lib_ap);
++  const sta::LibertyPort* scene_drvr_port =
++      static_cast<const sta::LibertyPort*>(drvr_port)->scenePort(lib_ap);
++  const sta::LibertyPort* scene_input_port =
++      static_cast<const sta::LibertyPort*>(in_port)->scenePort(lib_ap);
+   if (scene_drvr_port == nullptr || scene_input_port == nullptr) {
+-    return nullptr;
++    return {};
+   }
+ 
+-  const float drive_r_rise
+-      = scene_drvr_port->driveResistance(sta::RiseFall::rise(), min_max);
+-  const float drive_r_fall
+-      = scene_drvr_port->driveResistance(sta::RiseFall::fall(), min_max);
++  const float drive_r_rise =
++      scene_drvr_port->driveResistance(sta::RiseFall::rise(), min_max);
++  const float drive_r_fall =
++      scene_drvr_port->driveResistance(sta::RiseFall::fall(), min_max);
+   const float in_cap = in_rf != nullptr
+                            ? scene_input_port->capacitance(in_rf, min_max)
+                            : scene_input_port->capacitance();
+-  const float delay
+-      = (drvr_rf != nullptr
+-             ? resizer_.gateDelay(drvr_port, drvr_rf, load_cap, scene, min_max)
+-             : resizer_.gateDelay(drvr_port, load_cap, scene, min_max))
+-        + prev_drive * in_cap;
++  const float delay =
++      (drvr_rf != nullptr
++           ? resizer_.gateDelay(drvr_port, drvr_rf, load_cap, scene, min_max)
++           : resizer_.gateDelay(drvr_port, load_cap, scene, min_max))
++      + prev_drive * in_cap;
+ 
+-  // Among cells that do not weaken drive resistance on either edge and improve
+-  // stage delay (corner-robust eligibility that protects downstream max-slew/
+-  // max-cap), pick the most cost-effective by delay-gain per unit power rather
+-  // than the first adequate cell, to avoid over-sizing.
+-  sta::LibertyCell* best_cell = nullptr;
+-  float best_score = 0.0f;
++  // Rank by stage delay gain, including the upstream delay cost of the
++  // replacement's input capacitance.  Area and leakage remain constrained by
++  // getSwappableCells(), but do not dilute the timing benefit in this ranking.
++  std::vector<std::pair<sta::LibertyCell*, float>> ranked_cells;
+   for (sta::LibertyCell* swappable : swappable_cells) {
+     if (swappable == cell) {
+       continue;
+@@ -287,44 +233,55 @@ sta::LibertyCell* SizeUpGenerator::upsizeCell(sta::LibertyPort* in_port,
+     if (swappable_corner == nullptr) {
+       continue;
+     }
+-    sta::LibertyPort* swappable_drvr
+-        = swappable_corner->findLibertyPort(drvr_port_name);
+-    sta::LibertyPort* swappable_input
+-        = swappable_corner->findLibertyPort(in_port_name);
++    sta::LibertyPort* swappable_drvr =
++        swappable_corner->findLibertyPort(drvr_port_name);
++    sta::LibertyPort* swappable_input =
++        swappable_corner->findLibertyPort(in_port_name);
+     if (swappable_drvr == nullptr || swappable_input == nullptr) {
+       continue;
+     }
+-    const float swappable_drive_r_rise
+-        = swappable_drvr->driveResistance(sta::RiseFall::rise(), min_max);
+-    const float swappable_drive_r_fall
+-        = swappable_drvr->driveResistance(sta::RiseFall::fall(), min_max);
+-    const float swappable_in_cap
+-        = in_rf != nullptr ? swappable_input->capacitance(in_rf, min_max)
+-                           : swappable_input->capacitance();
+-    const float swappable_delay
+-        = (drvr_rf != nullptr
+-               ? resizer_.gateDelay(
+-                     swappable_drvr, drvr_rf, load_cap, scene, min_max)
+-               : resizer_.gateDelay(swappable_drvr, load_cap, scene, min_max))
+-          + prev_drive * swappable_in_cap;
++    const float swappable_drive_r_rise =
++        swappable_drvr->driveResistance(sta::RiseFall::rise(), min_max);
++    const float swappable_drive_r_fall =
++        swappable_drvr->driveResistance(sta::RiseFall::fall(), min_max);
++    const float swappable_in_cap =
++        in_rf != nullptr ? swappable_input->capacitance(in_rf, min_max)
++                         : swappable_input->capacitance();
++    const float swappable_delay =
++        (drvr_rf != nullptr
++             ? resizer_.gateDelay(
++                   swappable_drvr, drvr_rf, load_cap, scene, min_max)
++             : resizer_.gateDelay(swappable_drvr, load_cap, scene, min_max))
++        + prev_drive * swappable_in_cap;
+     // Eligibility (upstream): stronger-or-equal drive on both edges and faster.
+     if (swappable_drive_r_rise > drive_r_rise
+         || swappable_drive_r_fall > drive_r_fall || swappable_delay >= delay) {
+       continue;
+     }
+-    // Selection: best delay-gain per unit power among eligible candidates.
+-    const std::optional<float> ratio = cost_ratio(swappable);
+-    if (!ratio) {
+-      continue;
+-    }
+-    const float score = (delay - swappable_delay) / std::max(1.0f, *ratio);
+-    if (score > best_score) {
+-      best_cell = swappable;
+-      best_score = score;
++    const float gain = delay - swappable_delay;
++    if (std::isfinite(gain) && gain > 0.0f) {
++      ranked_cells.emplace_back(swappable, gain);
+     }
+   }
+ 
+-  return best_cell;
++  std::stable_sort(ranked_cells.begin(),
++                   ranked_cells.end(),
++                   [](const auto& lhs, const auto& rhs) {
++                     if (lhs.second != rhs.second) {
++                       return lhs.second > rhs.second;
++                     }
++                     if (lhs.first->name() != rhs.first->name()) {
++                       return lhs.first->name() < rhs.first->name();
++                     }
++                     return lhs.first->library()->name()
++                            < rhs.first->library()->name();
++                   });
++
++  std::vector<sta::LibertyCell*> replacements;
++  for (const auto& ranked : ranked_cells) {
++    replacements.push_back(ranked.first);
++  }
++  return replacements;
+ }
+ 
+ }  // namespace rsz
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpGenerator.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/src/move/SizeUpGenerator.hh
+index 96725f6..2c6de51 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpGenerator.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/src/move/SizeUpGenerator.hh	
+@@ -23,15 +23,14 @@ class Scene;
+ 
+ namespace rsz {
+ 
+-// Selects a stronger replacement cell for one path driver using legacy
+-// drive-strength heuristics (input-pin cap, previous-stage drive, load cap).
++// Ranks stronger replacements for one path driver by stage delay reduction,
++// including the input-pin capacitance cost on the previous-stage driver.
+ //
+-// Produces a single SizeUpCandidate per target.  The replacement must be in
++// Produces multiple SizeUpCandidates per target.  Each replacement must be in
+ // the same cell family (same footprint if match_cell_footprint is set) and
+ // must not introduce a max-capacitance violation.  Single-threaded only
+ // (uses live STA queries for cap and drive).
+-class SizeUpGenerator : public MoveGenerator
+-{
++class SizeUpGenerator : public MoveGenerator {
+  public:
+   // === Construction =========================================================
+   explicit SizeUpGenerator(const GeneratorContext& context);
+@@ -56,24 +55,25 @@ class SizeUpGenerator : public MoveGenerator
+                         const sta::RiseFall*& in_rf,
+                         const sta::RiseFall*& drvr_rf,
+                         float& prev_drive) const;
+-  sta::LibertyCell* selectReplacement(sta::LibertyPort* in_port,
+-                                      const sta::RiseFall* in_rf,
+-                                      sta::LibertyPort* drvr_port,
+-                                      const sta::RiseFall* drvr_rf,
+-                                      float load_cap,
+-                                      float prev_drive,
+-                                      const sta::Scene* scene,
+-                                      const sta::MinMax* min_max) const;
++  std::vector<sta::LibertyCell*> selectReplacements(
++      sta::LibertyPort* in_port,
++      const sta::RiseFall* in_rf,
++      sta::LibertyPort* drvr_port,
++      const sta::RiseFall* drvr_rf,
++      float load_cap,
++      float prev_drive,
++      const sta::Scene* scene,
++      const sta::MinMax* min_max) const;
+ 
+  protected:
+-  sta::LibertyCell* upsizeCell(sta::LibertyPort* in_port,
+-                               const sta::RiseFall* in_rf,
+-                               sta::LibertyPort* drvr_port,
+-                               const sta::RiseFall* drvr_rf,
+-                               float load_cap,
+-                               float prev_drive,
+-                               const sta::Scene* scene,
+-                               const sta::MinMax* min_max) const;
++  std::vector<sta::LibertyCell*> upsizeCells(sta::LibertyPort* in_port,
++                                             const sta::RiseFall* in_rf,
++                                             sta::LibertyPort* drvr_port,
++                                             const sta::RiseFall* drvr_rf,
++                                             float load_cap,
++                                             float prev_drive,
++                                             const sta::Scene* scene,
++                                             const sta::MinMax* min_max) const;
+ };
+ 
+ }  // namespace rsz

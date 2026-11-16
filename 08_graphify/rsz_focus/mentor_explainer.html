@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>OpenROAD Resizer — Mentor Explainer</title>
+  <style>
+    :root { --bg:#07111f; --panel:#0d1b2d; --line:#29415f; --text:#eaf2ff; --muted:#9eb0c9; --blue:#55a7ff; --green:#55d6a0; --orange:#ffb454; --red:#ff7080; --purple:#b995ff; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--text); background:radial-gradient(circle at 10% 0,#142a46 0,transparent 35%),var(--bg); font:15px/1.5 Inter,system-ui,sans-serif; }
+    main { max-width:1240px; margin:auto; padding:34px 26px 54px; }
+    h1,h2,h3,p { margin:0; } h1 { font-size:34px; line-height:1.15; } h2 { font-size:20px; margin-bottom:14px; } h3 { font-size:15px; }
+    .subtitle { color:var(--muted); max-width:780px; margin-top:9px; }
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin:26px 0 18px; }
+    button { color:var(--muted); background:#102138; border:1px solid var(--line); border-radius:999px; padding:10px 16px; font:inherit; cursor:pointer; }
+    button.active { color:#06111e; background:var(--blue); border-color:var(--blue); font-weight:700; }
+    .goal { display:flex; gap:16px; align-items:center; background:linear-gradient(90deg,rgba(85,167,255,.14),rgba(85,214,160,.08)); border:1px solid var(--line); border-radius:14px; padding:16px 18px; }
+    .goal strong { color:var(--blue); white-space:nowrap; }
+    .flow { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:22px; margin:26px 0 12px; }
+    .step { position:relative; min-height:182px; background:rgba(13,27,45,.94); border:1px solid var(--line); border-radius:14px; padding:16px; }
+    .step:not(:last-child)::after { content:"→"; position:absolute; right:-20px; top:72px; color:var(--blue); font-size:24px; }
+    .num { display:inline-grid; place-items:center; width:27px; height:27px; border-radius:50%; background:rgba(85,167,255,.18); color:var(--blue); font-weight:700; margin-bottom:10px; }
+    .step p { color:var(--muted); font-size:13px; margin-top:7px; }
+    .code { display:block; margin-top:11px; color:var(--green); font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; overflow-wrap:anywhere; }
+    .decision { border-color:var(--purple); }
+    .decision .num { color:var(--purple); background:rgba(185,149,255,.18); }
+    .loop { text-align:center; color:var(--muted); margin:7px 0 30px; }
+    .loop b { color:var(--red); }
+    .grid { display:grid; grid-template-columns:1.15fr .85fr; gap:18px; }
+    .panel { background:rgba(13,27,45,.84); border:1px solid var(--line); border-radius:14px; padding:19px; }
+    .moves { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .move { padding:12px; border-left:3px solid var(--blue); background:#102138; border-radius:7px; }
+    .move:nth-child(2),.move:nth-child(5) { border-color:var(--green); } .move:nth-child(3),.move:nth-child(6) { border-color:var(--orange); }
+    .move p { color:var(--muted); font-size:12px; margin-top:3px; }
+    .metric { display:grid; grid-template-columns:74px 1fr; gap:8px; padding:9px 0; border-bottom:1px solid rgba(158,176,201,.16); }
+    .metric:last-child { border:0; } .metric b { color:var(--blue); } .metric span { color:var(--muted); }
+    .invariants { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+    .pill { background:#102138; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:6px 10px; font-size:12px; }
+    .takeaway { margin-top:18px; padding:16px 18px; border-left:4px solid var(--green); background:rgba(85,214,160,.08); }
+    footer { color:var(--muted); font-size:12px; margin-top:22px; }
+    @media (max-width:980px) { .flow { grid-template-columns:repeat(3,1fr); } .step:nth-child(3)::after { display:none; } .grid { grid-template-columns:1fr; } }
+    @media (max-width:620px) { main { padding:24px 16px; } .flow,.moves { grid-template-columns:1fr; } .step::after { display:none; } .goal { align-items:flex-start; flex-direction:column; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>How OpenROAD Resizer improves a chip</h1>
+    <p class="subtitle">A readable map of the RSZ optimization loop. It deliberately shows six decisions—not 10,950 code-graph nodes.</p>
+  </header>
+
+  <nav class="tabs" aria-label="Repair flow">
+    <button class="active" data-mode="setup">Setup timing</button>
+    <button data-mode="hold">Hold timing</button>
+    <button data-mode="drv">Electrical DRV</button>
+  </nav>
+
+  <section class="goal"><strong id="goal-title">Goal: make late data arrive earlier</strong><span id="goal-detail">Improve WNS and TNS without creating hold, placement, or electrical violations.</span></section>
+
+  <section class="flow" aria-label="Resizer decision flow">
+    <article class="step"><span class="num">1</span><h3 id="s1-title">Measure timing</h3><p id="s1-text">OpenSTA calculates arrival time, required time, slew, and slack.</p><code class="code" id="s1-code">sta::Sta · dbSta</code></article>
+    <article class="step"><span class="num">2</span><h3 id="s2-title">Find critical targets</h3><p id="s2-text">Collect the worst negative-slack endpoints and expand their timing paths.</p><code class="code" id="s2-code">RepairTargetCollector.cc</code></article>
+    <article class="step"><span class="num">3</span><h3 id="s3-title">Propose safe moves</h3><p id="s3-text">Try sizing, buffering, load splitting, cloning, pin swaps, or VT swaps.</p><code class="code" id="s3-code">src/move/*Generator.cc</code></article>
+    <article class="step"><span class="num">4</span><h3 id="s4-title">Predict and rank</h3><p id="s4-text">A fast analytical model rejects moves unlikely to improve delay.</p><code class="code" id="s4-code">DelayEstimator.cc</code></article>
+    <article class="step"><span class="num">5</span><h3 id="s5-title">Apply temporarily</h3><p id="s5-text">Modify OpenDB, legalize placement, update parasitics, and recalculate timing.</p><code class="code" id="s5-code">MoveCommitter · OpenDP</code></article>
+    <article class="step decision"><span class="num">6</span><h3 id="s6-title">Accept or roll back</h3><p id="s6-text">Keep the ECO only if real timing improves and every safety guard remains valid.</p><code class="code" id="s6-code">MoveTracker journal</code></article>
+  </section>
+  <p class="loop"><b>Rejected move ↶ rollback</b> · accepted move ↶ repeat from measurement until converged</p>
+
+  <section class="grid">
+    <article class="panel">
+      <h2>What the optimizer can change</h2>
+      <div class="moves">
+        <div class="move"><h3>Gate sizing</h3><p>X1 → X2/X4 to drive load faster.</p></div>
+        <div class="move"><h3>Buffering</h3><p>Break a long or heavy net into stages.</p></div>
+        <div class="move"><h3>Load splitting</h3><p>Isolate non-critical sinks from a critical path.</p></div>
+        <div class="move"><h3>Gate cloning</h3><p>Duplicate a driver and divide fanout.</p></div>
+        <div class="move"><h3>Pin / VT swap</h3><p>Use a faster equivalent pin or cell variant.</p></div>
+        <div class="move"><h3>Hold buffer</h3><p>Add controlled delay to an overly fast path.</p></div>
+      </div>
+    </article>
+    <article class="panel">
+      <h2>How success is measured</h2>
+      <div class="metric"><b>WNS</b><span>Worst failing endpoint. Closer to zero is better.</span></div>
+      <div class="metric"><b>TNS</b><span>Sum of all negative setup slack. Closer to zero is better.</span></div>
+      <div class="metric"><b>Hold</b><span>Fast paths must still preserve old data at capture.</span></div>
+      <div class="metric"><b>DRV</b><span>No new slew, capacitance, or fanout violations.</span></div>
+      <div class="invariants"><span class="pill">logical equivalence</span><span class="pill">legal placement</span><span class="pill">deterministic</span><span class="pill">area bounded</span></div>
+    </article>
+  </section>
+
+  <p class="takeaway"><strong>The research opportunity:</strong> improve steps 2–4—the target selection, move generation, and ranking heuristics—while the transactional step 6 prevents unsafe changes from entering the final design.</p>
+  <footer>Source map: Optimizer.cc → policy/* → RepairTargetCollector.cc → move/*Generator.cc → DelayEstimator.cc → MoveCommitter.cc / MoveTracker.cc</footer>
+</main>
+<script>
+const modes = {
+  setup: { goal:['Goal: make late data arrive earlier','Improve WNS and TNS without creating hold, placement, or electrical violations.'], steps:[['Measure timing','OpenSTA calculates arrival time, required time, slew, and slack.','sta::Sta · dbSta'],['Find critical targets','Collect the worst negative-slack endpoints and expand their timing paths.','RepairTargetCollector.cc'],['Propose safe moves','Try sizing, buffering, load splitting, cloning, pin swaps, or VT swaps.','src/move/*Generator.cc'],['Predict and rank','A fast analytical model rejects moves unlikely to improve delay.','DelayEstimator.cc'],['Apply temporarily','Modify OpenDB, legalize placement, update parasitics, and recalculate timing.','MoveCommitter · OpenDP'],['Accept or roll back','Keep the ECO only if real timing improves and every safety guard remains valid.','MoveTracker journal']]},
+  hold: { goal:['Goal: stop data arriving too early','Add delay to fast paths while protecting setup timing and placement legality.'], steps:[['Measure min-delay','OpenSTA finds negative hold slack on minimum-delay paths.','sta::MinMax::min'],['Trace fast paths','Visit the worst hold endpoints first and walk toward the launch register.','RepairHold.cc'],['Choose delay cells','Select small delay buffers with enough effect and acceptable area.','buffer selection'],['Check setup margin','Reject any buffer that would consume required setup headroom.','setup margin guard'],['Insert near capture','Split the net, insert the buffer, then legalize its physical location.','OpenDB · OpenDP'],['Accept or roll back','Keep it only when hold improves without violating setup or DRVs.','journal rollback']]},
+  drv: { goal:['Goal: make the net electrically legal','Repair excessive slew, capacitance, fanout, and wire length before timing closure.'], steps:[['Detect violations','Compare every driver and net against Liberty and user limits.','PreChecks.cc'],['Build net model','Estimate RC and inspect fanout locations and Steiner branches.','BufferedNet.cc'],['Choose repair','Resize the driver or construct a legal repeater/load-split tree.','RepairDesign.cc'],['Estimate effect','Predict downstream slew, capacitance, delay, and buffer count.','delay / RC model'],['Apply and legalize','Create buffers and nets, reconnect sinks, and place new cells.','OpenDB · OpenDP'],['Verify limits','Retain the change only when electrical limits and placement pass.','DRV checks']]}
+};
+document.querySelectorAll('button[data-mode]').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('button[data-mode]').forEach(b => b.classList.toggle('active', b === btn));
+  const data = modes[btn.dataset.mode];
+  document.getElementById('goal-title').textContent=data.goal[0]; document.getElementById('goal-detail').textContent=data.goal[1];
+  data.steps.forEach((s,i) => { const n=i+1; document.getElementById(`s${n}-title`).textContent=s[0]; document.getElementById(`s${n}-text`).textContent=s[1]; document.getElementById(`s${n}-code`).textContent=s[2]; });
+}));
+</script>
+</body>
+</html>

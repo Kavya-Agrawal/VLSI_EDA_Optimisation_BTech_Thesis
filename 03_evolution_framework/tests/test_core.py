@@ -152,3 +152,9 @@ def test_expired_oauth_is_an_availability_failure():
         "claude", {"is_error": True, "result": "Failed to authenticate: OAuth session expired and could not be refreshed"},
         0, 0.1, ["claude"])
     assert claude_runner._unavailable(attempt)
+
+
+def test_empty_agent_result_falls_back():
+    attempt = claude_runner._Attempt(
+        "codex", {"is_error": True, "result": "", "api_error": ""}, 0, 0.1, ["codex"])
+    assert claude_runner._unavailable(attempt)

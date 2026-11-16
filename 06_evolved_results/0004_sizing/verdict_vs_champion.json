@@ -1,0 +1,8 @@
+{
+  "accepted": false,
+  "score": 0.0,
+  "reasons": [
+    "gates failed: //src/rsz/test:TestResizer=FAILED; //src/rsz/test:cpp_tests=FAILED"
+  ],
+  "per_design": {}
+}

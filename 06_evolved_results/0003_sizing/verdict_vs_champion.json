@@ -1,0 +1,8 @@
+{
+  "accepted": false,
+  "score": 0.0,
+  "reasons": [
+    "gates failed: //src/rsz/test:TestInsertBuffer=FAILED; //src/rsz/test:TestNestedJournal=FAILED; //src/rsz/test:TestPreChecks=FAILED; //src/rsz/test:TestResizer=FAILED; //src/rsz/test:cpp_tests=FAILED"
+  ],
+  "per_design": {}
+}

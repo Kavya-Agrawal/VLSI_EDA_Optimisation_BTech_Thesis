@@ -1,0 +1,105 @@
+# Feedback for iteration 4 (0004_sizing, cluster sizing)
+
+```
+vs champion:
+REJECT  score=+0.00000
+  ! gates failed: //src/rsz/test:TestResizer=FAILED; //src/rsz/test:cpp_tests=FAILED
+
+vs baseline:
+REJECT  score=+0.00000
+  ! gates failed: //src/rsz/test:TestResizer=FAILED; //src/rsz/test:cpp_tests=FAILED
+```
+
+Cannot save `feedback.md` because the workspace is read-only. Contents:
+
+## 1. Outcome
+
+**REJECTED**, iteration 4, cluster `sizing`. Score **+0.00000** against both champion and baseline. Timing deltas are unavailable; the zero score does not mean unchanged timing.
+
+| Design | ΔWNS vs champion (ns) | ΔTNS vs champion (ns) | ΔWNS vs baseline (ns) | ΔTNS vs baseline (ns) |
+|---|---:|---:|---:|---:|
+| AES | N/A | N/A | N/A | N/A |
+| Ibex | N/A | N/A | N/A | N/A |
+| gcd | N/A | N/A | N/A | N/A |
+
+Build succeeded. Reported unit gates: **4 passed, 2 failed** (`TestResizer`, `cpp_tests`). Within `TestResizer`, **18/19 cases passed**. All **10/10 smoke tests passed**: five setup, three hold, two design-repair tests.
+
+The logged failing case is `SizeUpSelectsActiveTransitionSkewedCell`, with two failed assertions in `src/rsz/test/cpp/TestResizer.cc`:
+
+- Line 1192: direct rising-edge replacement differs from expected `SKEW_BUF_SKRD2_RVT`.
+- Line 1238: the applied replacement also differs from that expected master.
+
+The log identifies the actual master only by pointer. The supplied evidence does not establish a separate root cause for the failed `cpp_tests` gate.
+
+## 2. Did the hypothesis do what it predicted?
+
+**The ranking implementation changed; the timing prediction remains untested.**
+
+The patch in `src/rsz/src/move/SizeUpGenerator.cc` replaces cost-normalized scoring with maximum strictly positive finite stage-delay gain. It retains the preceding-driver input-capacitance penalty, `upsizeCell` API, single-candidate generation, and existing eligibility checks.
+
+The unit failure confirms that replacement selection differs in the rising-edge fixture, including after application. It does not demonstrate improved stage delay or endpoint arrival. The test’s comments explicitly describe power-aware ranking, so its expected master may encode the previous objective; independently calculate candidate gains before deciding whether the implementation or expectation is wrong.
+
+No candidate path report exists. Consequently, none of these predicted effects can be measured:
+
+- AES/Ibex WNS improvement of at least **0.010 ns**.
+- AES/Ibex TNS magnitude reductions of at least **2%/5%**, respectively.
+- gcd WNS loss no greater than **0.001 ns**, with no TNS regression.
+- Mean score of at least **+0.00200**.
+- Matched-endpoint arrival reductions without unacceptable loading, hold, area, DRV, or placement effects.
+
+Ibex’s fanout-943 clock gate remains outside the evidence for data-path sizing.
+
+## 3. Where the remaining negative slack comes from
+
+**Zero candidate endpoints are available; the five worst endpoints cannot be identified or ranked.** Endpoint names, slack, logic depth, fanout, wire delay, and clock contributions are absent.
+
+The following are conditional investigation rules, not measured attribution:
+
+| Possible cause | Relevant move types | Limitation of this change |
+|---|---|---|
+| Weak driver | Upsizing, VT swap | Ranking helps only when eligible replacements exist and survive execution checks. |
+| Deep logic | Pin swap, logic restructuring, selective sizing | Ranking does not remove logic stages. |
+| High data-net fanout | Buffering, cloning, load splitting | A larger driver does not partition the load. |
+| Long wire | Rebuffering, placement repair | The local stage estimate may miss distributed interconnect effects. |
+| IO constraint or clock skew | Constraint review, clock-specific repair | Data-cell ranking does not directly address these causes. |
+
+A source-visible limitation remains: `generate()` checks replacement max capacitance **after** choosing the winner. If that winner fails, it emits no candidate and does not try a runner-up. This could suppress useful sizing, but no measured endpoint demonstrates it here.
+
+## 4. Regressions
+
+**Endpoint regressions are unmeasured.** There are no matched arrivals, WNS/TNS deltas, or benchmark hold/area/DRV results.
+
+The observed regression is gate compatibility: absolute-gain ranking selects a master inconsistent with the existing rising-edge test expectation. Two assertions fail within one case. `SizeUpRejectsCandidateThatWeakensNonCriticalEdge` passes, so this run does not implicate removal of the both-edge drive guard.
+
+Larger replacements could increase upstream loading, area, placement pressure, or hold damage. These remain possible mechanisms, not observed regressions.
+
+## 5. Recommendation for the next iteration
+
+1. **Sizing — resolve the selection contract first.** Independently tabulate old/new stage delay, input capacitance, preceding-driver penalty, cost ratio, and selected master for the skew fixture’s rising and falling edges. Determine whether the new winner maximizes eligible finite gain. If the expectation encodes the superseded cost objective, revise it only through the authorized test-maintenance process; otherwise fix the selector.
+
+2. **Sizing — isolate transition behavior from ranking behavior.** Use a fixture where the active transition has a unique eligible winner, plus a separate case where cost-normalized and absolute-gain rankings disagree. Preserve explicit noncritical-edge rejection coverage. Require both failed unit gates and all ten smoke tests to pass before benchmark evaluation.
+
+3. **Sizing — investigate max-cap fallback separately.** If selection tracing shows winners discarded by the post-selection max-cap check, choose the highest-gain feasible replacement while still emitting at most one candidate. Measure rejection counts before pursuing this change.
+
+**Do not repeat:** submit the same unconditional absolute-gain change while leaving the known selection-contract failure unresolved, or reintroduce iteration 3’s API rename and candidate multiplicity.
+
+```json
+{
+  "recommended_cluster": "sizing",
+  "dominant_cause": "unit_test_selection_contract_mismatch",
+  "lesson": "Absolute stage-gain ranking changed rising-edge replacement selection and failed unit gates before any benchmark timing benefit could be measured.",
+  "dead_end": "Repeating the same gate-failing absolute-gain selector without resolving its selection contract cannot produce evaluable timing evidence.",
+  "good_changes": [],
+  "bad_changes": [
+    "src/rsz/src/move/SizeUpGenerator.cc: replacing cost-normalized ranking with absolute gain conflicts with two existing rising-edge master assertions; timing impact is unmeasured."
+  ],
+  "files_to_revisit": [
+    "src/rsz/src/move/SizeUpGenerator.cc",
+    "src/rsz/test/cpp/TestResizer.cc"
+  ],
+  "files_to_avoid": [
+    "src/rsz/src/move/SizeUpGenerator.hh",
+    "src/rsz/src/move/SizeUpCandidate.cc"
+  ]
+}
+```

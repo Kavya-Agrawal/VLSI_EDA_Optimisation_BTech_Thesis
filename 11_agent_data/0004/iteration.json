@@ -1,0 +1,64 @@
+{
+  "iteration": 4,
+  "tag": "0004_sizing",
+  "status": "rejected",
+  "cluster": "sizing",
+  "title": "Isolate absolute delay-gain ranking with API-compatible single-candidate sizing",
+  "hypothesis": "Cost-normalized sizing can prefer a smaller timing improvement over a larger eligible delay reduction on violating data paths. Preserve the champion upsizeCell API and single-candidate generation, but select the replacement with maximum positive finite stage delay gain, retaining the preceding-driver input-capacitance penalty and existing eligibility checks. AES critical X1 logic provides the clearest opportunity, while Ibex may benefit within its data cone; its fanout-943 clock gate is not evidence for this mechanism. Iteration 3 never reached timing evaluation, so this retry isolates ranking from candidate multiplicity and avoids its incompatible API rename. Improved selections should reduce matched-endpoint data arrivals and WNS/TNS, subject to upstream loading, hold, area, DRV, and placement gates.",
+  "planned_files": [
+    "src/move/SizeUpGenerator.cc",
+    "test/cpp/TestResizer.cc"
+  ],
+  "evidence_iterations": [
+    3
+  ],
+  "files_changed": [
+    "src/move/SizeUpGenerator.cc",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 64,
+    "lines_deleted": 73
+  },
+  "accepted": false,
+  "score_vs_champion": 0.0,
+  "score_vs_baseline": 0.0,
+  "reasons": [
+    "gates failed: //src/rsz/test:TestResizer=FAILED; //src/rsz/test:cpp_tests=FAILED"
+  ],
+  "per_design": {},
+  "champion_after": 0,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0004_sizing",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0004_sizing",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0004_sizing/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "sizing",
+    "dominant_cause": "unit_test_selection_contract_mismatch",
+    "lesson": "Absolute stage-gain ranking changed rising-edge replacement selection and failed unit gates before any benchmark timing benefit could be measured.",
+    "dead_end": "Repeating the same gate-failing absolute-gain selector without resolving its selection contract cannot produce evaluable timing evidence.",
+    "good_changes": [],
+    "bad_changes": [
+      "src/rsz/src/move/SizeUpGenerator.cc: replacing cost-normalized ranking with absolute gain conflicts with two existing rising-edge master assertions; timing impact is unmeasured."
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/move/SizeUpGenerator.cc",
+      "src/rsz/test/cpp/TestResizer.cc"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/move/SizeUpGenerator.hh",
+      "src/rsz/src/move/SizeUpCandidate.cc"
+    ]
+  },
+  "agents": {
+    "planner": "codex",
+    "coder": "codex",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0004",
+  "seconds": 250,
+  "when": "2026-11-16T11:47:18Z"
+}

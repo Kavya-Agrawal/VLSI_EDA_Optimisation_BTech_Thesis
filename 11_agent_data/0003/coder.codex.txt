@@ -1,0 +1,7 @@
+Implemented delay-gain ranking and multiple viable replacements, preserving upstream capacitance penalties, max-cap checks, and existing journaling. Added `HYPOTHESIS.md`.
+
+Formatting checks passed. No builds or tests run. OpenDP failure fallback remains limited because `replaceCell()` does not report legalization failure.
+
+```json
+{"files_changed":["src/move/SizeUpGenerator.cc","src/move/SizeUpGenerator.hh","src/move/SizeUpCandidate.hh","HYPOTHESIS.md"],"summary":"Rank viable sizing replacements by stage delay reduction without cost normalization. Return multiple candidates while preserving existing electrical filters and journaled application.","new_flags":[],"determinism_notes":"Stable sorting uses descending finite delay gain, then cell and library names for ties; no pointer-based ordering."}
+```

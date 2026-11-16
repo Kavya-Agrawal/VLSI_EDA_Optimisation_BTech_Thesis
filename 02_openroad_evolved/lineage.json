@@ -85,8 +85,266 @@
       "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0002",
       "seconds": 160,
       "when": "2026-11-12T22:43:13Z"
+    },
+    {
+      "iteration": 3,
+      "tag": "0003_sizing",
+      "status": "rejected",
+      "cluster": "sizing",
+      "title": "Delay-gain driven multi-candidate gate sizing to eliminate critical-path slew degradation",
+      "hypothesis": "Timing-critical paths across all benchmark designs suffer from severe transition slew degradation because SizeUpGenerator penalizes higher drive strengths by dividing delay gain by the cell area inflation ratio, forcing minimally sized replacements (X2) or leaving gates at X1. Furthermore, SizeUpGenerator generates only a single candidate per target, so any local placement legalization failure aborts sizing completely. By scoring candidate cells on timing-critical paths by pure stage delay reduction and returning a ranked multi-candidate set of viable drive strengths, the optimizer can evaluate and commit higher drive strengths (X4/X8) while gracefully falling back if OpenDP legalization fails. This directly sharpens transition slews on critical drivers and reduces both WNS and TNS.",
+      "planned_files": [
+        "src/move/SizeUpGenerator.cc",
+        "src/move/SizeUpGenerator.hh"
+      ],
+      "evidence_iterations": [
+        1,
+        2
+      ],
+      "files_changed": [
+        "src/move/SizeUpGenerator.cc",
+        "src/move/SizeUpGenerator.hh",
+        "src/move/SizeUpCandidate.hh",
+        "HYPOTHESIS.md"
+      ],
+      "patch_stats": {
+        "files": [
+          "repos"
+        ],
+        "files_count": 1,
+        "lines_added": 153,
+        "lines_deleted": 165
+      },
+      "accepted": false,
+      "score_vs_champion": 0.0,
+      "score_vs_baseline": 0.0,
+      "reasons": [
+        "gates failed: //src/rsz/test:TestInsertBuffer=FAILED; //src/rsz/test:TestNestedJournal=FAILED; //src/rsz/test:TestPreChecks=FAILED; //src/rsz/test:TestResizer=FAILED; //src/rsz/test:cpp_tests=FAILED"
+      ],
+      "per_design": {},
+      "champion_after": 0,
+      "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing",
+      "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0003_sizing",
+      "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0003_sizing/feedback.md",
+      "evaluator": {
+        "recommended_cluster": "sizing",
+        "dominant_cause": "build_api_mismatch",
+        "lesson": "Candidate 0003 produced no timing evidence because the upsizeCell-to-upsizeCells API change broke test compilation, and all ten smoke logs failed during helper initialization.",
+        "dead_end": "Repeating the incompatible API rename without migrating callers will fail gates before timing evaluation.",
+        "good_changes": [],
+        "bad_changes": [
+          "SizeUpGenerator.hh replaced upsizeCell with upsizeCells while TestResizer.cc retained the old API, producing five compiler errors.",
+          "Smoke success reporting accepted ten logs containing missing helpers.tcl errors."
+        ],
+        "files_to_revisit": [
+          "src/rsz/src/move/SizeUpGenerator.hh",
+          "src/rsz/src/move/SizeUpGenerator.cc",
+          "src/rsz/test/cpp/TestResizer.cc"
+        ],
+        "files_to_avoid": []
+      },
+      "agents": {
+        "planner": "antigravity",
+        "coder": "codex",
+        "evaluator": "codex"
+      },
+      "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0003",
+      "seconds": 313,
+      "when": "2026-11-16T11:40:54Z"
+    },
+    {
+      "iteration": 4,
+      "tag": "0004_sizing",
+      "status": "rejected",
+      "cluster": "sizing",
+      "title": "Isolate absolute delay-gain ranking with API-compatible single-candidate sizing",
+      "hypothesis": "Cost-normalized sizing can prefer a smaller timing improvement over a larger eligible delay reduction on violating data paths. Preserve the champion upsizeCell API and single-candidate generation, but select the replacement with maximum positive finite stage delay gain, retaining the preceding-driver input-capacitance penalty and existing eligibility checks. AES critical X1 logic provides the clearest opportunity, while Ibex may benefit within its data cone; its fanout-943 clock gate is not evidence for this mechanism. Iteration 3 never reached timing evaluation, so this retry isolates ranking from candidate multiplicity and avoids its incompatible API rename. Improved selections should reduce matched-endpoint data arrivals and WNS/TNS, subject to upstream loading, hold, area, DRV, and placement gates.",
+      "planned_files": [
+        "src/move/SizeUpGenerator.cc",
+        "test/cpp/TestResizer.cc"
+      ],
+      "evidence_iterations": [
+        3
+      ],
+      "files_changed": [
+        "src/move/SizeUpGenerator.cc",
+        "HYPOTHESIS.md"
+      ],
+      "patch_stats": {
+        "files": [
+          "repos"
+        ],
+        "files_count": 1,
+        "lines_added": 64,
+        "lines_deleted": 73
+      },
+      "accepted": false,
+      "score_vs_champion": 0.0,
+      "score_vs_baseline": 0.0,
+      "reasons": [
+        "gates failed: //src/rsz/test:TestResizer=FAILED; //src/rsz/test:cpp_tests=FAILED"
+      ],
+      "per_design": {},
+      "champion_after": 0,
+      "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0004_sizing",
+      "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0004_sizing",
+      "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0004_sizing/feedback.md",
+      "evaluator": {
+        "recommended_cluster": "sizing",
+        "dominant_cause": "unit_test_selection_contract_mismatch",
+        "lesson": "Absolute stage-gain ranking changed rising-edge replacement selection and failed unit gates before any benchmark timing benefit could be measured.",
+        "dead_end": "Repeating the same gate-failing absolute-gain selector without resolving its selection contract cannot produce evaluable timing evidence.",
+        "good_changes": [],
+        "bad_changes": [
+          "src/rsz/src/move/SizeUpGenerator.cc: replacing cost-normalized ranking with absolute gain conflicts with two existing rising-edge master assertions; timing impact is unmeasured."
+        ],
+        "files_to_revisit": [
+          "src/rsz/src/move/SizeUpGenerator.cc",
+          "src/rsz/test/cpp/TestResizer.cc"
+        ],
+        "files_to_avoid": [
+          "src/rsz/src/move/SizeUpGenerator.hh",
+          "src/rsz/src/move/SizeUpCandidate.cc"
+        ]
+      },
+      "agents": {
+        "planner": "codex",
+        "coder": "codex",
+        "evaluator": "codex"
+      },
+      "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0004",
+      "seconds": 250,
+      "when": "2026-11-16T11:47:18Z"
+    },
+    {
+      "iteration": 5,
+      "tag": "0005_sizing",
+      "status": "rejected",
+      "cluster": "sizing",
+      "title": "Recover suppressed sizing moves with cost-ranked feasible replacement selection",
+      "hypothesis": "The champion ranks replacement masters before checking instance-level upstream max-capacitance feasibility, so an infeasible winner can suppress a profitable feasible runner-up. Select the highest-scoring feasible master while preserving cost-normalized stage gain, upstream loading penalties, transition guards, the upsizeCell API, and single-candidate generation. Iteration 4 identifies this search limitation but provides no benchmark timing evidence; iteration 3 establishes the API-compatibility failure this implementation avoids. Recovered sizing should reduce matched data-path arrivals on affected AES or Ibex endpoints without increasing logic depth. If no feasible-runner-up opportunities occur in tier A, the mechanism is inapplicable and should be rejected.",
+      "planned_files": [
+        "src/move/SizeUpGenerator.cc",
+        "test/cpp/TestResizer.cc"
+      ],
+      "evidence_iterations": [
+        3,
+        4
+      ],
+      "files_changed": [
+        "src/move/SizeUpGenerator.cc",
+        "src/move/SizeUpGenerator.hh",
+        "HYPOTHESIS.md"
+      ],
+      "patch_stats": {
+        "files": [
+          "repos"
+        ],
+        "files_count": 1,
+        "lines_added": 115,
+        "lines_deleted": 17
+      },
+      "accepted": false,
+      "score_vs_champion": 3.525860723530096e-18,
+      "score_vs_baseline": 3.525860723530096e-18,
+      "reasons": [
+        "score +0.00000 below required gain +0.00200"
+      ],
+      "per_design": {
+        "nangate45/gcd": {
+          "score": 0.0,
+          "wns_cand": -0.17417545676519416,
+          "wns_ref": -0.17417545676519416,
+          "tns_cand": -7.62617102164613,
+          "tns_ref": -7.62617102164613,
+          "d_wns_ns": 0.0,
+          "d_tns_ns": 0.0,
+          "d_wns_pct_period": 0.0,
+          "d_tns_pct": 0.0,
+          "hold_cand": 0.08703885081255561,
+          "hold_ref": 0.08703885081255562,
+          "drv_cand": 0.0,
+          "drv_ref": 0.0,
+          "area_cand": 848.806025466331,
+          "area_ref": 848.806025466331,
+          "placement_violations": 0.0,
+          "deterministic": true
+        },
+        "nangate45/aes": {
+          "score": 1.0577582170590287e-17,
+          "wns_cand": -0.10828860337159199,
+          "wns_ref": -0.108288603371592,
+          "tns_cand": -14.773421126812009,
+          "tns_ref": -14.773421126812009,
+          "d_wns_ns": 1.3877787807814457e-17,
+          "d_tns_ns": 0.0,
+          "d_wns_pct_period": 2.1155164341180574e-15,
+          "d_tns_pct": 0.0,
+          "hold_cand": 0.10201455247075145,
+          "hold_ref": 0.10201455247075146,
+          "drv_cand": 0.0,
+          "drv_ref": 0.0,
+          "area_cand": 20271.860634579753,
+          "area_ref": 20271.860634579753,
+          "placement_violations": 0.0,
+          "deterministic": true
+        },
+        "nangate45/ibex": {
+          "score": 0.0,
+          "wns_cand": -0.29941183713160996,
+          "wns_ref": -0.29941183713160996,
+          "tns_cand": -416.2728946035277,
+          "tns_ref": -416.2728946035277,
+          "d_wns_ns": 0.0,
+          "d_tns_ns": 0.0,
+          "d_wns_pct_period": 0.0,
+          "d_tns_pct": 0.0,
+          "hold_cand": 0.044729221592639395,
+          "hold_ref": 0.044729221592639395,
+          "drv_cand": 0.0,
+          "drv_ref": 0.0,
+          "area_cand": 28628.781123529734,
+          "area_ref": 28628.78112352973,
+          "placement_violations": 0.0,
+          "deterministic": true
+        }
+      },
+      "champion_after": 0,
+      "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0005_sizing",
+      "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0005_sizing",
+      "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0005_sizing/feedback.md",
+      "evaluator": {
+        "recommended_cluster": "buffering",
+        "dominant_cause": "high_fanout",
+        "lesson": "Moving upstream max-capacitance feasibility into sizing selection preserved compatibility but produced zero incremental tier-A timing benefit.",
+        "dead_end": "Do not repeat feasible-runner-up sizing selection without measured recovery opportunities and attributable endpoint gains.",
+        "good_changes": [
+          "src/move/SizeUpGenerator.cc and src/move/SizeUpGenerator.hh preserved the protected upsizeCell API; all supplied unit and smoke gates passed, but no timing benefit was measured."
+        ],
+        "bad_changes": [
+          "src/move/SizeUpGenerator.cc moved replacementPreservesMaxCap into contender selection with zero measured WNS, TNS, or reported endpoint improvement."
+        ],
+        "files_to_revisit": [
+          "src/move/SplitLoadGenerator.cc",
+          "src/move/BufferGenerator.cc",
+          "src/move/CloneGenerator.cc",
+          "src/policy/SetupLegacyPolicy.cc"
+        ],
+        "files_to_avoid": [
+          "src/move/SizeUpGenerator.cc",
+          "src/move/SizeUpGenerator.hh"
+        ]
+      },
+      "agents": {
+        "planner": "codex",
+        "coder": "codex",
+        "evaluator": "codex"
+      },
+      "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0005",
+      "seconds": 443,
+      "when": "2026-11-16T11:55:57Z"
     }
   ],
   "champion_history": [],
-  "updated": "2026-11-12T22:43:13Z"
+  "updated": "2026-11-16T11:55:57Z"
 }

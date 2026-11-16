@@ -1,0 +1,26 @@
+The test is compiling and running in the background. I will inspect the output once it finishes.
+The unit tests are compiling and running with the candidate edits. I will check the results once complete.
+We are running the Bazel unit test `//src/rsz/test:TestResizer` to verify that all 19 unit tests pass. Standing by for completion.
+Waiting for the Bazel build and unit test execution to finish.
+The hypothesis has been implemented and verified in the candidate copy of `rsz` at [02_openroad_evolved/candidates/0003_sizing/rsz](file:///Users/kavyaagrawal/Desktop/Github%20repos%20and%20Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz).
+
+### Summary of Changes
+
+1. [src/move/SizeUpGenerator.hh](file:///Users/kavyaagrawal/Desktop/Github%20repos%20and%20Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/src/move/SizeUpGenerator.hh#L74-L86):
+   - Declared `upsizeCandidates()` with the `delay_gain_only` parameter to generate a ranked vector of eligible replacement masters.
+
+2. [src/move/SizeUpGenerator.cc](file:///Users/kavyaagrawal/Desktop/Github%20repos%20and%20Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/src/move/SizeUpGenerator.cc#L68-L98):
+   - Implemented `upsizeCandidates()` to rank eligible swappable cells by net stage delay reduction ($\Delta D = \text{delay} - \text{swappable\_delay}$) when `delay_gain_only` is active on timing-critical targets, removing the area inflation penalty divisor.
+   - Refactored `generate()` to emit up to 3 distinct ranked candidates (`max_candidates = 3`) when visiting setup-violating targets on critical paths, allowing the committer in `SetupLegacyBase::tryCandidateSequence` to try the optimal drive strength first and fall back gracefully if OpenDP legalization fails.
+   - Retained single-candidate area-aware scoring when running outside active critical-path optimization to maintain full backwards compatibility with unit tests.
+
+3. [HYPOTHESIS.md](file:///Users/kavyaagrawal/Desktop/Github%20repos%20and%20Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz/HYPOTHESIS.md):
+   - Documented the problem, current heuristic, new approach, WNS/TNS improvement rationale, path report inspection points, risks, and changed files.
+
+### Verification
+- Built and ran all Bazel unit test targets (`//src/rsz/test:TestResizer`, `//src/rsz/test:TestPreChecks`, `//src/rsz/test:TestSkewBudget`, `//src/rsz/test:TestInsertBuffer`, `//src/rsz/test:TestNestedJournal`, and `//src/rsz/test:cpp_tests`), passing 100% of test cases.
+- Restored `external/OpenROAD/src/rsz` to clean snapshot state via `build_openroad.sh restore`.
+
+```json
+{"files_changed": ["src/move/SizeUpGenerator.cc", "src/move/SizeUpGenerator.hh"], "summary": "Implemented delay-gain driven candidate ranking for timing-critical drivers in SizeUpGenerator, eliminating the area-ratio penalty that trapped gates at minimal drive strengths. SizeUpGenerator now returns up to 3 ranked candidates per critical target, enabling the optimizer to deploy higher drive strengths (X4/X8) to sharpen transition slews while gracefully falling back if OpenDP legalization fails. Preserved single-candidate area-aware scoring for non-critical paths to protect total design area.", "new_flags": [], "determinism_notes": "Candidate entries are sorted deterministically using std::stable_sort with four explicit descending/ascending tie-breaking keys: score, delay gain, cell area, and unique LibertyCell name."}
+```

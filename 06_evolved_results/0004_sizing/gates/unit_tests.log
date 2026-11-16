@@ -1,0 +1,184 @@
+INFO: Invocation ID: f2290f3e-4ee2-4891-a0df-bf140ee2a125
+Computing main repo mapping: 
+Loading: 
+Loading: 0 packages loaded
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+
+INFO: Analyzed 6 targets (4 packages loaded, 446 targets configured).
+[10,289 / 10,970] Compiling src/rsz/test/cpp/TestNestedJournal.cc; 0s disk-cache
+[11,214 / 11,226] Linking src/rsz/test/TestBufRem1; 0s disk-cache, remote-cache ... (6 actions, 0 running)
+[11,222 / 11,229] 2 / 6 tests; Linking src/rsz/test/TestSkewBudget; 0s disk-cache, remote-cache, darwin-sandbox ... (4 actions, 2 running)
+[11,228 / 11,231] 4 / 6 tests; Testing //src/rsz/test:TestResizer; 1s disk-cache, remote-cache, darwin-sandbox ... (2 actions, 1 running)
+FAIL: //src/rsz/test:TestResizer (Exit 1) (see /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/execroot/_main/bazel-out/darwin_arm64-opt/testlogs/src/rsz/test/TestResizer/test.log)
+[11,231 / 11,232] 6 / 6 tests, 1 failed; Testing //src/rsz/test:TestResizer; 2s disk-cache, remote-cache, darwin-sandbox
+INFO: From Testing //src/rsz/test:TestResizer:
+==================== Test output for //src/rsz/test:TestResizer:
+Running main() from gmock_main.cc
+[==========] Running 19 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 19 tests from TestResizer
+[ RUN      ] TestResizer.ResizeSlacksExcludeNonTimingDrivers
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[       OK ] TestResizer.ResizeSlacksExcludeNonTimingDrivers (92 ms)
+[ RUN      ] TestResizer.HierarchicalNetDontTouch
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[       OK ] TestResizer.HierarchicalNetDontTouch (80 ms)
+[ RUN      ] TestResizer.BufferRemovalPreservesCandidateAndSurvivorFlags
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[INFO ODB-0127] Reading DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/remove_buffers3.def
+[INFO ODB-0128] Design: top
+[INFO ODB-0130]     Created 2 pins.
+[INFO ODB-0131]     Created 4 components and 16 component-terminals.
+[INFO ODB-0132]     Created 2 special nets and 8 connections.
+[INFO ODB-0133]     Created 5 nets and 8 connections.
+[INFO ODB-0134] Finished DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/remove_buffers3.def
+[       OK ] TestResizer.BufferRemovalPreservesCandidateAndSurvivorFlags (80 ms)
+[ RUN      ] TestResizer.BufferRemovalWithDisconnectedOutputPreservesInputNet
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[INFO ODB-0127] Reading DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/remove_buffers3.def
+[INFO ODB-0128] Design: top
+[INFO ODB-0130]     Created 2 pins.
+[INFO ODB-0131]     Created 4 components and 16 component-terminals.
+[INFO ODB-0132]     Created 2 special nets and 8 connections.
+[INFO ODB-0133]     Created 5 nets and 8 connections.
+[INFO ODB-0134] Finished DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/remove_buffers3.def
+[       OK ] TestResizer.BufferRemovalWithDisconnectedOutputPreservesInputNet (83 ms)
+[ RUN      ] TestResizer.WeakerCellFirstOrdersHigherDriveResistanceFirst
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[       OK ] TestResizer.WeakerCellFirstOrdersHigherDriveResistanceFirst (83 ms)
+[ RUN      ] TestResizer.WeakerCellFirstOrdersHigherIntrinsicDelayFirst
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[       OK ] TestResizer.WeakerCellFirstOrdersHigherIntrinsicDelayFirst (83 ms)
+[ RUN      ] TestResizer.SwapPinsFeedthroughModNet
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+--------------------------------------------------------
+Compare TestResizer_SwapPinsFeedthroughModNet_out.v and /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/cpp/TestResizer_SwapPinsFeedthroughModNet_post.v
+--------------------------------------------------------
+[       OK ] TestResizer.SwapPinsFeedthroughModNet (106 ms)
+[ RUN      ] TestResizer.LatchThroughPathCollectsLatchDataFaninTargets
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[INFO ODB-0127] Reading DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/inferred_clock_gator_time_borrow.def
+[INFO ODB-0128] Design: inferred_clock_gator_time_borrow
+[INFO ODB-0130]     Created 2 pins.
+[INFO ODB-0131]     Created 10 components and 52 component-terminals.
+[INFO ODB-0133]     Created 7 nets and 22 connections.
+[INFO ODB-0134] Finished DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/inferred_clock_gator_time_borrow.def
+[       OK ] TestResizer.LatchThroughPathCollectsLatchDataFaninTargets (86 ms)
+[ RUN      ] TestResizer.ChainedLatchFaninTargets
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[INFO ODB-0127] Reading DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/latch_borrow_chain.def
+[INFO ODB-0128] Design: latch_borrow_chain
+[INFO ODB-0130]     Created 2 pins.
+[INFO ODB-0131]     Created 13 components and 65 component-terminals.
+[INFO ODB-0133]     Created 10 nets and 29 connections.
+[INFO ODB-0134] Finished DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/latch_borrow_chain.def
+[       OK ] TestResizer.ChainedLatchFaninTargets (83 ms)
+[ RUN      ] TestResizer.RepairBudgetClampsToAtLeastOneWhenSlackImprovesPastMinViol
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[       OK ] TestResizer.RepairBudgetClampsToAtLeastOneWhenSlackImprovesPastMinViol (81 ms)
+[ RUN      ] TestResizer.SetupLegacyPolicyResetsForceSingleRepairAfterImprovingPass
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[       OK ] TestResizer.SetupLegacyPolicyResetsForceSingleRepairAfterImprovingPass (81 ms)
+[ RUN      ] TestResizer.TerminateProgressIgnoresFixRateWhenTnsIsZero
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[       OK ] TestResizer.TerminateProgressIgnoresFixRateWhenTnsIsZero (80 ms)
+[ RUN      ] TestResizer.GainBufferingBuffersOnlyNegativeSlackOutputPorts
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+Iteration |   Area    | Resized | Buffers | Nets repaired | Remaining
+---------------------------------------------------------------------
+        0 |   +219.2% |       0 |       2 |             2 |         9
+    final |   +219.2% |       0 |       2 |             2 |         0
+---------------------------------------------------------------------
+[INFO RSZ-0036] Found 1 capacitance violations.
+[INFO RSZ-0038] Inserted 2 buffers in 2 nets.
+[INFO RSZ-0504] Runtime: 0.00s
+[       OK ] TestResizer.GainBufferingBuffersOnlyNegativeSlackOutputPorts (84 ms)
+[ RUN      ] TestResizer.GainBufferingBuffersPositiveSlackOutputPortWhenDriverHasNegativeSlack
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+Iteration |   Area    | Resized | Buffers | Nets repaired | Remaining
+---------------------------------------------------------------------
+        0 |   +215.4% |       0 |       2 |             1 |         9
+    final |   +215.4% |       0 |       2 |             1 |         0
+---------------------------------------------------------------------
+[INFO RSZ-0038] Inserted 2 buffers in 1 nets.
+[INFO RSZ-0504] Runtime: 0.00s
+[       OK ] TestResizer.GainBufferingBuffersPositiveSlackOutputPortWhenDriverHasNegativeSlack (86 ms)
+[ RUN      ] TestResizer.SizeUpSelectsActiveTransitionSkewedCell
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[INFO ODB-0127] Reading DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/inferred_clock_gator_time_borrow.def
+[INFO ODB-0128] Design: inferred_clock_gator_time_borrow
+[INFO ODB-0130]     Created 2 pins.
+[INFO ODB-0131]     Created 10 components and 52 component-terminals.
+[INFO ODB-0133]     Created 7 nets and 22 connections.
+[INFO ODB-0134] Finished DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/inferred_clock_gator_time_borrow.def
+src/rsz/test/cpp/TestResizer.cc:1192: Failure
+Expected equality of these values:
+  rise_replacement
+    Which is: 0x77f0802a00
+  skrd2_rvt
+    Which is: 0x77f0801e00
+
+src/rsz/test/cpp/TestResizer.cc:1238: Failure
+Expected equality of these values:
+  db_network_->libertyCell(inst)
+    Which is: 0x77f0802a00
+  skrd2_rvt
+    Which is: 0x77f0801e00
+
+[  FAILED  ] TestResizer.SizeUpSelectsActiveTransitionSkewedCell (84 ms)
+[ RUN      ] TestResizer.SizeUpRejectsCandidateThatWeakensNonCriticalEdge
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[INFO ODB-0127] Reading DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/inferred_clock_gator_time_borrow.def
+[INFO ODB-0128] Design: inferred_clock_gator_time_borrow
+[INFO ODB-0130]     Created 2 pins.
+[INFO ODB-0131]     Created 10 components and 52 component-terminals.
+[INFO ODB-0133]     Created 7 nets and 22 connections.
+[INFO ODB-0134] Finished DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/inferred_clock_gator_time_borrow.def
+[       OK ] TestResizer.SizeUpRejectsCandidateThatWeakensNonCriticalEdge (83 ms)
+[ RUN      ] TestResizer.VtSwapAdvancesOnlyToNonWeakeningEquivCells
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[INFO ODB-0127] Reading DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/inferred_clock_gator_time_borrow.def
+[INFO ODB-0128] Design: inferred_clock_gator_time_borrow
+[INFO ODB-0130]     Created 2 pins.
+[INFO ODB-0131]     Created 10 components and 52 component-terminals.
+[INFO ODB-0133]     Created 7 nets and 22 connections.
+[INFO ODB-0134] Finished DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/inferred_clock_gator_time_borrow.def
+[       OK ] TestResizer.VtSwapAdvancesOnlyToNonWeakeningEquivCells (82 ms)
+[ RUN      ] TestResizer.GetVtEquivCellsDeduplicatesNonAdjacentSameVtCells
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[       OK ] TestResizer.GetVtEquivCellsDeduplicatesNonAdjacentSameVtCells (83 ms)
+[ RUN      ] TestResizer.DisabledConditionalArcIgnoredInDriveResistance
+[INFO ODB-0227] LEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/test/Nangate45/Nangate45.lef, created 22 layers, 27 vias, 135 library cells
+[INFO ODB-0127] Reading DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/remove_buffers3.def
+[INFO ODB-0128] Design: top
+[INFO ODB-0130]     Created 2 pins.
+[INFO ODB-0131]     Created 4 components and 16 component-terminals.
+[INFO ODB-0132]     Created 2 special nets and 8 connections.
+[INFO ODB-0133]     Created 5 nets and 8 connections.
+[INFO ODB-0134] Finished DEF file: /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/sandbox/darwin-sandbox/690/execroot/_main/bazel-out/darwin_arm64-opt/bin/src/rsz/test/TestResizer.runfiles/_main/src/rsz/test/remove_buffers3.def
+[       OK ] TestResizer.DisabledConditionalArcIgnoredInDriveResistance (81 ms)
+[----------] 19 tests from TestResizer (1608 ms total)
+
+[----------] Global test environment tear-down
+[==========] 19 tests from 1 test suite ran. (1608 ms total)
+[  PASSED  ] 18 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TestResizer.SizeUpSelectsActiveTransitionSkewedCell
+
+ 1 FAILED TEST
+================================================================================
+INFO: Found 6 test targets...
+INFO: Elapsed time: 5.930s, Critical Path: 4.56s
+INFO: 14 processes: 152 action cache hit, 5 disk cache hit, 2 internal, 7 darwin-sandbox.
+INFO: Build completed, 1 test FAILED, 14 total actions
+//src/rsz/test:TestBufRem1                                      (cached) PASSED in 1.1s
+//src/rsz/test:TestInsertBuffer                                 (cached) PASSED in 4.7s
+//src/rsz/test:TestNestedJournal                                (cached) PASSED in 1.7s
+//src/rsz/test:TestPreChecks                                    (cached) PASSED in 2.1s
+//src/rsz/test:TestSkewBudget                                   (cached) PASSED in 0.8s
+//src/rsz/test:TestResizer                                               FAILED in 2.4s
+  /Users/kavyaagrawal/Library/Caches/bazel/_bazel_kavyaagrawal/fb9cc363baa19ddc90b20839667985b5/execroot/_main/bazel-out/darwin_arm64-opt/testlogs/src/rsz/test/TestResizer/test.log
+
+Executed 1 out of 6 tests: 5 tests pass and 1 fails locally.
+There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.

@@ -1,0 +1,130 @@
+{
+  "iteration": 5,
+  "tag": "0005_sizing",
+  "status": "rejected",
+  "cluster": "sizing",
+  "title": "Recover suppressed sizing moves with cost-ranked feasible replacement selection",
+  "hypothesis": "The champion ranks replacement masters before checking instance-level upstream max-capacitance feasibility, so an infeasible winner can suppress a profitable feasible runner-up. Select the highest-scoring feasible master while preserving cost-normalized stage gain, upstream loading penalties, transition guards, the upsizeCell API, and single-candidate generation. Iteration 4 identifies this search limitation but provides no benchmark timing evidence; iteration 3 establishes the API-compatibility failure this implementation avoids. Recovered sizing should reduce matched data-path arrivals on affected AES or Ibex endpoints without increasing logic depth. If no feasible-runner-up opportunities occur in tier A, the mechanism is inapplicable and should be rejected.",
+  "planned_files": [
+    "src/move/SizeUpGenerator.cc",
+    "test/cpp/TestResizer.cc"
+  ],
+  "evidence_iterations": [
+    3,
+    4
+  ],
+  "files_changed": [
+    "src/move/SizeUpGenerator.cc",
+    "src/move/SizeUpGenerator.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 115,
+    "lines_deleted": 17
+  },
+  "accepted": false,
+  "score_vs_champion": 3.525860723530096e-18,
+  "score_vs_baseline": 3.525860723530096e-18,
+  "reasons": [
+    "score +0.00000 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.0,
+      "wns_cand": -0.17417545676519416,
+      "wns_ref": -0.17417545676519416,
+      "tns_cand": -7.62617102164613,
+      "tns_ref": -7.62617102164613,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.08703885081255561,
+      "hold_ref": 0.08703885081255562,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 848.806025466331,
+      "area_ref": 848.806025466331,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": 1.0577582170590287e-17,
+      "wns_cand": -0.10828860337159199,
+      "wns_ref": -0.108288603371592,
+      "tns_cand": -14.773421126812009,
+      "tns_ref": -14.773421126812009,
+      "d_wns_ns": 1.3877787807814457e-17,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 2.1155164341180574e-15,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075146,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20271.860634579753,
+      "area_ref": 20271.860634579753,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.0,
+      "wns_cand": -0.29941183713160996,
+      "wns_ref": -0.29941183713160996,
+      "tns_cand": -416.2728946035277,
+      "tns_ref": -416.2728946035277,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28628.781123529734,
+      "area_ref": 28628.78112352973,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 0,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0005_sizing",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0005_sizing",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0005_sizing/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "buffering",
+    "dominant_cause": "high_fanout",
+    "lesson": "Moving upstream max-capacitance feasibility into sizing selection preserved compatibility but produced zero incremental tier-A timing benefit.",
+    "dead_end": "Do not repeat feasible-runner-up sizing selection without measured recovery opportunities and attributable endpoint gains.",
+    "good_changes": [
+      "src/move/SizeUpGenerator.cc and src/move/SizeUpGenerator.hh preserved the protected upsizeCell API; all supplied unit and smoke gates passed, but no timing benefit was measured."
+    ],
+    "bad_changes": [
+      "src/move/SizeUpGenerator.cc moved replacementPreservesMaxCap into contender selection with zero measured WNS, TNS, or reported endpoint improvement."
+    ],
+    "files_to_revisit": [
+      "src/move/SplitLoadGenerator.cc",
+      "src/move/BufferGenerator.cc",
+      "src/move/CloneGenerator.cc",
+      "src/policy/SetupLegacyPolicy.cc"
+    ],
+    "files_to_avoid": [
+      "src/move/SizeUpGenerator.cc",
+      "src/move/SizeUpGenerator.hh"
+    ]
+  },
+  "agents": {
+    "planner": "codex",
+    "coder": "codex",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0005",
+  "seconds": 443,
+  "when": "2026-11-16T11:55:57Z",
+  "schema_version": 1,
+  "valid_experiment": true
+}

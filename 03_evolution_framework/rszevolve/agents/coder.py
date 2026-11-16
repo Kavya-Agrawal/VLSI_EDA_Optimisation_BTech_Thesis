@@ -59,6 +59,35 @@ def make_patch(cand_rsz: Path) -> str:
     return res.stdout
 
 
+def load_checkpoint(iteration: int, h: Hypothesis, *, log_dir: Path) -> CodeResult | None:
+    """Load a coder result that finished before its parent terminal/process died."""
+    rsz = PATHS.candidates / f"{iteration:04d}_{h.cluster}" / "rsz"
+    raw_paths = [log_dir / "coder.raw.json"]
+    raw_paths.extend(sorted(log_dir.glob("coder.*.raw.json"), key=lambda path: path.stat().st_mtime, reverse=True))
+    raw = next((candidate for path in raw_paths
+                if (candidate := (read_json(path, {}) or {}))
+                and not candidate.get("is_error") and str(candidate.get("result") or "").strip()), {})
+    if not rsz.is_dir() or not raw:
+        return None
+    patch = make_patch(rsz)
+    # HYPOTHESIS.md alone is metadata, not a completed coding checkpoint. Confirm that at least one claimed
+    # source file is actually present in the diff before trusting a provider-specific result from an older run.
+    claimed = [str(f) for f in js.get("files_changed", [])] if (js := extract_json_block(str(raw.get("result") or ""))) else []
+    if not patch.strip() or not any(f"/rsz/{path}" in patch for path in claimed):
+        return None
+    js = js or {}
+    changed = [str(f) for f in js.get("files_changed", [])]
+    if not changed:
+        changed = sorted({line.split()[1] for line in patch.splitlines()
+                          if line.startswith("+++ ") and "/dev/null" not in line})
+    write_text(rsz.parent / "candidate.patch", patch)
+    if not (rsz / "HYPOTHESIS.md").exists():
+        write_text(rsz / "HYPOTHESIS.md", f"# {h.title}\n\n{h.hypothesis}\n")
+    shutil.copy2(rsz / "HYPOTHESIS.md", rsz.parent / "HYPOTHESIS.md")
+    log(f"coder: recovered completed checkpoint with {len(changed)} files changed")
+    return CodeResult(rsz, raw.get("session_id"), changed, str(js.get("summary", "")), patch, raw)
+
+
 def code(iteration: int, h: Hypothesis, knobs: Knobs, *, log_dir: Path, budget_cap_usd: float | None = None) -> CodeResult:
     cand = new_candidate_dir(iteration, h.cluster)
     rsz = cand / "rsz"

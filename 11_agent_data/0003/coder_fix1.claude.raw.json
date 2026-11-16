@@ -1,0 +1,8 @@
+{
+  "is_error": true,
+  "result": "",
+  "stderr": "No conversation found with session ID: dcea2f8b-cf41-4877-8835-e2b17eeec904\n",
+  "stdout_tail": "",
+  "stderr_tail": "No conversation found with session ID: dcea2f8b-cf41-4877-8835-e2b17eeec904\n",
+  "total_cost_usd": 0
+}

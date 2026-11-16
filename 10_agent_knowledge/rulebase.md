@@ -20,3 +20,11 @@ Rules marked [fixed] are safety constraints and cannot be removed by agents.
 - Prefer changes to *what* the algorithm decides (ordering, selection, acceptance, search strategy, cost
   model) over changes to *how fast* it does it.
 - Read the evaluator's worst-path attribution before choosing a cluster; attack the dominant cause.
+
+## proposed by planner, iteration 4
+
+Treat gate-failed candidates as timing-unverified, preserve helper API compatibility, and require smoke logs to demonstrate successful initialization and repair execution before timing interpretation.
+
+## proposed by planner, iteration 5
+
+For feasibility-fallback hypotheses, measure rejected winners and profitable feasible alternatives; zero benchmark opportunities falsifies applicability without justifying relaxed safety checks.

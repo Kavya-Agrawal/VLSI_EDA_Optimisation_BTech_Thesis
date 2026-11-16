@@ -1,9 +1,9 @@
 {
   "spent_usd": 0.938398,
-  "spent_tokens": 81627,
+  "spent_tokens": 1838745,
   "budget_usd": 5.0,
   "max_tokens": 0,
-  "updated": "2026-11-13T10:00:00Z",
+  "updated": "2026-11-16T11:55:57Z",
   "calls": [
     {
       "ts": "2026-11-12T22:36:53Z",
@@ -58,6 +58,127 @@
       "turns": 1,
       "session_id": "6abaa2b5-c0a9-4af3-bd4f-e34bc8a48eea",
       "duration_ms": 71,
+      "model": null
+    },
+    {
+      "ts": "2026-11-13T10:28:34Z",
+      "role": "planner",
+      "iteration": 3,
+      "usd": 0.0,
+      "tokens": 14504,
+      "turns": 1,
+      "session_id": "antigravity:b59aca07-ef1a-4a45-a2a2-eb854d354e8b",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-13T11:03:19Z",
+      "role": "planner",
+      "iteration": 3,
+      "usd": 0.0,
+      "tokens": 288997,
+      "turns": 1,
+      "session_id": "antigravity:0f3f787e-1c56-49b7-801f-7453b1c736a2",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-16T11:34:13Z",
+      "role": "coder:sizing",
+      "iteration": 3,
+      "usd": 0.0,
+      "tokens": 0,
+      "turns": 0,
+      "session_id": null,
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-16T11:34:56Z",
+      "role": "coder:fix",
+      "iteration": 3,
+      "usd": 0.0,
+      "tokens": 0,
+      "turns": 0,
+      "session_id": null,
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-16T11:40:54Z",
+      "role": "evaluator",
+      "iteration": 3,
+      "usd": 0.0,
+      "tokens": 107632,
+      "turns": 1,
+      "session_id": "codex:01a1e428-1091-7023-bfa7-d81db900d984",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-16T11:44:44Z",
+      "role": "planner",
+      "iteration": 4,
+      "usd": 0.0,
+      "tokens": 345405,
+      "turns": 1,
+      "session_id": "codex:01a1e42b-0b65-7280-81cb-b76cdba05fcb",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-16T11:45:47Z",
+      "role": "coder:sizing",
+      "iteration": 4,
+      "usd": 0.0,
+      "tokens": 170808,
+      "turns": 1,
+      "session_id": "codex:01a1e42c-880d-76b3-81b7-f9c626cf362b",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-16T11:47:18Z",
+      "role": "evaluator",
+      "iteration": 4,
+      "usd": 0.0,
+      "tokens": 124598,
+      "turns": 1,
+      "session_id": "codex:01a1e42d-caae-7881-bd15-a3097de3e4ab",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-16T11:50:09Z",
+      "role": "planner",
+      "iteration": 5,
+      "usd": 0.0,
+      "tokens": 249155,
+      "turns": 1,
+      "session_id": "codex:01a1e430-0a12-7770-acd5-a2dbe923b385",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-16T11:52:10Z",
+      "role": "coder:sizing",
+      "iteration": 5,
+      "usd": 0.0,
+      "tokens": 299841,
+      "turns": 1,
+      "session_id": "codex:01a1e431-7e2b-7971-ab0b-f6ec69bd552e",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-16T11:55:57Z",
+      "role": "evaluator",
+      "iteration": 5,
+      "usd": 0.0,
+      "tokens": 156178,
+      "turns": 1,
+      "session_id": "codex:01a1e435-9fee-7690-8f58-bfc33a4dcbab",
+      "duration_ms": null,
       "model": null
     }
   ]

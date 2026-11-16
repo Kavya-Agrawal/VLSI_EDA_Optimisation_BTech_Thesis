@@ -1,0 +1,7 @@
+Implemented feasible replacement ranking by default, preserving scoring, transition guards, the `upsizeCell` API, and existing move rollback behavior. Added `HYPOTHESIS.md`.
+
+Lightweight source checks passed. Builds and tests were not run, per your resource rule; timing gains remain unverified.
+
+```json
+{"files_changed":["src/move/SizeUpGenerator.cc","src/move/SizeUpGenerator.hh","HYPOTHESIS.md"],"summary":"Selection now rejects infeasible contenders before updating the best score, allowing profitable feasible runners-up to win. Existing scoring, upsizeCell API, and single-candidate generation are preserved.","new_flags":[],"determinism_notes":"Candidate iteration order and strict score comparisons remain unchanged, preserving deterministic tie handling."}
+```

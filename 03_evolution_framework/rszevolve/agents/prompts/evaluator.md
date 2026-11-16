@@ -24,5 +24,8 @@ Write `feedback.md` with sections:
    ranked), and one thing NOT to try again.
 Then END with a JSON block:
 ```json
-{"recommended_cluster": "<name>", "dominant_cause": "<tag>", "lesson": "<one sentence for lessons.md>", "dead_end": "<one sentence or empty>"}
+{"recommended_cluster": "<name>", "dominant_cause": "<tag>", "lesson": "<one sentence for lessons.md>",
+ "dead_end": "<one sentence or empty>", "good_changes": ["specific mechanism/file that helped"],
+ "bad_changes": ["specific mechanism/file that hurt or had no effect"],
+ "files_to_revisit": ["src/..."], "files_to_avoid": ["src/..."]}
 ```

@@ -1,0 +1,7 @@
+Implemented maximum positive finite stage delay-gain ranking and added `HYPOTHESIS.md`. Preserved `upsizeCell`, single-candidate generation, upstream loading penalty, and existing safety/journal paths.
+
+Lightweight diff checks passed. No builds or tests run, as requested.
+
+```json
+{"files_changed":["src/move/SizeUpGenerator.cc","HYPOTHESIS.md"],"summary":"Replaced cost-normalized scoring with maximum positive finite stage delay gain. Preserved the existing API, single-candidate generation, upstream capacitance penalty, and eligibility checks.","new_flags":[],"determinism_notes":"Preserved existing candidate iteration order; strict gain comparison retains the first candidate on exact ties. Non-finite gains are rejected."}
+```

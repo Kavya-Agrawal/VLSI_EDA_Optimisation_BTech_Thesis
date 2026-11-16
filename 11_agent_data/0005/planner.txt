@@ -1,0 +1,68 @@
+## Observation
+
+Stock repair leaves stressed WNS/TNS of **−0.1083/−14.773 ns on AES**, **−0.2994/−416.273 ns on Ibex**, and **−0.1742/−7.626 ns on gcd**. AES’s worst paths include slow-slew AOI221_X1 and XOR2_X1 drivers; Ibex also has slow data logic, although its fanout-943 clock gate does not establish a data-sizing opportunity. gcd’s limited improvement and an already stronger AOI21_X4 driver suggest a smaller opportunity.
+
+**Iteration 4 supports investigating sizing feasibility:** its feedback identifies a winner-only max-capacitance check that can suppress sizing entirely. It provides no benchmark timing evidence. **Iteration 3 establishes the API-compatibility failure to avoid**, while iteration 4 additionally rules out repeating unconditional absolute-gain ranking with the known failing expectations. Neither experiment establishes which designs improve or regress; iterations 1–2 are infrastructure/no-code records.
+
+## Cluster choice and why
+
+**Choose `sizing`: select the best electrically feasible replacement under the champion’s existing cost-normalized objective.**
+
+This changes the search decision from “choose a winner, then possibly abandon sizing” to “choose the best feasible winner.” It directly addresses a source-confirmed limitation without repeating the failed ranking objective. Whether this limitation materially affects the benchmarks remains unmeasured.
+
+## Hypothesis
+
+**Problem →** A profitable replacement may be suppressed because the highest-scoring master increases capacitance too much on an upstream net, even when another profitable master fits the available budget.
+
+**Current heuristic →** `SizeUpGenerator::upsizeCell()` maximizes positive stage-delay gain divided by the existing cost ratio. `generate()` then calls `replacementPreservesMaxCap()` only on that winner and returns no candidate if it fails. That check examines the replacement’s input-capacitance effects across fanin nets, including inputs outside the selected path.
+
+**New approach →** Keep the champion’s score, upstream loading penalty, transition eligibility, and single-candidate behavior, but select the highest-scoring replacement that passes the existing instance-level max-capacitance check.
+
+**Why WNS/TNS improves →** Previously abandoned targets can receive a smaller, feasible timing improvement. On affected AES or Ibex data paths, reports should show a replacement master, reduced stage delay or slew, and lower matched-endpoint arrival. Logic depth should remain unchanged.
+
+**Risks →** Feasible runners-up may be rare or absent. Local estimated gain may disappear after timing propagation or legalization; additional accepted sizing may consume area or hold margin.
+
+## Implementation sketch
+
+Paths below are relative to the candidate `rsz/` tree.
+
+- **`src/move/SizeUpGenerator.cc` — `generate()`, `selectReplacement()`, `upsizeCell()`**
+  - Start from the original champion.
+  - Share the existing scoring loop through a file-local selector accepting an optional feasibility predicate. Keep the protected `upsizeCell()` signature and behavior intact.
+  - Have `generate()` supply a predicate calling `resizer_.replacementPreservesMaxCap(inst, candidate, active_mode)`.
+  - Select the greatest existing score among eligible, feasible masters; preserve iteration order and strict-score tie behavior. Emit at most one candidate and retain the final safety check.
+  - Trace rejected unconstrained winners, available feasible runners-up, their scores, and eventual move outcomes. Do not approximate feasibility using only the active input pin.
+- **`test/cpp/TestResizer.cc`**
+  - Add coverage where the score winner violates an upstream cap limit but a lower-scoring profitable replacement passes.
+  - Cover all-infeasible and winner-already-feasible cases, including rejection caused by a non-path input.
+  - Preserve the existing skewed-transition master assertions and noncritical-edge rejection coverage.
+
+No changes to `SizeUpGenerator.hh`, `SizeUpCandidate.cc`, or `Resizer.cc` are needed.
+
+## Success criteria
+
+1. All C++ gates and **10/10 smoke tests** pass, including the unchanged transition-selection tests.
+2. Benchmark tracing finds **at least one suppressed winner with a feasible profitable runner-up**. Zero occurrences falsifies applicability to this tier.
+3. Target **AES WNS improvement ≥0.005 ns and TNS magnitude reduction ≥1%**, with Ibex WNS/TNS nonregressing. Limit gcd WNS loss to **0.001 ns**, with no TNS regression.
+4. Achieve mean evaluator score **≥+0.00200**, with all hold, DRV, area, placement, and determinism gates passing.
+5. For affected matched endpoints, demonstrate lower data arrival attributable to recovered sizing; compare the five worst endpoints per design after legalization and parasitic re-estimation. Treat summary slew values as raw report units until verified.
+
+## Fallback if it fails
+
+If no feasible-runner-up opportunities occur, reject this mechanism for tier A rather than relaxing capacitance limits or changing the score. If opportunities occur without timing improvement, inspect their estimated versus measured arrival changes and record the discrepancy. Preserve the original champion if the score or any acceptance gate fails; do not combine another heuristic into this iteration.
+
+```json
+{
+  "cluster": "sizing",
+  "title": "Recover suppressed sizing moves with cost-ranked feasible replacement selection",
+  "hypothesis": "The champion ranks replacement masters before checking instance-level upstream max-capacitance feasibility, so an infeasible winner can suppress a profitable feasible runner-up. Select the highest-scoring feasible master while preserving cost-normalized stage gain, upstream loading penalties, transition guards, the upsizeCell API, and single-candidate generation. Iteration 4 identifies this search limitation but provides no benchmark timing evidence; iteration 3 establishes the API-compatibility failure this implementation avoids. Recovered sizing should reduce matched data-path arrivals on affected AES or Ibex endpoints without increasing logic depth. If no feasible-runner-up opportunities occur in tier A, the mechanism is inapplicable and should be rejected.",
+  "files": [
+    "src/move/SizeUpGenerator.cc",
+    "test/cpp/TestResizer.cc"
+  ],
+  "evidence_iterations": [3, 4],
+  "success_criteria": "All gates pass; at least one recovered feasible opportunity; AES dWNS >= +0.005 ns and TNS magnitude down >=1%; Ibex nonregressing; gcd WNS loss <=0.001 ns with no TNS regression; mean score >=+0.00200.",
+  "risk": "Feasible runners-up may be absent, and local delay gains may not survive upstream loading, legalization, hold, or area constraints.",
+  "rule_updates": "For feasibility-fallback hypotheses, measure rejected winners and profitable feasible alternatives; zero benchmark opportunities falsifies applicability without justifying relaxed safety checks."
+}
+```

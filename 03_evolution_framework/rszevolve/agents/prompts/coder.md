@@ -8,6 +8,10 @@ do not reorganise data structures, do not touch unrelated code. Keep OpenROAD's 
 hypothesis requires a new optional flag (default off is NOT acceptable: the new behaviour must be on by default so
 the evaluator measures it).
 
+Resource rule: do **not** run Bazel, OpenROAD, unit tests, builds, long commands, background jobs, or restore/copy
+the external OpenROAD tree. The parent orchestrator owns building and testing after you return. You may only make
+the scoped source edits and perform lightweight read/diff checks in this candidate tree, then return immediately.
+
 Mandatory outputs:
 1. Code edits in the editable files.
 2. `HYPOTHESIS.md` in the tree root with: Problem; Current heuristic (file:function); New approach; Why WNS/TNS

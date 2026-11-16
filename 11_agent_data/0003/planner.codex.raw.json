@@ -1,0 +1,17 @@
+{
+  "type": "result",
+  "subtype": "error",
+  "is_error": true,
+  "result": "",
+  "session_id": "01a1d47f-47e9-7303-9a6c-1ed06fa00d21",
+  "num_turns": 0,
+  "total_cost_usd": 0,
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "api_error": "You\u2019ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at Nov 17th, 2026 3:17 AM.\n{'message': 'You\u2019ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at Nov 17th, 2026 3:17 AM.'}",
+  "stderr_tail": "",
+  "stdout_tail": "{\"type\":\"thread.started\",\"thread_id\":\"01a1d47f-47e9-7303-9a6c-1ed06fa00d21\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"error\",\"message\":\"You\u2019ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at Nov 17th, 2026 3:17 AM.\"}\n{\"type\":\"turn.failed\",\"error\":{\"message\":\"You\u2019ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at Nov 17th, 2026 3:17 AM.\"}}\n"
+}

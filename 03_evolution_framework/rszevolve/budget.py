@@ -53,6 +53,10 @@ class Budget:
         self.save()
         return rec
 
+    def charged(self, *, role: str, iteration: int) -> bool:
+        """Return whether this durable run already accounted for a checkpointed agent call."""
+        return any(int(call.get("iteration", -1)) == iteration and call.get("role") == role for call in self.calls)
+
     def exhausted(self) -> str | None:
         if self.budget_usd and self.spent_usd >= self.budget_usd:
             return f"USD budget reached: spent {self.spent_usd:.2f} >= {self.budget_usd:.2f}"

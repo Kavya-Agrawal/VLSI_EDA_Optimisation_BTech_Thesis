@@ -1,0 +1,36 @@
+{
+  "type": "result",
+  "subtype": "error",
+  "is_error": true,
+  "result": "",
+  "session_id": null,
+  "num_turns": 0,
+  "total_cost_usd": 0,
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "api_error": "",
+  "stderr_tail": "ERROR: logging before google.Init: E1116 17:04:56.715588       1 main.go:783] Failed to redirect output for CLI: creating log file: opening log file: open /Users/kavyaagrawal/.gemini/antigravity-cli/log/cli-20261116_170456.log: operation not permitted\nI1116 17:04:56.716103       1 resolver.go:85] Model ID gemini-3.8-flash-high not in local config, defaulting to CCPA\nI1116 17:04:56.716109       1 resolver.go:111] Model resolved via default\nI1116 17:04:56.716187      66 server.go:2531] Starting language server process with pid 56354\nE1116 17:04:56.716296      66 server.go:2445] Failed to initialize crash reporter: failed to setup crash output: open /Users/kavyaagrawal/.gemini/antigravity-cli/crashes/crash_56354_d0dc42cf-142e-4448-afde-2ac7ce595092.log: operation not permitted\nI1116 17:04:56.716303      66 workflow_python.go:21] run_workflow Python: interpreter \"\", embedded true\nI1116 17:04:56.716406      66 server.go:2590] Language server version: 1.5.8\nI1116 17:04:56.716410      66 server.go:1259] Language server will attempt to listen on host localhost\nE1116 17:04:56.716693      66 main.go:965] CLI failed to start - listen tcp 127.0.0.1:0: bind: operation not permitted\n(1) attached stack trace\n  -- stack trace:\n  | google3/third_party/jetski/language_server/language_server.setUpServerPortListeners\n  | \tthird_party/jetski/language_server/server.go:1271\n  | google3/third_party/jetski/language_server/language_server.CreateLanguageServerAndServe\n  | \tthird_party/jetski/language_server/server.go:2602\n  | main.main.func4\n  | \tthird_party/jetski/cmd/cli/main.go:963\n  | runtime.goexit\n  | \tthird_party/go/gc/src/runtime/asm_arm64.s:1034\nWraps: (2) listen tcp 127.0.0.1:0\nWraps: (3) bind\nWraps: (4) operation not permitted\nError types: (1) *withstack.withStack (2) *net.OpError (3) *os.SyscallError (4) syscall.Errno\nFailed to start: listen tcp 127.0.0.1:0: bind: operation not permitted\n",
+  "stdout_tail": "",
+  "provider": "antigravity",
+  "model": "gemini-3.8-flash-high",
+  "fallback_attempts": [
+    {
+      "provider": "claude",
+      "ok": false,
+      "reason": "Not logged in \u00b7 Please run /login"
+    },
+    {
+      "provider": "codex",
+      "ok": false,
+      "reason": "WARNING: proceeding, even though we could not create PATH aliases: Operation not permitted (os error 1)\n2026-11-16T11:34:56.646003Z  WARN codex_state::runtime: failed to open memories db at /Users/kavyaagrawal/.codex/memories_1.sqlite: failed to open memories DB at /Users/kavyaagrawal/.codex/memorie"
+    },
+    {
+      "provider": "antigravity",
+      "ok": false,
+      "reason": "ERROR: logging before google.Init: E1116 17:04:56.715588       1 main.go:783] Failed to redirect output for CLI: creating log file: opening log file: open /Users/kavyaagrawal/.gemini/antigravity-cli/log/cli-20261116_170456.log: operation not permitted\nI1116 17:04:56.716103       1 resolver.go:85] Mo"
+    }
+  ]
+}

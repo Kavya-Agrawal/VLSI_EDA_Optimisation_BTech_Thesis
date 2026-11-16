@@ -13,20 +13,21 @@ from typing import Any
 
 from .agents import coder as coder_mod
 from .agents.evaluator_agent import feedback as make_feedback
-from .agents.planner import plan
+from .agents.planner import hypothesis_from_text, plan
 from .budget import Budget
 from .config import PATHS, Knobs, designs_for_tier
 from .eval.baseline import load_baseline
 from .eval.build import build_candidate
 from .eval.candidate import evaluate
 from .eval.score import Verdict
-from .knowledge.ledger import (append_ledger, append_section, champion_record, ensure_knowledge_files, load_lineage,
-                               next_iteration_number, promote_champion, record_iteration)
+from .knowledge.ledger import (append_ledger, append_section, backfill_experience, champion_record,
+                               ensure_knowledge_files, load_lineage, next_iteration_number, patch_stats,
+                               promote_champion, record_experience, record_iteration)
 from .util import log, now_iso, read_json, write_json, write_text
 
 
 class AgentUnavailable(RuntimeError):
-    """A required Claude call failed before producing usable work."""
+    """Every configured provider failed before producing usable work."""
 
 
 def _require_agent(role: str, raw: dict[str, Any]) -> None:
@@ -39,6 +40,10 @@ def _require_agent(role: str, raw: dict[str, Any]) -> None:
 def latest_feedback() -> str:
     d = load_lineage()
     for it in reversed(d.get("iterations", [])):
+        # A no-code/agent-error run can have a mechanically generated feedback file, but it contains no evidence
+        # about an algorithm. Do not let it displace the latest valid experiment in planner context.
+        if it.get("status") not in ("accepted", "rejected") or not it.get("files_changed"):
+            continue
         p = Path(it.get("results_dir", "")) / "feedback.md"
         if p.exists():
             return p.read_text()
@@ -68,25 +73,38 @@ def run_iteration(iteration: int, tier: str, designs: list[str], knobs: Knobs, b
     t0 = time.time()
     log_dir = PATHS.agent_data / f"{iteration:04d}"
     log_dir.mkdir(parents=True, exist_ok=True)
-    timeline: list[dict[str, Any]] = []
+    timeline: list[dict[str, Any]] = list(read_json(log_dir / "timeline.json", []) or [])
     def mark(step: str, **kw: Any) -> None:
         timeline.append({"step": step, "t": round(time.time() - t0, 1), "ts": now_iso(), **kw})
         write_json(log_dir / "timeline.json", timeline)
 
-    # 1. plan
-    h, raw = plan(iteration, knobs, feedback=latest_feedback(), tier=tier, designs=designs, budget_summary=budget.summary(),
-                  log_dir=log_dir, forced_cluster=forced_cluster)
-    budget.charge(role="planner", iteration=iteration, result=raw)
-    _require_agent("planner", raw)
-    mark("planned", cluster=h.cluster, title=h.title)
+    # 1. plan (reuse durable output if the parent terminal/IDE died after this stage)
+    planner_raw = read_json(log_dir / "planner.raw.json", {}) or {}
+    planned = any(item.get("step") == "planned" for item in timeline)
+    if planned and str(planner_raw.get("result") or "").strip() and not planner_raw.get("is_error"):
+        h = hypothesis_from_text(str(planner_raw["result"]), forced_cluster=forced_cluster)
+        raw = planner_raw
+        log(f"planner: recovered iteration {iteration} checkpoint ({h.cluster})")
+    else:
+        h, raw = plan(iteration, knobs, feedback=latest_feedback(), tier=tier, designs=designs,
+                      budget_summary=budget.summary(), log_dir=log_dir, forced_cluster=forced_cluster)
+        if not budget.charged(role="planner", iteration=iteration):
+            budget.charge(role="planner", iteration=iteration, result=raw)
+        _require_agent("planner", raw)
+        mark("planned", cluster=h.cluster, title=h.title)
     tag = f"{iteration:04d}_{h.cluster}"
 
-    # 2. code
-    remaining = budget.remaining_usd()
-    cr = coder_mod.code(iteration, h, knobs, log_dir=log_dir, budget_cap_usd=(remaining if remaining else None))
-    budget.charge(role=f"coder:{h.cluster}", iteration=iteration, result=cr.raw)
+    # 2. code. A completed candidate is a checkpoint: never delete/recreate it after an outer-process crash.
+    cr = coder_mod.load_checkpoint(iteration, h, log_dir=log_dir)
+    resumed_coder = cr is not None
+    if cr is None:
+        remaining = budget.remaining_usd()
+        cr = coder_mod.code(iteration, h, knobs, log_dir=log_dir, budget_cap_usd=(remaining if remaining else None))
+    if not budget.charged(role=f"coder:{h.cluster}", iteration=iteration):
+        budget.charge(role=f"coder:{h.cluster}", iteration=iteration, result=cr.raw)
     _require_agent(f"coder:{h.cluster}", cr.raw)
-    mark("coded", files=cr.files_changed)
+    if not any(item.get("step") == "coded" for item in timeline):
+        mark("coded", files=cr.files_changed, recovered=resumed_coder)
     if not cr.patch.strip():
         verdict = Verdict(False, 0.0, ["coder produced no change"])
         entry = _finish(iteration, tag, h, cr, None, verdict, log_dir, t0, "no_change")
@@ -132,18 +150,27 @@ def run_iteration(iteration: int, tier: str, designs: list[str], knobs: Knobs, b
         append_section("dead_ends.md", f"iteration {iteration} ({h.cluster})", str(fb_js["dead_end"]))
     if h.rule_updates.strip():
         append_section("rulebase.md", f"proposed by planner, iteration {iteration}", h.rule_updates)
-    return _finish(iteration, tag, h, cr, ce, ce.vs_champion, log_dir, t0, "accepted" if ce.accepted else "rejected")
+    return _finish(iteration, tag, h, cr, ce, ce.vs_champion, log_dir, t0, "accepted" if ce.accepted else "rejected",
+                   evaluator=fb_js)
 
 
-def _finish(iteration: int, tag: str, h, cr, ce, verdict: Verdict, log_dir: Path, t0: float, status: str) -> dict[str, Any]:
+def _finish(iteration: int, tag: str, h, cr, ce, verdict: Verdict, log_dir: Path, t0: float, status: str,
+            *, evaluator: dict[str, Any] | None = None) -> dict[str, Any]:
     champ = champion_record()
     entry = {"iteration": iteration, "tag": tag, "status": status, "cluster": h.cluster, "title": h.title, "hypothesis": h.hypothesis,
-             "files_changed": cr.files_changed if cr else [], "accepted": bool(ce and ce.accepted), "score_vs_champion": verdict.score,
+             "planned_files": h.files, "evidence_iterations": getattr(h, "evidence_iterations", []),
+             "files_changed": cr.files_changed if cr else [], "patch_stats": patch_stats(cr.patch if cr else ""),
+             "accepted": bool(ce and ce.accepted), "score_vs_champion": verdict.score,
              "score_vs_baseline": (ce.vs_baseline.score if ce else None), "reasons": verdict.reasons,
              "per_design": (ce.vs_champion.per_design if ce else {}), "champion_after": champ.get("iteration", 0),
              "candidate_dir": str(cr.rsz_dir.parent) if cr else None, "results_dir": str(PATHS.results / tag),
+             "feedback_path": str(PATHS.results / tag / "feedback.md"), "evaluator": evaluator or {},
+             "agents": {"planner": (read_json(log_dir / "planner.raw.json", {}) or {}).get("provider"),
+                        "coder": (cr.raw if cr else {}).get("provider"),
+                        "evaluator": (read_json(log_dir / "evaluator.raw.json", {}) or {}).get("provider")},
              "agent_data_dir": str(log_dir), "seconds": round(time.time() - t0), "when": now_iso()}
     record_iteration(entry)
+    record_experience(entry)
     append_ledger(iteration, h.cluster, h.title or h.hypothesis, status, verdict.score, "; ".join(verdict.reasons)[:120])
     write_json(log_dir / "iteration.json", entry)
     log(f"iteration {iteration} done: {status} score={verdict.score:+.5f} in {entry['seconds']}s")
@@ -153,6 +180,7 @@ def _finish(iteration: int, tag: str, h, cr, ce, verdict: Verdict, log_dir: Path
 def evolve(*, iterations: int, budget_usd: float, max_tokens: int, tier: str, replicates: int, resume: bool,
            knobs: Knobs, cluster: str | None = None) -> int:
     ensure_knowledge_files()
+    backfill_experience()
     designs = _preflight(tier, knobs)
     budget = Budget.load(PATHS.agent_data / "budget.json", budget_usd=budget_usd, max_tokens=max_tokens, reset=not resume and next_iteration_number() == 1)
     start = next_iteration_number()
@@ -175,7 +203,9 @@ def evolve(*, iterations: int, budget_usd: float, max_tokens: int, tier: str, re
             break
         except Exception as e:  # keep the loop alive; the failure is recorded
             log(f"iteration {i} crashed: {type(e).__name__}: {e}")
-            record_iteration({"iteration": i, "status": "crashed", "error": f"{type(e).__name__}: {e}", "when": now_iso()})
+            crash = {"iteration": i, "status": "crashed", "error": f"{type(e).__name__}: {e}", "when": now_iso()}
+            record_iteration(crash)
+            record_experience(crash)
         done += 1
         log(f"budget: {budget.summary()}")
     from .report.summary import print_status

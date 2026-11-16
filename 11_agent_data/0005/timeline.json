@@ -1,0 +1,40 @@
+[
+  {
+    "step": "planned",
+    "t": 94.8,
+    "ts": "2026-11-16T11:50:09Z",
+    "cluster": "sizing",
+    "title": "Recover suppressed sizing moves with cost-ranked feasible replacement selection"
+  },
+  {
+    "step": "coded",
+    "t": 214.9,
+    "ts": "2026-11-16T11:52:10Z",
+    "files": [
+      "src/move/SizeUpGenerator.cc",
+      "src/move/SizeUpGenerator.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 228.8,
+    "ts": "2026-11-16T11:52:23Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 14
+  },
+  {
+    "step": "evaluated",
+    "t": 365.7,
+    "ts": "2026-11-16T11:54:40Z",
+    "accepted": false,
+    "score": 3.525860723530096e-18
+  },
+  {
+    "step": "feedback",
+    "t": 442.8,
+    "ts": "2026-11-16T11:55:57Z"
+  }
+]

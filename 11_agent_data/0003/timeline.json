@@ -1,0 +1,39 @@
+[
+  {
+    "step": "planned",
+    "t": 624.1,
+    "ts": "2026-11-13T11:03:19Z",
+    "cluster": "sizing",
+    "title": "Delay-gain driven multi-candidate gate sizing to eliminate critical-path slew degradation"
+  },
+  {
+    "step": "coded",
+    "t": 0.4,
+    "ts": "2026-11-16T11:34:55Z",
+    "files": [
+      "src/move/SizeUpGenerator.cc",
+      "src/move/SizeUpGenerator.hh"
+    ],
+    "recovered": true
+  },
+  {
+    "step": "built",
+    "t": 236.6,
+    "ts": "2026-11-16T11:39:37Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 105
+  },
+  {
+    "step": "evaluated",
+    "t": 250.8,
+    "ts": "2026-11-16T11:39:52Z",
+    "accepted": false,
+    "score": 0.0
+  },
+  {
+    "step": "feedback",
+    "t": 313.4,
+    "ts": "2026-11-16T11:40:54Z"
+  }
+]

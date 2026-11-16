@@ -1,0 +1,52 @@
+INFO: Invocation ID: 28e53fa5-eba1-4348-bb80-c6f21487f25e
+Computing main repo mapping: 
+Loading: 
+Loading: 0 packages loaded
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+
+Analyzing: 6 targets (3 packages loaded, 23 targets configured)
+
+INFO: Analyzed 6 targets (10 packages loaded, 528 targets configured).
+[11,069 / 11,226] Compiling src/rsz/test/cpp/TestBufferRemoval.cc; 0s disk-cache, remote-cache ... (4 actions, 0 running)
+[11,207 / 11,226] Compiling src/rsz/test/cpp/TestInsertBuffer.cpp; 0s disk-cache, remote-cache, darwin-sandbox ... (7 actions, 4 running)
+[11,207 / 11,226] Compiling src/rsz/test/cpp/TestInsertBuffer.cpp; 1s disk-cache, remote-cache, darwin-sandbox ... (7 actions running)
+[11,208 / 11,226] Compiling src/rsz/test/cpp/TestInsertBuffer.cpp; 2s disk-cache, remote-cache, darwin-sandbox ... (7 actions, 6 running)
+[11,208 / 11,226] Compiling src/rsz/test/cpp/TestInsertBuffer.cpp; 3s disk-cache, remote-cache, darwin-sandbox ... (7 actions, 6 running)
+[11,210 / 11,227] 1 / 6 tests; Compiling src/rsz/test/cpp/TestInsertBuffer.cpp; 5s disk-cache, remote-cache, darwin-sandbox ... (6 actions running)
+[11,212 / 11,227] 1 / 6 tests; Compiling src/rsz/test/cpp/TestInsertBuffer.cpp; 8s disk-cache, remote-cache, darwin-sandbox ... (6 actions, 5 running)
+ERROR: /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/external/OpenROAD/src/rsz/test/BUILD:570:8: Compiling src/rsz/test/cpp/TestResizer.cc failed: (Exit 1): clang++ failed: error executing CppCompile command (from cc_test rule target //src/rsz/test:TestResizer) external/llvm++llvm_toolchain_minimal+llvm-toolchain-minimal-darwin-arm64/bin/clang++ -target aarch64-apple-darwin -no-canonical-prefixes -Wno-builtin-macro-redefined '-D__DATE__="redacted"' ... (remaining 1200 arguments skipped)
+
+Use --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging
+src/rsz/test/cpp/TestResizer.cc:103:26: error: no member named 'upsizeCell' in 'rsz::SizeUpGenerator'; did you mean 'upsizeCells'?
+  103 |   using SizeUpGenerator::upsizeCell;
+      |         ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+      |                          upsizeCells
+src/rsz/src/move/SizeUpGenerator.hh:69:34: note: 'upsizeCells' declared here
+   69 |   std::vector<sta::LibertyCell*> upsizeCells(sta::LibertyPort* in_port,
+      |                                  ^
+src/rsz/test/cpp/TestResizer.cc:1183:19: error: no member named 'upsizeCell' in 'rsz::TestSizeUpGenerator'
+ 1183 |       = generator.upsizeCell(in_port,
+      |         ~~~~~~~~~ ^
+src/rsz/test/cpp/TestResizer.cc:1195:19: error: no member named 'upsizeCell' in 'rsz::TestSizeUpGenerator'
+ 1195 |       = generator.upsizeCell(in_port,
+      |         ~~~~~~~~~ ^
+src/rsz/test/cpp/TestResizer.cc:1293:45: error: no member named 'upsizeCell' in 'rsz::TestSizeUpGenerator'
+ 1293 |   sta::LibertyCell* replacement = generator.upsizeCell(in_port,
+      |                                   ~~~~~~~~~ ^
+src/rsz/test/cpp/TestResizer.cc:1307:23: error: no member named 'upsizeCell' in 'rsz::TestSizeUpGenerator'
+ 1307 |   EXPECT_EQ(generator.upsizeCell(in_port,
+      |             ~~~~~~~~~ ^
+5 errors generated.
+Use --verbose_failures to see the command lines of failed build steps.
+INFO: Elapsed time: 12.216s, Critical Path: 9.41s
+INFO: 14 processes: 138 action cache hit, 4 disk cache hit, 7 internal, 3 darwin-sandbox.
+ERROR: Build did NOT complete successfully
+//src/rsz/test:TestSkewBudget                                   (cached) PASSED in 0.8s
+//src/rsz/test:TestBufRem1                                            NO STATUS
+//src/rsz/test:TestInsertBuffer                                       NO STATUS
+//src/rsz/test:TestNestedJournal                                      NO STATUS
+//src/rsz/test:TestPreChecks                                          NO STATUS
+//src/rsz/test:TestResizer                                      FAILED TO BUILD
+
+Executed 0 out of 6 tests: 1 test passes, 1 fails to build, and 4 were skipped.

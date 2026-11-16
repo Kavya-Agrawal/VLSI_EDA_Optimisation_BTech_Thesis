@@ -5,7 +5,9 @@
 10_agent_knowledge/rulebase.md     self-evolving rules the planner maintains
 10_agent_knowledge/lessons.md      free-form lessons appended by the planner
 10_agent_knowledge/hypotheses_ledger.md   one line per hypothesis with its outcome
-10_agent_knowledge/dead_ends.md    ideas that failed and why (so they are not retried blindly)"""
+10_agent_knowledge/dead_ends.md    ideas that failed and why (so they are not retried blindly)
+10_agent_knowledge/iterations/     one structured, durable record per completed iteration
+10_agent_knowledge/EXPERIENCE.md   regenerated agent-friendly index over all iteration records"""
 from __future__ import annotations
 
 import shutil
@@ -42,12 +44,20 @@ Rules marked [fixed] are safety constraints and cannot be removed by agents.
 LESSONS_SEED = "# Lessons\n\nAppended by the planner after each iteration. Newest at the bottom.\n"
 LEDGER_SEED = "# Hypotheses ledger\n\n| iter | cluster | hypothesis (short) | verdict | score vs champion | note |\n|---|---|---|---|---|---|\n"
 DEAD_ENDS_SEED = "# Dead ends\n\nIdeas that were tried and failed, with the reason. Check before proposing something similar.\n"
+EXPERIENCE_SEED = """# Experiment experience index
+
+This is a derived, agent-friendly index. The durable source records are `iterations/<NNNN>.json`; raw evidence
+remains in `02_openroad_evolved`, `06_evolved_results`, and `11_agent_data`. Regenerating this file never deletes
+an iteration record.
+"""
 
 
 def ensure_knowledge_files() -> None:
     PATHS.knowledge.mkdir(parents=True, exist_ok=True)
+    (PATHS.knowledge / "iterations").mkdir(exist_ok=True)
     for name, seed in (("rulebase.md", RULEBASE_SEED), ("lessons.md", LESSONS_SEED),
-                       ("hypotheses_ledger.md", LEDGER_SEED), ("dead_ends.md", DEAD_ENDS_SEED)):
+                       ("hypotheses_ledger.md", LEDGER_SEED), ("dead_ends.md", DEAD_ENDS_SEED),
+                       ("EXPERIENCE.md", EXPERIENCE_SEED)):
         p = PATHS.knowledge / name
         if not p.exists():
             write_text(p, seed)
@@ -71,6 +81,147 @@ def append_section(filename: str, title: str, body: str) -> None:
     p = PATHS.knowledge / filename
     with p.open("a") as f:
         f.write(f"\n## {title}\n\n{body.strip()}\n")
+
+
+def patch_stats(patch: str) -> dict[str, Any]:
+    """Compact source-change description suitable for lineage and planner memory."""
+    files: list[str] = []
+    added = deleted = 0
+    for line in patch.splitlines():
+        if line.startswith("diff --git "):
+            parts = line.split()
+            if len(parts) >= 4:
+                name = parts[3]
+                if name.startswith("b/"):
+                    name = name[2:]
+                files.append(name)
+        elif line.startswith("+") and not line.startswith("+++"):
+            added += 1
+        elif line.startswith("-") and not line.startswith("---"):
+            deleted += 1
+    return {"files": sorted(set(files)), "files_count": len(set(files)), "lines_added": added, "lines_deleted": deleted}
+
+
+def _valid_experiment(record: dict[str, Any]) -> bool:
+    return record.get("status") in ("accepted", "rejected") and bool(record.get("files_changed") or record.get("patch_stats", {}).get("files"))
+
+
+def _design_line(name: str, values: dict[str, Any]) -> str:
+    def num(key: str) -> float:
+        return float(values.get(key) or 0)
+    return (f"{name}: score {num('score'):+.5f}; "
+            f"WNS {num('wns_ref'):+.4f}->{num('wns_cand'):+.4f} ns (d {num('d_wns_ns'):+.4f}); "
+            f"TNS {num('tns_ref'):+.3f}->{num('tns_cand'):+.3f} ns (d {num('d_tns_ns'):+.3f})")
+
+
+def _experience_card(record: dict[str, Any], *, detailed: bool = True) -> str:
+    iteration = int(record.get("iteration", 0))
+    score = float(record.get("score_vs_champion") or 0)
+    valid = _valid_experiment(record)
+    lines = [f"## Iteration {iteration}: {record.get('status', 'unknown')} · {record.get('cluster', 'unassigned')}",
+             f"- **Evidence status:** {'valid algorithm experiment' if valid else 'infrastructure/no-code record; do not infer heuristic quality'}",
+             f"- **Hypothesis:** {str(record.get('title') or record.get('hypothesis') or record.get('error') or '')[:600]}",
+             f"- **Score:** vs champion {score:+.5f}; vs baseline {float(record.get('score_vs_baseline') or 0):+.5f}",
+             f"- **Files planned:** {', '.join(record.get('planned_files') or []) or '(not recorded)'}",
+             f"- **Files changed:** {', '.join(record.get('files_changed') or record.get('patch_stats', {}).get('files', [])) or '(none)'}"]
+    stats = record.get("patch_stats") or {}
+    if stats:
+        lines.append(f"- **Patch scope:** {stats.get('files_count', 0)} files, +{stats.get('lines_added', 0)}/-{stats.get('lines_deleted', 0)} lines")
+    if record.get("reasons"):
+        lines.append(f"- **Verdict reasons:** {'; '.join(str(x) for x in record['reasons'])}")
+    if detailed:
+        for name, values in (record.get("per_design") or {}).items():
+            lines.append(f"- **{_design_line(name, values)}**")
+        evaluator = record.get("evaluator") or {}
+        for key, label in (("dominant_cause", "Dominant cause"), ("lesson", "Lesson"), ("dead_end", "Dead end"),
+                           ("recommended_cluster", "Recommended next cluster")):
+            if evaluator.get(key):
+                lines.append(f"- **{label}:** {evaluator[key]}")
+        for key, label in (("good_changes", "Good changes"), ("bad_changes", "Bad changes"),
+                           ("files_to_revisit", "Files to revisit"), ("files_to_avoid", "Files to avoid")):
+            if evaluator.get(key):
+                value = evaluator[key]
+                lines.append(f"- **{label}:** {', '.join(map(str, value)) if isinstance(value, list) else value}")
+    return "\n".join(lines)
+
+
+def load_experience() -> list[dict[str, Any]]:
+    ensure_knowledge_files()
+    records = [read_json(path, {}) or {} for path in sorted((PATHS.knowledge / "iterations").glob("*.json"))]
+    return sorted((record for record in records if record.get("iteration") is not None), key=lambda record: int(record["iteration"]))
+
+
+def render_experience_index() -> None:
+    records = load_experience()
+    body = [EXPERIENCE_SEED.rstrip(), "", f"Recorded iterations: **{len(records)}** · valid algorithm experiments: **{sum(_valid_experiment(r) for r in records)}**", ""]
+    body.extend(_experience_card(record) + "\n" for record in records)
+    write_text(PATHS.knowledge / "EXPERIENCE.md", "\n".join(body).rstrip() + "\n")
+
+
+def record_experience(entry: dict[str, Any]) -> None:
+    """Upsert one iteration's durable record without modifying any other iteration."""
+    ensure_knowledge_files()
+    record = dict(entry)
+    record["schema_version"] = 1
+    record["valid_experiment"] = _valid_experiment(record)
+    write_json(PATHS.knowledge / "iterations" / f"{int(record['iteration']):04d}.json", record)
+    render_experience_index()
+
+
+def backfill_experience() -> None:
+    """Add missing durable records from lineage; existing richer records always win."""
+    ensure_knowledge_files()
+    changed = False
+    for entry in load_lineage().get("iterations", []):
+        path = PATHS.knowledge / "iterations" / f"{int(entry['iteration']):04d}.json"
+        if not path.exists():
+            record = dict(entry)
+            record["schema_version"] = 1
+            record["valid_experiment"] = _valid_experiment(record)
+            write_json(path, record)
+            changed = True
+    if changed or not (PATHS.knowledge / "EXPERIENCE.md").exists():
+        render_experience_index()
+
+
+def planner_experience_context(*, recent: int = 8) -> str:
+    """Compact all-history portfolio plus detailed recent evidence for the planning prompt."""
+    backfill_experience()
+    records = load_experience()
+    if not records:
+        return "No completed iterations yet."
+    valid = [record for record in records if _valid_experiment(record)]
+    accepted = [record for record in valid if record.get("status") == "accepted"]
+    out = ["# Durable cross-iteration memory",
+           f"All {len(records)} records remain on disk. {len(valid)} are valid code experiments; {len(accepted)} were accepted. "
+           "Records marked infrastructure/no-code are not evidence about heuristic quality.", "", "## Cluster portfolio"]
+    clusters = sorted({str(record.get("cluster")) for record in records if record.get("cluster")})
+    for cluster in clusters:
+        subset = [record for record in valid if record.get("cluster") == cluster]
+        wins = sum(record.get("status") == "accepted" for record in subset)
+        best = max((float(record.get("score_vs_champion") or 0) for record in subset), default=0)
+        out.append(f"- {cluster}: {len(subset)} valid experiments, {wins} accepted, best score {best:+.5f}")
+    out.extend(["", "## Complete compact history"])
+    for record in records:
+        flag = "valid" if _valid_experiment(record) else "infra/no-code"
+        out.append(f"- #{record.get('iteration')} [{flag}] {record.get('status')} {record.get('cluster', '')}: "
+                   f"score {float(record.get('score_vs_champion') or 0):+.5f}; files "
+                   f"{', '.join(record.get('files_changed') or []) or 'none'}; "
+                   f"{str(record.get('title') or record.get('error') or record.get('hypothesis') or '')[:180]}")
+    file_outcomes: dict[str, dict[str, float]] = {}
+    for record in valid:
+        for filename in record.get("files_changed") or []:
+            outcome = file_outcomes.setdefault(str(filename), {"tries": 0, "wins": 0, "best": -1e9})
+            outcome["tries"] += 1
+            outcome["wins"] += int(record.get("status") == "accepted")
+            outcome["best"] = max(outcome["best"], float(record.get("score_vs_champion") or 0))
+    if file_outcomes:
+        out.extend(["", "## File outcome history"])
+        for filename, outcome in sorted(file_outcomes.items(), key=lambda item: (item[1]["wins"], item[1]["best"]), reverse=True)[:30]:
+            out.append(f"- {filename}: {int(outcome['tries'])} tries, {int(outcome['wins'])} accepted, best {outcome['best']:+.5f}")
+    out.extend(["", f"## Detailed most recent {min(recent, len(records))} records"])
+    out.extend(_experience_card(record) + "\n" for record in records[-recent:])
+    return "\n".join(out)
 
 
 # ----------------------------------------------------------------------------- lineage / champion

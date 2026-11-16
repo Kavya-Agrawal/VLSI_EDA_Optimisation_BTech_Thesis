@@ -1,0 +1,39 @@
+[
+  {
+    "step": "planned",
+    "t": 97.1,
+    "ts": "2026-11-16T11:44:44Z",
+    "cluster": "sizing",
+    "title": "Isolate absolute delay-gain ranking with API-compatible single-candidate sizing"
+  },
+  {
+    "step": "coded",
+    "t": 159.9,
+    "ts": "2026-11-16T11:45:47Z",
+    "files": [
+      "src/move/SizeUpGenerator.cc",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 172.4,
+    "ts": "2026-11-16T11:46:00Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 12
+  },
+  {
+    "step": "evaluated",
+    "t": 179.9,
+    "ts": "2026-11-16T11:46:07Z",
+    "accepted": false,
+    "score": 0.0
+  },
+  {
+    "step": "feedback",
+    "t": 250.4,
+    "ts": "2026-11-16T11:47:18Z"
+  }
+]

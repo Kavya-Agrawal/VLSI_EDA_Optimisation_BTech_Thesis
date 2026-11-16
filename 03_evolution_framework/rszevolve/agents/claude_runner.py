@@ -211,7 +211,7 @@ def _run_codex(call: AgentCall) -> _Attempt:
 
 
 def _run_antigravity(call: AgentCall) -> _Attempt:
-    mode = "accept-edits" if _editable(call) else "plan"
+    mode = "accept-edits"
     actual_cmd = [PATHS.antigravity_bin, "--output-format", "json", "--model", _model_for(call, "antigravity"),
                   "--mode", mode, "--print-timeout", f"{max(1, call.timeout_s)}s",
                   "--dangerously-skip-permissions"]
@@ -239,6 +239,11 @@ def _run_antigravity(call: AgentCall) -> _Attempt:
 def _unavailable(attempt: _Attempt) -> bool:
     raw = attempt.raw
     if attempt.returncode in (126, 127, -9):
+        return True
+    # Some authenticated CLIs occasionally exit 0 without emitting a final agent message. There is no usable
+    # work to evaluate in that case, so continue to the next configured provider instead of aborting the run.
+    if raw.get("is_error") and not str(raw.get("result") or "").strip() \
+            and not str(raw.get("api_error") or "").strip():
         return True
     if raw.get("api_error_status") in (401, 403, 408, 409, 425, 429, 500, 502, 503, 504):
         return True

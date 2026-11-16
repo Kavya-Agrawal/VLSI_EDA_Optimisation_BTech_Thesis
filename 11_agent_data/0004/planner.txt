@@ -1,0 +1,71 @@
+## Observation
+
+Stock repair leaves substantial stressed-design violations:
+
+| Design | Post WNS (ns) | Post TNS (ns) | Relevant baseline structure |
+|---|---:|---:|---|
+| gcd | −0.1742 | −7.626 | Critical chain already contains many X4 cells; limited obvious sizing headroom |
+| aes | −0.1083 | −14.773 | X1 logic remains on critical paths, including `_20052_/ZN` and `_13242_/Z` |
+| ibex | −0.2994 | −416.273 | Deep data paths with X1 logic and shared buffered fanout |
+
+The raw Ibex report places the fanout-943 `_26153_/ZN` **before the launch register’s CK pin**. Its extreme slew is clock-path evidence, not proof of an undersized data driver. The exported slew units also need verification. Likewise, the summary’s `io_constrained` tags do not establish an IO limitation: inspected paths launch from registers.
+
+**Iteration 3** supplies an integration failure to avoid, but no timing evidence: compilation failed after removing `upsizeCell`. **Iterations 1 and 2** contain no code experiments and cannot support a heuristic conclusion. Only one record is marked valid, so the requirement to cite two valid experiments is not yet applicable.
+
+## Cluster choice and why
+
+**Choose `sizing`: isolate timing-gain ranking with the existing single-candidate API.**
+
+The evaluator recommends revisiting sizing. AES provides the clearest baseline opportunity; Ibex may benefit along its data cone. Expect less improvement in gcd because much of its critical chain is already strongly sized.
+
+This deliberately retries only the ranking component of iteration 3. The new reason is experimental isolation: that iteration combined ranking and candidate multiplicity, then failed before either could be measured. Preserve the champion API and candidate count so this experiment tests one decision.
+
+## Hypothesis (problem -> current heuristic -> new approach -> why WNS/TNS improves -> risks)
+
+**Problem:** Cost normalization may favor a smaller timing improvement on a violating path even when another eligible replacement offers greater delay reduction.
+
+**Current heuristic:** `SizeUpGenerator::upsizeCell` estimates stage delay as gate delay plus preceding-driver resistance times input capacitance. Among eligible replacements, it maximizes delay gain divided by a cost ratio: leakage when available, otherwise LEF or Liberty area.
+
+**New approach:** Select the single eligible replacement with the greatest positive, finite estimated stage delay gain. Retain the upstream capacitance penalty, both-edge drive-resistance checks, configured replacement restrictions, and existing max-cap check. Break equal-gain ties deterministically by lower cost, then library and cell name.
+
+**Why WNS/TNS improves:** Greater estimated delay reduction should advance critical data arrivals. On shared data cones, that improvement can benefit several violating endpoints. AES is the primary opportunity; stronger replacements are predicted only where the measured ranking actually differs.
+
+**Risks:** The upstream resistance approximation can underestimate slew and side-path damage. Larger replacements can increase area and placement pressure, or worsen hold timing. Pure gain ranking may also offer little additional headroom in gcd.
+
+## Implementation sketch (files/functions)
+
+1. Start from the **original champion**, not candidate 0003.
+2. In `src/move/SizeUpGenerator.cc`, change only the winner selection in `SizeUpGenerator::upsizeCell`: replace cost-normalized gain with absolute estimated gain. Keep cost available for tie-breaking.
+3. Preserve `upsizeCell`’s signature and visibility in `SizeUpGenerator.hh`. Leave `selectReplacement`, `generate`, and the single `SizeUpCandidate` transaction behavior intact.
+4. In `test/cpp/TestResizer.cc`, add a focused selection case where cost-normalized and absolute-gain rankings choose different eligible masters. Assert the maximum-gain choice and retain upstream-capacitance and drive-eligibility coverage.
+5. Use existing debug reporting to expose original/replacement master, estimated gain, and cost ratio for changed selections.
+
+Compile and execute all unit gates before benchmarking. All ten smoke scripts must reach repair successfully; missing `helpers.tcl` or initialization errors invalidate validation regardless of an `ok` label. Repair test resources only within the authorized candidate tree.
+
+## Success criteria (numbers to look for)
+
+- **Acceptance:** Mean evaluator score **≥ +0.00200** against champion, with every contract gate passing and identical replicate results.
+- **Timing targets:** AES and Ibex WNS improve by **≥ 0.010 ns** each; AES TNS magnitude falls **≥ 2%**, and Ibex **≥ 5%**. These are predictions, not measured results.
+- **Regression target:** gcd WNS loss **≤ 0.001 ns**, with no TNS regression.
+- **Mechanism:** At least one committed replacement differs from champion because of ranking. Matched endpoint reports should show lower data arrival and reduced delay around changed stages; inspect preceding-stage loading and downstream slew.
+- Classify the candidate’s five worst endpoints afresh. Compare clock and data portions separately, and verify slew units before interpreting absolute values.
+
+## Fallback if it fails
+
+If gates fail, retain the hypothesis as untested and resolve integration before drawing timing conclusions. If gates pass but rankings never differ, reject the proposed mechanism. If stronger selections worsen upstream delay, TNS, or placement, restore champion ranking and record the measured failure; a future sizing experiment should investigate slew-aware neighboring-stage estimates.
+
+```json
+{
+  "cluster": "sizing",
+  "title": "Isolate absolute delay-gain ranking with API-compatible single-candidate sizing",
+  "hypothesis": "Cost-normalized sizing can prefer a smaller timing improvement over a larger eligible delay reduction on violating data paths. Preserve the champion upsizeCell API and single-candidate generation, but select the replacement with maximum positive finite stage delay gain, retaining the preceding-driver input-capacitance penalty and existing eligibility checks. AES critical X1 logic provides the clearest opportunity, while Ibex may benefit within its data cone; its fanout-943 clock gate is not evidence for this mechanism. Iteration 3 never reached timing evaluation, so this retry isolates ranking from candidate multiplicity and avoids its incompatible API rename. Improved selections should reduce matched-endpoint data arrivals and WNS/TNS, subject to upstream loading, hold, area, DRV, and placement gates.",
+  "files": [
+    "src/move/SizeUpGenerator.cc",
+    "test/cpp/TestResizer.cc"
+  ],
+  "evidence_iterations": [3],
+  "success_criteria": "All gates pass; deterministic mean score >= +0.00200; target >= 0.010 ns WNS improvement on AES and Ibex, >= 2%/5% TNS magnitude reduction respectively, and <= 0.001 ns gcd WNS loss with no gcd TNS regression.",
+  "risk": "Absolute-gain ranking can increase upstream loading, area, placement pressure, and hold damage; the existing stage approximation may misrank these effects.",
+  "rule_updates": "Treat gate-failed candidates as timing-unverified, preserve helper API compatibility, and require smoke logs to demonstrate successful initialization and repair execution before timing interpretation."
+}
+```

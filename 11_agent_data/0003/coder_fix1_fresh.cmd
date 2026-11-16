@@ -1,0 +1,3 @@
+/Users/kavyaagrawal/.local/bin/agy --output-format json --model gemini-3.8-flash-high --mode accept-edits --print-timeout 3600s --dangerously-skip-permissions --add-dir '/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/09_agent_context' --add-dir '/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/01_openroad_original' '<prompt supplied via -p>'
+# provider=antigravity
+# cwd=/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0003_sizing/rsz
