@@ -1,0 +1,538 @@
+% ==============================================================================
+%  B.Tech Project Mid-Semester Report (Phase-I)
+%  Department of Electronics and Communication Engineering
+%  Indian Institute of Technology Guwahati
+%  Author: Kavya Kumar Agrawal (Roll No: a.kavya@iitg.ac.in)
+%  Title: Towards Automated Algorithmic Evolution of OpenROAD's Physical Timing Engine
+% ==============================================================================
+\documentclass[10pt, conference]{IEEEtran}
+
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage[hidelinks]{hyperref}
+\usetikzlibrary{arrows.meta, shapes.geometric, positioning, fit, backgrounds, calc, shadows}
+
+% ---- Code Listing Configuration ----
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+\lstset{
+  backgroundcolor=\color{backcolour},
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{blue}\bfseries,
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\scriptsize,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  keepspaces=true,
+  numbers=left,
+  numbersep=4pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=2,
+  frame=single,
+  rulecolor=\color{black!20},
+  aboveskip=4pt,
+  belowskip=4pt
+}
+
+% ---- Compact IEEE conference spacing ----
+\setlength{\textfloatsep}{5pt plus 1pt minus 1pt}
+\setlength{\floatsep}{5pt plus 1pt minus 1pt}
+\setlength{\intextsep}{5pt plus 1pt minus 1pt}
+\setlength{\dbltextfloatsep}{6pt plus 1pt minus 1pt}
+\setlength{\dblfloatsep}{5pt plus 1pt minus 1pt}
+
+% ==============================================================================
+\title{Evolutionary Optimization of Algorithms for OpenROAD's Physical Design Flow}
+
+\author{%
+  \IEEEauthorblockN{Kavya Kumar Agrawal}
+  \IEEEauthorblockA{B. Tech. Project Report\\
+  Supervisors: Chandan Karfa and Sukanta Bhattacharjee\\
+    Email: \texttt{a.kavya@iitg.ac.in}}
+}
+
+\begin{document}
+\maketitle
+
+% ==============================================================================
+\begin{abstract}
+LLM agents have recently shown that they can discover new heuristics and algorithms by directly rewriting the source code of various Electronic Design Automation (EDA) tools. Recent work like Self-Evolved ABC showed impressive quality-of-results (QoR) improvements in the ABC logic-synthesis tool. However, autonomous evolution of post-placement timing repair remains much less explored. In this B.Tech Project (BTP), I explore physical-synthesis code evolution by building an automated evolution framework targeted at the Resizer (\texttt{src/rsz}) inside OpenROAD, the open-source physical design tool. The Resizer is responsible for gate sizing, buffer insertion, and setup/hold timing repair after global and detailed placement.
+
+This work began with \texttt{OptMirror}, where I tried to evolve cell-mirroring decisions in detailed placement. Those experiments improved execution time, but produced little or no repeatable improvement in WNS or TNS. I then generated and evaluated approximately 3{,}500 isolated OpenROAD candidate patches and studied their timing and runtime effects. The repeated appearance of slow-slew, high-fanout, and weak-driver critical paths showed that the Resizer was a more direct target for timing-quality improvement. Based on this evidence, I built a multi-agent Resizer evolution framework with physical-safety gates, persistent experiment memory, critical-path feedback, and Graphify-assisted source navigation. A 943-fanout bottleneck in the Ibex core is presented as a representative case study.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Electronic Design Automation (EDA), Code Evolution, OpenROAD, Resizer, Static Timing Analysis, Multi-Agent Systems, Gate Sizing, Buffer Insertion.
+\end{IEEEkeywords}
+
+% ==============================================================================
+\section{Introduction}
+\label{sec:intro}
+
+The physical design flow of modern integrated circuits is one of the most computationally complex pipelines in computer science. Taking a register-transfer level (RTL) Verilog description all the way up to a manufacturing-ready GDSII mask layout involves global placement, detailed placement, clock tree synthesis (CTS), routing, and continuous timing and design-rule repair. Over decades of industrial and academic development, tools such as OpenROAD~\cite{openroad} have accumulated hundreds of thousands of lines of high-performance C++ code implementing mathematical heuristics.
+
+Even with this sophistication, these heuristics are designed and tuned by human experts who cannot foresee every corner of the combinatorial layout space since most of these problems are algorithmically hard. Recently, a new paradigm has emerged in automated software engineering: using Large Language Models (LLMs) as \emph{autonomous evolutionary agents that directly rewrite the core C++ algorithms of the EDA tools themselves}. A notable result in this direction is Self-Evolved ABC~\cite{selfevolvedabc}, where an LLM multi-agent loop modified the C++ source code of the ABC synthesis tool and reported average WNS improvements of about 8--9\% and an 8.3\% area-delay-product reduction.
+
+\subsection{The Untried Domain: Evolving Physical Design}
+
+While Self-Evolved ABC and related works~\cite{alphaevolve,satlution,vprevolve,evodrc} established that code can be feasibly evolved, most work has focused on logic synthesis, general algorithms, FPGA flows, or isolated physical-design tasks. \textbf{To my knowledge, no prior work has specifically attempted autonomous evolution of OpenROAD's post-placement Resizer algorithms with timing, placement, hold, electrical, and repeatability checks in one loop.}
+
+The Resizer module (\texttt{src/rsz}) in OpenROAD performs post-placement optimization: it sizes gates up or down, inserts buffer trees along high-capacitance interconnects, fixes setup or hold violations, and eliminates design-rule violations (DRVs) such as maximum slew and maximum capacitance limits. We are trying to improve the algorithmic efficiency and heuristics of \texttt{src/rsz}, leading to higher clock frequencies (less negative Worst Negative Slack, WNS), fewer global timing violations (lower Total Negative Slack, TNS), and reduced silicon area.
+
+However, moving from logic synthesis to physical design introduces newer challenges: \emph{the problem of verification and correctness}. In logic synthesis, Boolean logic is scale-invariant and discrete. In physical design, a code modification can produce a circuit that is logically identical to the previous one, but can be physically invalid (e.g., cells can overlap, wire slews can degrade, setup or hold margins can be violated, and detailed placement can be invalidated).
+
+\subsection{My work in BTP Phase-I}
+
+In this first phase of my B.Tech Project, I set out to apply the ideas of autonomous code evolution in physical-design EDA tools, specifically OpenROAD. The specific contributions I have made during this semester are:
+
+\begin{enumerate}
+  \item \textbf{OptMirror Exploration:} I first investigated automated evolution of detailed-placement cell mirroring. This phase yielded useful runtime improvements, but only minor or no consistent WNS/TNS gains, showing that faster physical optimization does not necessarily improve timing quality.
+  \item \textbf{Empirical Patch Study (3{,}500 Variants):} I generated 3{,}500 isolated OpenROAD policy patches and recorded their WNS, TNS, and runtime effects. The median patch degraded timing, but the positive tail reached a +1.26\% P99 WNS impact and a +2.26\% maximum, motivating a guided rather than random search.
+  \item \textbf{Correctness of the Physical Design flow changes:} I showed why single-layer checks like Combinational Equivalence Checking (CEC) fail in physical design, and I proposed the \emph{Physical Verification Correctness Contract (PVCC)}---a multi-domain check using geometric legality, electrical limits, and dual setup-hold timing margins.
+  \item \textbf{Timing-Path-Guided Search:} Instead of asking agents to edit arbitrary files, I feed the planner the worst OpenSTA paths and their tags (slow slew, high fanout, and deep logic). The planner then selects the relevant Resizer code cluster before proposing a localized change.
+  \item \textbf{Multi-Agent Resizer Evolution Architecture:} I built a multi-agent framework in the \texttt{pv\_resizer\_evolve} branch, using Graphify-assisted source navigation and bounded source dossiers for sizing, buffering, hold, setup, and DRV repair.
+  \item \textbf{Physical Bottleneck Discovery \& Phase-II Plan:} I diagnosed a critical bottleneck in the Ibex RISC-V core---a 943-fanout \texttt{AND2\_X1} net with a very large reported slew that the normal rebuffer move does not consider because its applicability threshold is below 20 fanouts---and developed a concrete plan to address it.
+\end{enumerate}
+
+% ==============================================================================
+\section{Background: Multi-Agent Evolution in Logic Synthesis (ABC)}
+\label{sec:abc_background}
+
+It is good to examine how automated code evolution succeeded in logic synthesis and where its assumptions break in physical synthesis.
+
+\subsection{Self-Evolved ABC}
+
+Self-Evolved ABC~\cite{selfevolvedabc} (Yu and Ren, DAC~'26) proposed the concept of autonomous C++ code rewriting for EDA. The architecture consists of a centralized Planning Agent and three domain-specific Coding Agents assigned to separate functional directories of the ABC repository:
+\begin{itemize}
+  \item \textbf{FlowTune Agent:} Modifies \texttt{src/opt/flowtune}, exploring optimization sequencing and rewrite iteration thresholds.
+  \item \textbf{AIG Synthesis Agent:} Modifies \texttt{src/base/abci}, evolving cut-based rewriting and refactoring routines on And-Inverter Graphs (AIGs).
+  \item \textbf{Tech-Mapping Agent:} Modifies \texttt{src/map/mapper}, optimizing standard-cell delay-oriented FPGA and ASIC lookup-table mapping.
+\end{itemize}
+
+During each cycle, the Planning Agent reviews the performance and formulates a strategy. The Coding Agents generate patch files, which are compiled with \texttt{gcc}. If compilation succeeds, the new ABC binary is evaluated on benchmark suites (ISCAS'85, ISCAS'89, EPFL) across an 87-node CPU cluster.
+
+\subsection{The Role of CEC as a Single-Point Oracle}
+
+The main reason of Self-Evolved ABC's correctness is \emph{Combinational Equivalence Checking} (CEC). In ABC, any transformation performed on a circuit netlist must preserve the exact input-output Boolean truth table:
+\begin{equation}
+  \forall \mathbf{x} \in \{0, 1\}^n, \quad F_{\text{orig}}(\mathbf{x}) = F_{\text{evolved}}(\mathbf{x})
+\end{equation}
+
+CEC constructs a ``miter'' circuit by XORing the corresponding primary outputs of the original and evolved netlists, feeding them into a satisfiability (SAT) solver. If the SAT solver proves the output is unachievable (UNSAT), the mutation is mathematically guaranteed to be functionally correct. 
+% CEC is:
+% \begin{enumerate}
+%   \item \textbf{Decidable and Sound:} It produces an absolute mathematical guarantee.
+%   \item \textbf{Self-Contained:} It depends only on the logic netlist, requiring no knowledge of technology files, physical coordinates, parasitics, or library timing tables.
+%   \item \textbf{Cheap:} Modern SAT and BDD sweeping algorithms verify moderate circuits in seconds.
+% \end{enumerate}
+
+Because CEC acts as a strong functional-correctness filter, the LLM coding agents in Self-Evolved ABC could make aggressive, speculative code mutations while rejecting functionally incorrect candidates.
+
+% ==============================================================================
+\section{From OptMirror and 3{,}500 Patches to the Resizer}
+\label{sec:difficulty}
+
+My first evolution target was \texttt{OptMirror}, which changes cell orientation during detailed placement to improve pin locations and wirelength. I invested substantial effort in generating and evaluating alternative mirroring policies. The useful result was mainly lower runtime; WNS and TNS changed only slightly or inconsistently. This negative result was important because it showed that optimizing how quickly a placement pass runs is different from improving the final timing quality.
+
+I therefore broadened the study to approximately 3{,}500 individually recorded candidate patches. Each patch was kept separate and evaluated through the same flow, recording whether it compiled and its effect on WNS, TNS, and runtime. Most candidates were neutral, regressive, or invalid, while only a small subset improved timing. Examining the failures was as useful as examining the winners: local code changes often moved a bottleneck instead of removing it, and a faster implementation frequently left timing unchanged.
+
+The critical-path reports gave the clearest direction. Across GCD, AES, and Ibex, the recurring problems were slow slew, weak drive strength, deep logic, and large fanout. The strongest example was an Ibex path containing an \texttt{AND2\_X1} driver with 943 sinks. These are problems directly controlled by gate sizing, buffering, cloning, and timing-repair strategy, all of which belong to OpenROAD's Resizer.
+
+This evidence motivated the transition from \texttt{OptMirror} to \texttt{src/rsz}. Unlike CEC-only logic evolution, a Resizer patch must also compile, preserve placement legality, avoid new electrical and hold violations, and produce repeatable WNS/TNS improvement. These observations led directly to the guarded Resizer evolution framework described in the next section.
+
+% ==============================================================================
+% FULL-WIDTH TIKZ ARCHITECTURE DIAGRAM
+% ==============================================================================
+\begin{figure*}[!t]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+  >=Stealth,
+  node distance=6mm and 8mm,
+  every node/.style={font=\sffamily\footnotesize},
+  stagebox/.style={draw=black!70, rounded corners=4pt, line width=0.8pt, inner sep=6pt, fill=white},
+  header/.style={font=\sffamily\bfseries\small, align=center, fill=black!8, rounded corners=2pt, inner sep=3pt, minimum width=38mm},
+  itembox/.style={draw=black!40, rounded corners=2pt, line width=0.5pt, fill=white, align=center, inner sep=3pt, minimum width=36mm},
+  subitem/.style={draw=black!30, rounded corners=2pt, fill=black!3, align=left, font=\sffamily\scriptsize, inner sep=3pt, text width=34mm},
+  flowarrow/.style={->, line width=1.2pt, draw=black!80},
+  feedbackarrow/.style={->, line width=1.1pt, draw=red!70!black, dashed},
+  guardarrow/.style={->, line width=1pt, draw=blue!70!black}
+]
+
+  % ==================== STAGE 1: CONTEXT & GRAPHIFY ====================
+  \node[header] (h1) {1. Knowledge \& Context};
+  
+  \node[itembox, below=3mm of h1] (c1_repo) {
+    \textbf{OpenROAD \texttt{src/rsz}}\\
+    \scriptsize Resizer + OpenSTA/OpenDB context
+  };
+  
+  \node[itembox, below=3mm of c1_repo] (c1_graphify) {
+    \textbf{Graphify Source Index}\\
+    \scriptsize 10,950 nodes $\cdot$ 22,828 edges
+  };
+  
+  \node[itembox, below=3mm of c1_graphify] (c1_dossiers) {
+    \textbf{Algorithm Dossiers}\\
+    \scriptsize Sizing $\cdot$ Buffering $\cdot$ Hold $\cdot$ DRV
+  };
+  
+  \node[itembox, below=3mm of c1_dossiers] (c1_kb) {
+    \textbf{Knowledge Base}\\
+    \scriptsize Past failures $\cdot$ Results $\cdot$ Champion
+  };
+  
+  \begin{scope}[on background layer]
+    \node[stagebox, fill=blue!3, fit=(h1)(c1_repo)(c1_kb)] (box1) {};
+  \end{scope}
+
+  % ==================== STAGE 2: MULTI-AGENT SYNTHESIS ====================
+  \node[header, right=14mm of h1] (h2) {2. Multi-Agent Synthesis};
+  
+  \node[itembox, below=3mm of h2, fill=yellow!15] (c2_planner) {
+    \textbf{Planning Agent}\\
+    \scriptsize Select cluster and state hypothesis
+  };
+  
+  \node[itembox, below=3mm of c2_planner] (c2_subagents) {
+    \textbf{Specialized Coding Agents}\\
+    \vspace{1mm}
+    \begin{tabular}{@{}l@{}}
+      \scriptsize $\bullet$ \textbf{Sizing Agent} (\texttt{move/SizeUpGenerator.cc})\\
+      \scriptsize $\bullet$ \textbf{Buffer Agent} (\texttt{move/BufferGenerator.cc})\\
+      \scriptsize $\bullet$ \textbf{Hold Agent} (\texttt{RepairHold.cc})\\
+      \scriptsize $\bullet$ \textbf{DRV Agent} (\texttt{RepairDesign.cc})
+    \end{tabular}
+  };
+  
+  \node[itembox, below=3mm of c2_subagents, fill=blue!10] (c2_patch) {
+    \textbf{Candidate C++ Patch ($\Delta P$)}\\
+    \scriptsize Localized source change
+  };
+  
+  \begin{scope}[on background layer]
+    \node[stagebox, fill=yellow!4, fit=(h2)(c2_planner)(c2_patch)] (box2) {};
+  \end{scope}
+
+  % ==================== STAGE 3: FAIL-CLOSED CONTRACT (PVCC) ====================
+  \node[header, right=14mm of h2] (h3) {3. Correctness Contract (PVCC)};
+  
+  \node[subitem, below=3mm of h3, fill=red!8] (pvcc_l1) {
+    \textbf{L1: Build Verification}\\
+    \tiny Bazel build of OpenROAD
+  };
+  
+  \node[subitem, below=2mm of pvcc_l1, fill=red!8] (pvcc_l2) {
+    \textbf{L2: Regression Test Suite}\\
+    \tiny Resizer unit tests $\cdot$ Tcl smoke tests
+  };
+  
+  \node[subitem, below=2mm of pvcc_l2, fill=red!8] (pvcc_l3) {
+    \textbf{L3: Physical Placement Gate}\\
+    \tiny OpenDP legalization $\cdot$ no violations
+  };
+  
+  \node[subitem, below=2mm of pvcc_l3, fill=red!8] (pvcc_l4) {
+    \textbf{L4: Electrical DRV Limits}\\
+    \tiny Slew $\leq S_{\max}$ $\cdot$ Cap $\leq C_{\max}$ $\cdot$ Fanout
+  };
+  
+  \node[subitem, below=2mm of pvcc_l4, fill=red!8] (pvcc_l5) {
+    \textbf{L5: Hold Slack Guard}\\
+    \tiny $\Delta \text{HoldWNS} \geq -\tau_h$ (No hold destruction)
+  };
+  
+  \node[subitem, below=2mm of pvcc_l5, fill=red!8] (pvcc_l6) {
+    \textbf{L6: Determinism Audit}\\
+    \tiny Repeat WNS/TNS evaluation
+  };
+  
+  \begin{scope}[on background layer]
+    \node[stagebox, fill=red!3, fit=(h3)(pvcc_l1)(pvcc_l6)] (box3) {};
+  \end{scope}
+
+  % ==================== STAGE 4: PHYSICAL EVALUATION & STA ====================
+  \node[header, right=14mm of h3] (h4) {4. Physical Evaluation (STA)};
+  
+  \node[itembox, below=3mm of h4] (c4_checkpoint) {
+    \textbf{Pre-Placed ODB Netlist}\\
+    \scriptsize Nangate45: GCD $\cdot$ AES $\cdot$ Ibex
+  };
+  
+  \node[itembox, below=3mm of c4_checkpoint, fill=green!15] (c4_sta_loop) {
+    \textbf{OpenSTA Timing Loop}\\
+    \scriptsize \texttt{estimate\_parasitics}\\
+    \scriptsize $\downarrow$\\
+    \scriptsize \texttt{repair\_timing} (Evolved Code)\\
+    \scriptsize $\downarrow$\\
+    \scriptsize \texttt{detailed\_placement} (OpenDP)
+  };
+  
+  \node[itembox, below=3mm of c4_sta_loop] (c4_metrics) {
+    \textbf{QoR Metric Extraction}\\
+    \scriptsize WNS $\cdot$ TNS $\cdot$ Hold $\cdot$ DRV $\cdot$ Area
+  };
+  
+  \node[itembox, below=3mm of c4_metrics, fill=gray!15] (c4_score) {
+    \textbf{Implemented Timing Score}\\
+    \scriptsize Accept only after all guards pass
+  };
+  
+  \begin{scope}[on background layer]
+    \node[stagebox, fill=green!3, fit=(h4)(c4_checkpoint)(c4_score)] (box4) {};
+  \end{scope}
+
+  % ==================== CONNECTIONS ====================
+  % Stage 1 -> Stage 2
+  \draw[flowarrow] (c1_dossiers) -- (c2_subagents);
+  \draw[flowarrow] (c1_kb.east) -- ++(4mm,0) |- (c2_planner.west);
+  
+  % Stage 2 -> Stage 3
+  \draw[flowarrow] (c2_patch.east) -- ++(4mm,0) |- (pvcc_l1.west);
+  
+  % Stage 3 -> Stage 4 (Pass)
+  \draw[guardarrow] (pvcc_l6.east) -- ++(4mm,0) |- node[pos=0.25, above, font=\sffamily\bfseries\tiny, color=blue!70!black] {Pass All 6 Layers} (c4_checkpoint.west);
+  
+  % Fail Closed Rejection
+  \draw[feedbackarrow] (box3.north) -- ++(0, 4mm) -| node[pos=0.15, above, font=\sffamily\tiny, color=red!70!black] {Fail Any Layer: Immediate Reject \& Log Signature} (c2_planner.north);
+
+  % STA Loop inside Stage 4
+  \draw[flowarrow] (c4_checkpoint) -- (c4_sta_loop);
+  \draw[flowarrow] (c4_sta_loop) -- (c4_metrics);
+  \draw[flowarrow] (c4_metrics) -- (c4_score);
+  
+  % Bottom Feedback Loop: TPGM Attribution & Champion Update
+  \draw[feedbackarrow] (c4_score.south) -- ++(0, -6mm) -| 
+    node[pos=0.2, below, font=\sffamily\bfseries\scriptsize, color=red!70!black] {
+      Feedback: Worst Paths, Bottleneck Tags, Rejection Reasons, and Champion Update
+    } (c1_kb.south);
+
+\end{tikzpicture}
+}% end resizebox
+\caption{The Resizer evolution loop. Source context and previous results guide a localized patch. Build and physical-safety checks reject invalid candidates before WNS/TNS scoring. Worst paths and rejection reasons are saved for the next iteration.}
+\label{fig:framework}
+\end{figure*}
+
+\subsection{The Physical Verification Correctness Contract (PVCC)}
+
+CEC alone cannot tell whether an evolved physical-design algorithm produced a usable layout. I therefore use PVCC as a practical, fail-closed sequence of checks. First, the candidate must build and pass the Resizer unit tests and Tcl smoke tests. It is then run on placed benchmark checkpoints. A candidate is rejected if legalization reports a placement violation, if it adds electrical DRVs, if hold WNS becomes worse than the allowed tolerance, if area grows by more than 10\%, or if repeated runs disagree. Only candidates that pass these checks are compared using setup WNS and TNS.
+
+This contract is intentionally simple: a good timing number is not accepted when the resulting layout is unsafe or cannot be reproduced. The check also records the reason for every rejection, so failed candidates become useful context for later planning instead of being silently discarded.
+
+% ==============================================================================
+\section{The Multi-Agent Resizer Evolution Architecture}
+\label{sec:architecture}
+
+The multi-agent evolution framework developed in the \texttt{pv\_resizer\_evolve} branch is illustrated in Figure~\ref{fig:framework}.
+
+\subsection{OpenROAD Resizer Context Engineering via Graphify}
+
+The Resizer is tightly connected to OpenSTA and OpenDB, so giving an agent a few isolated source files is not enough. I used the Graphify output as a navigation index and combined it with source-level dossiers. The recorded graph contains 10{,}950 nodes, 22{,}828 edges, and 368 communities. It is useful for finding connected files, but the agents still verify symbols against the source before editing. Five code clusters are supplied:
+\begin{enumerate}
+  \item \textbf{Sizing:} \texttt{move/SizeUpGenerator.cc}, \texttt{SizeDownFanoutGenerator.cc}, and related move generators.
+  \item \textbf{Buffering:} \texttt{move/BufferGenerator.cc}, \texttt{Rebuffer.cc}, cloning, and load-splitting moves.
+  \item \textbf{Hold repair:} \texttt{RepairHold.cc} and its supporting checks.
+  \item \textbf{Setup strategy:} \texttt{Optimizer.cc}, \texttt{RepairTargetCollector.cc}, \texttt{MoveCommitter.cc}, and setup policies.
+  \item \textbf{DRV repair:} \texttt{RepairDesign.cc}, \texttt{PreChecks.cc}, and \texttt{BufferedNet.cc}.
+\end{enumerate}
+This bounded context helps the agent understand which files work together and reduces unrelated changes.
+
+\subsection{Multi-Agent Hierarchy}
+
+The framework separates three responsibilities:
+\begin{itemize}
+  \item \textbf{Planning agent:} reads the accumulated ledger, earlier rejection reasons, and critical-path summaries; selects one code cluster; and writes a testable hypothesis.
+  \item \textbf{Coding agent:} receives that hypothesis and the relevant source dossier, then makes a localized C++ patch.
+  \item \textbf{Evaluation stage:} builds OpenROAD, runs tests and placed benchmarks, applies the PVCC guards, and records the result. An accepted candidate becomes the next champion; rejected and crashed attempts remain in the history.
+\end{itemize}
+
+% ==============================================================================
+\section{Timing-Path-Guided Mutation (TPGM)}
+\label{sec:tpgm}
+
+The 3{,}500-patch study showed that blind edits usually regress timing. The Resizer loop therefore reports the worst 20 setup paths after each evaluation. For every path it stores the endpoint, slack, stage count, maximum fanout, worst slew, and the cells on the path. Simple tags such as \texttt{high\_fanout}, \texttt{slow\_slew}, and \texttt{deep\_logic} make this information easier for the planner to use.
+
+The planner relates these observations to the source clusters. A high-fanout, slow-slew path suggests buffering, cloning, load splitting, or sizing; a deep path with moderate fanout suggests sizing or setup-target ordering. This is not a claim that a timing path uniquely identifies one correct code change. It is a way to start each iteration from measured evidence and to avoid editing unrelated code. The complete path summaries, hypothesis, patch, build result, and before/after metrics are kept for later iterations.
+
+\subsection{Balanced Multi-Objective Scoring Formulation}
+
+After all PVCC checks pass, the implemented score compares candidate $c$ with reference $r$:
+\begin{equation}
+  \mathcal{S}(c,r)=\frac{1}{2}\frac{\mathrm{WNS}_c-\mathrm{WNS}_r}{T}
+  +\frac{1}{2}\frac{\mathrm{TNS}_c-\mathrm{TNS}_r}{T|E|}.
+\end{equation}
+Here $T$ is the clock period and $|E|$ is the number of timing endpoints. The score is averaged across the benchmark designs. Normalization prevents a design with a long period or many endpoints from dominating the comparison. The current acceptance threshold is 0.002; area is handled separately by the 10\% guard.
+
+% ==============================================================================
+\section{Empirical Results and Case Studies}
+\label{sec:results}
+
+\subsection{Phase 1: Learning from 3{,}500 Candidate Patches}
+
+I created 3{,}500 isolated OpenROAD policy variants rather than repeatedly editing one working tree. Each candidate received a content hash, a standalone patch, the changed fields, its agent iteration and generation, and measured WNS, TNS, and runtime deltas. This made every experiment reproducible and allowed unsuccessful patches to remain useful evidence instead of being overwritten by the next run.
+
+\begin{table}[t]
+\centering
+\caption{Summary of the 3{,}500 recorded candidate patches}
+\label{tab:sweep_outcomes}
+\footnotesize
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Recorded quantity} & \textbf{Observed value} \\
+\midrule
+Candidate patches & 3{,}500 \\
+Candidates labelled accepted & 724 (20.7\%) \\
+WNS impact: mean / median & $-0.251\%$ / $-0.218\%$ \\
+WNS impact: P99 / maximum & $+1.260\%$ / $+2.260\%$ \\
+TNS impact: mean / median & $-0.775\%$ / $-0.652\%$ \\
+TNS impact: P99 / maximum & $+4.263\%$ / $+7.186\%$ \\
+Runtime delta: median & $+0.021$ s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The distribution in Table~\ref{tab:sweep_outcomes} was more informative than a single best candidate:
+\begin{itemize}
+  \item The mean and median WNS/TNS impacts were negative, so a random patch was more likely to degrade timing than improve it.
+  \item The positive tail proved that useful policies existed, but the difference between typical and best candidates made guided search necessary.
+  \item Runtime and timing quality were weakly coupled: a faster policy was not automatically a better physical-design policy.
+  \item Keeping each patch separate made it possible to identify repeated failure patterns and avoid retrying them in later generations.
+\end{itemize}
+
+\begin{table*}[t]
+\centering
+\caption{Critical-path findings that motivated the transition to the Resizer}
+\label{tab:attribution}
+\small
+\begin{tabular}{@{}p{0.18\textwidth}p{0.50\textwidth}p{0.22\textwidth}@{}}
+\toprule
+\textbf{Repeated observation} & \textbf{What the path reports showed} & \textbf{Resizer mechanism} \\
+\midrule
+Weak drivers & Critical-path gates remained at small drive strengths while their output transitions degraded. & Gate sizing / VT swap \\
+Large fanout & A small number of drivers supplied many sinks; the Ibex case reached 943 sinks. & Buffering / cloning / load splitting \\
+Slow slew & Poor transition quality appeared repeatedly on the worst paths and propagated into downstream delay. & DRV repair / stronger drivers \\
+Deep logic & Some paths accumulated delay over many stages, so repairing one local gate was often insufficient. & Target ordering / multi-stage moves \\
+Neutral runtime wins & Faster implementations frequently produced almost unchanged WNS and TNS. & QoR-directed acceptance \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Table~\ref{tab:attribution} summarizes the practical bridge from the patch sweep to the Resizer framework. The path reports did not merely say that timing was bad; they repeatedly identified the physical causes and the OpenROAD subsystem capable of changing them.
+
+\subsection{OptMirror: An Important Negative Result}
+
+Before focusing on the Resizer, I spent a substantial part of the project evolving \texttt{OptMirror}. Cell mirroring is attractive because it can shorten local connections by changing pin locations without changing the Boolean circuit. The evolved implementations reduced runtime in several runs, demonstrating that the code search could improve implementation efficiency.
+
+However, the timing benefit was minor, inconsistent, or absent: WNS and TNS generally remained close to the baseline. This established a useful boundary for the project. \texttt{OptMirror} is valuable for placement efficiency, but orientation changes alone had insufficient leverage over the dominant critical-path problems observed in these benchmarks. The work was therefore not discarded; it supplied the experimental infrastructure and the central lesson that acceptance must be based on end-to-end timing QoR, not runtime alone. That lesson directly shaped the Resizer framework's scoring and validation gates.
+
+\subsection{Stock OpenROAD Baseline \& Physical Bottleneck Case Study}
+
+To establish the benchmark foundation for the multi-agent framework in the \texttt{pv\_resizer\_evolve} branch, I evaluated stock OpenROAD on three standard Nangate45 designs under stressed timing constraints (clock period tightened by 20\%).
+
+\begin{table*}[t]
+\centering
+\caption{Stock OpenROAD Baseline Performance (Nangate45, Stressed SDC)}
+\label{tab:baseline}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Design} & \textbf{Period $T$} & \textbf{Pre-WNS} & \textbf{Post-WNS} & \textbf{Post-TNS} & \textbf{Hold WNS} \\
+\midrule
+GCD   & 0.225\,ns & $-0.175$\,ns & $-0.174$\,ns & $-7.63$\,ns  & $+0.087$\,ns \\
+AES   & 0.656\,ns & $-0.161$\,ns & $-0.108$\,ns & $-14.77$\,ns & $+0.102$\,ns \\
+Ibex  & 1.760\,ns & $-0.413$\,ns & $-0.299$\,ns & $-416.27$\,ns & $+0.045$\,ns \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+As shown in Table~\ref{tab:baseline}, while \texttt{repair\_timing} successfully improves WNS on AES (from $-0.161$\,ns to $-0.108$\,ns) and Ibex (from $-0.413$\,ns to $-0.299$\,ns), a severe timing residue remains.
+
+\paragraph{Case Study: The Ibex Fanout-943 Bottleneck}
+Analyzing the STA path dumps for the Ibex RISC-V processor revealed a repeated physical bottleneck that remained after the normal repair pass:
+\begin{itemize}
+  \item Endpoint: register-file bit 703 (\texttt{rf\_reg[703]/D})
+  \item Slack: $\mathbf{-0.2994}$\,\textbf{ns}
+  \item Logic depth: 35 stages
+  \item Driving gate: \texttt{AND2\_X1@\_26153\_/ZN}
+  \item Fanout: $\mathbf{943}$ \textbf{sinks}
+  \item Measured Driver Slew: $\mathbf{2.087 \times 10^9}$ (internal time units)
+\end{itemize}
+
+The same 943-fanout net appeared on all 60 stored worst paths and its reported slew was unchanged after repair. Source inspection gave a concrete explanation: \texttt{move/BufferGenerator.cc} and \texttt{move/RebufferMtGenerator.cc} define \texttt{kRebufferMaxFanout = 20}, and their applicability checks require the target fanout to be below this value. Therefore, the normal rebuffer move is not generated for this net. This does not prove that one particular buffer tree will solve the complete path, but it identifies a clear limitation that can be tested. The Phase-II direction is to add a timing-aware high-fanout move, evaluate it through real STA and legalization, and retain it only if WNS/TNS improve without violating the PVCC guards.
+
+% ==============================================================================
+\section{Plan for Next Semester (BTP Phase-II)}
+\label{sec:roadmap}
+
+Phase-I established the experimental pipeline and identified useful search directions, but it has not yet produced an accepted Resizer champion. In Phase-II, I will use the framework for longer, controlled searches and measure whether the proposed changes generalize. My semester plan is organized into four milestones:
+
+\paragraph{Milestone 1: Longer Reproducible Runs} Run the autonomous loop for more iterations, retain complete history across restarts, and audit crashes, rejected candidates, and provider fallbacks. The immediate goal is a reproducible accepted champion rather than a large number of unverified patches.
+
+\paragraph{Milestone 2: High-Fanout Timing Move} Test a new high-fanout move for the Ibex bottleneck by reusing proven Resizer buffering and gain calculations where possible. Compare alternatives such as load splitting, cloning, and a multi-level buffer tree. Any target improvement will be treated as a hypothesis until measured on the full benchmark tier.
+
+\paragraph{Milestone 3: Benchmark Expansion} After a candidate is stable on Nangate45 GCD, AES, and Ibex, expand evaluation to additional designs and technologies. This will test whether a gain is a general algorithmic improvement or only a benchmark-specific effect.
+
+\paragraph{Milestone 4: Selective OptMirror--Resizer Co-Evolution \& Publication} Revisit \texttt{OptMirror} as a supporting placement stage rather than the primary timing target. Cross-stage candidates will be retained only when their runtime benefit is accompanied by repeatable end-to-end WNS/TNS improvement. Package the reproducible framework as an open-source OpenROAD contribution and prepare a conference paper submission to an IEEE/ACM venue (DAC/ICCAD).
+
+% ==============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+In this mid-semester BTP report, I investigated autonomous evolution for OpenROAD physical-design algorithms. The initial \texttt{OptMirror} work improved runtime but produced little or no consistent WNS/TNS gain; this negative result redirected the project toward timing-critical code. A reproducible study of 3{,}500 isolated patches then showed that most unguided changes regress timing, while a small positive tail justifies continued search. Critical-path analysis connected the recurring slow-slew, weak-driver, deep-logic, and high-fanout failures to the Resizer, including the 943-fanout Ibex bottleneck. These findings motivated the guarded multi-agent Resizer framework, where every candidate must pass build, regression, placement, electrical, hold, and determinism checks before its timing result can be trusted.
+
+% ==============================================================================
+\bibliographystyle{IEEEtran}
+\begin{thebibliography}{10}
+\footnotesize
+\setlength{\itemsep}{0.5pt plus 0.5pt}
+
+\bibitem{selfevolvedabc}
+C.~Yu and H.~Ren,
+``Autonomous Evolution of EDA Tools: Multi-Agent Self-Evolved ABC,''
+\textit{arXiv preprint arXiv:2604.15082}, 2026.
+
+\bibitem{openroad}
+A.~B.~Kahng \textit{et al.},
+``OpenROAD: Toward a Self-Driving, Open-Source Digital Layout Implementation Tool Chain,''
+in \textit{Proc. GOMACTECH}, 2019, pp.~1--5.
+
+\bibitem{alphaevolve}
+Google DeepMind,
+``AlphaEvolve: A Gemini-Powered Coding Agent for Designing Advanced Algorithms,'' May 2025.
+
+\bibitem{satlution}
+C.~Yu, R.~Liang, C.-T.~Ho, and H.~Ren,
+``Autonomous Code Evolution Meets NP-Completeness,''
+\textit{arXiv preprint arXiv:2509.07367}, 2025.
+
+\bibitem{vprevolve}
+Q.~Wu, T.~Jafri, A.~Arora, and V.~A.~Chhabria,
+``VPR-Evolve: Multi-Agent Algorithm Evolution for FPGA Place and Route,''
+\textit{arXiv preprint arXiv:2607.24998}, 2026.
+
+\bibitem{evodrc}
+B.-Y.~Wu, C.-T.~Ho, H.~Yang, B.~Khailany, and V.~A.~Chhabria,
+``EvoDRC: Self-Evolving DRC Repair Framework for Advanced Technology Nodes,''
+\textit{arXiv preprint arXiv:2607.20019}, 2026.
+
+\bibitem{graphify}
+Graphify Labs,
+``Graphify: Call-Graph and Semantic Code Indexing for Large C++ Repositories,''
+\url{https://github.com/Graphify-Labs/graphify}, 2025.
+
+\end{thebibliography}
+
+\end{document}

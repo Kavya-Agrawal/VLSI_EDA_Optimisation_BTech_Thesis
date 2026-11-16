@@ -120,3 +120,26 @@ clean-results: ## delete evolved results, candidates, agent data (keeps baseline
 	git checkout -- 06_evolved_results/README.md 11_agent_data/README.md 2>/dev/null || true
 clean-build: ## remove copied binaries (Bazel cache is kept)
 	rm -rf build
+
+# ---- viva / professor demonstration commands -----------------------------------
+.PHONY: demo show-diff show-sweep show-tpgm show-bottleneck show-baseline show-contract
+demo: ## interactive menu for professor viva questions
+	@./demo_cli.py
+
+show-diff: ## show side-by-side C++ diff in SetupLegacyBase.cc (champion vs stock)
+	@./demo_cli.py diff
+
+show-sweep: ## show 3500 candidate sweep outcomes and QoR distribution
+	@./demo_cli.py sweep
+
+show-tpgm: ## show live walkthrough: STA critical paths -> code attribution (w_i)
+	@./demo_cli.py tpgm
+
+show-bottleneck: ## show Ibex fanout-943 physical bottleneck & BufferTree.cc barrier
+	@./demo_cli.py ibex
+
+show-baseline: ## show stock OpenROAD baseline metrics across Nangate45
+	@./demo_cli.py baseline
+
+show-contract: ## show 6-layer PVCC correctness contract and verification gates
+	@./demo_cli.py contract
