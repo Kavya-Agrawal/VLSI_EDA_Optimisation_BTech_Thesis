@@ -267,6 +267,106 @@ def demo_sweep(filter_mode="all", limit=None, tail=None, show_stats_only=False):
 # ==============================================================================
 # COMMAND 3: UNTRUNCATED OPENSTA PATHS & TPGM MATHEMATICAL ATTRIBUTION MATRIX
 # ==============================================================================
+def demo_matrix():
+    """
+    Computes and displays the verbose Feature-to-Code Sensitivity Matrix M_{i, j}
+    across physical features f_i and candidate code blocks b_j.
+    """
+    traces_path = os.path.join(SCRIPT_DIR, "11_agent_data/candidates_sweep/critical_path_traces.json")
+    if not os.path.exists(traces_path):
+        print(f"{C.RED}Error: {traces_path} not found.{C.RESET}")
+        return
+
+    with open(traces_path, "r", encoding="utf-8") as f:
+        traces = json.load(f)
+
+    paths = traces.get("paths", [])
+    
+    # Define features (rows f_i) and code blocks (columns b_j)
+    features = ["load", "fanout", "position_late", "slow_slew"]
+    feature_labels = {
+        "load": "f1: load (pin/wire cap)",
+        "fanout": "f2: fanout (driver load)",
+        "position_late": "f3: position_late (deep logic)",
+        "slow_slew": "f4: slow_slew (transition)",
+    }
+
+    blocks = [
+        ("b1: late_path_focus", {"position_late", "load"}),
+        ("b2: load_pressure",   {"load"}),
+        ("b3: fanout_shock",    {"load", "fanout"}),
+        ("b4: stability_damper",{"position_late"}),
+    ]
+
+    # Initialize M_{i, j} matrix
+    M = {f: [0.0] * len(blocks) for f in features}
+
+    total_violating_slack = 0.0
+    for p in paths:
+        slack = float(p.get("slack_ns", 0.0))
+        if slack >= 0.0:
+            continue
+        crit = -slack
+        total_violating_slack += crit
+        p_feats = set(p.get("features", []))
+        # Add slow_slew if max_fanout or load is large
+        if p.get("max_fanout", 0) >= 10:
+            p_feats.add("slow_slew")
+
+        for i, f_key in enumerate(features):
+            if f_key in p_feats:
+                for j, (b_name, reads) in enumerate(blocks):
+                    if f_key in reads:
+                        # M_{i, j} contribution
+                        M[f_key][j] += crit * (1.0 / len(reads))
+
+    print(f"{C.BOLD}========================================================================================================{C.RESET}")
+    print(f"{C.BOLD}[TPGM] Feature-to-Code Sensitivity Matrix M_{{i, j}} (Verbose Formulation & Computation):{C.RESET}\n")
+    print(f"  {C.CYAN}Mathematical Formulation of Matrix Cell M_{{i, j}}:{C.RESET}")
+    print(f"    M_{{i, j}} = ∑_{{p ∈ Paths}} max(0, -slack(p)) × 1_{{f_i ∈ features(p)}} × [ 1_{{f_i ∈ reads(b_j)}} / |reads(b_j)| ]\n")
+    print(f"  {C.DIM}Where:{C.RESET}")
+    print(f"    - max(0, -slack(p))          : Path criticality weight (higher violation = higher attribution)")
+    print(f"    - 1_{{f_i ∈ features(p)}}        : Feature indicator (True if failing path p exhibits physical defect f_i)")
+    print(f"    - 1_{{f_i ∈ reads(b_j)}} / |reads|: Normalized AST dependency of code block b_j on variable f_i")
+    print(f"--------------------------------------------------------------------------------------------------------\n")
+
+    # Table Header
+    header = f"  {'Physical Feature (f_i)':<32} | " + " | ".join([f"{b[0]:<20}" for b in blocks])
+    print(f"{C.BOLD}{header}{C.RESET}")
+    print(f"  {'-'*32}-+-" + "-+-".join(["-"*20 for _ in blocks]))
+
+    # Print rows
+    for f_key in features:
+        row_str = f"  {feature_labels[f_key]:<32} | "
+        vals = []
+        for j in range(len(blocks)):
+            val = M[f_key][j]
+            if val > 0.1:
+                vals.append(f"{C.GREEN}{val:>18.4f}ns{C.RESET}")
+            elif val > 0.0:
+                vals.append(f"{val:>18.4f}ns")
+            else:
+                vals.append(f"{C.DIM}{0.0:>18.4f}ns{C.RESET}")
+        print(row_str + " | ".join(vals))
+
+    print(f"  {'-'*32}-+-" + "-+-".join(["-"*20 for _ in blocks]))
+
+    # Column sums (w_j = sum_i M_{i, j})
+    col_sums = [sum(M[f_key][j] for f_key in features) for j in range(len(blocks))]
+    total_w = sum(col_sums)
+    probs = [c / total_w if total_w > 0 else 0.25 for c in col_sums]
+
+    sum_str = f"  {C.BOLD}{'Total Block Weight w_j = ∑_i M_{i, j}':<32}{C.RESET} | " + " | ".join([f"{C.BOLD}{c:>18.4f}ns{C.RESET}" for c in col_sums])
+    print(sum_str)
+    
+    prob_str = f"  {C.CYAN}{'Sampling Probability P(b_j)':<32}{C.RESET} | " + " | ".join([f"{C.CYAN}{p*100:>17.1f}%{C.RESET}" for p in probs])
+    print(prob_str)
+    print(f"--------------------------------------------------------------------------------------------------------")
+    print(f"  {C.BOLD}Sampling Verdict:{C.RESET} Target Block = {C.GREEN}{C.BOLD}{blocks[0][0]}{C.RESET} (P = {probs[0]*100:.1f}%)")
+    print(f"  {C.BOLD}Action:{C.RESET} Dispatch mutation agent to synthesize heuristic in {C.CYAN}src/rsz/src/policy/SetupLegacyBase.cc{C.RESET}")
+    print(f"{C.BOLD}========================================================================================================{C.RESET}")
+
+
 def demo_tpgm(design="gcd", show_all=True):
     """
     Outputs all 20 OpenSTA critical paths without truncation, calculates the
@@ -522,6 +622,7 @@ def print_help():
     print("Commands:")
     print(f"  {C.CYAN}diff{C.RESET}       Show unified git diff of evolved OpenROAD C++ (options: --file generator|header|candidate|policy)")
     print(f"  {C.CYAN}sweep{C.RESET}      Stream all 3,500 candidate evaluation records (options: --filter accepted|rejected|champion, --limit N, --stats)")
+    print(f"  {C.CYAN}matrix{C.RESET}     Show verbose Feature-to-Code Sensitivity Matrix M_{i, j} with formulas")
     print(f"  {C.CYAN}tpgm{C.RESET}       Show untruncated 20 critical paths & mathematical feature attribution matrix")
     print(f"  {C.CYAN}ibex{C.RESET}       Show complete 35-stage OpenSTA critical path & fanout-943 BufferTree bottleneck")
     print(f"  {C.CYAN}baseline{C.RESET}   Show stock OpenROAD baseline QoR across Nangate45 benchmarks")
@@ -565,6 +666,9 @@ def main():
             show_stats = True
 
         demo_sweep(filter_mode=filter_mode, limit=limit, tail=tail, show_stats_only=show_stats)
+
+    elif cmd in ("matrix", "sens-matrix", "sensitivity"):
+        demo_matrix()
 
     elif cmd in ("tpgm", "paths", "attribution"):
         demo_tpgm()

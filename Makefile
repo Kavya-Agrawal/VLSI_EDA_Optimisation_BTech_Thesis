@@ -122,7 +122,7 @@ clean-build: ## remove copied binaries (Bazel cache is kept)
 	rm -rf build
 
 # ---- viva / professor demonstration commands -----------------------------------
-.PHONY: demo show-diff show-sweep show-tpgm show-bottleneck show-baseline show-contract
+.PHONY: demo show-diff show-sweep show-tpgm show-matrix show-bottleneck show-baseline show-contract
 demo: ## interactive menu for professor viva questions
 	@./demo_cli.py
 
@@ -134,6 +134,9 @@ show-sweep: ## show 3500 candidate sweep outcomes and QoR distribution
 
 show-tpgm: ## show live walkthrough: STA critical paths -> code attribution (w_i)
 	@./demo_cli.py tpgm
+
+show-matrix: ## show verbose Feature-to-Code Sensitivity Matrix M_{i, j} with formulas
+	@./demo_cli.py matrix
 
 show-bottleneck: ## show Ibex fanout-943 physical bottleneck & BufferTree.cc barrier
 	@./demo_cli.py ibex

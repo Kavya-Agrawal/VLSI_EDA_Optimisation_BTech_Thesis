@@ -29,6 +29,9 @@ make show-sweep
 # 2. View all 20 OpenSTA critical paths & TPGM feature attribution matrix
 make show-tpgm
 
+# 2b. View verbose Feature-to-Code Sensitivity Matrix M_{i, j} with mathematical breakdown
+make show-matrix
+
 # 3. View the complete, untruncated 35-stage OpenSTA timing path for Ibex (fanout 943)
 make show-bottleneck
 
