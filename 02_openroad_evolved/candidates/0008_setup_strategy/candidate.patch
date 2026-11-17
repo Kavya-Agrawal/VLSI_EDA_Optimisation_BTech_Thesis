@@ -1,0 +1,413 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy/rsz/HYPOTHESIS.md
+new file mode 100644
+index 0000000..f201ba8
+--- /dev/null
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy/rsz/HYPOTHESIS.md	
+@@ -0,0 +1,72 @@
++# Problem
++
++LEGACY commits the first applicable repair on load-delay-ranked path drivers.
++Its local ranking can miss shared endpoint benefits or accept collateral timing
++damage that becomes visible only after parasitic and STA refresh.
++
++# Current heuristic (file:function)
++
++`src/policy/SetupLegacyBase.cc:repairPath` ranks path drivers by load delay and
++calls `tryRepairPathTarget`. `tryCandidateSequence` accepts the first legal
++candidate whose application succeeds. `SetupLegacyPolicy::repairEndpoint`
++promotes checkpoints using WNS and focus slack, overlooking TNS-only gains.
++
++# New approach
++
++Override path repair in LEGACY only. Collect the existing path-driver candidates,
++including latch fanin segments, and trial each legal candidate inside a nested
++MoveCommitter journal. Every trial starts from the same endpoint checkpoint and
++is rolled back after parasitic and timing refresh. Regenerate targets and
++candidates after rollback rather than retaining invalid STA paths.
++
++Require nondecreasing global setup WNS, global setup TNS, focus endpoint slack,
++global hold worst slack and hold TNS; also reject area-limit breaches and
++increased max slew, capacitance or fanout violation counts. Among admitted
++candidates maximize `delta WNS + delta TNS / constrained endpoint count`, using
++negative slack clamped at zero for WNS. Require strictly positive measured gain.
++Resolve ties by path traversal, configured generator order, then candidate order.
++Recreate the winner and require its measured score to meet or exceed its trial
++score before merging its journal into the undoable endpoint checkpoint.
++
++Apply one winner per pass even when the configured repair budget permits more;
++subsequent passes rebuild the path. Promote global TNS-only or WNS-only gains
++through the existing endpoint checkpoint machinery, including path-group runs.
++No Tcl options or new flags are introduced; LEGACY uses this behavior by default.
++
++# Why WNS/TNS should improve
++
++Actual global TNS rewards changes on shared timing cones. The normalized TNS
++term makes broad endpoint benefit comparable to direct WNS improvement. Global
++and focus slack floors prevent sacrificing one objective for a predicted gain.
++Replaying the winner checks that regenerated candidates reproduce that gain.
++
++# What to look for in the path report
++
++Look for improved worst path slack and fewer violating endpoints sharing repaired
++drivers, rather than just a faster isolated stage. Compare pre-repair and final
++post-detailed-placement reports: target AES WNS +5 ps, Ibex WNS +10 ps and TNS
+++15 ns versus champion, without design WNS/TNS, hold or DRV regressions. Gains
++must survive the evaluator's final detailed placement and parasitic extraction.
++
++# Risks
++
++Full timing trials, electrical checks, regeneration and rollback add runtime and
++can hit the evaluator timeout. Strict monotonic admission can block useful
++multi-move sequences, and one winner per pass can reach iteration limits sooner.
++Existing candidate legality, equivalence and placement behavior is retained.
++Electrical guards compare violation counts, not individual violating pin sets.
++Global hold floors do not guarantee every individual hold endpoint is unchanged.
++
++Final detailed placement is an external command executed after repair returns;
++these policy files cannot keep a journal alive across that command or verify its
++result. Consequently, post-placement gain survival and placement legality remain
++mandatory evaluator checks, not a guarantee made by the trial timing. No builds,
++OpenROAD runs or tests were performed, per the resource rule; only lightweight
++source and formatting checks were performed.
++
++# Files changed
++
++- `src/policy/SetupLegacyPolicy.cc`: Measure journaled alternatives, replay the
++  best admitted repair, and retain global WNS/TNS gains in endpoint checkpoints.
++- `src/policy/SetupLegacyPolicy.hh`: Declare the LEGACY path-repair override.
++- `HYPOTHESIS.md`: Document the algorithm, expected report evidence and risks.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc
+index 7b7c254..09c3362 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc	
+@@ -4,8 +4,12 @@
+ #include "SetupLegacyPolicy.hh"
+ 
+ #include <algorithm>
++#include <array>
+ #include <cmath>
++#include <cstddef>
++#include <optional>
+ #include <utility>
++#include <vector>
+ 
+ #include "MoveCommitter.hh"
+ #include "MoveGenerator.hh"
+@@ -21,6 +25,7 @@
+ #include "sta/Network.hh"
+ #include "sta/NetworkClass.hh"
+ #include "sta/Path.hh"
++#include "sta/Scene.hh"
+ #include "utl/Logger.h"
+ #include "utl/timer.h"
+ 
+@@ -34,6 +39,207 @@ static constexpr int kDelayDigits = 3;
+ 
+ }  // namespace
+ 
++bool SetupLegacyPolicy::repairPath(sta::Path* path,
++                                   const sta::Slack path_slack,
++                                   const bool force_single_repair)
++{
++  if (path == nullptr || repairBudget(path_slack, force_single_repair) == 0) {
++    return false;
++  }
++  if (path->minMax(sta_) != max_) {
++    logger_->error(RSZ,
++                   kMsgRepairSetupExpectedMaxPath,
++                   "repairSetup expects max delay path");
++    return false;
++  }
++
++  // Keep only pin identities across trials. STA paths and prepared generator
++  // inputs must be rebuilt after every journal restore.
++  const sta::Pin* endpoint_pin = path->pin(sta_);
++  std::vector<const sta::Pin*> drivers;
++  for (const Target& target :
++       target_collector_->collectPathDriverTargets(path, path_slack)) {
++    appendUnique(drivers, target.driver_pin);
++  }
++  resizer_.updateParasiticsAndTiming();
++
++  struct Metrics
++  {
++    float wns;
++    float tns;
++    float focus;
++    float hold_wns;
++    float hold_tns;
++  };
++  auto measure = [&]() -> Metrics {
++    sta::Vertex* endpoint = graph_->pinLoadVertex(endpoint_pin);
++    return {std::min(0.0f, sta::delayAsFloat(sta_->worstSlack(max_))),
++            sta::delayAsFloat(sta_->totalNegativeSlack(max_)),
++            endpoint != nullptr
++                ? sta::delayAsFloat(target_collector_->endpointSlack(endpoint))
++                : -sta::INF,
++            sta::delayAsFloat(sta_->worstSlack(sta::MinMax::min())),
++            sta::delayAsFloat(sta_->totalNegativeSlack(sta::MinMax::min()))};
++  };
++  // Check electrical limits on the refreshed graph, including new buffer and
++  // clone pins. Existing generator guards remain in force as well.
++  auto drv_counts = [&]() {
++    std::array<int, 3> counts{};
++    sta::VertexIterator vertices(graph_);
++    while (vertices.hasNext()) {
++      sta::Vertex* vertex = vertices.next();
++      const sta::Pin* pin = vertex->pin();
++      const sta::Scene* scene = nullptr;
++      const sta::RiseFall* rf = nullptr;
++      sta::Slew slew;
++      float limit, slack;
++      sta_->checkSlew(pin,
++                      sta_->scenes(),
++                      max_,
++                      false,
++                      slew,
++                      limit,
++                      slack,
++                      rf,
++                      scene);
++      counts[0] += slack < 0.0f;
++      if (vertex->isDriver(network_)) {
++        float cap;
++        sta_->checkCapacitance(pin,
++                               sta_->scenes(),
++                               max_,
++                               cap,
++                               limit,
++                               slack,
++                               rf,
++                               scene);
++        counts[1] += slack < 0.0f;
++        bool fanout_violation = false;
++        for (const sta::Scene* corner : sta_->scenes()) {
++          float fanout;
++          sta_->checkFanout(pin, corner->mode(), max_, fanout, limit, slack);
++          fanout_violation |= slack < 0.0f;
++        }
++        counts[2] += fanout_violation;
++      }
++    }
++    return counts;
++  };
++  const auto baseline_drvs = drv_counts();
++  const Metrics baseline = measure();
++  size_t endpoint_count = 0;
++  for (sta::Vertex* endpoint : sta_->endpoints()) {
++    const float slack = sta::delayAsFloat(sta_->slack(endpoint, max_));
++    if (std::isfinite(slack) && slack > -sta::INF && slack < sta::INF) {
++      ++endpoint_count;
++    }
++  }
++  const double normalization = std::max(size_t{1}, endpoint_count);
++  auto score = [&](const Metrics& metrics) {
++    // Use strict floors: repeated sub-tolerance regressions must not
++    // accumulate.
++    if (metrics.wns < baseline.wns || metrics.tns < baseline.tns
++        || metrics.focus < baseline.focus
++        || metrics.hold_wns < baseline.hold_wns
++        || metrics.hold_tns < baseline.hold_tns || resizer_.overMaxArea()) {
++      return 0.0;
++    }
++    return (static_cast<double>(metrics.wns) - baseline.wns)
++           + (static_cast<double>(metrics.tns) - baseline.tns) / normalization;
++  };
++
++  struct Choice
++  {
++    const sta::Pin* driver;
++    size_t generator;
++    size_t candidate;
++  };
++  // Regenerate by stable generator/candidate order, never reapply an object
++  // whose apply() or rollback may have consumed its internal state.
++  auto apply = [&](const Choice& choice,
++                   bool keep,
++                   double required_gain,
++                   size_t& count) {
++    sta::Vertex* endpoint = graph_->pinLoadVertex(endpoint_pin);
++    Target target;
++    if (endpoint == nullptr
++        || !makePinTargetOnPath(choice.driver,
++                                endpointWorstPath(endpoint),
++                                baseline.focus,
++                                target)) {
++      count = 0;
++      return 0.0;
++    }
++    MoveGenerator& generator = *move_generators_[choice.generator];
++    if (!generator.isApplicable(target)) {
++      count = 0;
++      return 0.0;
++    }
++    generator.prepareInputs(target);
++    auto candidates = generator.generate(target);
++    count = candidates.size();
++    if (choice.candidate >= count) {
++      return 0.0;
++    }
++    MoveCandidate& candidate = *candidates[choice.candidate];
++    const Estimate estimate = candidate.estimate();
++    if (!estimate.legal) {
++      return 0.0;
++    }
++    committer_.beginJournal();
++    committer_.trackMoveAttempt(target.driver_pin, generator.type());
++    const MoveResult result = committer_.commit(candidate);
++    double gain = 0.0;
++    if (result.accepted) {
++      resizer_.updateParasiticsAndTiming();
++      gain = score(measure());
++      if (gain > 0.0) {
++        const auto drvs = drv_counts();
++        for (size_t index = 0; index < drvs.size(); ++index) {
++          if (drvs[index] > baseline_drvs[index]) {
++            gain = 0.0;
++            break;
++          }
++        }
++      }
++    }
++    if (keep && gain > 0.0 && gain >= required_gain) {
++      // Merge into the endpoint journal; its checkpoint can still undo this.
++      committer_.commitJournal();
++    } else {
++      committer_.restoreJournal();
++      if (keep) {
++        gain = 0.0;
++      }
++    }
++    return gain;
++  };
++
++  std::optional<Choice> winner;
++  double best_gain = 0.0;
++  for (const sta::Pin* driver : drivers) {
++    for (size_t generator = 0; generator < move_generators_.size();
++         ++generator) {
++      size_t count = 1;
++      for (size_t candidate = 0; candidate < count; ++candidate) {
++        const Choice choice{driver, generator, candidate};
++        const double gain = apply(choice, false, 0.0, count);
++        // Equal scores keep the first path/generator/candidate in traversal
++        // order, with no pointer ordering or timing-dependent trial limits.
++        if (gain > best_gain) {
++          best_gain = gain;
++          winner = choice;
++        }
++      }
++    }
++  }
++  size_t count = 0;
++  // One measured winner per pass. Subsequent passes collect a fresh path so
++  // every comparison starts from the same checkpoint, even with a larger
++  // budget.
++  return winner.has_value() && apply(*winner, true, best_gain, count) > 0.0;
++}
++
+ void SetupLegacyPolicy::iterate()
+ {
+   committer_.tracker().capturePrePhaseSlack();
+@@ -50,8 +256,9 @@ void SetupLegacyPolicy::iterate()
+     runMainRepairLoop(violating_ends, main_state);
+   }
+ 
+-  committer_.printTrackerPhaseSummary(
+-      phaseSummaryTitle(), phaseEndpointProfilerTitle(), true);
++  committer_.printTrackerPhaseSummary(phaseSummaryTitle(),
++                                      phaseEndpointProfilerTitle(),
++                                      true);
+ 
+   // Propagate accumulator deltas back to the sequencer.
+   setup_context_.iteration = main_state.opto_iteration;
+@@ -195,14 +402,13 @@ void SetupLegacyPolicy::repairEndpoint(EndpointRepairState& endpoint_state,
+     }
+ 
+     const bool log_change_summary = logger_->debugCheck(RSZ, "repair_setup", 3);
+-    float prev_tns_local = 0.0;
+-    if (log_change_summary) {
+-      prev_tns_local = totalNegativeSlack();
+-    }
++    const float prev_tns_local = sta_->totalNegativeSlack(max_);
++    const sta::Slack prev_global_slack = sta_->worstSlack(max_);
+ 
+     sta::Path* end_path = endpointWorstPath(endpoint_state.end);
+-    const bool changed = repairPath(
+-        end_path, endpoint_state.end_slack, endpoint_state.force_single_repair);
++    const bool changed = repairPath(end_path,
++                                    endpoint_state.end_slack,
++                                    endpoint_state.force_single_repair);
+     if (!changed) {
+       RepairSetupProfiler::stop("no_change");
+       if (endpoint_state.pass != 1) {
+@@ -246,7 +452,9 @@ void SetupLegacyPolicy::repairEndpoint(EndpointRepairState& endpoint_state,
+     const bool better = pathImproved(endpoint_state.end_slack,
+                                      endpoint_state.worst_slack,
+                                      endpoint_state.prev_end_slack,
+-                                     endpoint_state.prev_worst_slack);
++                                     endpoint_state.prev_worst_slack)
++                        || sta_->totalNegativeSlack(max_) > prev_tns_local
++                        || sta_->worstSlack(max_) > prev_global_slack;
+ 
+     float new_tns = 0.0f;
+ 
+@@ -254,8 +462,9 @@ void SetupLegacyPolicy::repairEndpoint(EndpointRepairState& endpoint_state,
+     // debug summary does not need the TNS query.
+     if (log_change_summary || RepairSetupProfiler::enabled()) {
+       new_tns = totalNegativeSlack();
+-      RepairSetupProfiler::qor(
+-          "pass_after", endpoint_state.worst_slack, new_tns);
++      RepairSetupProfiler::qor("pass_after",
++                               endpoint_state.worst_slack,
++                               new_tns);
+     }
+     if (log_change_summary) {
+       const ProfileScope profile("reporting");
+@@ -386,13 +595,13 @@ void SetupLegacyPolicy::repairEndpoint(EndpointRepairState& endpoint_state,
+ void SetupLegacyPolicy::runMainRepairLoop(const ViolatingEnds& violating_ends,
+                                           MainRepairState& main_state)
+ {
+-  const utl::DebugScopedTimer timer(
+-      logger_,
+-      RSZ,
+-      "repair_setup",
+-      10,
+-      fmt::format(
+-          "{}{} Phase Time: {{}}", phaseName(), main_state.phase_marker));
++  const utl::DebugScopedTimer timer(logger_,
++                                    RSZ,
++                                    "repair_setup",
++                                    10,
++                                    fmt::format("{}{} Phase Time: {{}}",
++                                                phaseName(),
++                                                main_state.phase_marker));
+   for (const pair<sta::Vertex*, sta::Slack>& end_original_slack :
+        violating_ends) {
+     // Stop before starting a new endpoint after reaching the global limit.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh
+index 1d47ea6..9509876 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh	
+@@ -11,8 +11,8 @@
+ 
+ namespace rsz {
+ 
+-// Default single-threaded setup-repair phase.  This preserves the original
+-// endpoint/path-driver repair loop when the LEGACY phase is selected.
++// Default single-threaded setup-repair phase. Path repairs select a journaled,
++// measured winner while retaining the legacy endpoint checkpoint loop.
+ class SetupLegacyPolicy : public SetupLegacyBase
+ {
+  public:
+@@ -22,6 +22,10 @@ class SetupLegacyPolicy : public SetupLegacyBase
+   void iterate() override;
+ 
+  protected:
++  bool repairPath(sta::Path* path,
++                  sta::Slack path_slack,
++                  bool force_single_repair) override;
++
+   // Mutable progress counters for the main endpoint repair loop.
+   struct MainRepairState
+   {

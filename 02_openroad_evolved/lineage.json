@@ -343,8 +343,261 @@
       "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0005",
       "seconds": 443,
       "when": "2026-11-16T11:55:57Z"
+    },
+    {
+      "iteration": 6,
+      "tag": "0006_buffering",
+      "status": "rejected",
+      "cluster": "buffering",
+      "title": "Enable shared-critical-data rebuffering beyond the blanket fanout cutoff",
+      "hypothesis": "BufferGenerator currently excludes every net with fanout at least 20, including confirmed Ibex data-path drivers with fanouts 22, 31, and 45. Preserve low-fanout behavior but admit higher-fanout setup data targets when at least two distinct immediate loads have finite negative setup slack for the target transition, retaining existing protections and excluding clock drivers. Reuse the existing required-time-aware rebuffer search to improve shared-load topology and reduce multiple endpoint arrivals. Iteration 5 supports this direction through measured sizing parity and unresolved shared data loads, while iteration 4 supplies the selection-contract failure to avoid without providing timing evidence. Success requires committed newly eligible repairs and attributable post-legalization WNS/TNS gains.",
+      "planned_files": [
+        "src/move/BufferGenerator.cc"
+      ],
+      "evidence_iterations": [
+        4,
+        5
+      ],
+      "files_changed": [
+        "src/move/BufferGenerator.cc",
+        "src/move/BufferGenerator.hh",
+        "HYPOTHESIS.md"
+      ],
+      "patch_stats": {
+        "files": [
+          "repos"
+        ],
+        "files_count": 1,
+        "lines_added": 120,
+        "lines_deleted": 7
+      },
+      "accepted": false,
+      "score_vs_champion": -0.0003905557962669997,
+      "score_vs_baseline": -0.0003905557962669997,
+      "reasons": [
+        "score -0.00039 below required gain +0.00200"
+      ],
+      "per_design": {
+        "nangate45/gcd": {
+          "score": 0.0,
+          "wns_cand": -0.17417545676519416,
+          "wns_ref": -0.17417545676519416,
+          "tns_cand": -7.62617102164613,
+          "tns_ref": -7.62617102164613,
+          "d_wns_ns": 0.0,
+          "d_tns_ns": 0.0,
+          "d_wns_pct_period": 0.0,
+          "d_tns_pct": 0.0,
+          "hold_cand": 0.08703885081255561,
+          "hold_ref": 0.08703885081255562,
+          "drv_cand": 0.0,
+          "drv_ref": 0.0,
+          "area_cand": 848.806025466331,
+          "area_ref": 848.806025466331,
+          "placement_violations": 0.0,
+          "deterministic": true
+        },
+        "nangate45/aes": {
+          "score": -0.0023641705055668107,
+          "wns_cand": -0.11118745128202452,
+          "wns_ref": -0.108288603371592,
+          "tns_cand": -15.02669498031519,
+          "tns_ref": -14.773421126812009,
+          "d_wns_ns": -0.002898847910432517,
+          "d_tns_ns": -0.2532738535031811,
+          "d_wns_pct_period": -0.44189754732203,
+          "d_tns_pct": -1.7143886397682055,
+          "hold_cand": 0.10201455247075145,
+          "hold_ref": 0.10201455247075146,
+          "drv_cand": 0.0,
+          "drv_ref": 0.0,
+          "area_cand": 20380.65360920882,
+          "area_ref": 20271.860634579753,
+          "placement_violations": 0.0,
+          "deterministic": true
+        },
+        "nangate45/ibex": {
+          "score": 0.0011925031167658116,
+          "wns_cand": -0.2978442021765035,
+          "wns_ref": -0.29941183713160996,
+          "tns_cand": -401.6370780749931,
+          "tns_ref": -416.2728946035277,
+          "d_wns_ns": 0.0015676349551064783,
+          "d_tns_ns": 14.635816528534576,
+          "d_wns_pct_period": 0.08907016790377718,
+          "d_tns_pct": 3.5159186961894844,
+          "hold_cand": 0.044729221592639395,
+          "hold_ref": 0.044729221592639395,
+          "drv_cand": 0.0,
+          "drv_ref": 0.0,
+          "area_cand": 28611.22538888594,
+          "area_ref": 28628.78112352973,
+          "placement_violations": 0.0,
+          "deterministic": true
+        }
+      },
+      "champion_after": 0,
+      "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0006_buffering",
+      "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0006_buffering",
+      "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0006_buffering/feedback.md",
+      "evaluator": {
+        "recommended_cluster": "buffering",
+        "dominant_cause": "deep_logic",
+        "lesson": "High-fanout eligibility reduced Ibex TNS by 3.52% but failed promotion because AES regressed and retained repairs on the intended drivers were not established.",
+        "dead_end": "Do not repeat fanout eligibility expansion without retained-driver attribution and post-legalization collateral checks.",
+        "good_changes": [
+          "src/rsz/src/move/BufferGenerator.cc preserves low-fanout eligibility, net protections, and clock exclusion; GCD timing remained identical.",
+          "The eligibility-only candidate reduced Ibex TNS by 14.636 ns, but the specific retained rebuffer mechanism remains unverified."
+        ],
+        "bad_changes": [
+          "src/rsz/src/move/BufferGenerator.cc enables high-fanout candidates by default without demonstrating post-legalization benefit across affected branches; AES WNS and TNS regressed.",
+          "Reusing BufferCandidate and Rebuffer unchanged did not establish retained repairs on fanout-22/31/45 targets or meet the 20 ps Ibex WNS target."
+        ],
+        "files_to_revisit": [
+          "src/rsz/src/move/BufferGenerator.cc",
+          "src/rsz/src/move/BufferCandidate.cc",
+          "src/rsz/src/Rebuffer.cc",
+          "src/rsz/src/Optimizer.cc",
+          "src/rsz/src/RepairTargetCollector.cc"
+        ],
+        "files_to_avoid": [
+          "src/rsz/src/move/BufferGenerator.hh"
+        ]
+      },
+      "agents": {
+        "planner": "codex",
+        "coder": "codex",
+        "evaluator": "codex"
+      },
+      "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0006",
+      "seconds": 571,
+      "when": "2026-11-17T14:01:00Z"
+    },
+    {
+      "iteration": 7,
+      "tag": "0007_buffering",
+      "status": "rejected",
+      "cluster": "buffering",
+      "title": "Choose split-load partitions by branch slack budgets instead of half the sink count",
+      "hypothesis": "The champion isolates half the headroom-ranked sinks without evaluating their capacitance or inserted-buffer delay. Search nonempty proper prefixes while retaining the focus-path sink directly on the driver, predicting the existing target-slew buffer size and both-transition branch arrival changes. Reject partitions that worsen already-negative moved-load slack or create negative slack on previously nonnegative moved loads, then maximize predicted worst-load slack improvement with aggregate negative-slack improvement as a tie-breaker. Iteration 6 supports investigating shared-load repair but warns against eligibility expansion and unverified retention; iteration 5 establishes the sizing fallback dead end this plan avoids. Retained splits should reduce shared data-driver delay and improve multiple matched endpoints after legalization.",
+      "planned_files": [
+        "src/move/SplitLoadGenerator.cc"
+      ],
+      "evidence_iterations": [
+        5,
+        6
+      ],
+      "files_changed": [
+        "src/move/SplitLoadGenerator.cc",
+        "HYPOTHESIS.md"
+      ],
+      "patch_stats": {
+        "files": [
+          "repos"
+        ],
+        "files_count": 1,
+        "lines_added": 231,
+        "lines_deleted": 36
+      },
+      "accepted": false,
+      "score_vs_champion": -0.001557445955045847,
+      "score_vs_baseline": -0.001557445955045847,
+      "reasons": [
+        "score -0.00156 below required gain +0.00200"
+      ],
+      "per_design": {
+        "nangate45/gcd": {
+          "score": 0.0,
+          "wns_cand": -0.17417545676519416,
+          "wns_ref": -0.17417545676519416,
+          "tns_cand": -7.62617102164613,
+          "tns_ref": -7.62617102164613,
+          "d_wns_ns": 0.0,
+          "d_tns_ns": 0.0,
+          "d_wns_pct_period": 0.0,
+          "d_tns_pct": 0.0,
+          "hold_cand": 0.08703885081255561,
+          "hold_ref": 0.08703885081255562,
+          "drv_cand": 0.0,
+          "drv_ref": 0.0,
+          "area_cand": 848.806025466331,
+          "area_ref": 848.806025466331,
+          "placement_violations": 0.0,
+          "deterministic": true
+        },
+        "nangate45/aes": {
+          "score": -0.004672337865137541,
+          "wns_cand": -0.11362977547181982,
+          "wns_ref": -0.108288603371592,
+          "tns_cand": -15.75801222999514,
+          "tns_ref": -14.773421126812009,
+          "d_wns_ns": -0.005341172100227817,
+          "d_tns_ns": -0.9845911031831314,
+          "d_wns_pct_period": -0.8142030640591184,
+          "d_tns_pct": -6.664611363418153,
+          "hold_cand": 0.10201455247075145,
+          "hold_ref": 0.10201455247075146,
+          "drv_cand": 0.0,
+          "drv_ref": 0.0,
+          "area_cand": 19636.917869547688,
+          "area_ref": 20271.860634579753,
+          "placement_violations": 0.0,
+          "deterministic": true
+        },
+        "nangate45/ibex": {
+          "score": 0.0,
+          "wns_cand": -0.29941183713160996,
+          "wns_ref": -0.29941183713160996,
+          "tns_cand": -416.2728946035277,
+          "tns_ref": -416.2728946035277,
+          "d_wns_ns": 0.0,
+          "d_tns_ns": 0.0,
+          "d_wns_pct_period": 0.0,
+          "d_tns_pct": 0.0,
+          "hold_cand": 0.044729221592639395,
+          "hold_ref": 0.044729221592639395,
+          "drv_cand": 0.0,
+          "drv_ref": 0.0,
+          "area_cand": 28628.781123529734,
+          "area_ref": 28628.78112352973,
+          "placement_violations": 0.0,
+          "deterministic": true
+        }
+      },
+      "champion_after": 0,
+      "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0007_buffering",
+      "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0007_buffering",
+      "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0007_buffering/feedback.md",
+      "evaluator": {
+        "recommended_cluster": "buffering",
+        "dominant_cause": "high_fanout",
+        "lesson": "Capacitance-aware prefix selection with predicted moved-load safety regressed AES WNS by 5.341 ps and TNS by 0.984591 ns, so split retention requires measured affected-endpoint checks after legalization.",
+        "dead_end": "Do not repeat prediction-only prefix replacement without attributing retained splits and verifying post-legalization collateral.",
+        "good_changes": [],
+        "bad_changes": [
+          "src/rsz/src/move/SplitLoadGenerator.cc: prefix selection replacement regressed AES and produced no measured GCD or Ibex benefit",
+          "src/rsz/src/move/SplitLoadGenerator.cc: HPWL capacitance and gate-delay prediction omits wire resistance and downstream slew propagation"
+        ],
+        "files_to_revisit": [
+          "src/rsz/src/move/SplitLoadGenerator.cc",
+          "src/rsz/src/move/SplitLoadCandidate.cc",
+          "src/rsz/src/Optimizer.cc"
+        ],
+        "files_to_avoid": [
+          "src/rsz/src/move/SizeUpGenerator.cc",
+          "src/rsz/src/move/SizeUpCandidate.cc"
+        ]
+      },
+      "agents": {
+        "planner": "codex",
+        "coder": "codex",
+        "evaluator": "codex"
+      },
+      "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0007",
+      "seconds": 547,
+      "when": "2026-11-17T14:10:07Z"
     }
   ],
   "champion_history": [],
-  "updated": "2026-11-16T11:55:57Z"
+  "updated": "2026-11-17T14:10:07Z"
 }

@@ -1,0 +1,5 @@
+Implemented slack-budget prefix selection with both-transition delay prediction, target-slew buffer sizing, and focus-sink retention. Added `HYPOTHESIS.md`. Builds and tests were not run, per your resource rule.
+
+```json
+{"files_changed":["src/move/SplitLoadGenerator.cc","HYPOTHESIS.md"],"summary":"Replaced fixed-half splitting with capacitance-aware prefix scoring that predicts driver relief and inserted-buffer delay. Unsafe moved-load slack changes are rejected; safe partitions maximize worst-load slack improvement, then aggregate negative-slack improvement.","new_flags":[],"determinism_notes":"Preserved headroom ordering with pin-name tie-breaking; exact score ties retain the first prefix. Existing journaled application remains unchanged."}
+```

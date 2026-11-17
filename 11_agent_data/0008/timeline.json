@@ -1,0 +1,28 @@
+[
+  {
+    "step": "planned",
+    "t": 129.1,
+    "ts": "2026-11-17T14:12:16Z",
+    "cluster": "setup_strategy",
+    "title": "Select LEGACY path repairs by journaled measured WNS/TNS gain"
+  },
+  {
+    "step": "coded",
+    "t": 451.1,
+    "ts": "2026-11-17T14:17:38Z",
+    "files": [
+      "src/policy/SetupLegacyPolicy.cc",
+      "src/policy/SetupLegacyPolicy.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 466.2,
+    "ts": "2026-11-17T14:17:53Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 15
+  }
+]

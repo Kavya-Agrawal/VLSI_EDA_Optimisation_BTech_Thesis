@@ -1,0 +1,7 @@
+Implemented default-on high-fanout eligibility for setup data drivers with two distinct immediate loads having finite negative slack on the target transition. Existing low-fanout eligibility, protections, and rebuffer commit flow remain intact.
+
+Added `HYPOTHESIS.md`. Formatting and whitespace checks completed; builds, tests, and timing evaluation remain with the parent orchestrator.
+
+```json
+{"files_changed":["src/move/BufferGenerator.cc","src/move/BufferGenerator.hh","HYPOTHESIS.md"],"summary":"Admit high-fanout setup data targets when two distinct immediate loads have finite negative slack for the selected transition, excluding clock drivers. Preserve existing low-fanout behavior and reuse the existing rebuffer search and journaling flow.","new_flags":[],"determinism_notes":"Eligibility depends only on whether two distinct pins qualify, independent of edge traversal order; no randomness or new mutable state."}
+```

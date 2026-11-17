@@ -1,0 +1,77 @@
+# Iteration 6 — Enable shared-critical-data rebuffering beyond the blanket fanout cutoff
+
+cluster: `buffering`
+
+## Observation
+
+Iteration **5** passed the unit and smoke gates but produced **zero WNS/TNS improvement on all three designs**. This supports testing a topology-changing move rather than another sizing fallback. Iteration **4** failed selection-contract tests before timing evaluation; avoid repeating that selector or interpreting its zero score as timing evidence.
+
+The detailed Ibex path corrects the latest attribution: `_26153_/ZN` drives a launch register’s **CK** pin. Its fanout of 943 and extreme reported slew describe the clock segment, not a data-net buffering opportunity.
+
+There are confirmed shared loads **after launch Q** on the worst Ibex data path:
+
+| Driver | Reported fanout |
+|---|---:|
+| `place2525/Z` | 22 |
+| `place2523/Z` | 45 |
+| `place1915/Z` | 31 |
+
+These drivers occur on the path to `rf_reg[703]/D`; the first two also occur on the path to `rf_reg[607]/D`. Their eligibility under other checks remains to be measured.
+
+## Cluster choice and why
+
+**Choose exactly `buffering`: criticality-gated rebuffering beyond the fanout cutoff.**
+
+`src/move/BufferGenerator.cc::isApplicable()` currently rejects every target with fanout **≥20**, before the existing rebuffer planner can search for a tree. Thus, confirmed shared data-path drivers with fanouts 22, 31, and 45 cannot receive this move.
+
+The lever is the **eligibility decision**, not a larger numerical cutoff: replace the blanket exclusion with evidence that the net feeds multiple setup violations. This directly tests the shared-load direction recommended in iteration 5 while avoiding the sizing dead ends from iterations 3–5.
+
+Ibex supplies the clearest opportunity. AES and GCD provide regression checks; their timing must be compared separately because the evaluator averages normalized per-design scores.
+
+## Hypothesis (problem → current heuristic → new approach → why WNS/TNS improves → risks)
+
+**Problem:** Shared data nets can retain poor critical-sink arrivals because full-tree rebuffering is unavailable at moderate fanout.
+
+**Current heuristic:** Permit rebuffering only for `1 ≤ fanout < 20`, regardless of sink criticality. Higher-fanout targets rely on other moves, including half-by-count load splitting.
+
+**New approach:** Preserve existing eligibility for fanout below 20. For fanout ≥20, permit the existing rebuffer search when the target is a setup-violating data-path driver and at least two distinct immediate load vertices have finite negative setup slack for the target transition. Preserve all existing net protection and applicability checks; exclude clock-network drivers.
+
+**Why timing should improve:** The existing required-time-aware tree search can partition shared load and change repeater topology on nets previously excluded from consideration. Improving a shared launch-side data trunk can reduce arrivals at several register-file endpoints together, improving both WNS and TNS.
+
+**Risks:** Added repeaters may increase insertion delay, area, or upstream capacitance. Existing trees may already be near optimal, or earlier move ordering may prevent the newly eligible search from executing. Hold, DRV, placement, determinism, and timeout gates remain mandatory.
+
+## Implementation sketch (files/functions)
+
+- **Edit `src/move/BufferGenerator.cc::isApplicable()`.** Replace the unconditional high-fanout veto with the criticality predicate above. Count distinct wire-connected loads using current STA values; ignore unconstrained/nonfinite slack.
+- **Keep `BufferGenerator::generate()` unchanged:** emit one existing `BufferCandidate`.
+- **Reuse `src/move/BufferCandidate.cc::apply()` → `Rebuffer::rebufferPin()` unchanged.** Keep buffer-tree construction, realization, parasitic invalidation, and commit/rollback behavior intact.
+- Add diagnostic counts in the generator for high-fanout targets examined, qualifying targets, and candidates generated. Use existing move tracking to distinguish attempted, applied, committed, and rolled-back repairs. An insertion log alone does not establish final acceptance.
+- Preserve APIs and sizing selection contracts. Add focused eligibility coverage for multiple violating loads, a single violating load, unconstrained loads, and protected clock nets.
+
+The named instances are diagnostic examples, never hardcoded targets.
+
+## Success criteria (numbers to look for)
+
+- Aggregate score versus champion **≥ +0.00200**, with all evaluator gates passing.
+- Ibex target: **ΔWNS ≥ +0.020 ns**, reaching approximately **−0.2794 ns**, and **≥1% lower TNS magnitude**, reaching approximately **−412.110 ns**.
+- Those Ibex gains alone contribute approximately **+0.00260** to the three-design average if AES/GCD remain unchanged.
+- At least one newly eligible high-fanout data-net repair survives rollback.
+- Matched affected endpoints show lower data arrivals after legalization and parasitic re-estimation, with changed downstream buffering and reduced shared-driver load or slew. Do not require fewer stages: useful buffering may add stages.
+- Seek nonnegative WNS/TNS deltas on AES and GCD; report any regressions explicitly.
+
+## Fallback if it fails
+
+Reject the candidate and retain the original champion. If no newly eligible repairs execute, record whether qualification, move ordering, or later rejection blocked them. If repairs execute without final timing gains, record matched arrival and topology changes and mark this eligibility hypothesis ineffective on tier A. Do not enlarge another cutoff or relax safety checks within this iteration.
+
+```json
+{
+  "cluster": "buffering",
+  "title": "Enable shared-critical-data rebuffering beyond the blanket fanout cutoff",
+  "hypothesis": "BufferGenerator currently excludes every net with fanout at least 20, including confirmed Ibex data-path drivers with fanouts 22, 31, and 45. Preserve low-fanout behavior but admit higher-fanout setup data targets when at least two distinct immediate loads have finite negative setup slack for the target transition, retaining existing protections and excluding clock drivers. Reuse the existing required-time-aware rebuffer search to improve shared-load topology and reduce multiple endpoint arrivals. Iteration 5 supports this direction through measured sizing parity and unresolved shared data loads, while iteration 4 supplies the selection-contract failure to avoid without providing timing evidence. Success requires committed newly eligible repairs and attributable post-legalization WNS/TNS gains.",
+  "files": ["src/move/BufferGenerator.cc"],
+  "evidence_iterations": [5, 4],
+  "success_criteria": "Score >= +0.00200 with all gates passing; target Ibex WNS gain >= 0.020 ns and TNS magnitude reduction >= 1%, supported by committed repairs and matched data-arrival reductions.",
+  "risk": "Existing trees may be near optimal; newly admitted searches may be blocked by ordering or may add delay, area, upstream load, or excessive search cost.",
+  "rule_updates": "Before using path maximum-fanout or worst-slew tags to justify data-net repair, locate the attributed driver relative to launch CK/Q and capture D."
+}
+```

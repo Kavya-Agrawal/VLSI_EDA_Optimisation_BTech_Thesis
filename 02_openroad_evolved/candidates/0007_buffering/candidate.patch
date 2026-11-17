@@ -1,0 +1,357 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0007_buffering/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0007_buffering/rsz/HYPOTHESIS.md
+new file mode 100644
+index 0000000..e180350
+--- /dev/null
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0007_buffering/rsz/HYPOTHESIS.md	
+@@ -0,0 +1,68 @@
++# Problem
++
++Splitting a fixed half of a high-fanout driver's sinks can move too much
++capacitance behind a buffer, consume the branch's slack, or miss a better split.
++
++# Current heuristic (file:function)
++
++`src/move/SplitLoadGenerator.cc:chooseSplitLoads` previously selected half of the
++sinks ordered by descending slack headroom, excluding top-level ports. Buffer
++sizing happened only when `SplitLoadCandidate::applySplitBuffer` inserted it.
++
++# New approach
++
++Keep the existing driver eligibility and deterministic headroom order. Search
++nonempty proper prefixes of movable sinks, excluding the captured focus-path
++load and top-level ports. Require a known focus-path load on the net.
++
++For each prefix, accumulate scene-specific pin capacitance and estimate split
++wire capacitance with driver-rooted bounding-box half-perimeters. Predict the
++buffer size with the existing `findTargetCell` target-slew policy. Evaluate
++original and reduced-load driver delays for rise and fall, then evaluate the
++buffer with the predicted driver output slews. Existing sink wire delays are
++held constant; driver delay relief and the new buffer delay change arrival.
++
++Reject a partition if either transition predicts worsening an already-negative
++moved-load slack or making a nonnegative moved-load slack negative. Among safe
++partitions with positive worst-load slack improvement, maximize that improvement
++and break ties by aggregate negative-slack improvement over load transitions.
++Exact ties retain the first (shortest) prefix. Missing timing models do not fall
++back to the fixed-half split. Selection performs no netlist edits; the existing
++candidate still inserts, sizes, invalidates parasitics, and participates in the
++existing journal/commit/rollback flow. No Tcl options change.
++
++# Why WNS/TNS should improve
++
++Shielding the focus driver from a capacitively heavy side branch can improve
++its delay to several failing endpoints. Explicitly charging moved sinks for
++buffer delay avoids spending slack they do not have. Searching prefix sizes
++allows more useful isolation than sink count alone. These are predictions;
++post-legalization WNS/TNS improvement must be established by the evaluator.
++
++# What to look for in the path report
++
++Compare matched endpoints before and after legalization. The focus sink should
++remain directly connected to the original driver, with lower driver delay and
++multiple improved shared-driver paths. Moved sinks should appear behind a
++`split` buffer without new setup regressions. Correlate retained split instances
++with the `split_load_move` level-2 selection diagnostic (load count, predicted
++worst slack gain, aggregate negative-slack gain); selection or insertion alone
++is not evidence that a move survived commit. Check Ibex WNS/TNS targets and
++unchanged AES/GCD, plus hold, DRVs, area, and placement gates.
++
++# Risks
++
++Bounding-box capacitance omits Steiner topology and wire-delay redistribution.
++Legalization changes wire lengths and slew; actual target-slew resizing can
++choose a different cell from the estimate. Driver delay uses the existing
++library helper's input-slew policy, and load slack budgets use STA's worst
++setup mode rather than a complete per-path, per-scene sensitivity model.
++Aggregate load-transition negative slack is a ranking proxy, not endpoint TNS.
++Few eligible nets or conservative slack guards may limit gains. No build,
++OpenROAD invocation, or tests were run, per the resource rule; the parent
++orchestrator must verify all evaluation gates.
++
++# Files changed
++
++- `src/move/SplitLoadGenerator.cc`: Replace fixed-half selection with deterministic, capacitance- and delay-aware prefix scoring and moved-branch slack guards.
++- `HYPOTHESIS.md`: Document the algorithm, expected path evidence, and modeling limits.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0007_buffering/rsz/src/move/SplitLoadGenerator.cc
+index 8746a15..5dbf183 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0007_buffering/rsz/src/move/SplitLoadGenerator.cc	
+@@ -4,6 +4,8 @@
+ #include "SplitLoadGenerator.hh"
+ 
+ #include <algorithm>
++#include <cmath>
++#include <limits>
+ #include <memory>
+ #include <utility>
+ #include <vector>
+@@ -14,16 +16,19 @@
+ #include "SplitLoadCandidate.hh"
+ #include "db_sta/dbNetwork.hh"
+ #include "db_sta/dbSta.hh"
++#include "est/EstimateParasitics.h"
+ #include "odb/db.h"
+ #include "odb/geom.h"
+ #include "rsz/Resizer.hh"
+ #include "sta/Delay.hh"
+ #include "sta/Graph.hh"
+ #include "sta/GraphClass.hh"
++#include "sta/GraphDelayCalc.hh"
+ #include "sta/Liberty.hh"
+ #include "sta/Network.hh"
+ #include "sta/NetworkClass.hh"
+ #include "sta/Path.hh"
++#include "sta/Scene.hh"
+ #include "sta/Transition.hh"
+ #include "utl/Logger.h"
+ 
+@@ -50,21 +55,14 @@ bool resolveDriverPin(Resizer& resizer,
+     return false;
+   }
+   if (target.fanout <= kSplitLoadMinFanout) {
+-    debugPrint(resizer.logger(),
+-               RSZ,
+-               "split_load_move",
+-               2,
++    debugPrint(resizer.logger(), RSZ, "split_load_move", 2,
+                "REJECT SplitLoadMove {}: Fanout {} <= {} min fanout",
+-               resizer.network()->pathName(drvr_pin),
+-               target.fanout,
++               resizer.network()->pathName(drvr_pin), target.fanout,
+                kSplitLoadMinFanout);
+     return false;
+   }
+   if (!resizer.okToBufferNet(drvr_pin)) {
+-    debugPrint(resizer.logger(),
+-               RSZ,
+-               "split_load_move",
+-               2,
++    debugPrint(resizer.logger(), RSZ, "split_load_move", 2,
+                "REJECT SplitLoadMove {}: Not OK to buffer net",
+                resizer.network()->pathName(drvr_pin));
+     return false;
+@@ -87,8 +85,8 @@ std::vector<FanoutSlack> collectRankedFanoutSlacks(Resizer& resizer,
+     return fanout_slacks;
+   }
+ 
+-  const sta::Slack drvr_slack
+-      = resizer.sta()->slack(drvr_vertex, resizer.maxAnalysisMode());
++  const sta::Slack drvr_slack =
++      resizer.sta()->slack(drvr_vertex, resizer.maxAnalysisMode());
+   sta::VertexOutEdgeIterator edge_iter(drvr_vertex, resizer.graph());
+   while (edge_iter.hasNext()) {
+     sta::Edge* edge = edge_iter.next();
+@@ -97,34 +95,163 @@ std::vector<FanoutSlack> collectRankedFanoutSlacks(Resizer& resizer,
+     }
+ 
+     sta::Vertex* fanout_vertex = edge->to(resizer.graph());
+-    const sta::Slack fanout_slack
+-        = resizer.sta()->slack(fanout_vertex, rf, resizer.maxAnalysisMode());
++    const sta::Slack fanout_slack =
++        resizer.sta()->slack(fanout_vertex, rf, resizer.maxAnalysisMode());
+     fanout_slacks.emplace_back(fanout_vertex, fanout_slack - drvr_slack);
+   }
+ 
+-  std::ranges::sort(fanout_slacks,
+-                    [&resizer](const FanoutSlack& lhs, const FanoutSlack& rhs) {
+-                      return lhs.second > rhs.second
+-                             || (lhs.second == rhs.second
+-                                 && resizer.network()->pathNameLess(
+-                                     lhs.first->pin(), rhs.first->pin()));
+-                    });
++  std::ranges::sort(fanout_slacks, [&resizer](const FanoutSlack& lhs,
++                                              const FanoutSlack& rhs) {
++    return lhs.second > rhs.second || (lhs.second == rhs.second &&
++                                       resizer.network()->pathNameLess(
++                                           lhs.first->pin(), rhs.first->pin()));
++  });
+   return fanout_slacks;
+ }
+ 
++// Keep the existing headroom order, but spend each branch's slack budget
++// rather than moving a fixed number of sinks.  No trial netlist edits are
++// needed: application still uses the journaled SplitLoadCandidate.
+ std::unique_ptr<sta::PinSet> chooseSplitLoads(
+     Resizer& resizer,
++    const Target& target,
++    sta::Pin* drvr_pin,
++    sta::LibertyCell* buffer_cell,
+     const std::vector<FanoutSlack>& fanout_slacks)
+ {
+-  auto load_pins = std::make_unique<sta::PinSet>(resizer.network());
+-  const int split_index = fanout_slacks.size() / 2;
+-  for (int i = 0; i < split_index; ++i) {
+-    sta::Pin* split_pin = fanout_slacks[i].first->pin();
+-    if (!resizer.network()->isTopLevelPort(split_pin)) {
+-      load_pins->insert(split_pin);
++  auto best_pins = std::make_unique<sta::PinSet>(resizer.network());
++  const auto* scene = target.activeScene(resizer);
++  const auto* min_max = target.minMax(resizer);
++  const auto* driver_port = resizer.network()->libertyPort(drvr_pin);
++  // Without the captured path load we cannot guarantee path retention.
++  if (scene == nullptr || min_max == nullptr || driver_port == nullptr ||
++      target.load_pin == nullptr ||
++      !std::ranges::any_of(fanout_slacks, [&target](const auto& load) {
++        return load.first->pin() == target.load_pin;
++      })) {
++    return best_pins;
++  }
++  driver_port = driver_port->scenePort(scene->libertyIndex(min_max));
++  if (driver_port == nullptr) {
++    return best_pins;
++  }
++
++  const odb::Point origin = resizer.dbNetwork()->location(drvr_pin);
++  odb::Rect all_box(origin, origin);
++  for (const auto& [vertex, headroom] : fanout_slacks) {
++    all_box.merge(resizer.dbNetwork()->location(vertex->pin()));
++  }
++  double wire_res = 0.0;
++  double wire_cap = 0.0;
++  resizer.estimateParasitics()->wireSignalRC(scene, wire_res, wire_cap);
++  const double cap_per_dbu = wire_cap * resizer.dbuToMeters(1);
++  const float old_cap =
++      resizer.sta()->graphDelayCalc()->loadCap(drvr_pin, scene, min_max);
++  sta::ArcDelay old_delay[sta::RiseFall::index_count];
++  sta::Slew old_slew[sta::RiseFall::index_count];
++  resizer.gateDelays(driver_port, old_cap, scene, min_max, old_delay, old_slew);
++
++  sta::PinSet moved(resizer.network());
++  float moved_cap = 0.0f;
++  odb::Rect moved_box(origin, origin);
++  float best_gain = 0.0f;
++  double best_tns_gain = 0.0;
++  for (size_t prefix = 0; prefix < fanout_slacks.size(); ++prefix) {
++    sta::Pin* pin = fanout_slacks[prefix].first->pin();
++    if (pin == target.load_pin || resizer.network()->isTopLevelPort(pin)) {
++      continue;
++    }
++    const auto* port = resizer.network()->libertyPort(pin);
++    port = port != nullptr ? port->scenePort(scene->libertyIndex(min_max))
++                           : nullptr;
++    if (port == nullptr) {
++      // A prefix with an unmodelled load cannot be evaluated safely.
++      break;
++    }
++    moved.insert(pin);
++    moved_cap += port->capacitance();
++    moved_box.merge(resizer.dbNetwork()->location(pin));
++    if (moved.size() >= fanout_slacks.size()) {
++      break;
++    }
++
++    odb::Rect kept_box(origin, origin);
++    for (const auto& [vertex, headroom] : fanout_slacks) {
++      if (moved.find(vertex->pin()) == moved.end()) {
++        kept_box.merge(resizer.dbNetwork()->location(vertex->pin()));
++      }
++    }
++    // HPWL approximates the two new nets, both rooted at the driver.
++    const float branch_cap =
++        moved_cap + cap_per_dbu * (moved_box.dx() + moved_box.dy());
++    const float saved_wire_cap = cap_per_dbu * (all_box.dx() + all_box.dy() -
++                                                kept_box.dx() - kept_box.dy());
++    auto* sized_cell = resizer.findTargetCell(buffer_cell, branch_cap, false);
++    auto* scene_cell =
++        sized_cell != nullptr ? sized_cell->sceneCell(scene, min_max) : nullptr;
++    sta::LibertyPort *input = nullptr, *output = nullptr;
++    if (scene_cell != nullptr) {
++      scene_cell->bufferPorts(input, output);
++    }
++    if (input == nullptr || output == nullptr) {
++      continue;
++    }
++    const float new_cap = std::max(
++        0.0f, old_cap - moved_cap - saved_wire_cap + input->capacitance());
++    sta::ArcDelay new_delay[sta::RiseFall::index_count];
++    sta::Slew new_slew[sta::RiseFall::index_count];
++    sta::ArcDelay buffer_delay[sta::RiseFall::index_count];
++    sta::Slew buffer_slew[sta::RiseFall::index_count];
++    resizer.gateDelays(driver_port, new_cap, scene, min_max, new_delay,
++                       new_slew);
++    resizer.gateDelays(output, branch_cap, new_slew, scene, min_max,
++                       buffer_delay, buffer_slew);
++
++    bool safe = true;
++    float old_worst = std::numeric_limits<float>::infinity();
++    float new_worst = std::numeric_limits<float>::infinity();
++    double tns_gain = 0.0;
++    for (const auto& [vertex, headroom] : fanout_slacks) {
++      const bool is_moved = moved.find(vertex->pin()) != moved.end();
++      for (const auto* rf : sta::RiseFall::range()) {
++        const int index = rf->index();
++        const auto slack =
++            resizer.sta()->slack(vertex, rf, resizer.maxAnalysisMode());
++        if (sta::delayInf(slack, resizer.sta())) {
++          continue;
++        }
++        const float change =
++            sta::delayAsFloat(new_delay[index]) -
++            sta::delayAsFloat(old_delay[index]) +
++            (is_moved ? sta::delayAsFloat(buffer_delay[index]) : 0.0f);
++        const float before = sta::delayAsFloat(slack);
++        const float after = before - change;
++        if (!std::isfinite(change) || old_delay[index] <= -sta::INF ||
++            new_delay[index] <= -sta::INF || buffer_delay[index] <= -sta::INF ||
++            (is_moved && ((before < 0.0f && after < before) ||
++                          (before >= 0.0f && after < 0.0f)))) {
++          safe = false;
++        }
++        old_worst = std::min(old_worst, before);
++        new_worst = std::min(new_worst, after);
++        tns_gain += std::min(after, 0.0f) - std::min(before, 0.0f);
++      }
++    }
++    const float gain = new_worst - old_worst;
++    if (safe && std::isfinite(gain) && gain > 0.0f &&
++        (gain > best_gain || (gain == best_gain && tns_gain > best_tns_gain))) {
++      best_gain = gain;
++      best_tns_gain = tns_gain;
++      *best_pins = moved;
+     }
+   }
+-  return load_pins;
++  debugPrint(
++      resizer.logger(), RSZ, "split_load_move", 2,
++      "SplitLoadMove {}: selected {} loads, predicted worst slack gain {} "
++      "aggregate negative slack gain {}",
++      resizer.network()->pathName(drvr_pin), best_pins->size(), best_gain,
++      best_tns_gain);
++  return best_pins;
+ }
+ 
+ }  // namespace
+@@ -144,18 +271,12 @@ std::vector<std::unique_ptr<MoveCandidate>> SplitLoadGenerator::generate(
+     return candidates;
+   }
+ 
+-  std::vector<FanoutSlack> fanout_slacks
+-      = collectRankedFanoutSlacks(resizer_, target, drvr_vertex);
++  std::vector<FanoutSlack> fanout_slacks =
++      collectRankedFanoutSlacks(resizer_, target, drvr_vertex);
+   if (fanout_slacks.empty()) {
+     return candidates;
+   }
+ 
+-  std::unique_ptr<sta::PinSet> load_pins
+-      = chooseSplitLoads(resizer_, fanout_slacks);
+-  if (load_pins->empty()) {
+-    return candidates;
+-  }
+-
+   sta::LibertyCell* buffer_cell = resizer_.lowestDriveBufferCell();
+   odb::dbNet* db_drvr_net = nullptr;
+   odb::dbModNet* db_mod_drvr_net = nullptr;
+@@ -165,6 +286,12 @@ std::vector<std::unique_ptr<MoveCandidate>> SplitLoadGenerator::generate(
+     return candidates;
+   }
+ 
++  std::unique_ptr<sta::PinSet> load_pins =
++      chooseSplitLoads(resizer_, target, drvr_pin, buffer_cell, fanout_slacks);
++  if (load_pins->empty()) {
++    return candidates;
++  }
++
+   const odb::Point drvr_loc = resizer_.dbNetwork()->location(drvr_pin);
+   candidates.push_back(std::make_unique<SplitLoadCandidate>(
+       resizer_, target, drvr_net, buffer_cell, drvr_loc, std::move(load_pins)));

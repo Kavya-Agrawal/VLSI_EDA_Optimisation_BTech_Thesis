@@ -1,0 +1,3 @@
+/Users/kavyaagrawal/.vscode/extensions/openai.chatgpt-26.1111.21308-darwin-arm64/bin/macos-aarch64/codex --no-daemon -s workspace-write -a never -C '/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy/rsz' -m gpt-6.1-sol exec --json -
+# provider=codex
+# cwd=/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy/rsz

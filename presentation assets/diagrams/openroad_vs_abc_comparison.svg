@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 560" width="1280" height="560">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#1e293b"/>
+    </marker>
+    <filter id="soft-shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.04"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <!-- transparent background for perfect cropping -->
+
+  <!-- Global Header Pill -->
+  <g transform="translate(460, 18)">
+    <rect width="360" height="32" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+    <text x="180" y="21" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#475569" text-anchor="middle">
+      Architectural Comparison: Logic Synthesis vs. Physical Design
+    </text>
+  </g>
+
+  <!-- ==================== COLUMN 1: ABC (BLUE) ==================== -->
+  <g transform="translate(60, 75)">
+    <!-- Pill Badge -->
+    <rect x="80" y="-12" width="200" height="24" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="180" y="4" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Logic Synthesis Domain</text>
+
+    <!-- Outer Container -->
+    <rect width="360" height="450" rx="14" fill="#dbeafe" stroke="#1e293b" stroke-width="1.8" filter="url(#soft-shadow)"/>
+    <text x="180" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#0f172a" text-anchor="middle">
+      ABC / Self-Evolved ABC
+    </text>
+    <text x="180" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="500" fill="#475569" text-anchor="middle">
+      Discrete Boolean Logic Optimization
+    </text>
+
+    <!-- Sub-card 1: Representation -->
+    <g transform="translate(18, 75)">
+      <rect width="324" height="74" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Circuit Representation</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• And-Inverter Graphs (AIGs) &amp; Boolean truth tables</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• No physical layout coordinates, no RC parasitics</text>
+    </g>
+
+    <!-- Sub-card 2: Oracle -->
+    <g transform="translate(18, 160)">
+      <rect width="324" height="88" rx="8" fill="#fef9c3" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#854d0e">Correctness Oracle: Single SAT Miter</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Combinational Equivalence Checking (CEC)</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Math guarantee: ∀ x, F_orig(x) == F_evolved(x)</text>
+      <text x="14" y="78" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="600" fill="#854d0e">• Single binary verdict: UNSAT = PASS</text>
+    </g>
+
+    <!-- Sub-card 3: Search Plasticity -->
+    <g transform="translate(18, 260)">
+      <rect width="324" height="82" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Agent Search Plasticity</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• High local freedom: unconstrained cut restructuring</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Edits in abci/ do not cause physical violations</text>
+      <text x="14" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Instant verification (&lt; 1 sec per testcase)</text>
+    </g>
+
+    <!-- Sub-card 4: Benchmarks -->
+    <g transform="translate(18, 354)">
+      <rect width="324" height="74" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Standard Benchmarks</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• ISCAS'85, ISCAS'89, EPFL benchmark suites</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Logic netlists without process design kits (PDKs)</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: KEY DIVERGENCE (GREY) ==================== -->
+  <g transform="translate(460, 75)">
+    <!-- Pill Badge -->
+    <rect x="75" y="-12" width="210" height="24" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="180" y="4" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">The Physical Reality Barrier</text>
+
+    <!-- Outer Container -->
+    <rect width="360" height="450" rx="14" fill="#f1f5f9" stroke="#1e293b" stroke-width="1.8" filter="url(#soft-shadow)"/>
+    <text x="180" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#0f172a" text-anchor="middle">
+      Why Logic != Physical
+    </text>
+    <text x="180" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="500" fill="#475569" text-anchor="middle">
+      Fundamental EDA Domain Shift
+    </text>
+
+    <!-- Comparison Row 1 -->
+    <g transform="translate(18, 75)">
+      <rect width="324" height="74" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Boolean Logic vs. Silicon Physics</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• ABC preserves functional truth tables.</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• OpenROAD must obey non-linear nanometer physics.</text>
+    </g>
+
+    <!-- Comparison Row 2 -->
+    <g transform="translate(18, 160)">
+      <rect width="324" height="88" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Oracle: Single SAT vs. Multi-Domain</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• CEC cannot detect overlapping placed cells.</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• CEC cannot detect slew degradation or hold violations.</text>
+      <text x="14" y="78" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="600" fill="#0f172a">• Physical tools require orthogonal verification layers.</text>
+    </g>
+
+    <!-- Comparison Row 3 -->
+    <g transform="translate(18, 260)">
+      <rect width="324" height="82" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Coupled Non-Local Side Effects</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Sizing gate g increases its input capacitance C_in.</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Higher C_in slows upstream driver, rippling delay back.</text>
+      <text x="14" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Wider cell displaces adjacent cells, risking DRC overlaps.</text>
+    </g>
+
+    <!-- Comparison Row 4 -->
+    <g transform="translate(18, 354)">
+      <rect width="324" height="74" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Search Space Constraints</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Random edits produce 96.1% invalid or regressed designs.</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Guided physical path mutation (TPGM) is mandatory.</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: OPENROAD (PINK) ==================== -->
+  <g transform="translate(860, 75)">
+    <!-- Pill Badge -->
+    <rect x="80" y="-12" width="200" height="24" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="180" y="4" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Physical Design Domain</text>
+
+    <!-- Outer Container -->
+    <rect width="360" height="450" rx="14" fill="#fecdd3" stroke="#1e293b" stroke-width="1.8" filter="url(#soft-shadow)"/>
+    <text x="180" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#0f172a" text-anchor="middle">
+      OpenROAD / PV-Evolve
+    </text>
+    <text x="180" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="500" fill="#475569" text-anchor="middle">
+      2D Layout &amp; Timing Closure Engine (rsz)
+    </text>
+
+    <!-- Sub-card 1: Representation -->
+    <g transform="translate(18, 75)">
+      <rect width="324" height="74" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Circuit Representation</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Geometric layout (.def / .odb) with (X, Y) coordinates</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Liberty non-linear tables (.lib) &amp; wire parasitics (.spef)</text>
+    </g>
+
+    <!-- Sub-card 2: Oracle -->
+    <g transform="translate(18, 160)">
+      <rect width="324" height="88" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#9f1239">Correctness Oracle: 6-Layer PVCC</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• C(c, r) = L1(build) ∧ L2(unit) ∧ L3(OpenDP legal)</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">          ∧ L4(DRC slew/cap) ∧ L5(Hold) ∧ L6(determ)</text>
+      <text x="14" y="78" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="600" fill="#9f1239">• Fail-Closed: any violation aborts evaluation</text>
+    </g>
+
+    <!-- Sub-card 3: Search Plasticity -->
+    <g transform="translate(18, 260)">
+      <rect width="324" height="82" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Agent Search Plasticity</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Constrained physical moves (sizing, buffering, hold)</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Guided by TPGM path sensitivity matrix w_i</text>
+      <text x="14" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Bounded code context dossiers via Graphify</text>
+    </g>
+
+    <!-- Sub-card 4: Benchmarks -->
+    <g transform="translate(18, 354)">
+      <rect width="324" height="74" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.4"/>
+      <text x="14" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Standard Benchmarks</text>
+      <text x="14" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Real ASIC placed blocks: Nangate45 GCD, AES, Ibex</text>
+      <text x="14" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" fill="#334155">• Advanced nodes: ASAP7 (7nm FinFET), SKY130</text>
+    </g>
+  </g>
+</svg>

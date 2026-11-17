@@ -1,0 +1,66 @@
+{
+  "accepted": false,
+  "score": -0.000391,
+  "reasons": [
+    "score -0.00039 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.0,
+      "wns_cand": -0.17417545676519416,
+      "wns_ref": -0.17417545676519416,
+      "tns_cand": -7.62617102164613,
+      "tns_ref": -7.62617102164613,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.08703885081255561,
+      "hold_ref": 0.08703885081255562,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 848.806025466331,
+      "area_ref": 848.806025466331,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -0.0023641705055668107,
+      "wns_cand": -0.11118745128202452,
+      "wns_ref": -0.108288603371592,
+      "tns_cand": -15.02669498031519,
+      "tns_ref": -14.773421126812009,
+      "d_wns_ns": -0.002898847910432517,
+      "d_tns_ns": -0.2532738535031811,
+      "d_wns_pct_period": -0.44189754732203,
+      "d_tns_pct": -1.7143886397682055,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075146,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20380.65360920882,
+      "area_ref": 20271.860634579753,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.0011925031167658116,
+      "wns_cand": -0.2978442021765035,
+      "wns_ref": -0.29941183713160996,
+      "tns_cand": -401.6370780749931,
+      "tns_ref": -416.2728946035277,
+      "d_wns_ns": 0.0015676349551064783,
+      "d_tns_ns": 14.635816528534576,
+      "d_wns_pct_period": 0.08907016790377718,
+      "d_tns_pct": 3.5159186961894844,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28611.22538888594,
+      "area_ref": 28628.78112352973,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  }
+}

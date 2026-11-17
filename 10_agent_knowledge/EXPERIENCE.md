@@ -4,7 +4,7 @@ This is a derived, agent-friendly index. The durable source records are `iterati
 remains in `02_openroad_evolved`, `06_evolved_results`, and `11_agent_data`. Regenerating this file never deletes
 an iteration record.
 
-Recorded iterations: **5** · valid algorithm experiments: **3**
+Recorded iterations: **7** · valid algorithm experiments: **5**
 
 ## Iteration 1: crashed · unassigned
 - **Evidence status:** infrastructure/no-code record; do not infer heuristic quality
@@ -74,3 +74,42 @@ Recorded iterations: **5** · valid algorithm experiments: **3**
 - **Bad changes:** src/move/SizeUpGenerator.cc moved replacementPreservesMaxCap into contender selection with zero measured WNS, TNS, or reported endpoint improvement.
 - **Files to revisit:** src/move/SplitLoadGenerator.cc, src/move/BufferGenerator.cc, src/move/CloneGenerator.cc, src/policy/SetupLegacyPolicy.cc
 - **Files to avoid:** src/move/SizeUpGenerator.cc, src/move/SizeUpGenerator.hh
+
+## Iteration 6: rejected · buffering
+- **Evidence status:** valid algorithm experiment
+- **Hypothesis:** Enable shared-critical-data rebuffering beyond the blanket fanout cutoff
+- **Score:** vs champion -0.00039; vs baseline -0.00039
+- **Files planned:** src/move/BufferGenerator.cc
+- **Files changed:** src/move/BufferGenerator.cc, src/move/BufferGenerator.hh, HYPOTHESIS.md
+- **Patch scope:** 1 files, +120/-7 lines
+- **Verdict reasons:** score -0.00039 below required gain +0.00200
+- **nangate45/gcd: score +0.00000; WNS -0.1742->-0.1742 ns (d +0.0000); TNS -7.626->-7.626 ns (d +0.000)**
+- **nangate45/aes: score -0.00236; WNS -0.1083->-0.1112 ns (d -0.0029); TNS -14.773->-15.027 ns (d -0.253)**
+- **nangate45/ibex: score +0.00119; WNS -0.2994->-0.2978 ns (d +0.0016); TNS -416.273->-401.637 ns (d +14.636)**
+- **Dominant cause:** deep_logic
+- **Lesson:** High-fanout eligibility reduced Ibex TNS by 3.52% but failed promotion because AES regressed and retained repairs on the intended drivers were not established.
+- **Dead end:** Do not repeat fanout eligibility expansion without retained-driver attribution and post-legalization collateral checks.
+- **Recommended next cluster:** buffering
+- **Good changes:** src/rsz/src/move/BufferGenerator.cc preserves low-fanout eligibility, net protections, and clock exclusion; GCD timing remained identical., The eligibility-only candidate reduced Ibex TNS by 14.636 ns, but the specific retained rebuffer mechanism remains unverified.
+- **Bad changes:** src/rsz/src/move/BufferGenerator.cc enables high-fanout candidates by default without demonstrating post-legalization benefit across affected branches; AES WNS and TNS regressed., Reusing BufferCandidate and Rebuffer unchanged did not establish retained repairs on fanout-22/31/45 targets or meet the 20 ps Ibex WNS target.
+- **Files to revisit:** src/rsz/src/move/BufferGenerator.cc, src/rsz/src/move/BufferCandidate.cc, src/rsz/src/Rebuffer.cc, src/rsz/src/Optimizer.cc, src/rsz/src/RepairTargetCollector.cc
+- **Files to avoid:** src/rsz/src/move/BufferGenerator.hh
+
+## Iteration 7: rejected · buffering
+- **Evidence status:** valid algorithm experiment
+- **Hypothesis:** Choose split-load partitions by branch slack budgets instead of half the sink count
+- **Score:** vs champion -0.00156; vs baseline -0.00156
+- **Files planned:** src/move/SplitLoadGenerator.cc
+- **Files changed:** src/move/SplitLoadGenerator.cc, HYPOTHESIS.md
+- **Patch scope:** 1 files, +231/-36 lines
+- **Verdict reasons:** score -0.00156 below required gain +0.00200
+- **nangate45/gcd: score +0.00000; WNS -0.1742->-0.1742 ns (d +0.0000); TNS -7.626->-7.626 ns (d +0.000)**
+- **nangate45/aes: score -0.00467; WNS -0.1083->-0.1136 ns (d -0.0053); TNS -14.773->-15.758 ns (d -0.985)**
+- **nangate45/ibex: score +0.00000; WNS -0.2994->-0.2994 ns (d +0.0000); TNS -416.273->-416.273 ns (d +0.000)**
+- **Dominant cause:** high_fanout
+- **Lesson:** Capacitance-aware prefix selection with predicted moved-load safety regressed AES WNS by 5.341 ps and TNS by 0.984591 ns, so split retention requires measured affected-endpoint checks after legalization.
+- **Dead end:** Do not repeat prediction-only prefix replacement without attributing retained splits and verifying post-legalization collateral.
+- **Recommended next cluster:** buffering
+- **Bad changes:** src/rsz/src/move/SplitLoadGenerator.cc: prefix selection replacement regressed AES and produced no measured GCD or Ibex benefit, src/rsz/src/move/SplitLoadGenerator.cc: HPWL capacitance and gate-delay prediction omits wire resistance and downstream slew propagation
+- **Files to revisit:** src/rsz/src/move/SplitLoadGenerator.cc, src/rsz/src/move/SplitLoadCandidate.cc, src/rsz/src/Optimizer.cc
+- **Files to avoid:** src/rsz/src/move/SizeUpGenerator.cc, src/rsz/src/move/SizeUpCandidate.cc

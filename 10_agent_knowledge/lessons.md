@@ -13,3 +13,11 @@ Absolute stage-gain ranking changed rising-edge replacement selection and failed
 ## iteration 5 (sizing)
 
 Moving upstream max-capacitance feasibility into sizing selection preserved compatibility but produced zero incremental tier-A timing benefit.
+
+## iteration 6 (buffering)
+
+High-fanout eligibility reduced Ibex TNS by 3.52% but failed promotion because AES regressed and retained repairs on the intended drivers were not established.
+
+## iteration 7 (buffering)
+
+Capacitance-aware prefix selection with predicted moved-load safety regressed AES WNS by 5.341 ps and TNS by 0.984591 ns, so split retention requires measured affected-endpoint checks after legalization.

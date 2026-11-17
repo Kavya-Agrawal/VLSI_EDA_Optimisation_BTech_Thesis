@@ -13,3 +13,11 @@ Repeating the same gate-failing absolute-gain selector without resolving its sel
 ## iteration 5 (sizing)
 
 Do not repeat feasible-runner-up sizing selection without measured recovery opportunities and attributable endpoint gains.
+
+## iteration 6 (buffering)
+
+Do not repeat fanout eligibility expansion without retained-driver attribution and post-legalization collateral checks.
+
+## iteration 7 (buffering)
+
+Do not repeat prediction-only prefix replacement without attributing retained splits and verifying post-legalization collateral.

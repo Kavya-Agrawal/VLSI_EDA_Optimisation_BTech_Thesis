@@ -1,0 +1,118 @@
+# Feedback for iteration 7 (0007_buffering, cluster buffering)
+
+```
+vs champion:
+REJECT  score=-0.00156
+  nangate45/gcd      WNS -0.1742 -> -0.1742 ns  TNS -7.626 -> -7.626 ns  score +0.00000
+  nangate45/aes      WNS -0.1083 -> -0.1136 ns  TNS -14.773 -> -15.758 ns  score -0.00467
+  nangate45/ibex     WNS -0.2994 -> -0.2994 ns  TNS -416.273 -> -416.273 ns  score +0.00000
+  ! score -0.00156 below required gain +0.00200
+
+vs baseline:
+ACCEPT  score=-0.00156
+  nangate45/gcd      WNS -0.1742 -> -0.1742 ns  TNS -7.626 -> -7.626 ns  score +0.00000
+  nangate45/aes      WNS -0.1083 -> -0.1136 ns  TNS -14.773 -> -15.758 ns  score -0.00467
+  nangate45/ibex     WNS -0.2994 -> -0.2994 ns  TNS -416.273 -> -416.273 ns  score +0.00000
+```
+
+Could not save `feedback.md`: this session permits read-only filesystem access. Complete contents follow.
+
+## 1. Outcome
+
+**REJECT vs champion.** Score **−0.001557**, missing the required **+0.002000** by **0.003557**. The authoritative baseline verdict is **ACCEPT**, despite the same negative score; it does not establish a timing gain.
+
+Deltas below are candidate minus champion; negative means worse.
+
+| Design | WNS reference → candidate (ns) | ΔWNS (ns) | TNS reference → candidate (ns) | ΔTNS (ns) | Score |
+|---|---:|---:|---:|---:|---:|
+| nangate45/gcd | −0.174175 → −0.174175 | 0 | −7.626171 → −7.626171 | 0 | 0 |
+| nangate45/aes | −0.108289 → −0.113630 | −0.005341 | −14.773421 → −15.758012 | −0.984591 | −0.004672 |
+| nangate45/ibex | −0.299412 → −0.299412 | 0 | −416.272895 → −416.272895 | 0 | 0 |
+
+AES negative-slack magnitude increased **6.665%**. Both replicates were deterministic. All six unit targets and ten smoke tests passed; functional gates did not detect the timing regression.
+
+## 2. Did the hypothesis do what it predicted?
+
+**The implementation follows the proposed selection mechanism; measured results contradict its expected benefit.**
+
+Only `src/rsz/src/move/SplitLoadGenerator.cc` differs from champion. It retains the focus sink, searches prefixes of the eligible ranked loads, estimates capacitance and target-slew buffer size, evaluates both transitions, rejects predicted moved-load violations, and ranks predicted worst-load slack gain with aggregate negative-slack gain as tie-breaker.
+
+Observed effects:
+
+- **GCD and Ibex:** identical WNS, TNS, and reported endpoint lists. No incremental shared-load repair benefit.
+- **AES:** zero improved matched reported endpoints, eight regressed, and twelve entries replaced in the worst list. Multiple endpoints deteriorated together.
+- AES `sa23_sr[4]` improved **35.671 ps** from its own pre-repair slack, but finished **9.768 ps worse than reference**. Similarly, `sa23_sr[0]` improved **33.711 ps** during repair yet lost **7.233 ps** against reference. These are repair-flow gains, not gains attributable to iteration 7.
+
+The predictor uses HPWL capacitance and driver/buffer gate-delay changes. It retrieves wire resistance but does not use it, and does not propagate changed sink slew through downstream logic. Application independently calls `resizeToTargetSlew()` on the inserted net; predicted and realized cell/load agreement is unverified.
+
+The logs do not attribute retained splits or report predicted versus realized endpoint deltas. Therefore, the evidence cannot distinguish inaccurate predictions from suppression of useful champion splits or subsequent repair-sequence changes.
+
+## 3. Where the remaining negative slack comes from
+
+The five worst endpoints globally are all Ibex endpoints; selecting one per design would omit worse paths.
+
+| Endpoint | Slack (ns) | Likely cause | Applicable moves | Why this candidate likely did not resolve it |
+|---|---:|---|---|---|
+| `gen_regfile_ff.register_file_i.rf_reg[703]$_DFFE_PN0P_/D` | −0.299412 | Shared high fanout/weak drive; deep logic | Buffer tree, driver cloning, targeted sizing; logic-depth reduction | Prefix selection alone did not change final timing; retained-action attribution absent |
+| `gen_regfile_ff.register_file_i.rf_reg[607]$_DFFE_PN0P_/D` | −0.299021 | Same shared bottleneck | Same | No measured change to the shared bottleneck |
+| `gen_regfile_ff.register_file_i.rf_reg[831]$_DFFE_PN0P_/D` | −0.298793 | Same shared bottleneck | Same | A single added branch cannot be assumed sufficient for this load |
+| `gen_regfile_ff.register_file_i.rf_reg[799]$_DFFE_PN0P_/D` | −0.298775 | Same shared bottleneck | Same | Existing eligibility and repair scheduling remain unchanged |
+| `gen_regfile_ff.register_file_i.rf_reg[895]$_DFFE_PN0P_/D` | −0.298720 | Same shared bottleneck | Same | No verified reduction in driver delay or downstream arrival |
+
+All five paths have **35 stages**, maximum fanout **943**, and the same reported worst driver, `AND2_X1@_26153_/ZN`, with raw slew **2,087,753,088**. Their slack spread is only **0.692 ps**, supporting investigation of a common bottleneck. Confirm whether the extreme-fanout net is a legal data-repair target before proposing a transformation.
+
+The reports also tag these paths `io_constrained`, but attribution records startpoint `clk`; that tag alone does not establish an IO-budget cause. Long-wire delay and clock skew are unproven without RC and clock-arrival decomposition. Raw slew units require validation before physical interpretation.
+
+For context, GCD’s worst paths have fanout at most eight, while split-load eligibility requires **fanout > 8**. This directly limits the changed mechanism’s reach there.
+
+## 4. Regressions
+
+All eight matched reported regressions occur in AES.
+
+| Endpoint | Reference slack (ns) | Candidate slack (ns) | Loss (ps) |
+|---|---:|---:|---:|
+| `sa23_sr[4]$_DFF_P_/D` | −0.103862 | −0.113630 | 9.768 |
+| `sa23_sr[7]$_DFF_P_/D` | −0.105271 | −0.112934 | 7.663 |
+| `sa23_sr[0]$_DFF_P_/D` | −0.105239 | −0.112472 | 7.233 |
+| `sa23_sr[5]$_DFF_P_/D` | −0.105222 | −0.111829 | 6.607 |
+| `sa32_sr[7]$_DFF_P_/D` | −0.102820 | −0.111042 | 8.222 |
+| `sa20_sr[7]$_DFF_P_/D` | −0.104571 | −0.110636 | 6.065 |
+| `sa33_sr[1]$_DFF_P_/D` | −0.104054 | −0.109630 | 5.576 |
+| `sa33_sr[3]$_DFF_P_/D` | −0.107356 | −0.109618 | 2.262 |
+
+The four `sa23` paths share reported slow-driver structures around `_13069_` and `_13050_`; the worst path also contains `BUF_X1@place7593`. This is consistent with shared-cone collateral or lost repair opportunities, but does not identify a particular inserted buffer as responsible.
+
+Probable mechanisms are omitted wire-resistance/downstream-slew effects, predicted versus applied sizing mismatch, and changed candidate availability affecting later repairs. The prediction-only moved-load guard cannot establish post-legalization endpoint safety. Worst-list turnover is not proof that departing endpoints improved.
+
+## 5. Recommendation for the next iteration
+
+**Recommended cluster: buffering.** Start from champion.
+
+1. **Add measured split retention and attribution.** Record driver, moved sinks, predicted cell/gains, applied cell, and matched endpoint deltas. After parasitic refresh and legalization, reject moved-negative endpoint losses, newly negative moved endpoints, and affected-cone WNS/TNS regressions. Reproduce AES first.
+2. **Compare selection policies under identical verification.** Evaluate champion’s half split and the proposed prefixes through journaled trials. This separates rejected useful splits from inaccurate positive predictions. Include actual downstream slew propagation; use the analytical estimate for ordering.
+3. **Investigate the Ibex shared driver within existing eligibility.** Establish why `_26153_/ZN` receives no effective retained repair. If legally bufferable, compare a staged buffer tree with cloning using matched endpoint measurements; the first five endpoints should respond together if the attribution is correct.
+
+**Do not repeat:** replacing champion’s selector with another prediction-only prefix policy without retained-split and post-legalization evidence. Do not revive iteration 5’s feasible-runner-up sizing fallback.
+
+```json
+{
+  "recommended_cluster": "buffering",
+  "dominant_cause": "high_fanout",
+  "lesson": "Capacitance-aware prefix selection with predicted moved-load safety regressed AES WNS by 5.341 ps and TNS by 0.984591 ns, so split retention requires measured affected-endpoint checks after legalization.",
+  "dead_end": "Do not repeat prediction-only prefix replacement without attributing retained splits and verifying post-legalization collateral.",
+  "good_changes": [],
+  "bad_changes": [
+    "src/rsz/src/move/SplitLoadGenerator.cc: prefix selection replacement regressed AES and produced no measured GCD or Ibex benefit",
+    "src/rsz/src/move/SplitLoadGenerator.cc: HPWL capacitance and gate-delay prediction omits wire resistance and downstream slew propagation"
+  ],
+  "files_to_revisit": [
+    "src/rsz/src/move/SplitLoadGenerator.cc",
+    "src/rsz/src/move/SplitLoadCandidate.cc",
+    "src/rsz/src/Optimizer.cc"
+  ],
+  "files_to_avoid": [
+    "src/rsz/src/move/SizeUpGenerator.cc",
+    "src/rsz/src/move/SizeUpCandidate.cc"
+  ]
+}
+```

@@ -1,0 +1,28 @@
+INFO: Invocation ID: c91d5002-7645-4b91-b8a3-fa4171565ac2
+Computing main repo mapping: 
+Loading: 
+Loading: 0 packages loaded
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+
+INFO: Analyzed 6 targets (4 packages loaded, 446 targets configured).
+[11,214 / 11,226] Linking src/rsz/test/TestNestedJournal; 0s disk-cache, remote-cache ... (6 actions, 0 running)
+[11,214 / 11,226] Linking src/rsz/test/TestPreChecks; 0s disk-cache, remote-cache, darwin-sandbox ... (6 actions running)
+[11,227 / 11,232] 1 / 6 tests; Testing //src/rsz/test:TestInsertBuffer; 0s disk-cache, remote-cache, darwin-sandbox ... (5 actions running)
+[11,228 / 11,232] 2 / 6 tests; Testing //src/rsz/test:TestInsertBuffer; 1s disk-cache, remote-cache, darwin-sandbox ... (4 actions running)
+[11,230 / 11,232] 4 / 6 tests; Testing //src/rsz/test:TestInsertBuffer; 2s disk-cache, remote-cache, darwin-sandbox ... (2 actions running)
+[11,231 / 11,232] 5 / 6 tests; Testing //src/rsz/test:TestInsertBuffer; 3s disk-cache, remote-cache, darwin-sandbox
+[11,231 / 11,232] 6 / 6 tests; Testing //src/rsz/test:TestInsertBuffer; 4s disk-cache, remote-cache, darwin-sandbox
+INFO: Found 6 test targets...
+INFO: Elapsed time: 8.783s, Critical Path: 7.37s
+INFO: 17 processes: 149 action cache hit, 6 internal, 11 darwin-sandbox.
+INFO: Build completed successfully, 17 total actions
+//src/rsz/test:TestSkewBudget                                   (cached) PASSED in 0.8s
+//src/rsz/test:TestBufRem1                                               PASSED in 0.9s
+//src/rsz/test:TestInsertBuffer                                          PASSED in 4.9s
+//src/rsz/test:TestNestedJournal                                         PASSED in 1.8s
+//src/rsz/test:TestPreChecks                                             PASSED in 2.4s
+//src/rsz/test:TestResizer                                               PASSED in 2.9s
+
+Executed 5 out of 6 tests: 6 tests pass.
+There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.

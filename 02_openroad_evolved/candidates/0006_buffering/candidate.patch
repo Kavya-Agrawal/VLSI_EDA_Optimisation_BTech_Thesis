@@ -1,0 +1,170 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0006_buffering/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0006_buffering/rsz/HYPOTHESIS.md
+new file mode 100644
+index 0000000..f270c1e
+--- /dev/null
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0006_buffering/rsz/HYPOTHESIS.md	
+@@ -0,0 +1,65 @@
++# Problem
++
++The blanket fanout cutoff excludes shared setup-critical data nets, including
++the planner's reported Ibex drivers with fanouts 22, 31, and 45. Their loads may
++benefit together from a different buffer topology.
++
++# Current heuristic (file:function)
++
++`src/move/BufferGenerator.cc:BufferGenerator::isApplicable` admits path-driver
++targets only when fanout is at least one and below 20 and `okToBufferNet` passes.
++`BufferCandidate::apply` invokes the existing required-time-aware
++`Rebuffer::rebufferPin` search through the normal move commit flow.
++
++# New approach
++
++Preserve eligibility below fanout 20. For fanout 20 or above, additionally require
++a setup (max-analysis) target with a known driver transition and timing mode;
++exclude clock drivers and clock source pins in that mode. Walk only immediate
++wire edges from the driver and require at least two distinct load pins with
++finite negative setup slack for the target transition. Reject STA's negative
++infinity sentinel, IEEE infinities, and NaNs. Keep all existing net protection
++checks and pass eligible targets to the same BufferCandidate and rebuffer search.
++This behavior is enabled by default without new flags.
++
++# Why WNS/TNS should improve
++
++Required-time-aware tree selection can isolate or redistribute shared load
++capacitance and reduce driver-to-load delay for multiple failing branches.
++Admitting these nets creates opportunities to improve both the worst arrival
++and arrivals at other violating endpoints. Eligibility alone does not establish
++an improvement; committed repairs and post-legalization measurements must do so.
++
++# What to look for in the path report
++
++Identify committed BufferMove repairs on newly eligible data drivers, especially
++the reported Ibex fanouts 22, 31, and 45. Match startpoints, endpoints, and
++transitions before and after repair and legalization; inspect buffer stages,
++shared driver delay, and data arrivals across at least two affected branches.
++Check for Ibex WNS improvement of at least 0.020 ns, TNS magnitude reduction of
++at least 1%, and overall score at least +0.00200 with all evaluation gates passing.
++An accepted candidate log alone is insufficient evidence of a retained repair.
++
++# Risks
++
++Existing trees may already be near optimal. Larger searches can cost more time,
++and candidate ordering can prevent newly eligible repairs from being attempted
++or retained. Added buffers may increase area or upstream load, degrade other
++paths, or lose timing gains after legalization. Setup-load qualification does
++not itself guarantee hold or DRV safety; the existing rebuffer, journal,
++rollback, and evaluator checks remain necessary. No topology mutation or
++placement logic is changed here. Selection is deterministic: it tests whether
++two distinct pins qualify, independent of edge traversal order, without ranking
++ties, random choices, or new mutable state.
++
++# Files changed
++
++- `src/move/BufferGenerator.cc`: Add shared-critical setup-data qualification above the existing fanout cutoff.
++- `src/move/BufferGenerator.hh`: Document high-fanout eligibility and existing protection checks.
++- `HYPOTHESIS.md`: Record the hypothesis, evidence to inspect, and risks.
++
++# Verification
++
++Only lightweight source, formatting, and diff checks are performed in this
++candidate. Builds, unit/Tcl tests, OpenROAD runs, legalization, and timing/DRV
++measurements are reserved for the parent orchestrator as instructed.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/BufferGenerator.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0006_buffering/rsz/src/move/BufferGenerator.cc
+index 99dd773..81c70af 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/BufferGenerator.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0006_buffering/rsz/src/move/BufferGenerator.cc	
+@@ -3,6 +3,7 @@
+ 
+ #include "BufferGenerator.hh"
+ 
++#include <cmath>
+ #include <memory>
+ #include <vector>
+ 
+@@ -10,7 +11,12 @@
+ #include "MoveCandidate.hh"
+ #include "MoveGenerator.hh"
+ #include "OptimizerTypes.hh"
++#include "db_sta/dbSta.hh"
+ #include "rsz/Resizer.hh"
++#include "sta/Delay.hh"
++#include "sta/Graph.hh"
++#include "sta/MinMax.hh"
++#include "sta/Mode.hh"
+ 
+ namespace rsz {
+ 
+@@ -27,9 +33,51 @@ BufferGenerator::BufferGenerator(const GeneratorContext& context)
+ 
+ bool BufferGenerator::isApplicable(const Target& target) const
+ {
+-  return MoveGenerator::isApplicable(target) && target.fanout >= 1
+-         && target.fanout < kRebufferMaxFanout
+-         && resizer_.okToBufferNet(target.driver_pin);
++  if (!MoveGenerator::isApplicable(target) || target.fanout < 1
++      || !resizer_.okToBufferNet(target.driver_pin)) {
++    return false;
++  }
++  if (target.fanout < kRebufferMaxFanout) {
++    return true;
++  }
++
++  // Larger trees are worth searching when multiple immediate data loads
++  // share setup criticality on the selected transition.
++  const sta::Mode* mode = target.mode(resizer_);
++  sta::dbSta* sta = resizer_.sta();
++  if (target.minMax(resizer_) != sta::MinMax::max()
++      || target.driver_rf == nullptr || mode == nullptr
++      || sta->isClock(target.driver_pin, mode)
++      || sta->isClockSrc(target.driver_pin, mode->sdc())) {
++    return false;
++  }
++
++  sta::Graph* graph = resizer_.graph();
++  sta::Vertex* driver_vertex = graph->pinDrvrVertex(target.driver_pin);
++  if (driver_vertex == nullptr) {
++    return false;
++  }
++
++  const sta::Pin* first_critical_load = nullptr;
++  sta::VertexOutEdgeIterator edge_iter(driver_vertex, graph);
++  while (edge_iter.hasNext()) {
++    sta::Edge* edge = edge_iter.next();
++    if (!edge->isWire()) {
++      continue;
++    }
++    sta::Vertex* load_vertex = edge->to(graph);
++    const float slack = sta::delayAsFloat(
++        sta->slack(load_vertex, target.driver_rf, resizer_.maxAnalysisMode()));
++    // Reject unconstrained sentinels as well as IEEE infinities and NaNs.
++    if (std::isfinite(slack) && slack > -sta::INF && slack < 0.0f) {
++      const sta::Pin* load_pin = load_vertex->pin();
++      if (first_critical_load != nullptr && first_critical_load != load_pin) {
++        return true;
++      }
++      first_critical_load = load_pin;
++    }
++  }
++  return false;
+ }
+ 
+ std::vector<std::unique_ptr<MoveCandidate>> BufferGenerator::generate(
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/BufferGenerator.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0006_buffering/rsz/src/move/BufferGenerator.hh
+index 3c6ebe3..d8fba15 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/BufferGenerator.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0006_buffering/rsz/src/move/BufferGenerator.hh	
+@@ -13,10 +13,10 @@
+ 
+ namespace rsz {
+ 
+-// Builds legacy rebuffer candidates for moderate-fanout path drivers.
+-// isApplicable() gates on minimum fanout and checks that the net is
+-// allowed to be buffered (okToBuffer guard in Resizer).  Single-threaded
+-// only; the Rebuffer engine mutates STA state internally.
++// Builds legacy rebuffer candidates for path drivers.  High-fanout drivers
++// require multiple setup-critical immediate data loads on the target
++// transition.  All nets retain the okToBuffer guard in Resizer.
++// Single-threaded only; the Rebuffer engine mutates STA state internally.
+ class BufferGenerator : public MoveGenerator
+ {
+  public:

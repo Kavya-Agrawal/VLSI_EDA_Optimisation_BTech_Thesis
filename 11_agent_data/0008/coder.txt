@@ -1,0 +1,7 @@
+Implemented measured, journaled LEGACY candidate selection and added `HYPOTHESIS.md`. Winner replay verifies measured gain; admission guards setup, focus slack, hold metrics, DRV counts, and area.
+
+Only lightweight checks ran. Builds, tests, and final detailed-placement gain survival remain for the orchestrator.
+
+```json
+{"files_changed":["src/policy/SetupLegacyPolicy.cc","src/policy/SetupLegacyPolicy.hh","HYPOTHESIS.md"],"summary":"LEGACY now trials legal candidates from a common journal checkpoint and selects measured WNS gain plus normalized TNS gain. It regenerates and verifies the winner before acceptance and preserves TNS-only checkpoint improvements.","new_flags":[],"determinism_notes":"Stable path traversal, configured generator order, and candidate order resolve ties. No pointer ordering, randomization, or time-based trial limits were introduced."}
+```

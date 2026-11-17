@@ -1,0 +1,40 @@
+[
+  {
+    "step": "planned",
+    "t": 116.4,
+    "ts": "2026-11-17T13:53:26Z",
+    "cluster": "buffering",
+    "title": "Enable shared-critical-data rebuffering beyond the blanket fanout cutoff"
+  },
+  {
+    "step": "coded",
+    "t": 244.7,
+    "ts": "2026-11-17T13:55:34Z",
+    "files": [
+      "src/move/BufferGenerator.cc",
+      "src/move/BufferGenerator.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 284.0,
+    "ts": "2026-11-17T13:56:13Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 39
+  },
+  {
+    "step": "evaluated",
+    "t": 467.9,
+    "ts": "2026-11-17T13:59:17Z",
+    "accepted": false,
+    "score": -0.0003905557962669997
+  },
+  {
+    "step": "feedback",
+    "t": 570.8,
+    "ts": "2026-11-17T14:01:00Z"
+  }
+]

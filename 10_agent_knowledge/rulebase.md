@@ -28,3 +28,11 @@ Treat gate-failed candidates as timing-unverified, preserve helper API compatibi
 ## proposed by planner, iteration 5
 
 For feasibility-fallback hypotheses, measure rejected winners and profitable feasible alternatives; zero benchmark opportunities falsifies applicability without justifying relaxed safety checks.
+
+## proposed by planner, iteration 6
+
+Before using path maximum-fanout or worst-slew tags to justify data-net repair, locate the attributed driver relative to launch CK/Q and capture D.
+
+## proposed by planner, iteration 7
+
+For partition-search experiments, report opportunities reached, partitions selected, and finally retained topology; distinguish immediate-load slack proxies from endpoint TNS.

@@ -1,0 +1,129 @@
+{
+  "iteration": 6,
+  "tag": "0006_buffering",
+  "status": "rejected",
+  "cluster": "buffering",
+  "title": "Enable shared-critical-data rebuffering beyond the blanket fanout cutoff",
+  "hypothesis": "BufferGenerator currently excludes every net with fanout at least 20, including confirmed Ibex data-path drivers with fanouts 22, 31, and 45. Preserve low-fanout behavior but admit higher-fanout setup data targets when at least two distinct immediate loads have finite negative setup slack for the target transition, retaining existing protections and excluding clock drivers. Reuse the existing required-time-aware rebuffer search to improve shared-load topology and reduce multiple endpoint arrivals. Iteration 5 supports this direction through measured sizing parity and unresolved shared data loads, while iteration 4 supplies the selection-contract failure to avoid without providing timing evidence. Success requires committed newly eligible repairs and attributable post-legalization WNS/TNS gains.",
+  "planned_files": [
+    "src/move/BufferGenerator.cc"
+  ],
+  "evidence_iterations": [
+    4,
+    5
+  ],
+  "files_changed": [
+    "src/move/BufferGenerator.cc",
+    "src/move/BufferGenerator.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 120,
+    "lines_deleted": 7
+  },
+  "accepted": false,
+  "score_vs_champion": -0.0003905557962669997,
+  "score_vs_baseline": -0.0003905557962669997,
+  "reasons": [
+    "score -0.00039 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.0,
+      "wns_cand": -0.17417545676519416,
+      "wns_ref": -0.17417545676519416,
+      "tns_cand": -7.62617102164613,
+      "tns_ref": -7.62617102164613,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.08703885081255561,
+      "hold_ref": 0.08703885081255562,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 848.806025466331,
+      "area_ref": 848.806025466331,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -0.0023641705055668107,
+      "wns_cand": -0.11118745128202452,
+      "wns_ref": -0.108288603371592,
+      "tns_cand": -15.02669498031519,
+      "tns_ref": -14.773421126812009,
+      "d_wns_ns": -0.002898847910432517,
+      "d_tns_ns": -0.2532738535031811,
+      "d_wns_pct_period": -0.44189754732203,
+      "d_tns_pct": -1.7143886397682055,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075146,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20380.65360920882,
+      "area_ref": 20271.860634579753,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.0011925031167658116,
+      "wns_cand": -0.2978442021765035,
+      "wns_ref": -0.29941183713160996,
+      "tns_cand": -401.6370780749931,
+      "tns_ref": -416.2728946035277,
+      "d_wns_ns": 0.0015676349551064783,
+      "d_tns_ns": 14.635816528534576,
+      "d_wns_pct_period": 0.08907016790377718,
+      "d_tns_pct": 3.5159186961894844,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28611.22538888594,
+      "area_ref": 28628.78112352973,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 0,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0006_buffering",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0006_buffering",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0006_buffering/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "buffering",
+    "dominant_cause": "deep_logic",
+    "lesson": "High-fanout eligibility reduced Ibex TNS by 3.52% but failed promotion because AES regressed and retained repairs on the intended drivers were not established.",
+    "dead_end": "Do not repeat fanout eligibility expansion without retained-driver attribution and post-legalization collateral checks.",
+    "good_changes": [
+      "src/rsz/src/move/BufferGenerator.cc preserves low-fanout eligibility, net protections, and clock exclusion; GCD timing remained identical.",
+      "The eligibility-only candidate reduced Ibex TNS by 14.636 ns, but the specific retained rebuffer mechanism remains unverified."
+    ],
+    "bad_changes": [
+      "src/rsz/src/move/BufferGenerator.cc enables high-fanout candidates by default without demonstrating post-legalization benefit across affected branches; AES WNS and TNS regressed.",
+      "Reusing BufferCandidate and Rebuffer unchanged did not establish retained repairs on fanout-22/31/45 targets or meet the 20 ps Ibex WNS target."
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/move/BufferGenerator.cc",
+      "src/rsz/src/move/BufferCandidate.cc",
+      "src/rsz/src/Rebuffer.cc",
+      "src/rsz/src/Optimizer.cc",
+      "src/rsz/src/RepairTargetCollector.cc"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/move/BufferGenerator.hh"
+    ]
+  },
+  "agents": {
+    "planner": "codex",
+    "coder": "codex",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0006",
+  "seconds": 571,
+  "when": "2026-11-17T14:01:00Z"
+}
