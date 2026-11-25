@@ -1,0 +1,95 @@
+{
+  "per_design": {
+    "nangate45/gcd": {
+      "split_cutpoint_reranked": 0,
+      "split_cutpoint_candidates": 0,
+      "split_cutpoint_dropped": 0,
+      "bottleneck_rounds": 5,
+      "bottleneck_drivers_ranked": 874,
+      "bottleneck_trials": 328,
+      "bottleneck_kept": 17,
+      "bottleneck_rejected_wns": 22,
+      "bottleneck_rejected_tns": 56
+    },
+    "nangate45/aes": {
+      "split_cutpoint_reranked": 6,
+      "split_cutpoint_candidates": 18,
+      "split_cutpoint_dropped": 0,
+      "bottleneck_rounds": 5,
+      "bottleneck_drivers_ranked": 5682,
+      "bottleneck_trials": 294,
+      "bottleneck_kept": 22,
+      "bottleneck_rejected_wns": 24,
+      "bottleneck_rejected_tns": 20
+    },
+    "nangate45/ibex": {
+      "split_cutpoint_reranked": 23,
+      "split_cutpoint_candidates": 61,
+      "split_cutpoint_dropped": 0,
+      "bottleneck_rounds": 4,
+      "bottleneck_drivers_ranked": 2879,
+      "bottleneck_trials": 256,
+      "bottleneck_kept": 30,
+      "bottleneck_rejected_wns": 13,
+      "bottleneck_rejected_tns": 86
+    },
+    "nangate45/jpeg": {
+      "split_cutpoint_reranked": 20,
+      "split_cutpoint_candidates": 57,
+      "split_cutpoint_dropped": 0,
+      "bottleneck_rounds": 2,
+      "bottleneck_drivers_ranked": 8407,
+      "bottleneck_trials": 161,
+      "bottleneck_kept": 39,
+      "bottleneck_rejected_wns": 57,
+      "bottleneck_rejected_tns": 21
+    }
+  },
+  "total_fired": 19489,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 37,
+      "pins_swapped": 4
+    },
+    "nangate45/aes": {
+      "buffers_removed": 6,
+      "buffers_inserted": 486,
+      "resized": 1377,
+      "pins_swapped": 135,
+      "cloned": 69
+    },
+    "nangate45/ibex": {
+      "buffers_inserted": 73,
+      "resized": 157,
+      "pins_swapped": 22,
+      "cloned": 10
+    },
+    "nangate45/jpeg": {
+      "buffers_inserted": 76,
+      "resized": 335,
+      "pins_swapped": 133
+    }
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

@@ -1,0 +1,20 @@
+I changed `CloneGenerator` to try criticality-partitioned clones on high-fanout drivers, but it is only a partial version of the hypothesis. I did not build or test anything, per the resource rule, so the code is unchecked, including for `-Wall -Wextra`.
+
+**What it does.**
+- **Where it applies:** drivers with fanout of at least 12. The first request for a driver keeps the stock behavior, which moves the tolerant half of the sinks to a half-power clone.
+- **What changes on repeat requests:** later requests for the same driver rotate through six variants, covering 5, 15, 30, 50, 33 and 25 % of the sinks. In each variant a same-strength replica takes only the most critical sinks, ranked by slack delta, and the tolerant sinks stay on the original driver.
+- **Limits:** sinks that are top-level ports or dont-touch stay on the original driver, and at most 40 drivers get variants.
+- **Selection:** the existing journaled trial in `runTnsRecovery` (WNS floor plus TNS gain) accepts or rolls back each variant.
+- **Counters:** `clone_critical_variant`, `clone_variant_drivers` and `clone_variant_loads_moved` print as `RSZ_EVOLVE ... fired=N` from the generator's destructor. The legacy policy never calls `finishPhase`, so I used the destructor. The lines will only appear if the logger is still valid when the policy is destroyed.
+
+**Where it departs from the planner's text.**
+- **Not best-of-k:** `SetupLegacyPolicy.cc` is not an editable file. The planner's single measured best-of-k step therefore became sequential trial and rollback across successive requests, taking the first variant that passes.
+- **No rebuffering:** the tolerant net is not rebuffered with `Rebuffer::rebufferNet`, and the m-way quantile split is approximated by the critical-fraction variants.
+- **Stock-phase counts:** the generator can't tell the stock phase from recovery, so "stock-phase move counts identical" is not guaranteed. First requests are unchanged, but a later stock request for the same driver would also get a variant.
+- **Likely weak spot:** the first recovery request on a driver is stock-like, so the variants only start on a retry after a rejected trial.
+
+`HYPOTHESIS.md` is written in the tree root.
+
+```json
+{"files_changed": ["src/move/CloneGenerator.cc", "src/move/CloneGenerator.hh", "HYPOTHESIS.md"], "summary": "For drivers with fanout >= 12, repeat clone requests rotate through six criticality-partitioned variants, where a same-strength replica takes only the most critical sinks (5-50%) and the tolerant sinks stay on the original driver. The existing journaled recovery trial accepts or rolls back each variant. The policy file is not editable, so this is sequential trial and rollback rather than one multi-variant evaluation, and the tolerant net is not rebuffered.", "new_flags": [], "determinism_notes": "Variant choice depends only on a per-driver attempt counter keyed by the driver's pin path name (std::map), sink order comes from the existing slack-sorted list with a pathName tie-break, and no randomness or threading is used. At most 40 drivers get variants."}
+```

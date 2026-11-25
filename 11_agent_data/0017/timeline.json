@@ -1,0 +1,42 @@
+[
+  {
+    "step": "planned",
+    "t": 70.1,
+    "ts": "2026-11-25T16:45:28Z",
+    "cluster": "buffering",
+    "title": "Required-time-ordered (LT-tree) fanout tree synthesis for shared high-fanout drivers as a measured move in the post-stock recovery phase"
+  },
+  {
+    "step": "coded",
+    "t": 287.5,
+    "ts": "2026-11-25T16:49:06Z",
+    "files": [
+      "src/move/SplitLoadGenerator.cc",
+      "src/move/SplitLoadGenerator.hh",
+      "src/move/SplitLoadCandidate.cc",
+      "src/move/SplitLoadCandidate.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 309.8,
+    "ts": "2026-11-25T16:49:28Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 22
+  },
+  {
+    "step": "evaluated",
+    "t": 429.1,
+    "ts": "2026-11-25T16:51:27Z",
+    "accepted": false,
+    "score": 0.0
+  },
+  {
+    "step": "feedback",
+    "t": 593.4,
+    "ts": "2026-11-25T16:54:12Z"
+  }
+]

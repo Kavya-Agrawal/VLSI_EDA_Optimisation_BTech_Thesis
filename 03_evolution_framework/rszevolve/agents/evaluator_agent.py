@@ -22,7 +22,7 @@ def feedback(iteration: int, tag: str, cluster: str, hypothesis: str, ce: Candid
                  "PATHS": paths_md[:60000], "GATES": gates_txt[:8000]}.items():
         prompt = prompt.replace("{{" + k + "}}", v)
     call = AgentCall(role="evaluator", prompt=prompt, cwd=ce.out_dir, model=knobs.evaluator_model, max_turns=knobs.evaluator_max_turns,
-                     allowed_tools=list(READ_TOOLS), add_dirs=[PATHS.baseline, PATHS.context])
+                     allowed_tools=list(READ_TOOLS), add_dirs=[PATHS.baseline, PATHS.context], timeout_s=600)
     res = run_agent(call, log_dir=log_dir, tag="evaluator")
     text = res.text.strip() or f"# Feedback (agent unavailable)\n\n```\n{verdict_txt}\n```\n\n{paths_md}\n"
     # always prepend the authoritative numbers so the planner never depends on the agent's prose alone

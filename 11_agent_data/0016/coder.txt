@@ -1,0 +1,20 @@
+I replaced the post-stock `runTnsRecovery` with the Lagrangian best-of-k version. Nothing has been built or run, as instructed, so it is untested and may not compile. I did not run `clang-format`, so line wrapping may need a pass.
+
+The stock loop is unchanged. The new logic is in `src/policy/SetupLegacyPolicy.cc`:
+
+- **Endpoint prices:** each violating endpoint starts at 1. The price is multiplied by 1 + 0.5 × (endpoint slack / WNS) each round while the endpoint stays violated, and halved once it is repaired.
+- **Ranking:** drivers are ranked by the sum of prices over their distinct downstream endpoints. These come from the worst-path expansion of up to 400 endpoints.
+- **Best-of-3:** for each driver, up to 3 distinct move types are measured from the same journal checkpoint and each is rolled back. The best-TNS type is then re-applied on its own, re-verified and committed.
+- **WNS floor:** a commit requires WNS ≥ the higher of the post-stock WNS and the best WNS reached so far.
+- **Per-endpoint veto:** none of the 16 highest-price endpoints may lose more than 0.2 ps of slack.
+- **Skipping failed drivers:** drivers that fail are skipped in later rounds until something commits, so repricing reaches deeper drivers.
+- **Budget:** at most 6 rounds and 600 trials.
+- **Counters:** the six existing `bottleneck_*` counters are kept. New ones are `lr_rank_changed_vs_static`, `lr_price_updates`, `lr_best_of_k_evals`, `lr_best_not_first`, `lr_endpoint_veto_blocked` and `lr_wns_floor_ratchets`. All are printed even when zero.
+
+I kept the old routine as an unused `runTnsRecoveryStatic` in `SetupLegacyPolicy.cc` and declared it in `SetupLegacyPolicy.hh`. It can be deleted if you prefer.
+
+`HYPOTHESIS.md` is written at the tree root.
+
+```json
+{"files_changed": ["src/policy/SetupLegacyPolicy.cc", "src/policy/SetupLegacyPolicy.hh", "HYPOTHESIS.md"], "summary": "Replaced the post-stock TNS recovery with a multiplicative-weights Lagrangian loop. Drivers are ranked by price-weighted downstream endpoints, each driver gets best-of-3 measured move types from one journal checkpoint, and commits must satisfy a ratcheting WNS floor plus a per-endpoint veto on the 16 highest-price endpoints. Runtime is bounded by 6 rounds and 600 trials, and RSZ_EVOLVE lr_* counters are printed.", "new_flags": [], "determinism_notes": "Prices are kept in std::map keyed by endpoint name. Ties in driver and endpoint ordering break by name. Failed drivers are tracked in std::set. All trials go through the existing journal begin/restore/commit, and the winning move is re-applied and re-verified before it is committed."}
+```

@@ -1,0 +1,85 @@
+# Iteration 15 plan: Criticality-partitioned load isolation on shared bottleneck nets, as compound moves in the post-stock recovery phase
+
+## Observation
+- **Champion (iter 13)** runs the stock LEGACY loop unchanged, then a journaled TNS-recovery phase. Each recovery trial is accepted only if it passes a fixed stock-WNS floor and STA measures a TNS gain. It improved WNS on all four designs and cut Ibex TNS by 32%.
+- **What still limits timing is the net structure, not cell sizes:**
+  - Ibex's ten worst paths all go through the fanout-943 net driven by `AND2_X1 _26153_/ZN`. Raw slew there is about 2.09e9.
+  - JPEG's worst endpoints share the `ddin[8]/Q` launch net (DFFR_X2, fanout 12–17), which feeds HA/FA chains.
+  - Iter 14 used sizing-only DP. It did not change either structure, and JPEG rejected 65% of its trials on WNS.
+- **Shared-cone repair helps Ibex, but only safely outside the stock loop.** Iter 8 cut Ibex TNS by 57.6 ns, iter 9 by 34.3 ns and iter 13 by 21.3 ns. Iters 8, 9 and 12 changed the stock loop and lost WNS on AES, gcd and JPEG. Iter 13 avoided that by working only after the stock loop.
+- **Earlier buffering attempts failed for a specific reason.** Iters 6, 7 and 11 changed generators inside the stock loop and chose partitions by prediction only. Iter 7 lost 5.3 ps of AES WNS from unmeasured collateral damage.
+- **The fixed floor lets recovery give back WNS it already gained.** In iter 14 this cost 5.2 ps on Ibex and 1.3 ps on JPEG compared with the champion.
+
+## Cluster choice and why
+**buffering.**
+- Rotation: iters 12 and 13 were setup_strategy, iter 14 was sizing, so buffering is allowed.
+- The evaluator's dominant cause is `high_fanout`, and the stated remedy is to repair the shared structure explicitly. Sizing and ranking changes cannot change the topology of a net, so this needs the buffering cluster.
+- I keep the champion's recovery phase as the host and introduce the new move only there. This follows the iter-14 rulebase rule: new generators start inside the post-stock phase.
+
+## Hypothesis
+**Problem.** Many violating endpoints share one driver net. Every critical sink on that net pays the delay of the whole load, including sinks that have plenty of slack.
+
+**Current heuristic.**
+- `SplitLoadGenerator::generate` splits a net by sink-slack rank, roughly in half. It runs inside the greedy per-endpoint loop, its effect is predicted rather than measured, and it never considers how many violating endpoints sit below each sink.
+- `CloneGenerator` duplicates a gate under a similar fixed recipe.
+- Champion recovery only tries single moves on shared drivers: three attempts per driver on the top 50.
+
+**New approach: TNS-weighted critical-sink isolation with a measured cut-point search.** This is a compound move in `runTnsRecovery`, applied to the top-K shared bottleneck drivers (ranked by number of violating endpoints in the fan-out cone × summed negative slack).
+1. **Score each sink pin** by the violation it carries downstream: the sum of negative endpoint slack reachable through it, taken from the endpoint-to-driver attribution the recovery phase already builds. Sort sinks by this weight. Do not use local slack.
+2. **Generate cut points.** Use k ∈ {critical count, 2×, ¼ of fanout, ½ of fanout}, deduplicated and capped at 4. For each k, the top-k sinks stay on the original driver and the rest move behind a new buffer. The buffer is placed at the centroid of the moved sinks and sized from the existing buffer list by their capacitance. For fanout over 64, also try a clone variant: the clone drives the non-critical set.
+3. **Optionally resize the driver** for its now-reduced load, inside the same journal.
+4. **Evaluate each variant with real incremental STA** under the journal, then commit the best one. A variant must pass two checks:
+   - (a) a **dual WNS floor**: WNS ≥ max(stock-final WNS, WNS at the last recovery commit);
+   - (b) a strict design-TNS gain.
+
+   The dual floor is a guard, not the paradigm. It answers the iter-14 failure where recovery gave back WNS it had already gained.
+5. **Use a separate budget.** This step runs before the champion's existing single-move recovery and has its own budget, so the champion's recovery moves are not crowded out. In iter 14 the DP consumed the shared budget.
+
+**Why WNS and TNS should improve.**
+- On Ibex, isolating about 900 non-critical sinks behind one buffer removes most of the load capacitance from `_26153_/ZN`. That should cut its stage delay (a large share of the delay on 39-stage paths) for every violating `rf_reg[*]` endpoint at once, which is the iter-8-style TNS gain without touching the stock loop.
+- On JPEG, splitting the `ddin[8]` launch net speeds up the shared start of the HA/FA paths. The dual floor means WNS can only stay equal or improve compared with the champion.
+
+**Risks.**
+- The cost and delay of the new buffer may cancel the gain on low-fanout nets such as gcd. Mitigation: only drivers with fanout ≥ 8 and at least 2 violating endpoints in their cone are eligible.
+- Legalization may move cells so the measured gain does not survive. Mitigation: insert only at the centroid with legal-site snapping and report final timing after `detailed_placement`.
+- Runtime: at most 4 variants × K=40 drivers, each one incremental STA call.
+
+**Path-report signature.**
+- Ibex top paths should show a new buffer stage or a reduced load at `_26153_/ZN`, slew there falling by more than 5×, and `rf_reg[703]` slack better than −73 ps.
+- JPEG's `ddin[8]/Q` fanout should drop.
+
+## Trigger estimate
+- **Ibex:** the stock run makes 172 moves. I expect about 40 eligible drivers × up to 4 STA-evaluated variants (≈160 trials) and 15–30 committed topology changes. That is 9–17% of stock moves, and it changes the load on nets used by hundreds of violating paths.
+- **AES:** the stock run makes about 2,078 moves, including 481 buffers. I expect about 40 drivers × 4 ≈ 160 trials and around 20–40 commits. Measured against the 481 buffer moves (the relevant category), that is 4–8%. I'll raise K to 60 on designs with more than 1,000 endpoints to stay above 5%.
+- **JPEG:** I expect a similar number of trials.
+- Counters will verify these figures.
+
+## Implementation sketch
+- **`src/policy/SetupLegacyPolicy.cc` / `.hh`:**
+  - Add `runLoadIsolationRecovery()`, called right after the stock loop and before the existing `runTnsRecovery` body.
+  - Add `sinkViolationWeights(driverPin)`, which reuses the recovery phase's endpoint-to-driver attribution.
+  - Add `isolateLoads(driver, k, mode)`, which builds the move through the existing buffer-insert and clone primitives under a nested journal.
+  - Add the dual-floor accept check.
+- **`src/move/SplitLoadGenerator.cc`:** add a helper entry point that takes an explicit sink partition and buffer location. The stock `generate()` path stays exactly as it is.
+- **`src/move/CloneGenerator.cc`:** add the same kind of explicit-partition helper. Stock behaviour is unchanged.
+- **Counters:** print `RSZ_EVOLVE load_iso` lines per design with:
+  - drivers examined, variants evaluated, committed, rejected for WNS, rejected for TNS;
+  - the chosen k divided by fanout;
+  - the predicted versus measured TNS change;
+  - the stock-phase move counts, to prove the stock trajectory is byte-identical.
+
+## Success criteria
+- Score vs champion ≥ +0.002.
+- Ibex TNS better than −40 ns, with WNS no worse than the champion's −74.2 ps.
+- JPEG WNS ≥ −85.3 ps and TNS < −31.15 ns.
+- AES and gcd WNS unchanged or better.
+- At least 10 committed isolations on Ibex, including one on `_26153_`.
+- JPEG finishes within the 10-minute cap.
+
+## Fallback if it fails
+- If isolations are committed but lost after legalization, change cluster to `timing_model`: add placement-aware estimates for where the buffer can go.
+- If nothing reaches commit (for example, only rejections for WNS), the isolation paradigm is falsified for these designs. Then return to setup_strategy with beam search over recovery-move sequences (depth 2), rather than a narrower split variant.
+
+```json
+{"cluster": "buffering", "title": "TNS-weighted critical-sink isolation with measured cut-point search on shared bottleneck nets, inside the post-stock recovery phase", "hypothesis": "Shared high-fanout nets (Ibex _26153_/ZN fanout 943, JPEG ddin[8]/Q) dominate the remaining violations, and the stock SplitLoad/Clone recipes split them by half-count local slack inside the greedy loop with predicted effect only. Instead, after the unchanged stock loop, rank shared bottleneck drivers by violating-endpoint count times summed negative slack, weight each sink by the downstream negative endpoint slack it carries, and try up to four cut points (keep the top-k critical sinks on the driver, move the rest behind a centroid-placed buffer or a clone, then optionally resize the driver), each evaluated by journaled incremental STA. Commit the best variant only if WNS >= max(stock-final WNS, last committed recovery WNS) and design TNS strictly improves. This runs on its own budget before the champion's existing recovery moves, so it does not displace them. Removing non-critical load from shared trunks should cut stage delay for every violating endpoint behind the net at once, delivering the shared-cone TNS gains of iterations 8 and 9 without perturbing the stock trajectory.", "files": ["src/policy/SetupLegacyPolicy.cc", "src/policy/SetupLegacyPolicy.hh", "src/move/SplitLoadGenerator.cc", "src/move/SplitLoadGenerator.hh", "src/move/CloneGenerator.cc", "src/move/CloneGenerator.hh"], "evidence_iterations": [13, 8, 9, 7, 14], "success_criteria": "Score vs champion >= +0.002; Ibex TNS better than -40 ns with WNS >= -74.2 ps; JPEG WNS >= -85.3 ps; AES/gcd WNS not worse; >=10 committed Ibex isolations incl. _26153_; JPEG within timeout", "risk": "Buffer delay or post-legalization displacement may cancel measured trial gains on low-fanout nets, and the per-variant STA trials add runtime on JPEG", "rule_updates": "Topology-changing moves (split/clone/buffer) must be accepted only on measured STA under a dual WNS floor max(stock-final, last-commit) and must print predicted vs measured dTNS per committed move."}
+```

@@ -49,3 +49,26 @@ A separate journaled TNS recovery phase with a fixed stock-WNS floor improved WN
 ## iteration 14 (sizing)
 
 Joint sizing under a fixed stock-WNS floor displaced recovery moves and improved Ibex TNS by 21.20% versus champion while surrendering 5.205 ps of Ibex WNS and 1.289 ps of JPEG WNS.
+
+## iteration 8 (setup_strategy), measured later with a long timeout
+The iteration-8 candidate (setup policy rewrite) gave the largest TNS gains seen so far: ibex TNS -65.7 -> -8.1 ns (-88%), jpeg -32.4 -> -24.4 ns (-25%), gcd also better, but aes WNS worse and repair time grew 15-115x (jpeg 36 s -> 69 min, beyond the 10-min evaluation cap). Promising direction: keep its aggressive TNS recovery but bound its effort (iteration/time budget, or only on endpoints sharing bottleneck cells) so it fits the cap and does not degrade WNS.
+
+## iteration 15 (buffering)
+
+Immediate-sink model-ranked SplitLoad cuts inside the stock loop regressed champion-relative score; test downstream-weighted cuts in an isolated measured phase with a monotonic WNS floor.
+
+## iteration 16 (setup_strategy)
+
+Multiplicative endpoint prices retained Ibex's shared-driver bias and worsened TNS magnitude by 28.53% versus champion; isolate cone diversity and structural move coverage before retuning prices.
+
+## iteration 17 (buffering)
+
+Zero applied trees and unchanged fanout 943 mean candidate 0017 did not test timing-driven load isolation; establish activation and measure feasible journaled variants before tuning the heuristic.
+
+## iteration 18 (buffering)
+
+Iteration 18 lost to champion because visit-dependent single-replica cloning did not implement the proposed atomic search, while Ibex's 943-load attributed driver belongs to the launch clock path rather than the data chain.
+
+## iteration 19 (setup_strategy)
+
+Measured depth-2 recovery improved JPEG baseline TNS by 0.525 ns but lost champion recovery because AES generated no trials and Ibex failed replay.

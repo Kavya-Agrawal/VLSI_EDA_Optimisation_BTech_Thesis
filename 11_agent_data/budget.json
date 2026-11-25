@@ -1,9 +1,9 @@
 {
-  "spent_usd": 6.42303,
-  "spent_tokens": 8665071,
-  "budget_usd": 20.0,
+  "spent_usd": 11.538024,
+  "spent_tokens": 11333803,
+  "budget_usd": 30.0,
   "max_tokens": 0,
-  "updated": "2026-11-25T14:28:36Z",
+  "updated": "2026-11-25T17:12:52Z",
   "calls": [
     {
       "ts": "2026-11-12T22:36:53Z",
@@ -475,6 +475,171 @@
       "tokens": 403110,
       "turns": 1,
       "session_id": "codex:01a21319-e0b7-7a11-adac-0d87c766411a",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-25T15:58:48Z",
+      "role": "planner",
+      "iteration": 15,
+      "usd": 0.456824,
+      "tokens": 47294,
+      "turns": 2,
+      "session_id": "claude:cb753368-5a0e-40a0-8e08-58139831e705",
+      "duration_ms": 52584,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T16:01:20Z",
+      "role": "coder:buffering",
+      "iteration": 15,
+      "usd": 0.557308,
+      "tokens": 85948,
+      "turns": 24,
+      "session_id": "claude:0cdd354f-8bef-45be-8756-7b9e443e4c82",
+      "duration_ms": 150575,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T16:06:41Z",
+      "role": "evaluator",
+      "iteration": 15,
+      "usd": 0.0,
+      "tokens": 356863,
+      "turns": 1,
+      "session_id": "codex:01a21373-bc43-7111-9c6e-19f3f789729f",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-25T16:07:41Z",
+      "role": "planner",
+      "iteration": 16,
+      "usd": 0.490252,
+      "tokens": 50318,
+      "turns": 2,
+      "session_id": "claude:f97c3907-26a7-4008-93c0-3551c1d86231",
+      "duration_ms": 59330,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T16:09:30Z",
+      "role": "coder:setup_strategy",
+      "iteration": 16,
+      "usd": 0.421901,
+      "tokens": 70025,
+      "turns": 12,
+      "session_id": "claude:de057bd8-d67c-4ada-825e-cbedca5eb822",
+      "duration_ms": 107398,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T16:44:18Z",
+      "role": "evaluator",
+      "iteration": 16,
+      "usd": 0.0,
+      "tokens": 306608,
+      "turns": 1,
+      "session_id": "codex:01a2137a-c1aa-7340-8895-e090f03d722c",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-25T16:45:28Z",
+      "role": "planner",
+      "iteration": 17,
+      "usd": 0.502123,
+      "tokens": 50748,
+      "turns": 2,
+      "session_id": "claude:bbcb7af6-188b-4e82-b34e-d51a396ccbf5",
+      "duration_ms": 69136,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T16:49:06Z",
+      "role": "coder:buffering",
+      "iteration": 17,
+      "usd": 0.781441,
+      "tokens": 113728,
+      "turns": 34,
+      "session_id": "claude:e2fc27d5-c45c-41d8-a186-ce05639a8725",
+      "duration_ms": 216159,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T16:54:12Z",
+      "role": "evaluator",
+      "iteration": 17,
+      "usd": 0.0,
+      "tokens": 513562,
+      "turns": 1,
+      "session_id": "codex:01a2139e-8e32-7f60-9620-1941ac837da6",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-25T16:55:18Z",
+      "role": "planner",
+      "iteration": 18,
+      "usd": 0.481758,
+      "tokens": 48605,
+      "turns": 2,
+      "session_id": "claude:683aa154-b00f-4e84-ba00-131a53a7e196",
+      "duration_ms": 65429,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T16:56:40Z",
+      "role": "coder:buffering",
+      "iteration": 18,
+      "usd": 0.337994,
+      "tokens": 54877,
+      "turns": 22,
+      "session_id": "claude:2863ef9e-f24f-4026-9983-056ff00befcf",
+      "duration_ms": 80751,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T17:01:53Z",
+      "role": "evaluator",
+      "iteration": 18,
+      "usd": 0.0,
+      "tokens": 352881,
+      "turns": 1,
+      "session_id": "codex:01a213a6-7288-7650-a3b1-fb7ce5457007",
+      "duration_ms": null,
+      "model": null
+    },
+    {
+      "ts": "2026-11-25T17:04:25Z",
+      "role": "planner",
+      "iteration": 19,
+      "usd": 0.501849,
+      "tokens": 51695,
+      "turns": 3,
+      "session_id": "claude:699499a3-064b-44c5-b4d1-de566205cd73",
+      "duration_ms": 150216,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T17:07:01Z",
+      "role": "coder:setup_strategy",
+      "iteration": 19,
+      "usd": 0.583544,
+      "tokens": 88257,
+      "turns": 21,
+      "session_id": "claude:86aad5c0-18ba-46b1-b751-1b89266abfa1",
+      "duration_ms": 154477,
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "ts": "2026-11-25T17:12:52Z",
+      "role": "evaluator",
+      "iteration": 19,
+      "usd": 0.0,
+      "tokens": 477323,
+      "turns": 1,
+      "session_id": "codex:01a213b0-64fa-7f40-9b26-a50869652e5d",
       "duration_ms": null,
       "model": null
     }

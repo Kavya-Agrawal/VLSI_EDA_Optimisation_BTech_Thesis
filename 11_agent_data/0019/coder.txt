@@ -1,0 +1,16 @@
+I replaced the greedy TNS recovery with a depth-2 beam search in `src/policy/SetupLegacyPolicy.cc`. Nothing has been compiled or run, since the task says the orchestrator builds and tests. I did not check the OpenSTA calls the new code relies on (`Path::isClock`, `Path::arrival`) against the build.
+
+The beam search is a new `runBeamRecovery()`, which `runTnsRecovery()` now calls. The old greedy body is renamed `runGreedyTnsRecovery()` and no longer called; it is left in the file, so delete it if you want it gone. `HYPOTHESIS.md` is written in the tree root.
+
+- **Seed ranking:** seeds are ranked by slack-weighted endpoint coverage times arc delay, over data arcs only. Clock-network paths are skipped.
+- **Trials:** each of the top 8 seeds gets two single-move variants (best move type, then the next type). Each variant is also paired with its upstream and its downstream driver. Every trial runs in a nested journal and is rolled back.
+- **Commit:** the best-TNS sequence of each round is replayed and committed through the journal. A replay that no longer passes is rolled back and ends the search.
+- **Acceptance:** WNS must stay at or above a floor that ratchets up after each commit, and TNS must gain at least 0.5 ps. No endpoint at or above -1 ps may end below -1 ps.
+- **Limits:** up to 12 rounds, bounded by the existing commit cap of `max(30, stock_moves/10)`.
+- **Counters:** `beam_*` counters, including `beam_committed_pair` and `beam_rejected_guard`, are printed in the `RSZ_EVOLVE <name> fired=<n>` format at the end.
+
+The main risk is JPEG runtime: about 8 seeds × 2 variants × 3 trials per round, each needing incremental timing updates. The guards may also be strict enough to leave few commits.
+
+```json
+{"files_changed": ["src/policy/SetupLegacyPolicy.cc", "src/policy/SetupLegacyPolicy.hh", "HYPOTHESIS.md"], "summary": "Replaced the greedy post-stock TNS recovery with a measured depth-2 beam search. It ranks data-arc seeds by slack-weighted coverage times arc delay, tries singles and upstream/downstream pairs in nested journals, and commits only the best sequence per round. Acceptance uses a ratcheting WNS floor and a per-endpoint -1 ps guard.", "new_flags": [], "determinism_notes": "Seeds are ordered by stable sort on weight then pin name, and the best sequence by strict TNS comparison in a fixed iteration order. Pins are resolved by name, and the guard set is only used for membership lookup. Every trial and the committed replay go through the existing journal, so results do not depend on pointer addresses or hash iteration order."}
+```

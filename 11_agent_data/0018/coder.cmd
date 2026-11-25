@@ -1,0 +1,3 @@
+/Users/kavyaagrawal/.local/bin/claude -p --output-format json --model sonnet --max-turns 60 --permission-mode acceptEdits --allowedTools Read Grep Glob LS Edit Write MultiEdit 'Bash(grep *)' 'Bash(rg *)' 'Bash(ls *)' 'Bash(cat *)' 'Bash(head *)' 'Bash(wc *)' 'Bash(diff *)' 'Bash(graphify *)' --add-dir '/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/09_agent_context' --add-dir '/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/01_openroad_original' --max-budget-usd 1.50
+# provider=claude
+# cwd=/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0018_buffering/rsz

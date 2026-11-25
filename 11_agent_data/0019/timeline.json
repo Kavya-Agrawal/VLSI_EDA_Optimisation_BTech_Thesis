@@ -1,0 +1,40 @@
+[
+  {
+    "step": "planned",
+    "t": 151.3,
+    "ts": "2026-11-25T17:04:25Z",
+    "cluster": "setup_strategy",
+    "title": "Measured depth-2 beam search over coupled sizing sequences on data-path-only bottleneck stages, with ratcheting WNS floor and per-endpoint guard, in the post-stock recovery phase"
+  },
+  {
+    "step": "coded",
+    "t": 308.0,
+    "ts": "2026-11-25T17:07:01Z",
+    "files": [
+      "src/policy/SetupLegacyPolicy.cc",
+      "src/policy/SetupLegacyPolicy.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 339.3,
+    "ts": "2026-11-25T17:07:33Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 31
+  },
+  {
+    "step": "evaluated",
+    "t": 543.1,
+    "ts": "2026-11-25T17:10:56Z",
+    "accepted": false,
+    "score": -0.0014506390438913804
+  },
+  {
+    "step": "feedback",
+    "t": 658.4,
+    "ts": "2026-11-25T17:12:52Z"
+  }
+]

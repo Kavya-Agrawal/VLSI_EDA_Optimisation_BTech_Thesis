@@ -1,0 +1,40 @@
+[
+  {
+    "step": "planned",
+    "t": 66.3,
+    "ts": "2026-11-25T16:55:18Z",
+    "cluster": "buffering",
+    "title": "Measured best-of-k criticality-partitioned gate cloning (critical-sink replica + stock van Ginneken on tolerant sinks) for shared high-fanout drivers in the post-stock recovery phase"
+  },
+  {
+    "step": "coded",
+    "t": 148.5,
+    "ts": "2026-11-25T16:56:40Z",
+    "files": [
+      "src/move/CloneGenerator.cc",
+      "src/move/CloneGenerator.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 165.7,
+    "ts": "2026-11-25T16:56:57Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 17
+  },
+  {
+    "step": "evaluated",
+    "t": 352.9,
+    "ts": "2026-11-25T17:00:04Z",
+    "accepted": false,
+    "score": -0.00023573967598160915
+  },
+  {
+    "step": "feedback",
+    "t": 461.6,
+    "ts": "2026-11-25T17:01:53Z"
+  }
+]

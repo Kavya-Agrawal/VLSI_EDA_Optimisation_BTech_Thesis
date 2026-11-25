@@ -14,7 +14,7 @@
   "path_count": 20,
   "sdc_variant": "stressed",
   "stressed_wns_target_ratio": -0.08,
-  "min_score_gain": 0.002,
+  "min_score_gain": 0.0003,
   "hold_wns_tolerance_ns": 0.005,
   "drv_tolerance": 0,
   "area_tolerance_pct": 10.0

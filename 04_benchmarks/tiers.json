@@ -24,5 +24,11 @@
     "nangate45/ariane133",
     "nangate45/ariane136"
   ],
-  "sdc_variant_default": "stressed"
+  "sdc_variant_default": "stressed",
+  "TEST": [
+    "asap7/ibex",
+    "nangate45/dynamic_node",
+    "nangate45/tinyRocket"
+  ],
+  "_comment_test": "TEST is held out: never used by the evolution loop or shown to agents; only for measuring the champion's generalisation."
 }

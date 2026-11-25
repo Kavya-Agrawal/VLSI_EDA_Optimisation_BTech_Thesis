@@ -3,7 +3,7 @@ You are the **Planning Agent** of an evolution loop that improves OpenROAD's Res
 cluster and write a hypothesis that a coding sub-agent will implement in this iteration.
 
 Iteration: 15. Champion so far: iteration 13 (score vs baseline +0.0021): Every in-loop change so far (iters 8, 9, 12) found large Ibex TNS gains from shared-cone/TNS-aware repair but perturbed the stock trajectory and lost WNS on AES/gcd/JPEG. Instead of modifying the gree.
-Benchmarks (tier A): nangate45/gcd, nangate45/aes, nangate45/ibex, nangate45/jpeg. Spend so far: spent $6.42 / 20.00, 8,665,071 tokens over 43 calls.
+Benchmarks (tier A): nangate45/gcd, nangate45/aes, nangate45/ibex, nangate45/jpeg. Spend so far: spent $6.42 / 30.00, 8,665,071 tokens over 43 calls.
 
 Hard rules:
 - The goal is a *different heuristic / approximation / search strategy*, not micro-optimisation, not data-structure
@@ -294,6 +294,9 @@ A separate journaled TNS recovery phase with a fixed stock-WNS floor improved WN
 ## iteration 14 (sizing)
 
 Joint sizing under a fixed stock-WNS floor displaced recovery moves and improved Ibex TNS by 21.20% versus champion while surrendering 5.205 ps of Ibex WNS and 1.289 ps of JPEG WNS.
+
+## iteration 8 (setup_strategy), measured later with a long timeout
+The iteration-8 candidate (setup policy rewrite) gave the largest TNS gains seen so far: ibex TNS -65.7 -> -8.1 ns (-88%), jpeg -32.4 -> -24.4 ns (-25%), gcd also better, but aes WNS worse and repair time grew 15-115x (jpeg 36 s -> 69 min, beyond the 10-min evaluation cap). Promising direction: keep its aggressive TNS recovery but bound its effort (iteration/time budget, or only on endpoints sharing bottleneck cells) so it fits the cap and does not degrade WNS.
 
 
 --- rulebase.md ---

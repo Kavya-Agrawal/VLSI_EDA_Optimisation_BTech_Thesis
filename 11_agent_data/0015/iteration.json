@@ -1,0 +1,153 @@
+{
+  "iteration": 15,
+  "tag": "0015_buffering",
+  "status": "rejected",
+  "cluster": "buffering",
+  "title": "TNS-weighted critical-sink isolation with measured cut-point search on shared bottleneck nets, inside the post-stock recovery phase",
+  "hypothesis": "Shared high-fanout nets (Ibex _26153_/ZN fanout 943, JPEG ddin[8]/Q) dominate the remaining violations, and the stock SplitLoad/Clone recipes split them by half-count local slack inside the greedy loop with predicted effect only. Instead, after the unchanged stock loop, rank shared bottleneck drivers by violating-endpoint count times summed negative slack, weight each sink by the downstream negative endpoint slack it carries, and try up to four cut points (keep the top-k critical sinks on the driver, move the rest behind a centroid-placed buffer or a clone, then optionally resize the driver), each evaluated by journaled incremental STA. Commit the best variant only if WNS >= max(stock-final WNS, last committed recovery WNS) and design TNS strictly improves. This runs on its own budget before the champion's existing recovery moves, so it does not displace them. Removing non-critical load from shared trunks should cut stage delay for every violating endpoint behind the net at once, delivering the shared-cone TNS gains of iterations 8 and 9 without perturbing the stock trajectory.",
+  "planned_files": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh",
+    "src/move/SplitLoadGenerator.cc",
+    "src/move/SplitLoadGenerator.hh",
+    "src/move/CloneGenerator.cc",
+    "src/move/CloneGenerator.hh"
+  ],
+  "evidence_iterations": [
+    7,
+    8,
+    9,
+    13,
+    14
+  ],
+  "files_changed": [
+    "src/move/SplitLoadGenerator.cc",
+    "src/move/SplitLoadGenerator.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 186,
+    "lines_deleted": 28
+  },
+  "accepted": false,
+  "score_vs_champion": -0.0006370291966242642,
+  "score_vs_baseline": 0.0014224780884346823,
+  "reasons": [
+    "score -0.00064 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.0,
+      "wns_cand": -0.0222145086391452,
+      "wns_ref": -0.0222145086391452,
+      "tns_cand": -0.3420142599269762,
+      "tns_ref": -0.3420142599269762,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 831.7819766290313,
+      "area_ref": 831.7819766290313,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -0.0012773274627969357,
+      "wns_cand": -0.025966285412368485,
+      "wns_ref": -0.024127922565050468,
+      "tns_cand": -1.0574394992272294,
+      "tns_ref": -0.9988178344899452,
+      "d_wns_ns": -0.0018383628473180175,
+      "d_tns_ns": -0.05862166473728414,
+      "d_wns_pct_period": -0.24910065681815954,
+      "d_tns_pct": -5.869104726911468,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20561.00179004261,
+      "area_ref": 20584.410620472227,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 6.547334598957208e-05,
+      "wns_cand": -0.07400835709303191,
+      "wns_ref": -0.07423972757790741,
+      "tns_cand": -44.244072768904076,
+      "tns_ref": -44.39935833548254,
+      "d_wns_ns": 0.0002313704848754955,
+      "d_tns_ns": 0.15528556657846337,
+      "d_wns_pct_period": 0.011685378024014923,
+      "d_tns_pct": 0.34974732158316835,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28643.944105510855,
+      "area_ref": 28643.944105510855,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": -0.0013362626696896932,
+      "wns_cand": -0.08800282973652519,
+      "wns_ref": -0.08530243419735703,
+      "tns_cand": -30.917662194429145,
+      "tns_ref": -31.15051771366437,
+      "d_wns_ns": -0.0027003955391681628,
+      "d_tns_ns": 0.23285551923522618,
+      "d_wns_pct_period": -0.2700395539168163,
+      "d_tns_pct": 0.7475173330203839,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90276.40857084407,
+      "area_ref": 90252.47038607631,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 13,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0015_buffering",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0015_buffering",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0015_buffering/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "buffering",
+    "dominant_cause": "deep_logic",
+    "lesson": "Immediate-sink model-ranked SplitLoad cuts inside the stock loop regressed champion-relative score; test downstream-weighted cuts in an isolated measured phase with a monotonic WNS floor.",
+    "dead_end": "Do not repeat greedy-loop cut reranking with a first-order RC model and one lowest-drive buffer at the driver location.",
+    "good_changes": [],
+    "bad_changes": [
+      "src/rsz/src/move/SplitLoadGenerator.cc: rankCutPoints changes stock-loop candidate ordering and yields score -0.00064 versus champion.",
+      "src/rsz/src/move/SplitLoadGenerator.cc: immediate sink slack does not implement downstream violating-endpoint weighting.",
+      "src/rsz/src/move/SplitLoadGenerator.cc: lowestDriveBufferCell and driver-location placement omit buffer-size and centroid searches."
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc",
+      "src/rsz/src/move/SplitLoadGenerator.cc",
+      "src/rsz/src/move/SplitLoadCandidate.cc"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/policy/SetupParallelEvalPolicy.cc",
+      "src/rsz/src/SkewBudget.hh"
+    ]
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0015",
+  "seconds": 527,
+  "when": "2026-11-25T16:06:41Z"
+}

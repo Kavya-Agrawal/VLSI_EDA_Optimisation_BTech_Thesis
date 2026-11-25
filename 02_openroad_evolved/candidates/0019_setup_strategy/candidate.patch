@@ -1,0 +1,396 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0019_setup_strategy/rsz/HYPOTHESIS.md
+index 8c3dc61..5dd4c85 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0019_setup_strategy/rsz/HYPOTHESIS.md	
+@@ -1,30 +1,37 @@
+-# Two-phase setup repair: stock LEGACY loop + bottleneck TNS recovery
++# Hypothesis: measured depth-2 beam search in post-stock TNS recovery
+ 
+ ## Problem
+-In-loop TNS-aware changes found large Ibex TNS gains but perturbed the stock greedy trajectory and lost WNS on AES/gcd/JPEG. Shared trunk drivers (e.g. Ibex `_26153_` fanout 943, JPEG HA/FA drivers) are only touched when they sit on the worst path of the endpoint currently being repaired.
++Remaining WNS/TNS sits on deep FA/HA/AOI data chains (Ibex six-FA_X1 chains, JPEG 20-23 stage multiplier paths). A single-stage upsize is rejected because its input-cap penalty needs a matching upstream or downstream resize. The previous recovery committed the first single move that improved TNS, so it never saw coupled gains. Earlier DP and greedy variants lost WNS or caused endpoint collateral.
+ 
+ ## Current heuristic
+-`SetupLegacyPolicy::iterate` / `repairEndpoint` (src/policy/SetupLegacyPolicy.cc) walks violating endpoints worst-first and repairs each one's worst path via `SetupLegacyBase::repairPath`. Nothing ranks drivers by how many violating paths they serve.
++`src/policy/SetupLegacyPolicy.cc: SetupLegacyPolicy::runGreedyTnsRecovery` (the previous `runTnsRecovery`). It ranks drivers by slack-weighted path count and keeps the first single move that improves TNS with WNS held.
+ 
+ ## New approach
+-The stock loop is unchanged. After it, for the LEGACY phase only, `SetupLegacyPolicy::runTnsRecovery`:
+-1. Snapshots design WNS W* (absolute floor, never rolled).
+-2. Up to 5 rounds: re-collect violating endpoints, unroll the worst path of the top 400, and rank driver pins by sum of (-endpoint slack) over those paths.
+-3. For the top 50 drivers (resolved by name each time), open a journal, run the stock generator sequence via `tryRepairTarget` (up to 3 attempts, excluding move types already rejected for that driver), refresh parasitics/timing, then keep the move only if WNS >= W* and TNS improves by >= 0.5 ps. Otherwise `restoreJournal`.
+-4. Stops when a round keeps nothing, after 5 rounds, or at max(30, 10% of stock moves) kept moves.
++`SetupLegacyPolicy::runBeamRecovery` (called from `runTnsRecovery`, LEGACY phase only), after the unchanged stock loop:
++1. Seeds are ranked by slack-weighted violating-endpoint coverage times arc delay. Arc delay is the arrival difference across the driver stage. Only data arcs from launch Q to D count; clock-network paths (`Path::isClock`) are skipped.
++2. For the top 8 seeds, two single-move variants are tried (best move type, then the next type). Each variant is also paired with the upstream and the downstream path driver, giving depth-2 sequences.
++3. Each trial runs in nested ECO journals with incremental STA, then is rolled back. Only the best-TNS sequence per round is replayed and committed. A replay that no longer passes is rolled back and ends the search.
++4. Acceptance requires all of:
++   - WNS >= a ratcheting floor (the post-stock WNS, raised to the current WNS after each commit);
++   - TNS gain >= 0.5 ps;
++   - no endpoint that was >= -1 ps ends below -1 ps.
++5. The search runs up to 12 rounds, bounded by max(30, stock_moves/10) commits.
+ 
+ ## Why WNS/TNS should improve
+-Final WNS >= stock WNS by construction. Moves on shared trunks help many endpoints at once, so TNS rises. Moves on shared drivers of the worst cone can also raise WNS.
++Coupled upsizes (stage plus the neighbour whose load or drive it changes) are measured as a unit, so the input-cap penalty is paid for by its partner. The WNS floor and the endpoint guard stop the WNS losses and endpoint collateral seen before.
+ 
+ ## What to look for in the path report
+-Fewer violating endpoints sharing a common upstream driver (upsized/buffered trunk); unchanged or better worst path; `RSZ_EVOLVE bottleneck_kept` > 0.
++- `RSZ_EVOLVE beam_committed_pair` >= 1 on ibex and jpeg.
++- Fewer FA/HA stages with a large arc delay on the worst paths.
++- No endpoint newly below -1 ps.
++- `beam_rejected_guard` and `beam_rejected_wns` counts, which show how strict the guards were.
+ 
+ ## Risks
+-TNS-only gains may be under-weighted by the score. Each trial needs a timing update, which may slow JPEG (bounded by 5 rounds x 50 drivers x 3 attempts). Pass count `bottleneck_rejected_*` shows how selective the floor is.
+-
+-## Counters
+-`bottleneck_rounds`, `bottleneck_drivers_ranked`, `bottleneck_trials`, `bottleneck_kept`, `bottleneck_rejected_wns`, `bottleneck_rejected_tns` (printed as `RSZ_EVOLVE <name> fired=<n>`).
++- Incremental-STA trial cost on JPEG: about 8 seeds x 2 variants x 3 trials per round.
++- Strict guards may leave few commits.
++- Coupled upsizes may hurt side paths on shared arithmetic cones.
++- Seed ranking uses the arrival-difference arc delay, which includes the wire delay of the input net.
+ 
+ ## Files changed
+-- src/policy/SetupLegacyPolicy.cc: `runTnsRecovery` and its call after the stock loop, plus counters.
+-- src/policy/SetupLegacyPolicy.hh: declaration of `runTnsRecovery`.
++- `src/policy/SetupLegacyPolicy.cc`: new `runBeamRecovery` with RSZ_EVOLVE counters; `runTnsRecovery` now calls it; the old greedy body is renamed `runGreedyTnsRecovery` and left unreferenced.
++- `src/policy/SetupLegacyPolicy.hh`: declarations for the two functions.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0019_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc
+index 891df17..51b0230 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0019_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc	
+@@ -443,6 +443,12 @@ void SetupLegacyPolicy::runMainRepairLoop(const ViolatingEnds& violating_ends,
+ }
+ 
+ void SetupLegacyPolicy::runTnsRecovery()
++{
++  // The beam search replaces the first-improving greedy recovery.
++  runBeamRecovery();
++}
++
++void SetupLegacyPolicy::runGreedyTnsRecovery()
+ {
+   constexpr int kTopPaths = 400;
+   constexpr int kTopDrivers = 50;
+@@ -597,6 +603,305 @@ void SetupLegacyPolicy::runTnsRecovery()
+   logger_->report("RSZ_EVOLVE bottleneck_rejected_tns fired={}", rejected_tns);
+ }
+ 
++void SetupLegacyPolicy::runBeamRecovery()
++{
++  // Measured depth-2 beam search over coupled sizing sequences on data-path
++  // stages.  Seeds are ranked by slack-weighted endpoint coverage times arc
++  // delay (launch-Q to D data arcs only).  Each seed is tried alone and
++  // paired with its upstream / downstream path driver inside nested ECO
++  // journals; only the best sequence per round is replayed and committed.
++  constexpr int kTopPaths = 400;
++  constexpr int kSeeds = 8;
++  constexpr int kMaxRounds = 12;
++  constexpr float kMinTnsGain = 0.5e-12f;
++  constexpr float kGuardSlack = -1.0e-12f;
++  constexpr float kGuardWindow = 50.0e-12f;
++
++  int64_t seeds_ranked = 0;
++  int64_t clock_arcs_skipped = 0;
++  int64_t rounds = 0;
++  int64_t single_trials = 0;
++  int64_t pair_trials = 0;
++  int64_t committed_single = 0;
++  int64_t committed_pair = 0;
++  int64_t rejected_wns = 0;
++  int64_t rejected_tns = 0;
++  int64_t rejected_guard = 0;
++  int64_t replay_mismatch = 0;
++
++  const MoveType all_types[] = {MoveType::kSizeUp,
++                                MoveType::kSizeUpMatch,
++                                MoveType::kSizeDownFanout,
++                                MoveType::kBuffer,
++                                MoveType::kClone,
++                                MoveType::kSwapPins,
++                                MoveType::kVtSwap,
++                                MoveType::kUnbuffer,
++                                MoveType::kSplitLoad,
++                                MoveType::kReroute};
++  int stock_moves = 0;
++  for (const MoveType type : all_types) {
++    stock_moves += committedMoves(type);
++  }
++  const int move_cap = std::max(30, stock_moves / 10);
++
++  sta::Slack wns_floor = 0.0;
++  sta::Vertex* wns_vertex = nullptr;
++  target_collector_->worstSlack(wns_floor, wns_vertex);
++  const float setup_slack_margin = config_.setup_slack_margin;
++
++  struct Seed
++  {
++    std::string name;
++    std::string up;
++    std::string down;
++    double weight{0.0};
++  };
++  struct Cand
++  {
++    float tns{0.0f};
++    std::string a_name;
++    std::optional<MoveType> a_avoid;
++    std::string b_name;
++  };
++
++  // Endpoints at or above the guard slack must not fall below it.
++  auto guardBaseline = [&]() {
++    std::unordered_set<sta::Vertex*> base;
++    for (const auto& [v, s] : collectViolatingEndpoints(kGuardWindow)) {
++      if (s >= kGuardSlack) {
++        base.insert(v);
++      }
++    }
++    return base;
++  };
++  auto guardOk = [&](const std::unordered_set<sta::Vertex*>& base) {
++    for (const auto& [v, s] : collectViolatingEndpoints(kGuardWindow)) {
++      if (s < kGuardSlack && base.contains(v)) {
++        return false;
++      }
++    }
++    return true;
++  };
++
++  // Apply one single-stage move at a named driver pin.
++  auto applyStep = [&](const std::string& name,
++                       const std::optional<MoveType>& avoid,
++                       std::optional<MoveType>& used) {
++    const sta::Pin* pin = network_->findPin(name.c_str());
++    if (pin == nullptr) {
++      return false;
++    }
++    Target target;
++    if (!makePinTarget(pin, wns_floor, target)) {
++      return false;
++    }
++    std::unordered_set<MoveType> rejected;
++    if (avoid) {
++      rejected.insert(*avoid);
++    }
++    int changed = 0;
++    return tryRepairTarget(target, 1, changed, &rejected, used);
++  };
++
++  if (wns_vertex != nullptr && wns_floor < setup_slack_margin) {
++    float cur_tns = totalNegativeSlack();
++    for (int round = 0;
++         round < kMaxRounds && committed_single + committed_pair < move_cap;
++         ++round) {
++      if (resizer_.overMaxArea()) {
++        break;
++      }
++      ++rounds;
++      const ViolatingEnds ends = collectViolatingEndpoints(setup_slack_margin);
++      if (ends.empty()) {
++        break;
++      }
++
++      // Rank seeds over data arcs only.
++      std::vector<Seed> seeds;
++      std::unordered_map<const sta::Pin*, size_t> index_of;
++      const int path_count
++          = std::min(static_cast<int>(ends.size()), kTopPaths);
++      for (int i = 0; i < path_count; ++i) {
++        sta::Path* path = endpointWorstPath(ends[i].first);
++        if (path == nullptr) {
++          continue;
++        }
++        sta::PathExpanded expanded(path, sta_);
++        const double weight = -static_cast<double>(ends[i].second);
++        std::vector<size_t> drivers;
++        for (size_t k = expanded.startIndex(); k < expanded.size(); ++k) {
++          const sta::Path* p = expanded.path(k);
++          const sta::Pin* pin = p->pin(sta_);
++          if (!p->vertex(sta_)->isDriver(network_)
++              || network_->isTopLevelPort(pin)) {
++            continue;
++          }
++          drivers.push_back(k);
++        }
++        for (size_t di = 0; di < drivers.size(); ++di) {
++          const size_t k = drivers[di];
++          const sta::Path* p = expanded.path(k);
++          if (p->isClock(sta_) || k == 0) {
++            ++clock_arcs_skipped;
++            continue;
++          }
++          const double delay
++              = static_cast<double>(p->arrival())
++                - static_cast<double>(expanded.path(k - 1)->arrival());
++          if (delay <= 0.0) {
++            continue;
++          }
++          const sta::Pin* pin = p->pin(sta_);
++          auto [it, inserted] = index_of.emplace(pin, seeds.size());
++          if (inserted) {
++            Seed s;
++            s.name = network_->pathName(pin);
++            if (di > 0) {
++              s.up = network_->pathName(
++                  expanded.path(drivers[di - 1])->pin(sta_));
++            }
++            if (di + 1 < drivers.size()) {
++              s.down = network_->pathName(
++                  expanded.path(drivers[di + 1])->pin(sta_));
++            }
++            seeds.push_back(std::move(s));
++          }
++          seeds[it->second].weight += weight * delay;
++        }
++      }
++      std::ranges::stable_sort(seeds, [](const Seed& a, const Seed& b) {
++        if (a.weight != b.weight) {
++          return a.weight > b.weight;
++        }
++        return a.name < b.name;
++      });
++      seeds_ranked += static_cast<int64_t>(seeds.size());
++
++      const auto base = guardBaseline();
++      std::optional<Cand> best;
++
++      // Evaluate the current (journaled) netlist against all acceptance rules.
++      auto evaluate = [&](float& tns_out) {
++        resizer_.updateParasiticsAndTiming();
++        sta::Slack wns = 0.0;
++        sta::Vertex* wv = nullptr;
++        target_collector_->worstSlack(wns, wv);
++        tns_out = totalNegativeSlack();
++        if (!sta::fuzzyGreaterEqual(wns, wns_floor)) {
++          ++rejected_wns;
++          return false;
++        }
++        if (tns_out < cur_tns + kMinTnsGain) {
++          ++rejected_tns;
++          return false;
++        }
++        if (!guardOk(base)) {
++          ++rejected_guard;
++          return false;
++        }
++        return true;
++      };
++
++      const int seed_count = std::min(static_cast<int>(seeds.size()), kSeeds);
++      for (int d = 0; d < seed_count; ++d) {
++        std::optional<MoveType> first_used;
++        for (int variant = 0; variant < 2; ++variant) {
++          std::optional<MoveType> avoid;
++          if (variant == 1) {
++            if (!first_used) {
++              break;
++            }
++            avoid = first_used;
++          }
++          committer_.beginJournal();
++          std::optional<MoveType> used;
++          if (!applyStep(seeds[d].name, avoid, used)) {
++            committer_.restoreJournal();
++            break;
++          }
++          if (variant == 0) {
++            first_used = used;
++          }
++          ++single_trials;
++          float tns = 0.0f;
++          if (evaluate(tns) && (!best || tns > best->tns)) {
++            best = Cand{tns, seeds[d].name, avoid, ""};
++          }
++          for (const std::string* partner : {&seeds[d].up, &seeds[d].down}) {
++            if (partner->empty()) {
++              continue;
++            }
++            committer_.beginJournal();
++            std::optional<MoveType> used_b;
++            if (applyStep(*partner, std::nullopt, used_b)) {
++              ++pair_trials;
++              if (evaluate(tns) && (!best || tns > best->tns)) {
++                best = Cand{tns, seeds[d].name, avoid, *partner};
++              }
++            }
++            committer_.restoreJournal();
++            resizer_.updateParasiticsAndTiming();
++          }
++          committer_.restoreJournal();
++          resizer_.updateParasiticsAndTiming();
++        }
++      }
++      if (!best) {
++        break;
++      }
++
++      // Replay and commit the single best sequence of this round.
++      committer_.beginJournal();
++      std::optional<MoveType> used;
++      bool ok = applyStep(best->a_name, best->a_avoid, used);
++      if (ok && !best->b_name.empty()) {
++        std::optional<MoveType> used_b;
++        ok = applyStep(best->b_name, std::nullopt, used_b);
++      }
++      float tns = 0.0f;
++      sta::Slack wns = 0.0;
++      if (ok) {
++        resizer_.updateParasiticsAndTiming();
++        sta::Vertex* wv = nullptr;
++        target_collector_->worstSlack(wns, wv);
++        tns = totalNegativeSlack();
++        ok = sta::fuzzyGreaterEqual(wns, wns_floor)
++             && tns >= cur_tns + kMinTnsGain && guardOk(base);
++      }
++      if (!ok) {
++        ++replay_mismatch;
++        committer_.restoreJournal();
++        resizer_.updateParasiticsAndTiming();
++        break;
++      }
++      committer_.commitJournal();
++      wns_floor = std::max(wns_floor, wns);
++      cur_tns = tns;
++      if (best->b_name.empty()) {
++        ++committed_single;
++      } else {
++        ++committed_pair;
++      }
++    }
++  }
++
++  logger_->report("RSZ_EVOLVE beam_rounds fired={}", rounds);
++  logger_->report("RSZ_EVOLVE beam_seeds_ranked fired={}", seeds_ranked);
++  logger_->report("RSZ_EVOLVE beam_clock_arcs_skipped fired={}",
++                  clock_arcs_skipped);
++  logger_->report("RSZ_EVOLVE beam_single_trials fired={}", single_trials);
++  logger_->report("RSZ_EVOLVE beam_pair_trials fired={}", pair_trials);
++  logger_->report("RSZ_EVOLVE beam_committed_single fired={}",
++                  committed_single);
++  logger_->report("RSZ_EVOLVE beam_committed_pair fired={}", committed_pair);
++  logger_->report("RSZ_EVOLVE beam_rejected_wns fired={}", rejected_wns);
++  logger_->report("RSZ_EVOLVE beam_rejected_tns fired={}", rejected_tns);
++  logger_->report("RSZ_EVOLVE beam_rejected_guard fired={}", rejected_guard);
++  logger_->report("RSZ_EVOLVE beam_replay_mismatch fired={}", replay_mismatch);
++}
++
+ bool SetupLegacyPolicy::pathImproved(const sta::Slack end_slack,
+                                      const sta::Slack worst_slack,
+                                      const sta::Slack prev_end_slack,
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0019_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh
+index eeb1359..ada92ca 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0019_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh	
+@@ -60,6 +60,10 @@ class SetupLegacyPolicy : public SetupLegacyBase
+   // a trial move only if design WNS stays >= the post-stock WNS and design TNS
+   // improves.  Only active for the LEGACY phase.
+   void runTnsRecovery();
++  // Measured depth-2 beam search (default recovery) and the retired
++  // first-improving greedy recovery, kept unreferenced for comparison.
++  void runBeamRecovery();
++  void runGreedyTnsRecovery();
+   bool pathImproved(sta::Slack end_slack,
+                     sta::Slack worst_slack,
+                     sta::Slack prev_end_slack,

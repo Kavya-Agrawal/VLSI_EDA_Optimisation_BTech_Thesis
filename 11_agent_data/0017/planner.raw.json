@@ -1,0 +1,205 @@
+{
+  "duration_api_ms": 68829,
+  "stop_reason": "end_turn",
+  "session_id": "claude:bbcb7af6-188b-4e82-b34e-d51a396ccbf5",
+  "total_cost_usd": 0.5021232999999999,
+  "usage": {
+    "input_tokens": 4,
+    "cache_creation_input_tokens": 44054,
+    "cache_read_input_tokens": 64146,
+    "output_tokens": 6690,
+    "output_tokens_details": {
+      "thinking_tokens": 1952
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 44054,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 4526,
+        "cache_read_input_tokens": 51494,
+        "cache_creation_input_tokens": 5212,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5212
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 30321,
+      "outputTokens": 28,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0030461000000000004,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 0,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 0,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5-5": {
+      "inputTokens": 4,
+      "outputTokens": 6690,
+      "cacheReadInputTokens": 64146,
+      "cacheCreationInputTokens": 44054,
+      "webSearchRequests": 0,
+      "costUSD": 0.4990772,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 1952,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 44054,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 2,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "# Plan for iteration 17: buffering cluster, an LT-tree rebuild of high-fanout nets after stock repair\n\n## Observation\n\n- **Ibex sets the score, and one net sets Ibex.** In iteration 16, every one of Ibex's ten worst paths passes through AND2_X1 `_26153_/ZN`. That cell has fanout **943** and the paths run **39 stages**. Ibex lost **12.668 ns** of TNS against the champion and caused the rejection.\n- **Stock repair never rebuilds that net.** Stock Ibex makes 149 resizes, 14 swaps, 9 clones and **0 buffer insertions**. The champion's recovery phase (iteration 13) and the price ranking (iteration 16) mostly upsize or clone the AND2 and its neighbours. Iteration 16 shows that re-ranking targets does not change this: the ordering changed in only 1 of 6 rounds, and the same trunk stayed critical.\n- **Changing the structure of shared drivers helps Ibex a lot.** Iteration 8 reached Ibex TNS -8.1 ns and iteration 9 reached -31.3 ns. Both lost because they disturbed the stock greedy loop and so lost WNS on AES, gcd and JPEG.\n- **Running after the stock loop is safe.** Iteration 13 is the only accepted change. It keeps the stock trajectory unchanged, then runs a measured, journaled recovery phase with a WNS floor.\n- **Earlier buffering attempts failed for specific reasons:**\n  - Iteration 6 widened which nets stock buffering may touch, inside the stock loop. AES regressed.\n  - Iteration 7 chose splits from predictions only. AES lost 5.3 ps of WNS.\n  - Iteration 11 re-ranked only at the root of the existing tree search. Ibex did not change.\n  - Iteration 15 cut loads with a first-order RC model, used one lowest-drive buffer placed at the driver, and ran inside the stock loop.\n  \n  None of these built a full timing-driven fanout tree, and none of them reached the 943-fanout net.\n- The evaluator's recommendation #2 for iteration 16 was to reserve structural evaluations for `_26153_/ZN`.\n\n## Cluster choice and why\n\n**Cluster: `buffering`.** The cluster history is 15 buffering, then 16 setup_strategy, so this keeps the rotation rules. The dominant cause is **high_fanout** on Ibex, and the next recovery gain has to come from a different topology, not more sizing or re-ranking. Iteration 16 has already shown that ranking does not move this trunk. The change runs only inside the champion's post-stock recovery phase, so the stock trajectory stays unchanged (iteration 13 is the supporting evidence). It does not repeat the in-loop perturbations of iterations 6, 9 and 15.\n\n## Hypothesis\n\n**Problem.** One weak driver feeds hundreds of sinks, and their required times differ a lot. The critical sinks pay the delay of the whole net load: the slow slew from 943 pins of capacitance, plus Steiner wire. That delay is then repeated along 39-stage paths to many endpoints.\n\n**Current heuristic.**\n- Stock `BufferGenerator` / `Rebuffer::fullyRebuffer` runs a van Ginneken pass. It has fanout and eligibility cutoffs and prunes on two values (slack, cap) with a root-only choice. On Ibex it never fires on this net.\n- `SplitLoadGenerator` splits off roughly half the sinks under one buffer.\n- `runTnsRecovery` in the champion can size, swap or clone this driver, but it never rebuilds the tree.\n\n**New approach: required-time-ordered fanout trees (LT-tree / Touati-style timing-driven fanout optimisation).** The rebuild happens as a measured move in the post-stock recovery phase, in five steps:\n\n1. **Choose nets.** For each candidate driver with fanout \u2265 16 that sits on the recovery phase's top violating paths, read the required time of every sink from STA.\n2. **Sort and group sinks.** Order the sinks by required time and cut them into levels:\n   - The level-0 group is the most critical sinks. Their total pin capacitance must fit within a budget set by the driver's best size. They stay directly on the driver.\n   - Each later level, which is less critical, goes behind one buffer.\n   - The buffers form a chain or a balanced tree, so the least critical sinks absorb the extra stages.\n3. **Choose the buffer size and position at each level.** Try every buffer master in the library, not only the lowest drive. Place each buffer at the centroid of the sinks it drives, then let the placer legalise it. Then size the driver for the level-0 load. `Rebuffer::sizeDriverWithTree` already does this.\n4. **Build several trees.** Make 3 to 4 alternatives per net from different level-0 cap budgets. Test each one with real incremental STA inside a journal. Keep the best one only if:\n   - TNS improves, and\n   - WNS stays at or above a ratcheting floor: max(stock-final WNS, best WNS committed so far in recovery), and\n   - no endpoint that started above \u22121 ps slack becomes worse than \u22121 ps. This explicitly covers the near-zero `instr_addr_o[*]` outputs.\n5. **Then hand over.** The champion's sizing and clone recovery runs unchanged on the new state.\n\n**Why WNS and TNS should improve.** Critical sinks lose almost all of the 943-pin load, so their stage delay and output slew fall sharply. The 39-stage Ibex paths gain at that stage and at the next one, which has a faster input slew. The non-critical sinks have positive slack to spare for the extra buffer stages. Every endpoint downstream of the trunk gains at the same time, so TNS should improve much more than WNS. Iterations 8 and 9 suggest roughly 20 ns or more of Ibex TNS is available. Measured acceptance with the ratchet means AES, gcd and JPEG can at worst stay at champion values. The \u22121 ps local guard also closes the regression gap seen on the iteration-13 and iteration-16 IO endpoints.\n\n**Risks.**\n- After legalisation, buffer displacement may change wire parasitics. Mitigation: estimate parasitics again after placement, before the accept check.\n- Runtime on JPEG. Mitigation: at most 40 nets \u00d7 4 trees per design.\n- Max-slew or max-cap violations created on the buffered levels. Mitigation: reject any tree whose DRV count goes above the pre-move count.\n- Very few AES nets may qualify.\n\n**What to look for in the path report.** `_26153_/ZN` should drop from fanout 943 to under about 100 on the critical paths, with 1\u20132 new buffer stages on the non-critical branches. Ibex worst paths should no longer be dominated by the AND2_X1 stage delay and its slew. The `instr_addr_o[22]`/`[29]` outputs should not become violating.\n\n## Trigger estimate\n\n| Design | What the change alters | Share of relevant moves |\n|---|---|---|\n| Ibex | Adds structural decisions where stock and the champion make none (0 of 172 stock moves are buffers). Expect 5\u201320 committed trees, including the 943-fanout trunk. | About 3\u201312 % of 172 stock decisions, but the trunk is on 10 of the 10 worst paths and on thousands of violating endpoints |\n| AES | Nets with fanout \u2265 16 on violating paths, around 30\u201380 candidates. Many already carry stock buffers, and those trees would be rebuilt. | About 6\u201317 % of the 481 stock buffer decisions |\n| JPEG | Shared launch DFFs `ddin[*]` with fanout 11\u201315 are below the threshold. Expect few triggers. | Small (this is acceptable) |\n\n## Implementation sketch\n\n1. **`src/Rebuffer.cc` / `Rebuffer.hh`:** add `BufferedNetPtr buildRequiredTimeTree(const sta::Pin* drvr, float level0_cap_budget, LibertyCell* buf_cell)`. It:\n   - uses `makeBufferedNet` and `annotateLoadSlacks` to get sink slacks,\n   - sorts the sinks by required time and groups them into levels,\n   - builds a Steiner subtree per group with `resteiner`,\n   - places each buffer at the centroid of its group,\n   - calls `sizeDriverWithTree` for the root.\n   \n   Commit through the existing `exportBufferTree` / `applyRebufferTreePlan` path.\n2. **`src/move/BufferGenerator.cc`** (or a small `LtTreeGenerator` inside it): wrap the step above as a candidate that sweeps 4 cap budgets \u00d7 the best 2 buffer masters. Each candidate carries its predicted dTNS for logging.\n3. **`src/policy/SetupLegacyPolicy.cc::runTnsRecovery`:** this is only a hook. At the start of each recovery round, try LT-tree moves on high-fanout drivers before sizing and cloning. Then:\n   - Use a journal checkpoint and `estimateParasitics` after legalisation.\n   - Decide acceptance with the ratcheting floor plus the \u22121 ps local guard on endpoints that started near zero.\n   - Mark drivers that fail as tried for the rest of the phase. Do not clear that mark when another round succeeds; iteration 16 had that bug.\n   - Leave the stock loop and the champion's ranking otherwise unchanged.\n4. **Counters to print (`RSZ_EVOLVE`):**\n   - `lt_candidates`, `lt_trees_built`, `lt_rejected_{wns,local,drv,tns}`, `lt_committed`\n   - for each committed net: name, fanout before and after, predicted vs measured dTNS\n   - the floor value\n   - stock-phase move counts, to prove the stock phase is byte-identical\n\n## Success criteria\n\n- Ibex TNS better than champion **\u221244.40 ns**, target \u2264 \u221235 ns.\n- Ibex WNS no worse than **\u22120.0742 ns**.\n- `_26153_/ZN` committed with critical-path fanout under 100.\n- AES, gcd and JPEG WNS no worse than champion (within 0.1 ps) and TNS no worse.\n- Score vs champion \u2265 **+0.0020**.\n- JPEG runs within the timeout.\n\n## Fallback if it fails\n\n| What happens | Next step |\n|---|---|\n| Trees are built but rejected on WNS or the local guard | Move to `timing_model`: account for post-legalisation parasitics in the prediction |\n| Trees are committed but the Ibex gain is small | The bottleneck is the 39-stage logic depth, not load. Change paradigm to `sizing` on JPEG/Ibex arithmetic arcs with input slew propagated |\n| Runtime blows up | Limit to the top 10 nets by violating-endpoint coverage |\n\n```json\n{\"cluster\": \"buffering\", \"title\": \"Required-time-ordered (LT-tree) fanout tree synthesis for shared high-fanout drivers as a measured move in the post-stock recovery phase\", \"hypothesis\": \"Ibex's worst paths all cross AND2_X1 _26153_/ZN with fanout 943, which stock repair never buffers and the champion's recovery phase only sizes or clones. Replace this with Touati-style timing-driven fanout trees: sort sinks by STA required time, keep the most critical group directly on a resized driver within a load-cap budget, and push less critical groups behind buffers placed at group centroids and chosen from all buffer masters. Several trees per net are built and judged on measured incremental STA inside a journal, under a ratcheting WNS floor plus a local guard for endpoints that start near zero slack. Only the champion's post-stock recovery phase runs this, so the stock trajectory stays byte-identical. Removing hundreds of pins of load from critical sinks should cut stage delay and slew on the shared trunk and improve TNS across thousands of Ibex endpoints without giving back WNS elsewhere.\", \"files\": [\"src/Rebuffer.cc\", \"src/Rebuffer.hh\", \"src/move/BufferGenerator.cc\", \"src/move/BufferGenerator.hh\", \"src/policy/SetupLegacyPolicy.cc\"], \"evidence_iterations\": [13, 9, 8, 16, 15, 6], \"success_criteria\": \"Ibex TNS better than -44.40 ns (target <= -35 ns) with WNS >= -0.0742 ns, _26153_/ZN critical fanout < 100, no WNS/TNS loss on gcd/aes/jpeg vs champion, score >= +0.0020\", \"risk\": \"Post-legalisation buffer displacement or new slew/cap violations erase the predicted gain so most trees are rejected, or AES has few qualifying nets and the score gain comes from Ibex alone\", \"rule_updates\": \"Structural tree rebuilds must print per-net fanout before/after and predicted vs measured dTNS, and must guard every endpoint whose pre-move slack is above -1 ps against falling below -1 ps, not only global WNS.\"}\n```",
+  "ttft_ms": 22750,
+  "type": "result",
+  "duration_ms": 69136,
+  "uuid": "5069ae42-73ce-425f-a37c-640072993faa",
+  "ttft_stream_ms": 2808,
+  "time_to_request_ms": 1339,
+  "time_to_request_phases_ms": {
+    "other": 2,
+    "system_prompt": 49,
+    "resume_other": 0,
+    "process_user_input": 1,
+    "input_attachments": 7,
+    "input_hooks": 1,
+    "conversation_append": 0,
+    "transcript_persist": 3,
+    "tool_pool_refresh": 1,
+    "init_message": 1,
+    "init_frame_send": 1,
+    "engine_pickup": 1,
+    "loop_entry": 2,
+    "message_prep": 0,
+    "model_config_wait": 1,
+    "autocompact": 0,
+    "request_announcements": 16,
+    "query_setup": 0,
+    "model_gates": 1238,
+    "tool_schema_build": 7,
+    "message_normalization": 1,
+    "client_creation": 3,
+    "request_build": 4
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 11,
+  "time_to_request_cpu_ms": 228,
+  "time_to_request_major_faults": 515,
+  "input_attachments_detail": {
+    "slowest_producer": "model",
+    "slowest_producer_ms": 2,
+    "cpu_ms": 9,
+    "major_faults": 30,
+    "setup_ms": 0,
+    "prompt_producers_ms": 0,
+    "ambient_start_ms": 2,
+    "ambient_wait_ms": 2,
+    "render_ms": 1,
+    "producers": 40,
+    "token_counts": 0
+  },
+  "tool_schema_build_detail": {
+    "betas_ms": 0,
+    "waits_ms": 1,
+    "placement_ms": 4,
+    "render_ms": 2,
+    "after_ms": 0,
+    "other_ms": 0,
+    "tools": 12,
+    "new_schemas": 12
+  },
+  "message_normalization_detail": {
+    "before_ms": 0,
+    "normalize_ms": 1,
+    "images_ms": 0,
+    "post_process_ms": 0,
+    "after_ms": 0,
+    "other_ms": 0,
+    "messages": 13,
+    "wire_messages": 2
+  },
+  "request_build_detail": {
+    "records_ms": 0,
+    "system_ms": 1,
+    "headers_ms": 0,
+    "cache_break_record_ms": 0,
+    "plans_ms": 1,
+    "retry_setup_ms": 0,
+    "sent_build_ms": 0,
+    "record_attempt_ms": 2,
+    "other_ms": 0,
+    "sent_build_safety_context_ms": 0,
+    "sent_build_cache_breakpoints_ms": 0,
+    "sent_build_surrogate_scan_ms": 0
+  },
+  "first_content_frame_ms": 2808,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "credential_expires_at": "2026-12-24T23:17:24.324Z",
+  "stderr_tail": "",
+  "provider": "claude",
+  "model": "opus",
+  "fallback_attempts": [
+    {
+      "provider": "claude",
+      "ok": true,
+      "reason": "# Plan for iteration 17: buffering cluster, an LT-tree rebuild of high-fanout nets after stock repair\n\n## Observation\n\n- **Ibex sets the score, and one net sets Ibex.** In iteration 16, every one of Ibex's ten worst paths passes through AND2_X1 `_26153_/ZN`. That cell has fanout **943** and the path"
+    }
+  ]
+}

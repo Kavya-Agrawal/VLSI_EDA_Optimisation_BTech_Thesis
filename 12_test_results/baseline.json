@@ -1,0 +1,251 @@
+{
+  "variant": "stressed",
+  "when": "2026-11-25T16:03:37Z",
+  "designs": {
+    "asap7/ibex": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 810.0,
+      "endpoints": 5456,
+      "pre": {
+        "wns_setup": -144.45389386874996,
+        "tns_setup": -120058.97124478986,
+        "setup_violations": 1219
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -100.95724296927415,
+          "min": -100.95724296927415,
+          "max": -100.95724296927415
+        },
+        "tns_setup": {
+          "mean": -78044.63595483301,
+          "min": -78044.63595483301,
+          "max": -78044.63595483301
+        },
+        "wns_hold": {
+          "mean": 17.33108108401136,
+          "min": 17.33108108401136,
+          "max": 17.33108108401136
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 1164.0,
+          "min": 1164.0,
+          "max": 1164.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 2449.060954035076,
+          "min": 2449.060954035076,
+          "max": 2449.060954035076
+        },
+        "util": {
+          "mean": 0.4656527910227036,
+          "min": 0.4656527910227036,
+          "max": 0.4656527910227036
+        },
+        "instances": {
+          "mean": 21384.0,
+          "min": 21384.0,
+          "max": 21384.0
+        },
+        "buffers": {
+          "mean": 1986.0,
+          "min": 1986.0,
+          "max": 1986.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 61922.0,
+        "min": 61922.0,
+        "max": 61922.0
+      },
+      "deterministic": true,
+      "evolve_counters": {},
+      "repair_stats": {
+        "buffers_inserted": 83,
+        "resized": 172,
+        "pins_swapped": 159,
+        "cloned": 28
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/12_test_results/baseline/asap7__ibex/stressed_r0"
+      ]
+    },
+    "nangate45/dynamic_node": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 2.6,
+      "endpoints": 4821,
+      "pre": {
+        "wns_setup": -0.23777541719684445,
+        "tns_setup": -13.48592298227229,
+        "setup_violations": 324
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.2240152571293251,
+          "min": -0.2240152571293251,
+          "max": -0.2240152571293251
+        },
+        "tns_setup": {
+          "mean": -17.24150826466696,
+          "min": -17.24150826466696,
+          "max": -17.24150826466696
+        },
+        "wns_hold": {
+          "mean": 0.10336706089207089,
+          "min": 0.10336706089207089,
+          "max": 0.10336706089207089
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 326.0,
+          "min": 326.0,
+          "max": 326.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 25313.623197575907,
+          "min": 25313.623197575907,
+          "max": 25313.623197575907
+        },
+        "util": {
+          "mean": 0.4712022182610412,
+          "min": 0.4712022182610412,
+          "max": 0.4712022182610412
+        },
+        "instances": {
+          "mean": 13055.0,
+          "min": 13055.0,
+          "max": 13055.0
+        },
+        "buffers": {
+          "mean": 2824.0,
+          "min": 2824.0,
+          "max": 2824.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 26987.0,
+        "min": 26987.0,
+        "max": 26987.0
+      },
+      "deterministic": true,
+      "evolve_counters": {},
+      "repair_stats": {
+        "buffers_removed": 3,
+        "resized": 499,
+        "pins_swapped": 71,
+        "cloned": 14
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/12_test_results/baseline/nangate45__dynamic_node/stressed_r0"
+      ]
+    },
+    "nangate45/tinyRocket": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 1.2,
+      "endpoints": 8461,
+      "pre": {
+        "wns_setup": -0.10959289341780946,
+        "tns_setup": -36.7141349935757,
+        "setup_violations": 409
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.10235879100706002,
+          "min": -0.10235879100706002,
+          "max": -0.10235879100706002
+        },
+        "tns_setup": {
+          "mean": -34.60163808971024,
+          "min": -34.60163808971024,
+          "max": -34.60163808971024
+        },
+        "wns_hold": {
+          "mean": 0.05975453634365134,
+          "min": 0.05975453634365134,
+          "max": 0.05975453634365134
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 414.0,
+          "min": 414.0,
+          "max": 414.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 53370.50623666073,
+          "min": 53370.50623666073,
+          "max": 53370.50623666073
+        },
+        "util": {
+          "mean": 0.6087741442189862,
+          "min": 0.6087741442189862,
+          "max": 0.6087741442189862
+        },
+        "instances": {
+          "mean": 27650.0,
+          "min": 27650.0,
+          "max": 27650.0
+        },
+        "buffers": {
+          "mean": 2223.0,
+          "min": 2223.0,
+          "max": 2223.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 70336.0,
+        "min": 70336.0,
+        "max": 70336.0
+      },
+      "deterministic": true,
+      "evolve_counters": {},
+      "repair_stats": {
+        "resized": 18,
+        "pins_swapped": 6,
+        "cloned": 2
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/12_test_results/baseline/nangate45__tinyRocket/stressed_r0"
+      ]
+    }
+  }
+}

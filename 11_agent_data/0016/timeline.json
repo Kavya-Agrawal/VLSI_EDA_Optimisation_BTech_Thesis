@@ -1,0 +1,40 @@
+[
+  {
+    "step": "planned",
+    "t": 60.2,
+    "ts": "2026-11-25T16:07:41Z",
+    "cluster": "setup_strategy",
+    "title": "Lagrangian endpoint pricing with best-of-k measured moves and a ratcheting WNS floor in the post-stock TNS-recovery phase"
+  },
+  {
+    "step": "coded",
+    "t": 169.0,
+    "ts": "2026-11-25T16:09:30Z",
+    "files": [
+      "src/policy/SetupLegacyPolicy.cc",
+      "src/policy/SetupLegacyPolicy.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 186.3,
+    "ts": "2026-11-25T16:09:47Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 17
+  },
+  {
+    "step": "evaluated",
+    "t": 340.0,
+    "ts": "2026-11-25T16:12:21Z",
+    "accepted": false,
+    "score": -0.00013930173233839236
+  },
+  {
+    "step": "feedback",
+    "t": 2257.0,
+    "ts": "2026-11-25T16:44:18Z"
+  }
+]

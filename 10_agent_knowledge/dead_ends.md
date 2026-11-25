@@ -49,3 +49,23 @@ Do not reintroduce shared-cone/TNS ranking inside the stock greedy loop: iterati
 ## iteration 14 (sizing)
 
 Do not repeat default-slew four-stage master-only DP before fallback recovery under only a fixed stock-WNS floor; JPEG rejected 49 of 75 DP trials for WNS and retained the same 34 total recovery moves.
+
+## iteration 15 (buffering)
+
+Do not repeat greedy-loop cut reranking with a first-order RC model and one lowest-drive buffer at the driver location.
+
+## iteration 16 (setup_strategy)
+
+Do not repeat the bundled lambda-sum recovery replacement with only higher price growth or larger search budgets.
+
+## iteration 17 (buffering)
+
+The current maximum-four-group lumped-RC prefilter produced zero applied trees and zero gain versus champion.
+
+## iteration 18 (buffering)
+
+Do not repeat same-strength critical-fraction clone rotation without isolated atomic evaluation and verified data-path targeting.
+
+## iteration 19 (setup_strategy)
+
+Do not replace champion greedy recovery with a fixed top-eight beam that regenerates moves during replay and cannot resize its dominant FA_X1/HA_X1 seeds.

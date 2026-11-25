@@ -1,0 +1,19 @@
+I implemented a cut-point search for SplitLoad, but it is a cheaper version of the planner's hypothesis. I did not build, compile or run anything, so none of it has been tested.
+
+**What changed:** `SplitLoadGenerator::generate` no longer always moves the less critical half of the sinks behind the buffer. It scores up to four cut points and emits up to four `SplitLoadCandidate`s in preference order, with the stock half-cut kept as the last resort. The cut points keep a different number of critical sinks on the driver: the negative-slack count, n/4, n/2 (the stock cut) and 3n/4.
+
+**How cuts are scored:** each cut uses a first-order model. Removing load capacitance Cm off the driver speeds every kept sink up by Rdrv·(Cm − Cbuf), and every moved sink by that minus the buffer delay. Each sink adds its own negative slack to the predicted TNS change. Cuts that would lower the predicted worst slack are dropped, and the rest are ranked by predicted TNS gain.
+
+**Deviations from the hypothesis:**
+- **Policy file not edited.** `src/policy/SetupLegacyPolicy.cc`, the suggested hook point, is not in the editable list. I therefore did not add a separate post-loop recovery phase with its own budget.
+- **Stock loop affected.** The new logic runs wherever SplitLoad runs, so it changes the stock loop as well as the existing `runTnsRecovery`.
+- **Model-ranked, not measured.** Cuts are ranked by the model, not by journaled incremental STA per variant. The existing recovery phase does measure and roll back, but only for the first candidate that is accepted.
+- **No isolation counters.** The "≥10 Ibex isolations" criterion has no counter of its own.
+
+**Counters:** the three counters (`split_cutpoint_reranked`, `split_cutpoint_candidates`, `split_cutpoint_dropped`) print in the `RSZ_EVOLVE <name> fired=<n>` form when the last `SplitLoadGenerator` is destroyed. I used the destructor because the policy file can't print at the end of the repair call. If generators are created and destroyed in separate waves, the lines may appear more than once.
+
+`HYPOTHESIS.md` is rewritten with the problem, heuristic, approach, risks and files changed.
+
+```json
+{"files_changed": ["src/move/SplitLoadGenerator.cc", "src/move/SplitLoadGenerator.hh", "HYPOTHESIS.md"], "summary": "SplitLoadGenerator now ranks up to four cut points (critical sinks kept on the driver) with a TNS-weighted first-order model (driver gain Rdrv*(Cm-Cbuf), buffer delay on moved sinks, per-sink negative-slack weighting) and emits them as ordered SplitLoadCandidates, keeping the stock half-cut as the last resort. The search runs inside the generator, not as a separate post-loop phase, because src/policy is not editable, and ranking is model-based rather than STA-measured per variant. Untested: nothing was built or run.", "new_flags": [], "determinism_notes": "Sinks are ordered by slack with a pathNameLess tie-break (unchanged from stock). Cut points come from a fixed list. Ranking uses a stable_sort on deterministic float arithmetic. Global counters are reset when the last generator is destroyed. No hash-ordered iteration is introduced, and the journal/commit path is unchanged."}
+```

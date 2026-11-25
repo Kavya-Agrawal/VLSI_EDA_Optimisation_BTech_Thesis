@@ -1,0 +1,40 @@
+[
+  {
+    "step": "planned",
+    "t": 53.5,
+    "ts": "2026-11-25T15:58:48Z",
+    "cluster": "buffering",
+    "title": "TNS-weighted critical-sink isolation with measured cut-point search on shared bottleneck nets, inside the post-stock recovery phase"
+  },
+  {
+    "step": "coded",
+    "t": 205.5,
+    "ts": "2026-11-25T16:01:20Z",
+    "files": [
+      "src/move/SplitLoadGenerator.cc",
+      "src/move/SplitLoadGenerator.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 229.4,
+    "ts": "2026-11-25T16:01:44Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 24
+  },
+  {
+    "step": "evaluated",
+    "t": 406.9,
+    "ts": "2026-11-25T16:04:41Z",
+    "accepted": false,
+    "score": -0.0006370291966242642
+  },
+  {
+    "step": "feedback",
+    "t": 527.0,
+    "ts": "2026-11-25T16:06:41Z"
+  }
+]

@@ -1,0 +1,62 @@
+{
+  "pdk": "nangate45",
+  "design": "dynamic_node",
+  "top": "dynamic_node_top_wrap",
+  "odb": "placed.odb",
+  "sdc": {
+    "nominal": "nominal.sdc",
+    "stressed": "stressed.sdc"
+  },
+  "libs": [
+    "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib"
+  ],
+  "set_rc": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/platforms/nangate45/setRC.tcl",
+  "dont_use": "TAPCELL_X1 FILLCELL_X1 AOI211_X1 OAI211_X1",
+  "clock_period_ns": {
+    "nominal": 2.0,
+    "stressed": 2.6
+  },
+  "provenance": {
+    "orfs_config": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/designs/nangate45/dynamic_node/config.mk",
+    "orfs_results": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs_runs/nangate45__dynamic_node/results/nangate45/dynamic_node/base",
+    "generated": "2026-11-25T15:58:37Z",
+    "openroad": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock",
+    "stage": "3_5_place_dp (ENABLE_PLACE_REPAIR_TIMING=0)",
+    "instances": null
+  },
+  "stress_calibration": {
+    "chosen_ratio": 1.3,
+    "target_wns_ratio": -0.08,
+    "table": [
+      {
+        "ratio": 2.0,
+        "period": 4.0,
+        "ok": true,
+        "wns_pre": 1.162224571700925,
+        "wns_post": 1.162490137055926,
+        "tns_post": 0.0,
+        "wns_post_pct_period": 29.06225342639815
+      },
+      {
+        "ratio": 1.6,
+        "period": 3.2,
+        "ok": true,
+        "wns_pre": 0.3622244273719277,
+        "wns_post": 0.36249004823808156,
+        "tns_post": 0.0,
+        "wns_post_pct_period": 11.327814007440049
+      },
+      {
+        "ratio": 1.3,
+        "period": 2.6,
+        "ok": true,
+        "wns_pre": -0.23777541719684445,
+        "wns_post": -0.2240152571293251,
+        "tns_post": -17.24150826466696,
+        "wns_post_pct_period": -8.615971428050965
+      }
+    ],
+    "binary": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock",
+    "when": "2026-11-25T15:58:56Z"
+  }
+}

@@ -1,0 +1,88 @@
+# Iteration 19 — Measured depth-2 beam search over coupled sizing sequences on data-path-only bottleneck stages, with ratcheting WNS floor and per-endpoint guard, in the post-stock recovery phase
+
+cluster: `setup_strategy`
+
+# Plan for iteration 19: setup_strategy
+
+## Observation
+
+- **Champion (iter 13):** `SetupLegacyPolicy::runTnsRecovery()` (`SetupLegacyPolicy.cc:445`, `kMaxRounds = 5`) runs after the unchanged stock loop. It tries one move at a time on top-ranked shared drivers. It keeps a move only if measured WNS stays above a fixed stock-final floor and design TNS improves. It retained 17/22/30/34 moves on gcd/aes/ibex/jpeg.
+- **Iter 18 evaluator:** the remaining violations are deep arithmetic chains.
+  - On Ibex `[703]`, six consecutive `FA_X1` arcs take about 679 ps, followed by a 48 ps HA arc.
+  - The JPEG top-5 paths are 20–23 stage HA/FA/OAI chains launched from `DFFR_X2`.
+  - The evaluator says single-driver trials reject moves whose input-capacitance penalty needs a matching upstream resize.
+- **Attribution bug:** Ibex's fanout-943 driver `_26153_/ZN` is on the **clock path** (it drives launch CK). Iterations 6, 15, 17 and 18 all targeted it partly because of that error, and none could have helped.
+- **What worked:** measured, journaled STA acceptance in a separate post-stock phase is the only accepted idea (iter 13).
+- **What failed:**
+  - Changing the stock loop's ranking or acceptance traded Ibex TNS for WNS on the other designs (iters 8, 9, 12).
+  - Model-predicted DP sizing gained 21% Ibex TNS but lost 5.2 ps Ibex WNS. 49 of 75 JPEG DP trials were rejected because the delay model was wrong (no propagated slew) and the floor was fixed (iter 14).
+  - Multiplicative endpoint prices did not change the ranking (iter 16).
+- **Unused:** the evaluator's acceptance contract has never been built: a ratcheting WNS floor, a −1 ps per-endpoint guard, and comparing alternatives from the same restored state.
+
+## Cluster choice and why
+
+**setup_strategy.** Buffering ran twice in a row (17, 18), so rotation forbids it, and the evaluator recommends setup_strategy. The dominant cause is deep logic, where the limit is the search procedure: one-move-greedy cannot accept moves that only pay off as a pair. A new sizing cost model would repeat iter 10/14. A new buffering move would keep chasing the clock-path driver.
+
+## Hypothesis
+
+- **Problem:** The remaining WNS/TNS sits on long FA/HA/AOI data chains. Upsizing one stage there increases input capacitance on its upstream driver. Measured alone, the move is often neutral or negative, so first-improving greedy throws it away. The upstream resize that would make it profitable is never tried in the same state.
+- **Current heuristic:** `runTnsRecovery()` ranks drivers by violating-path coverage, which still includes clock-path pins. For each driver it tries up to 3 single moves one after another. It commits the **first** move that keeps WNS ≥ the fixed stock floor and improves TNS. Endpoint regressions are allowed (Ibex `instr_addr_o[22]` went from +0.1 to −16.3 ps).
+- **New approach: measured beam search (lookahead) over move sequences in the recovery phase.**
+  1. **Data-path targeting.** For each violating endpoint group, expand the worst path from the launch flop's Q to D only. Clock-network pins (anything before the launch CK) are dropped. Each data-path stage is scored by how many violating endpoints share it (slack-weighted) times its arc delay.
+  2. **Lookahead expansion.** For each of the top K seed stages (K about 12 per round), build depth-2 sequences on the same path:
+     - stage upsize / pin swap / VT swap, combined with
+     - an upsize of its immediate upstream driver, or an upsize of the next downstream stage.
+     That is about 6–9 sequences per seed, plus the single moves.
+  3. **Same-state measured comparison.** Each sequence is applied inside a nested journal and measured with incremental STA, then rolled back to the same checkpoint. The best sequence across all seeds in the round is chosen lexicographically: largest ΔTNS, subject to the guards below. Only that one is committed, so this is best-of-beam, not first-improving.
+  4. **Acceptance contract.**
+     - Ratcheting floor: WNS must be ≥ max(stock-final WNS, best committed recovery WNS).
+     - Endpoint guard: snapshot every endpoint with slack > −1 ps (outputs included) before the round. Reject any sequence that pushes one below −1 ps.
+     - No new DRV violations.
+- **Why WNS/TNS improves:** Coupled pairs (FA upsize plus driver upsize) are exactly the moves that iter 14's model predicted well but measured WNS vetoed for lack of coordination. Measuring the pair directly gets their TNS gain without the model error. The ratchet and endpoint guard stop the WNS and collateral losses seen in iters 13/14/18. Targeting only data paths spends the budget on stages that actually set the slack, instead of the 943-fanout clock driver.
+- **Risks:**
+  - Runtime: K × about 9 sequences × 5 rounds of incremental STA. JPEG must stay under the 10-minute cap (the iter-8 lesson), so trials are hard-capped.
+  - The guards may be strict enough that little gets committed, giving an unchanged score.
+  - Upsizing on shared cones can hurt side paths; the endpoint guard is the mitigation.
+
+## Implementation sketch
+
+- **`src/policy/SetupLegacyPolicy.cc` / `.hh`** (the only files changed; the stock loop stays byte-identical):
+  - **`collectDataPathStages()`:** use `PathExpanded`. Start at the launch register's CK→Q arc and skip earlier clock-network vertices. Weight each stage by slack-weighted violating-endpoint coverage × arc delay.
+  - **`buildSequences(stage)`:** single moves from the stock generators (SizeUp, SwapPins, VtSwap), plus depth-2 combinations with the upstream driver (fanin of the stage's critical input pin) and the downstream stage.
+  - **`evaluateSequence()`:** nested journal begin, apply the moves, incremental STA, record WNS/TNS/guard result, roll back. All trials in a round restore the identical checkpoint.
+  - **`runTnsRecovery()`:** rewrite the round loop as seed → beam → choose best → commit one sequence. Ratcheting floor, endpoint snapshot guard, trial budget of 400 per design and 5 rounds, sorted deterministic iteration (by instance name).
+  - **New `RSZ_EVOLVE` counters:**
+    - `beam_seeds`, `beam_sequences_evaluated`, `beam_committed_single`, `beam_committed_pair`
+    - `beam_rejected_floor`, `beam_rejected_endpoint`, `beam_rejected_drv`
+    - `clock_stages_excluded`, `floor_value` (printed per round), per-phase runtime
+    - committed predicted vs measured dTNS
+    - `differs_from_greedy`: how often the chosen sequence is not what first-improving greedy would have taken.
+- **Trigger estimate:** every recovery decision changes, about 150–400 measured trials per design. Expected commits are 20–60, against stock moves of ibex 172 and aes 2078.
+  - Ibex: more than 5% of the stock move count.
+  - AES: commits are about 1–3% of stock moves, but the change replaces 100% of the post-stock decision procedure. Data-path re-attribution also changes which drivers are targeted on every round.
+
+## Success criteria
+
+- Score vs champion ≥ +0.0020.
+- Ibex TNS better than −40 ns (champion −44.4), with Ibex WNS ≥ −74.2 ps.
+- JPEG WNS better than −85.3 ps, from at least one committed pair on an FA/HA chain.
+- No design loses WNS vs champion, and AES TNS ≤ −0.999 ns.
+- `beam_committed_pair` ≥ 1 on ibex and jpeg, `clock_stages_excluded` > 0 on ibex.
+- No endpoint crosses below −1 ps from above (`instr_addr_o[22]` stays ≥ −1 ps).
+- JPEG repair finishes in under 10 minutes.
+
+## Fallback if it fails
+
+- **Zero committed pairs:** log the run as infrastructure, per the iter-18 rule. Rerun with the beam limited to Ibex `[703]`'s FA chain to confirm activation before drawing conclusions.
+- **Pairs commit but give no gain:** the coupling hypothesis is false. Switch cluster to `timing_model`, so that recovery ranking uses clock-aware (propagated-clock) slack. Do not retune K or the budget.
+
+```json
+{"cluster": "setup_strategy",
+ "title": "Measured depth-2 beam search over coupled sizing sequences on data-path-only bottleneck stages, with ratcheting WNS floor and per-endpoint guard, in the post-stock recovery phase",
+ "hypothesis": "The remaining WNS/TNS lies on deep FA/HA/AOI data chains (Ibex [703]: six FA_X1 arcs ~679 ps; JPEG 20-23 stage multiplier paths), where single-stage upsizes are rejected because their input-cap penalty needs a matching upstream resize. Replace runTnsRecovery's first-improving single-move greedy with a measured beam search: seed stages are ranked by slack-weighted violating-endpoint coverage times arc delay over launch-Q-to-D data arcs only (clock-network pins such as Ibex _26153_ excluded). For each seed, single moves and depth-2 sequences (stage + upstream driver or downstream stage) are evaluated by journaled incremental STA from one restored checkpoint, and only the best sequence per round is committed. Acceptance uses a ratcheting WNS floor and rejects any sequence that pushes an endpoint above -1 ps below -1 ps. This should capture the coupled TNS gains iter 14's DP found while avoiding its WNS losses and iter 13/18's endpoint collateral.",
+ "files": ["src/policy/SetupLegacyPolicy.cc", "src/policy/SetupLegacyPolicy.hh"],
+ "evidence_iterations": [13, 14, 18, 12, 16],
+ "success_criteria": "score vs champion >= +0.0020, no design loses WNS vs champion, Ibex TNS better than -40 ns, beam_committed_pair >= 1 on ibex and jpeg, no endpoint crosses -1 ps, JPEG under 10 min",
+ "risk": "Incremental-STA trial cost on JPEG and over-strict guards could yield few commits; coupled upsizes may hurt side paths on shared arithmetic cones.",
+ "rule_updates": "Recovery-phase target ranking must exclude clock-network pins (vertices before launch CK->Q) and print clock_stages_excluded; any comparison of alternatives must restore one identical checkpoint and print evaluated/committed counts per alternative type."}
+```

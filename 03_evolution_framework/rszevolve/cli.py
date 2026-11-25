@@ -49,6 +49,13 @@ def cmd_evolve(args: argparse.Namespace) -> int:
                   replicates=args.replicates, resume=args.resume, knobs=_knobs(args), cluster=args.cluster)
 
 
+def cmd_test(args: argparse.Namespace) -> int:
+    from .eval.test_set import test_baseline, test_champion
+    if args.baseline_only:
+        test_baseline(_knobs(args)); return 0
+    return test_champion(_knobs(args))
+
+
 def cmd_report(args: argparse.Namespace) -> int:
     from .report.summary import print_report
     print_report()
@@ -95,6 +102,9 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--max-tokens", type=int, default=0); s.add_argument("--tier", default="A"); s.add_argument("--replicates", type=int, default=2)
     s.add_argument("--resume", action="store_true"); s.add_argument("--cluster", default=None, help="force a cluster for the next iteration")
     s.set_defaults(fn=cmd_evolve)
+
+    s = sub.add_parser("test", help="held-out TEST designs: champion vs stock (never shown to agents)")
+    s.add_argument("--baseline-only", action="store_true"); s.set_defaults(fn=cmd_test)
 
     for name, fn in (("report", cmd_report), ("viz", cmd_viz), ("status", cmd_status)):
         s = sub.add_parser(name); s.set_defaults(fn=fn)

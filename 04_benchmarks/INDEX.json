@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-12T22:16:57Z",
+  "generated": "2026-11-25T16:00:44Z",
   "designs": {
     "asap7/ibex": {
       "periods": {
@@ -11,21 +11,28 @@
     "nangate45/aes": {
       "periods": {
         "nominal": 0.82,
-        "stressed": 0.656
+        "stressed": 0.738
+      },
+      "ready": true
+    },
+    "nangate45/dynamic_node": {
+      "periods": {
+        "nominal": 2.0,
+        "stressed": 2.6
       },
       "ready": true
     },
     "nangate45/gcd": {
       "periods": {
         "nominal": 0.25,
-        "stressed": 0.225
+        "stressed": 0.375
       },
       "ready": true
     },
     "nangate45/ibex": {
       "periods": {
         "nominal": 2.2,
-        "stressed": 1.7600000000000002
+        "stressed": 1.9800000000000002
       },
       "ready": true
     },
@@ -33,6 +40,13 @@
       "periods": {
         "nominal": 1.0,
         "stressed": 1.0
+      },
+      "ready": true
+    },
+    "nangate45/tinyRocket": {
+      "periods": {
+        "nominal": 1.2,
+        "stressed": 1.2
       },
       "ready": true
     }

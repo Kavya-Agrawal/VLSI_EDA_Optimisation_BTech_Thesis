@@ -64,3 +64,23 @@ Once in-loop changes have perturbed stock trajectories in two or more iterations
 ## proposed by planner, iteration 14
 
 New move generators should first be introduced only inside the post-stock recovery phase, with stock-phase move counts printed to prove the stock trajectory is byte-identical.
+
+## proposed by planner, iteration 15
+
+Topology-changing moves (split/clone/buffer) must be accepted only on measured STA under a dual WNS floor max(stock-final, last-commit) and must print predicted vs measured dTNS per committed move.
+
+## proposed by planner, iteration 16
+
+Post-stock recovery phases must use a ratcheting WNS floor (never below the best committed recovery WNS) and print lr/bottleneck counters showing how often target ranking differs from the champion's static ranking.
+
+## proposed by planner, iteration 17
+
+Structural tree rebuilds must print per-net fanout before/after and predicted vs measured dTNS, and must guard every endpoint whose pre-move slack is above -1 ps against falling below -1 ps, not only global WNS.
+
+## proposed by planner, iteration 18
+
+A structural-move hypothesis is untested unless RSZ_EVOLVE counters show at least one committed application on the named target net; zero-application runs must be logged as infrastructure, not as evidence against the idea.
+
+## proposed by planner, iteration 19
+
+Recovery-phase target ranking must exclude clock-network pins (vertices before launch CK->Q) and print clock_stages_excluded; any comparison of alternatives must restore one identical checkpoint and print evaluated/committed counts per alternative type.

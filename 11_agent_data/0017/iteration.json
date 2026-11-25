@@ -1,0 +1,157 @@
+{
+  "iteration": 17,
+  "tag": "0017_buffering",
+  "status": "rejected",
+  "cluster": "buffering",
+  "title": "Required-time-ordered (LT-tree) fanout tree synthesis for shared high-fanout drivers as a measured move in the post-stock recovery phase",
+  "hypothesis": "Ibex's worst paths all cross AND2_X1 _26153_/ZN with fanout 943, which stock repair never buffers and the champion's recovery phase only sizes or clones. Replace this with Touati-style timing-driven fanout trees: sort sinks by STA required time, keep the most critical group directly on a resized driver within a load-cap budget, and push less critical groups behind buffers placed at group centroids and chosen from all buffer masters. Several trees per net are built and judged on measured incremental STA inside a journal, under a ratcheting WNS floor plus a local guard for endpoints that start near zero slack. Only the champion's post-stock recovery phase runs this, so the stock trajectory stays byte-identical. Removing hundreds of pins of load from critical sinks should cut stage delay and slew on the shared trunk and improve TNS across thousands of Ibex endpoints without giving back WNS elsewhere.",
+  "planned_files": [
+    "src/Rebuffer.cc",
+    "src/Rebuffer.hh",
+    "src/move/BufferGenerator.cc",
+    "src/move/BufferGenerator.hh",
+    "src/policy/SetupLegacyPolicy.cc"
+  ],
+  "evidence_iterations": [
+    6,
+    8,
+    9,
+    13,
+    15,
+    16
+  ],
+  "files_changed": [
+    "src/move/SplitLoadGenerator.cc",
+    "src/move/SplitLoadGenerator.hh",
+    "src/move/SplitLoadCandidate.cc",
+    "src/move/SplitLoadCandidate.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 404,
+    "lines_deleted": 19
+  },
+  "accepted": false,
+  "score_vs_champion": 0.0,
+  "score_vs_baseline": 0.002059507285058947,
+  "reasons": [
+    "score +0.00000 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.0,
+      "wns_cand": -0.0222145086391452,
+      "wns_ref": -0.0222145086391452,
+      "tns_cand": -0.3420142599269762,
+      "tns_ref": -0.3420142599269762,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 831.7819766290313,
+      "area_ref": 831.7819766290313,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": 0.0,
+      "wns_cand": -0.024127922565050468,
+      "wns_ref": -0.024127922565050468,
+      "tns_cand": -0.9988178344899452,
+      "tns_ref": -0.9988178344899452,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20584.410620472227,
+      "area_ref": 20584.410620472227,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.0,
+      "wns_cand": -0.07423972757790741,
+      "wns_ref": -0.07423972757790741,
+      "tns_cand": -44.39935833548254,
+      "tns_ref": -44.39935833548254,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28643.944105510855,
+      "area_ref": 28643.944105510855,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": 0.0,
+      "wns_cand": -0.08530243419735703,
+      "wns_ref": -0.08530243419735703,
+      "tns_cand": -31.15051771366437,
+      "tns_ref": -31.15051771366437,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90252.47038607631,
+      "area_ref": 90252.47038607631,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 13,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0017_buffering",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0017_buffering/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "buffering",
+    "dominant_cause": "high_fanout",
+    "lesson": "Zero applied trees and unchanged fanout 943 mean candidate 0017 did not test timing-driven load isolation; establish activation and measure feasible journaled variants before tuning the heuristic.",
+    "dead_end": "The current maximum-four-group lumped-RC prefilter produced zero applied trees and zero gain versus champion.",
+    "good_changes": [
+      "Inherited src/rsz/src/policy/SetupLegacyPolicy.cc::runTnsRecovery retained 17/22/30/34 moves across GCD/AES/Ibex/JPEG; no new 0017 mechanism demonstrated benefit."
+    ],
+    "bad_changes": [
+      "src/rsz/src/move/SplitLoadGenerator.cc screens 16 modeled variants but returns at most one and produced zero applied trees.",
+      "src/rsz/src/move/SplitLoadCandidate.cc::applyFanoutTree does not resize the original driver.",
+      "The shared generator lacks recovery-only gating, and recovery lacks the promised ratcheting WNS floor and near-zero endpoint guard."
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/move/SplitLoadGenerator.cc",
+      "src/rsz/src/move/SplitLoadCandidate.cc",
+      "src/rsz/src/move/SplitLoadCandidate.hh",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/RepairHold.cc"
+    ]
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0017",
+  "seconds": 593,
+  "when": "2026-11-25T16:54:12Z"
+}

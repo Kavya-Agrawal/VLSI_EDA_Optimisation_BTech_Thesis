@@ -1,0 +1,101 @@
+{
+  "per_design": {
+    "nangate45/gcd": {
+      "beam_rounds": 2,
+      "beam_seeds_ranked": 344,
+      "beam_clock_arcs_skipped": 0,
+      "beam_single_trials": 4,
+      "beam_pair_trials": 3,
+      "beam_committed_single": 1,
+      "beam_committed_pair": 0,
+      "beam_rejected_wns": 4,
+      "beam_rejected_tns": 0,
+      "beam_rejected_guard": 0,
+      "beam_replay_mismatch": 0
+    },
+    "nangate45/aes": {
+      "beam_rounds": 1,
+      "beam_seeds_ranked": 1177,
+      "beam_clock_arcs_skipped": 0,
+      "beam_single_trials": 0,
+      "beam_pair_trials": 0,
+      "beam_committed_single": 0,
+      "beam_committed_pair": 0,
+      "beam_rejected_wns": 0,
+      "beam_rejected_tns": 0,
+      "beam_rejected_guard": 0,
+      "beam_replay_mismatch": 0
+    },
+    "nangate45/ibex": {
+      "beam_rounds": 1,
+      "beam_seeds_ranked": 781,
+      "beam_clock_arcs_skipped": 0,
+      "beam_single_trials": 8,
+      "beam_pair_trials": 10,
+      "beam_committed_single": 0,
+      "beam_committed_pair": 0,
+      "beam_rejected_wns": 3,
+      "beam_rejected_tns": 0,
+      "beam_rejected_guard": 0,
+      "beam_replay_mismatch": 1
+    },
+    "nangate45/jpeg": {
+      "beam_rounds": 2,
+      "beam_seeds_ranked": 8343,
+      "beam_clock_arcs_skipped": 0,
+      "beam_single_trials": 4,
+      "beam_pair_trials": 4,
+      "beam_committed_single": 0,
+      "beam_committed_pair": 1,
+      "beam_rejected_wns": 6,
+      "beam_rejected_tns": 0,
+      "beam_rejected_guard": 0,
+      "beam_replay_mismatch": 0
+    }
+  },
+  "total_fired": 10700,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 26,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 289,
+      "pins_swapped": 119
+    }
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

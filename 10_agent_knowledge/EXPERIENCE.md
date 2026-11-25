@@ -4,7 +4,7 @@ This is a derived, agent-friendly index. The durable source records are `iterati
 remains in `02_openroad_evolved`, `06_evolved_results`, and `11_agent_data`. Regenerating this file never deletes
 an iteration record.
 
-Recorded iterations: **14** · valid algorithm experiments: **12**
+Recorded iterations: **19** · valid algorithm experiments: **17**
 
 ## Iteration 1: crashed · unassigned
 - **Evidence status:** infrastructure/no-code record; do not infer heuristic quality
@@ -257,3 +257,106 @@ Recorded iterations: **14** · valid algorithm experiments: **12**
 - **Bad changes:** src/rsz/src/policy/SetupLegacyPolicy.cc::planWindow omits propagated input slew and explicit endpoint-violation weighting of side loads, src/rsz/src/policy/SetupLegacyPolicy.cc::runTnsRecovery tries DP first, skips fallback after acceptance and consumes the shared recovery budget, src/rsz/src/policy/SetupLegacyPolicy.cc fixed stock-WNS acceptance permits losing WNS gains already achieved during recovery
 - **Files to revisit:** src/rsz/src/policy/SetupLegacyPolicy.cc, src/rsz/src/move/BufferGenerator.cc, src/rsz/src/move/SplitLoadGenerator.cc, src/rsz/src/move/CloneGenerator.cc
 - **Files to avoid:** src/rsz/src/policy/SetupLegacyBase.cc, src/rsz/src/move/SizeUpGenerator.cc, src/rsz/src/SkewBudget.cc
+
+## Iteration 15: rejected · buffering
+- **Evidence status:** valid algorithm experiment
+- **Hypothesis:** TNS-weighted critical-sink isolation with measured cut-point search on shared bottleneck nets, inside the post-stock recovery phase
+- **Score:** vs champion -0.00064; vs baseline +0.00142
+- **Files planned:** src/policy/SetupLegacyPolicy.cc, src/policy/SetupLegacyPolicy.hh, src/move/SplitLoadGenerator.cc, src/move/SplitLoadGenerator.hh, src/move/CloneGenerator.cc, src/move/CloneGenerator.hh
+- **Files changed:** src/move/SplitLoadGenerator.cc, src/move/SplitLoadGenerator.hh, HYPOTHESIS.md
+- **Patch scope:** 1 files, +186/-28 lines
+- **Verdict reasons:** score -0.00064 below required gain +0.00200
+- **nangate45/gcd: score +0.00000; WNS -0.0222->-0.0222 ns (d +0.0000); TNS -0.342->-0.342 ns (d +0.000)**
+- **nangate45/aes: score -0.00128; WNS -0.0241->-0.0260 ns (d -0.0018); TNS -0.999->-1.057 ns (d -0.059)**
+- **nangate45/ibex: score +0.00007; WNS -0.0742->-0.0740 ns (d +0.0002); TNS -44.399->-44.244 ns (d +0.155)**
+- **nangate45/jpeg: score -0.00134; WNS -0.0853->-0.0880 ns (d -0.0027); TNS -31.151->-30.918 ns (d +0.233)**
+- **Dominant cause:** deep_logic
+- **Lesson:** Immediate-sink model-ranked SplitLoad cuts inside the stock loop regressed champion-relative score; test downstream-weighted cuts in an isolated measured phase with a monotonic WNS floor.
+- **Dead end:** Do not repeat greedy-loop cut reranking with a first-order RC model and one lowest-drive buffer at the driver location.
+- **Recommended next cluster:** buffering
+- **Bad changes:** src/rsz/src/move/SplitLoadGenerator.cc: rankCutPoints changes stock-loop candidate ordering and yields score -0.00064 versus champion., src/rsz/src/move/SplitLoadGenerator.cc: immediate sink slack does not implement downstream violating-endpoint weighting., src/rsz/src/move/SplitLoadGenerator.cc: lowestDriveBufferCell and driver-location placement omit buffer-size and centroid searches.
+- **Files to revisit:** src/rsz/src/policy/SetupLegacyPolicy.cc, src/rsz/src/move/SplitLoadGenerator.cc, src/rsz/src/move/SplitLoadCandidate.cc
+- **Files to avoid:** src/rsz/src/policy/SetupParallelEvalPolicy.cc, src/rsz/src/SkewBudget.hh
+
+## Iteration 16: rejected · setup_strategy
+- **Evidence status:** valid algorithm experiment
+- **Hypothesis:** Lagrangian endpoint pricing with best-of-k measured moves and a ratcheting WNS floor in the post-stock TNS-recovery phase
+- **Score:** vs champion -0.00014; vs baseline +0.00192
+- **Files planned:** src/policy/SetupLegacyPolicy.cc, src/policy/SetupLegacyPolicy.hh
+- **Files changed:** src/policy/SetupLegacyPolicy.cc, src/policy/SetupLegacyPolicy.hh, HYPOTHESIS.md
+- **Patch scope:** 1 files, +338/-17 lines
+- **Verdict reasons:** score -0.00014 below required gain +0.00200
+- **nangate45/gcd: score +0.00014; WNS -0.0222->-0.0222 ns (d -0.0000); TNS -0.342->-0.335 ns (d +0.007)**
+- **nangate45/aes: score -0.00005; WNS -0.0241->-0.0242 ns (d -0.0001); TNS -0.999->-1.019 ns (d -0.020)**
+- **nangate45/ibex: score -0.00067; WNS -0.0742->-0.0746 ns (d -0.0004); TNS -44.399->-57.068 ns (d -12.668)**
+- **nangate45/jpeg: score +0.00003; WNS -0.0853->-0.0853 ns (d +0.0000); TNS -31.151->-30.637 ns (d +0.513)**
+- **Dominant cause:** high_fanout
+- **Lesson:** Multiplicative endpoint prices retained Ibex's shared-driver bias and worsened TNS magnitude by 28.53% versus champion; isolate cone diversity and structural move coverage before retuning prices.
+- **Dead end:** Do not repeat the bundled lambda-sum recovery replacement with only higher price growth or larger search budgets.
+- **Recommended next cluster:** setup_strategy
+- **Good changes:** src/rsz/src/policy/SetupLegacyPolicy.cc: measured alternatives selected later moves on 17 of 57 JPEG commits; JPEG TNS improved 0.513403 ns versus champion, although causal contribution is not isolated., src/rsz/src/policy/SetupLegacyPolicy.cc: six-round/600-trial bounds completed all four measured runs.
+- **Bad changes:** src/rsz/src/policy/SetupLegacyPolicy.cc: lambda-sum ranking over 400 paths and 50 drivers changed Ibex ordering in only one of six rounds., src/rsz/src/policy/SetupLegacyPolicy.cc: fixed 16-endpoint veto excludes most endpoints and initially nonviolating outputs., src/rsz/src/policy/SetupLegacyPolicy.cc: best-of-three move types does not ensure clone/split/buffer coverage.
+- **Files to revisit:** src/rsz/src/policy/SetupLegacyPolicy.cc, src/rsz/src/move/CloneGenerator.cc, src/rsz/src/move/SplitLoadGenerator.cc, src/rsz/src/move/BufferGenerator.cc, src/rsz/src/move/SizeUpGenerator.cc
+- **Files to avoid:** src/sta/, src/rsz/src/policy/SetupLegacyBase.cc, src/rsz/src/Optimizer.cc
+
+## Iteration 17: rejected · buffering
+- **Evidence status:** valid algorithm experiment
+- **Hypothesis:** Required-time-ordered (LT-tree) fanout tree synthesis for shared high-fanout drivers as a measured move in the post-stock recovery phase
+- **Score:** vs champion +0.00000; vs baseline +0.00206
+- **Files planned:** src/Rebuffer.cc, src/Rebuffer.hh, src/move/BufferGenerator.cc, src/move/BufferGenerator.hh, src/policy/SetupLegacyPolicy.cc
+- **Files changed:** src/move/SplitLoadGenerator.cc, src/move/SplitLoadGenerator.hh, src/move/SplitLoadCandidate.cc, src/move/SplitLoadCandidate.hh, HYPOTHESIS.md
+- **Patch scope:** 1 files, +404/-19 lines
+- **Verdict reasons:** score +0.00000 below required gain +0.00200
+- **nangate45/gcd: score +0.00000; WNS -0.0222->-0.0222 ns (d +0.0000); TNS -0.342->-0.342 ns (d +0.000)**
+- **nangate45/aes: score +0.00000; WNS -0.0241->-0.0241 ns (d +0.0000); TNS -0.999->-0.999 ns (d +0.000)**
+- **nangate45/ibex: score +0.00000; WNS -0.0742->-0.0742 ns (d +0.0000); TNS -44.399->-44.399 ns (d +0.000)**
+- **nangate45/jpeg: score +0.00000; WNS -0.0853->-0.0853 ns (d +0.0000); TNS -31.151->-31.151 ns (d +0.000)**
+- **Dominant cause:** high_fanout
+- **Lesson:** Zero applied trees and unchanged fanout 943 mean candidate 0017 did not test timing-driven load isolation; establish activation and measure feasible journaled variants before tuning the heuristic.
+- **Dead end:** The current maximum-four-group lumped-RC prefilter produced zero applied trees and zero gain versus champion.
+- **Recommended next cluster:** buffering
+- **Good changes:** Inherited src/rsz/src/policy/SetupLegacyPolicy.cc::runTnsRecovery retained 17/22/30/34 moves across GCD/AES/Ibex/JPEG; no new 0017 mechanism demonstrated benefit.
+- **Bad changes:** src/rsz/src/move/SplitLoadGenerator.cc screens 16 modeled variants but returns at most one and produced zero applied trees., src/rsz/src/move/SplitLoadCandidate.cc::applyFanoutTree does not resize the original driver., The shared generator lacks recovery-only gating, and recovery lacks the promised ratcheting WNS floor and near-zero endpoint guard.
+- **Files to revisit:** src/rsz/src/move/SplitLoadGenerator.cc, src/rsz/src/move/SplitLoadCandidate.cc, src/rsz/src/move/SplitLoadCandidate.hh, src/rsz/src/policy/SetupLegacyPolicy.cc
+- **Files to avoid:** src/rsz/src/RepairHold.cc
+
+## Iteration 18: rejected · buffering
+- **Evidence status:** valid algorithm experiment
+- **Hypothesis:** Measured best-of-k criticality-partitioned gate cloning (critical-sink replica + stock van Ginneken on tolerant sinks) for shared high-fanout drivers in the post-stock recovery phase
+- **Score:** vs champion -0.00024; vs baseline +0.00182
+- **Files planned:** src/move/CloneGenerator.cc, src/move/CloneGenerator.hh, src/move/CloneCandidate.cc, src/move/CloneCandidate.hh, src/policy/SetupLegacyPolicy.cc, src/policy/SetupLegacyPolicy.hh
+- **Files changed:** src/move/CloneGenerator.cc, src/move/CloneGenerator.hh, HYPOTHESIS.md
+- **Patch scope:** 1 files, +108/-24 lines
+- **Verdict reasons:** score -0.00024 below required gain +0.00200
+- **nangate45/gcd: score +0.00000; WNS -0.0222->-0.0222 ns (d +0.0000); TNS -0.342->-0.342 ns (d +0.000)**
+- **nangate45/aes: score -0.00013; WNS -0.0241->-0.0242 ns (d -0.0001); TNS -0.999->-1.179 ns (d -0.181)**
+- **nangate45/ibex: score -0.00080; WNS -0.0742->-0.0773 ns (d -0.0030); TNS -44.399->-45.290 ns (d -0.891)**
+- **nangate45/jpeg: score -0.00001; WNS -0.0853->-0.0853 ns (d +0.0000); TNS -31.151->-31.242 ns (d -0.091)**
+- **Dominant cause:** deep_logic
+- **Lesson:** Iteration 18 lost to champion because visit-dependent single-replica cloning did not implement the proposed atomic search, while Ibex's 943-load attributed driver belongs to the launch clock path rather than the data chain.
+- **Dead end:** Do not repeat same-strength critical-fraction clone rotation without isolated atomic evaluation and verified data-path targeting.
+- **Recommended next cluster:** setup_strategy
+- **Good changes:** src/rsz/src/policy/SetupLegacyPolicy.cc: journaled STA evaluates measured WNS and TNS, but its benefit is inherited and does not establish a gain from iteration 18, src/rsz/src/move/CloneGenerator.cc: counters establish variant generation, though they do not measure committed moves
+- **Bad changes:** src/rsz/src/move/CloneGenerator.cc: shared visit-dependent state changes clone proposals outside an explicit recovery-only search, src/rsz/src/move/CloneGenerator.cc: same-strength single-replica fractions omit upsizing, multiway splitting and tolerant-net rebuffering, src/rsz/src/policy/SetupLegacyPolicy.cc: fixed WNS floor and aggregate-TNS acceptance omit the proposed endpoint guard and best-variant comparison
+- **Files to revisit:** src/rsz/src/policy/SetupLegacyPolicy.cc, src/rsz/src/move/CloneGenerator.cc, src/rsz/src/move/CloneGenerator.hh, src/rsz/src/move/CloneCandidate.cc, src/rsz/src/Rebuffer.cc
+- **Files to avoid:** src/rsz/src/SkewBudget.cc, src/rsz/src/RepairDesign.cc
+
+## Iteration 19: rejected · setup_strategy
+- **Evidence status:** valid algorithm experiment
+- **Hypothesis:** Measured depth-2 beam search over coupled sizing sequences on data-path-only bottleneck stages, with ratcheting WNS floor and per-endpoint guard, in the post-stock recovery phase
+- **Score:** vs champion -0.00145; vs baseline +0.00061
+- **Files planned:** src/policy/SetupLegacyPolicy.cc, src/policy/SetupLegacyPolicy.hh
+- **Files changed:** src/policy/SetupLegacyPolicy.cc, src/policy/SetupLegacyPolicy.hh, HYPOTHESIS.md
+- **Patch scope:** 1 files, +332/-16 lines
+- **Verdict reasons:** score -0.00145 below required gain +0.00200
+- **nangate45/gcd: score -0.00159; WNS -0.0222->-0.0229 ns (d -0.0007); TNS -0.342->-0.378 ns (d -0.036)**
+- **nangate45/aes: score -0.00124; WNS -0.0241->-0.0258 ns (d -0.0017); TNS -0.999->-1.141 ns (d -0.142)**
+- **nangate45/ibex: score -0.00227; WNS -0.0742->-0.0794 ns (d -0.0052); TNS -44.399->-65.665 ns (d -21.266)**
+- **nangate45/jpeg: score -0.00070; WNS -0.0853->-0.0866 ns (d -0.0013); TNS -31.151->-31.878 ns (d -0.728)**
+- **Dominant cause:** deep_logic
+- **Lesson:** Measured depth-2 recovery improved JPEG baseline TNS by 0.525 ns but lost champion recovery because AES generated no trials and Ibex failed replay.
+- **Dead end:** Do not replace champion greedy recovery with a fixed top-eight beam that regenerates moves during replay and cannot resize its dominant FA_X1/HA_X1 seeds.
+- **Recommended next cluster:** setup_strategy
+- **Good changes:** src/rsz/src/policy/SetupLegacyPolicy.cc: measured pair evaluation committed one JPEG pair with unchanged baseline WNS, src/rsz/src/policy/SetupLegacyPolicy.cc: measured single-move recovery improved GCD baseline TNS by 0.097 ns
+- **Bad changes:** src/rsz/src/policy/SetupLegacyPolicy.cc: runTnsRecovery bypasses champion runGreedyTnsRecovery, src/rsz/src/policy/SetupLegacyPolicy.cc: Cand stores pin names and exclusions rather than exact replayable operations, src/rsz/src/policy/SetupLegacyPolicy.cc: fixed top-eight seed selection produced zero AES trials, src/rsz/src/policy/SetupLegacyPolicy.cc: endpoint protection omits endpoints initially above +50 ps
+- **Files to revisit:** src/rsz/src/policy/SetupLegacyPolicy.cc, src/rsz/src/policy/SetupLegacyPolicy.hh, src/rsz/src/policy/SetupLegacyBase.cc, src/rsz/src/MoveCommitter.cc, src/rsz/src/move/SizeUpGenerator.cc

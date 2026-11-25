@@ -1,0 +1,138 @@
+# Feedback for iteration 17 (0017_buffering, cluster buffering)
+
+```
+vs champion:
+REJECT  score=+0.00000
+  nangate45/gcd      WNS -0.0222 -> -0.0222 ns  TNS -0.342 -> -0.342 ns  score +0.00000
+  nangate45/aes      WNS -0.0241 -> -0.0241 ns  TNS -0.999 -> -0.999 ns  score +0.00000
+  nangate45/ibex     WNS -0.0742 -> -0.0742 ns  TNS -44.399 -> -44.399 ns  score +0.00000
+  nangate45/jpeg     WNS -0.0853 -> -0.0853 ns  TNS -31.151 -> -31.151 ns  score +0.00000
+  ! score +0.00000 below required gain +0.00200
+
+vs baseline:
+ACCEPT  score=+0.00206
+  nangate45/gcd      WNS -0.0234 -> -0.0222 ns  TNS -0.475 -> -0.342 ns  score +0.00399
+  nangate45/aes      WNS -0.0258 -> -0.0241 ns  TNS -1.141 -> -0.999 ns  score +0.00124
+  nangate45/ibex     WNS -0.0794 -> -0.0742 ns  TNS -65.665 -> -44.399 ns  score +0.00227
+  nangate45/jpeg     WNS -0.0866 -> -0.0853 ns  TNS -32.403 -> -31.151 ns  score +0.00074
+```
+
+Could not save `feedback.md`: the filesystem is read-only, and the write was rejected. The report follows.
+
+## 1. Outcome
+
+**REJECT versus champion:** score **+0.00000**, below the required **+0.00200**. All four designs match champion WNS/TNS.
+
+**ACCEPT versus baseline:** score **+0.00206**. These gains are inherited from the champion.
+
+Deltas are candidate minus comparator; positive means improvement. Units: ns.
+
+| Design | Candidate WNS | Candidate TNS | ΔWNS vs champion | ΔTNS vs champion | ΔWNS vs baseline | ΔTNS vs baseline |
+|---|---:|---:|---:|---:|---:|---:|
+| GCD | -0.0222 | -0.342 | 0 | 0 | +0.0012 | +0.133 |
+| AES | -0.0241 | -0.999 | 0 | 0 | +0.0017 | +0.142 |
+| Ibex | -0.0742 | -44.399 | 0 | 0 | +0.0052 | +21.266 |
+| JPEG | -0.0853 | -31.151 | 0 | 0 | +0.0013 | +1.252 |
+
+Six unit targets and ten smoke cases passed. These checks do not establish activation of the new optimization.
+
+## 2. Did the hypothesis do what it predicted?
+
+**No tree effect was observed.** `evolve_counters.json` reports zero trees built, zero tree buffers, and zero sinks isolated on every design. Stock fallback fired twice on Ibex and once on JPEG.
+
+Ibex’s ten listed worst paths still cross **AND2_X1 `_26153_/ZN`**, retain maximum fanout **943**, and report worst slew **2087753088.0** in the report’s unverified slew units. Nine paths have 37 stages; one has 33. Neither load isolation nor driver resizing is visible.
+
+Source inspection identifies differences from the stated hypothesis:
+
+- `src/rsz/src/move/SplitLoadGenerator.cc` evaluates **16 variants using a lumped RC model**, then returns at most one tree. It does not evaluate several trees through measured incremental STA.
+- Sink ordering uses relative slack for one transition rather than explicit required-time ordering.
+- Groups are limited to **four**, and each must fit below **90% of one buffer master’s maximum capacitance**. This is a plausible feasibility bottleneck at fanout 943, but rejection reasons were not logged.
+- Screening excludes wire capacitance and slew-dependent delay and rejects predicted gains below **1 ps**.
+- `SplitLoadCandidate.cc::applyFanoutTree` inserts buffers but does not resize the original driver.
+- The shared generator has no recovery-only condition. Equal final metrics do not establish a byte-identical stock trajectory.
+- `SetupLegacyPolicy.cc::runTnsRecovery` captures its WNS floor once. It neither ratchets that floor after commits nor implements the promised near-zero endpoint guard.
+
+The built counter increments during application, before outer journal acceptance. Its zero value provides no evidence that a successfully inserted tree reached timing evaluation. The physical hypothesis remains untested by an applied tree.
+
+## 3. Where the remaining negative slack comes from
+
+The **five globally worst endpoints are all JPEG endpoints**. Names below omit the common prefix `fdct_zigzag.dct_mod.` and suffix `$_DFFE_PP_/D`.
+
+| Endpoint | Slack (ns) | Likely cause | Applicable moves and likely reason unresolved |
+|---|---:|---|---|
+| `dct_block_5.dct_unit_4.macu.mult_res[18]` | -0.085302 | Deep logic: 22 stages; fanout 15; shared DFFR_X2 `ddin[8]/Q` and HA_X1 `_114238_/S` | Launch sizing/cloning, selective load splitting, HA sizing. Tree threshold 40 excludes the reported path fanout. |
+| `dct_block_2.dct_unit_4.macu.mult_res[18]` | -0.085137 | Deep arithmetic logic: 19 stages; fanout 12; HA_X1 `_115515_/S`, NOR3_X2 `_106305_/ZN` | HA/NOR sizing, pin swaps, arithmetic remapping. High-fanout trees do not shorten the arithmetic chain. |
+| `dct_block_7.dct_unit_4.macu.mult_res[15]` | -0.084674 | Deep logic and shared launch load: 20 stages; fanout 15; HA_X1 `_115122_/S`, `ddin[8]/Q` | Coordinated HA and launch-cone sizing/cloning. Independent sizing may increase upstream capacitance enough to lose its downstream benefit. |
+| `dct_block_7.dct_unit_2.macu.mult_res[18]` | -0.083894 | Deep carry/sum chain: 22 stages; fanout 17; FA_X1 `_109354_/S`, HA_X1 `_115805_/S` | Joint FA/HA sizing or arithmetic restructuring. Single-move trials may reject intermediate states before a beneficial sequence completes. |
+| `dct_block_5.dct_unit_4.macu.mult_res[17]` | -0.083520 | Deep logic and weak/shared drive: 21 stages; fanout 15; OAI221_X1 `_095447_/ZN`, `ddin[8]/Q` | OAI sizing/pin assignment plus launch-load reduction. High-fanout-only generation misses this regime. |
+
+These are structural inferences. The supplied evidence does not establish long wire, IO constraints, or clock skew as dominant causes for these five register endpoints.
+
+Other design leaders need different treatment:
+
+- **Ibex:** unresolved 943-load X1 trunk plus 33–37 stages.
+- **AES:** slow-slew 14–16-stage cones, including OAI33_X1 `_19597_/ZN`; the worst path has fanout only 4.
+- **GCD:** 14-stage paths with DFF_X1 launch drive and maximum fanout 8.
+
+Ibex and JPEG contribute **75.550/76.891 ns ≈ 98.3%** of remaining absolute TNS.
+
+## 4. Regressions
+
+These are regressions against the supplied path reference, not demonstrated incremental damage versus champion. No tree was built. Shared-cone capacitance and slew changes are probable mechanisms; per-move traces are needed for attribution.
+
+| Design | Endpoint | Reference → candidate slack (ns) | Loss |
+|---|---|---:|---:|
+| GCD | `resp_msg[8]` | +0.0212 → +0.0043 | 16.9 ps |
+| GCD | `resp_msg[2]` | +0.0617 → +0.0610 | 0.7 ps |
+| GCD | `resp_msg[3]` | +0.0255 → +0.0254 | 0.1 ps |
+| GCD | `resp_msg[9]` | +0.0032 → +0.0032 | Hidden by rounding |
+| AES | `sa10_sr[3]$_DFF_P_/D` | -0.0227 → -0.0241 | 1.4 ps |
+| Ibex | `instr_addr_o[30]` | -0.0522 → -0.0587 | 6.5 ps |
+| Ibex | `instr_addr_o[22]` | +0.0001 → -0.0155 | 15.6 ps |
+| Ibex | `instr_addr_o[23]` | +0.0106 → +0.0033 | 7.3 ps |
+| Ibex | `instr_addr_o[26]` | +0.0267 → +0.0102 | 16.5 ps |
+| Ibex | `instr_addr_o[27]` | +0.0217 → +0.0155 | 6.2 ps |
+| JPEG | Block2/unit4/result18 | -0.0843 → -0.0851 | 0.8 ps |
+| JPEG | Block3/unit3/result16 | -0.0827 → -0.0828 | 0.1 ps |
+| JPEG | Block2/unit2/result16 | -0.0825 → -0.0826 | 0.1 ps |
+| JPEG | Block7/unit4/result17 | -0.0819 → -0.0825 | 0.6 ps |
+
+GCD output slack consumption and Ibex address-output regressions indicate shared-cone tradeoffs that aggregate WNS/TNS checks permit. **`instr_addr_o[22]` crosses zero**, directly motivating endpoint protection. AES and JPEG show slack redistribution among competing critical cones.
+
+The reference counts **4/1/13/4** regressed endpoints across GCD/AES/Ibex/JPEG. The examples supplied do not enumerate all 13 Ibex regressions.
+
+## 5. Recommendation for the next iteration
+
+1. **Buffering: make tree activation observable and feasible.** Explicitly schedule `_26153_/ZN` during recovery. Log target visitation, eligibility failures, max-cap infeasibility, model rejection, application failure, and STA rollback. Replace the four-group ceiling with capacitance-driven group counts or recursive trees. Measure several feasible variants in journals, including variants screened out by the approximate 1 ps threshold. Require an applied tree and reduced fanout before claiming the hypothesis was tested.
+
+2. **Buffering: implement the stated recovery contract.** Restrict tree trials to recovery; evaluate driver resizing and tree insertion atomically. Ratchet WNS after accepted moves and protect initially near-zero endpoints, including `instr_addr_o[22]`. Verify connectivity, parasitics, and timing restoration after rollback.
+
+3. **Sizing/arithmetic: target JPEG if functioning Ibex trees fail measured STA.** Evaluate small coordinated launch/HA/FA/OAI sizing bundles and selective splitting at fanouts **12–17**. JPEG retains **-31.151 ns TNS**; **77 of 169** recovery trials failed WNS, so diagnose upstream-load penalties before increasing trial budgets.
+
+**Do not repeat** the same lumped-model-only, maximum-four-group search and interpret another zero-application result as evidence against timing-driven buffering.
+
+```json
+{
+  "recommended_cluster": "buffering",
+  "dominant_cause": "high_fanout",
+  "lesson": "Zero applied trees and unchanged fanout 943 mean candidate 0017 did not test timing-driven load isolation; establish activation and measure feasible journaled variants before tuning the heuristic.",
+  "dead_end": "The current maximum-four-group lumped-RC prefilter produced zero applied trees and zero gain versus champion.",
+  "good_changes": [
+    "Inherited src/rsz/src/policy/SetupLegacyPolicy.cc::runTnsRecovery retained 17/22/30/34 moves across GCD/AES/Ibex/JPEG; no new 0017 mechanism demonstrated benefit."
+  ],
+  "bad_changes": [
+    "src/rsz/src/move/SplitLoadGenerator.cc screens 16 modeled variants but returns at most one and produced zero applied trees.",
+    "src/rsz/src/move/SplitLoadCandidate.cc::applyFanoutTree does not resize the original driver.",
+    "The shared generator lacks recovery-only gating, and recovery lacks the promised ratcheting WNS floor and near-zero endpoint guard."
+  ],
+  "files_to_revisit": [
+    "src/rsz/src/move/SplitLoadGenerator.cc",
+    "src/rsz/src/move/SplitLoadCandidate.cc",
+    "src/rsz/src/move/SplitLoadCandidate.hh",
+    "src/rsz/src/policy/SetupLegacyPolicy.cc"
+  ],
+  "files_to_avoid": [
+    "src/rsz/src/RepairHold.cc"
+  ]
+}
+```

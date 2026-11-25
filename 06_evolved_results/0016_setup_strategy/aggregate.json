@@ -1,0 +1,386 @@
+{
+  "stressed": {
+    "nangate45/gcd": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 0.375,
+      "endpoints": 72,
+      "pre": {
+        "wns_setup": -0.02495898003363754,
+        "tns_setup": -0.7322117563961893,
+        "setup_violations": 42
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.0222146751726036,
+          "min": -0.0222146751726036,
+          "max": -0.0222146751726036
+        },
+        "tns_setup": {
+          "mean": -0.33471201757616326,
+          "min": -0.33471201757616326,
+          "max": -0.33471201757616326
+        },
+        "wns_hold": {
+          "mean": 0.087038809179191,
+          "min": 0.087038809179191,
+          "max": 0.087038809179191
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 26.0,
+          "min": 26.0,
+          "max": 26.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 837.3680082662815,
+          "min": 837.3680082662815,
+          "max": 837.3680082662815
+        },
+        "util": {
+          "mean": 0.7776679841897286,
+          "min": 0.7776679841897286,
+          "max": 0.7776679841897286
+        },
+        "instances": {
+          "mean": 706.0,
+          "min": 706.0,
+          "max": 706.0
+        },
+        "buffers": {
+          "mean": 159.0,
+          "min": 159.0,
+          "max": 159.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 2110.0,
+        "min": 2110.0,
+        "max": 2110.0
+      },
+      "deterministic": true,
+      "evolve_counters": {
+        "bottleneck_rounds": 6,
+        "bottleneck_drivers_ranked": 949,
+        "bottleneck_trials": 469,
+        "bottleneck_kept": 21,
+        "bottleneck_rejected_wns": 47,
+        "bottleneck_rejected_tns": 32,
+        "lr_rank_changed_vs_static": 6,
+        "lr_price_updates": 139,
+        "lr_best_of_k_evals": 443,
+        "lr_best_not_first": 1,
+        "lr_endpoint_veto_blocked": 39,
+        "lr_wns_floor_ratchets": 1
+      },
+      "repair_stats": {
+        "resized": 44,
+        "pins_swapped": 1
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0016_setup_strategy/runs/nangate45__gcd/stressed_r0"
+      ]
+    },
+    "nangate45/aes": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 0.738,
+      "endpoints": 1248,
+      "pre": {
+        "wns_setup": -0.07898321109592449,
+        "tns_setup": -8.11572343411087,
+        "setup_violations": 160
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.02418582069742214,
+          "min": -0.02418582069742214,
+          "max": -0.02418582069742214
+        },
+        "tns_setup": {
+          "mean": -1.0190956145190087,
+          "min": -1.0190956145190087,
+          "max": -1.0190956145190087
+        },
+        "wns_hold": {
+          "mean": 0.10201455247075145,
+          "min": 0.10201455247075145,
+          "max": 0.10201455247075145
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 121.0,
+          "min": 121.0,
+          "max": 121.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 20579.090431738223,
+          "min": 20579.090431738223,
+          "max": 20579.090431738223
+        },
+        "util": {
+          "mean": 0.38986595444460487,
+          "min": 0.38986595444460487,
+          "max": 0.38986595444460487
+        },
+        "instances": {
+          "mean": 15342.0,
+          "min": 15342.0,
+          "max": 15342.0
+        },
+        "buffers": {
+          "mean": 3354.0,
+          "min": 3354.0,
+          "max": 3354.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 25932.0,
+        "min": 25932.0,
+        "max": 25932.0
+      },
+      "deterministic": true,
+      "evolve_counters": {
+        "bottleneck_rounds": 6,
+        "bottleneck_drivers_ranked": 7017,
+        "bottleneck_trials": 370,
+        "bottleneck_kept": 12,
+        "bottleneck_rejected_wns": 18,
+        "bottleneck_rejected_tns": 12,
+        "lr_rank_changed_vs_static": 6,
+        "lr_price_updates": 526,
+        "lr_best_of_k_evals": 354,
+        "lr_best_not_first": 4,
+        "lr_endpoint_veto_blocked": 8,
+        "lr_wns_floor_ratchets": 0
+      },
+      "repair_stats": {
+        "buffers_removed": 7,
+        "buffers_inserted": 489,
+        "resized": 1408,
+        "pins_swapped": 134,
+        "cloned": 70
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0016_setup_strategy/runs/nangate45__aes/stressed_r0"
+      ]
+    },
+    "nangate45/ibex": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 1.98,
+      "endpoints": 5565,
+      "pre": {
+        "wns_setup": -0.19248381211517587,
+        "tns_setup": -164.0219313462487,
+        "setup_violations": 1572
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.07462719542445992,
+          "min": -0.07462719542445992,
+          "max": -0.07462719542445992
+        },
+        "tns_setup": {
+          "mean": -57.06768552576667,
+          "min": -57.06768552576667,
+          "max": -57.06768552576667
+        },
+        "wns_hold": {
+          "mean": 0.044729221592639395,
+          "min": 0.044729221592639395,
+          "max": 0.044729221592639395
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 1428.0,
+          "min": 1428.0,
+          "max": 1428.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 28646.072181004456,
+          "min": 28646.072181004456,
+          "max": 28646.072181004456
+        },
+        "util": {
+          "mean": 0.5110110418850531,
+          "min": 0.5110110418850531,
+          "max": 0.5110110418850531
+        },
+        "instances": {
+          "mean": 14629.0,
+          "min": 14629.0,
+          "max": 14629.0
+        },
+        "buffers": {
+          "mean": 1112.0,
+          "min": 1112.0,
+          "max": 1112.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 41635.0,
+        "min": 41635.0,
+        "max": 41635.0
+      },
+      "deterministic": true,
+      "evolve_counters": {
+        "bottleneck_rounds": 6,
+        "bottleneck_drivers_ranked": 4463,
+        "bottleneck_trials": 526,
+        "bottleneck_kept": 39,
+        "bottleneck_rejected_wns": 32,
+        "bottleneck_rejected_tns": 105,
+        "lr_rank_changed_vs_static": 1,
+        "lr_price_updates": 7368,
+        "lr_best_of_k_evals": 479,
+        "lr_best_not_first": 6,
+        "lr_endpoint_veto_blocked": 11,
+        "lr_wns_floor_ratchets": 5
+      },
+      "repair_stats": {
+        "buffers_inserted": 84,
+        "resized": 153,
+        "pins_swapped": 13,
+        "cloned": 12
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0016_setup_strategy/runs/nangate45__ibex/stressed_r0"
+      ]
+    },
+    "nangate45/jpeg": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 1.0,
+      "endpoints": 8355,
+      "pre": {
+        "wns_setup": -0.11649559424633563,
+        "tns_setup": -48.30013858914408,
+        "setup_violations": 661
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.08530243419735703,
+          "min": -0.08530243419735703,
+          "max": -0.08530243419735703
+        },
+        "tns_setup": {
+          "mean": -30.63711504542089,
+          "min": -30.63711504542089,
+          "max": -30.63711504542089
+        },
+        "wns_hold": {
+          "mean": 0.008403000755284745,
+          "min": 0.008403000755284745,
+          "max": 0.008403000755284745
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 609.0,
+          "min": 609.0,
+          "max": 609.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 90280.13181477945,
+          "min": 90280.13181477945,
+          "max": 90280.13181477945
+        },
+        "util": {
+          "mean": 0.8333820333698662,
+          "min": 0.8333820333698662,
+          "max": 0.8333820333698662
+        },
+        "instances": {
+          "mean": 59614.0,
+          "min": 59614.0,
+          "max": 59614.0
+        },
+        "buffers": {
+          "mean": 5607.0,
+          "min": 5607.0,
+          "max": 5607.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 62096.0,
+        "min": 62096.0,
+        "max": 62096.0
+      },
+      "deterministic": true,
+      "evolve_counters": {
+        "bottleneck_rounds": 5,
+        "bottleneck_drivers_ranked": 21183,
+        "bottleneck_trials": 600,
+        "bottleneck_kept": 57,
+        "bottleneck_rejected_wns": 241,
+        "bottleneck_rejected_tns": 52,
+        "lr_rank_changed_vs_static": 5,
+        "lr_price_updates": 2421,
+        "lr_best_of_k_evals": 543,
+        "lr_best_not_first": 17,
+        "lr_endpoint_veto_blocked": 24,
+        "lr_wns_floor_ratchets": 1
+      },
+      "repair_stats": {
+        "resized": 324,
+        "pins_swapped": 119,
+        "cloned": 1
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0016_setup_strategy/runs/nangate45__jpeg/stressed_r0"
+      ]
+    }
+  },
+  "tier": "A",
+  "replicates": 1,
+  "when": "2026-11-25T16:12:21Z",
+  "rsz_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0016_setup_strategy/rsz"
+}

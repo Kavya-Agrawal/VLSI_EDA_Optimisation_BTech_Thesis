@@ -1,0 +1,313 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0015_buffering/rsz/HYPOTHESIS.md
+index 8c3dc61..49b7d30 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0015_buffering/rsz/HYPOTHESIS.md	
+@@ -1,30 +1,29 @@
+-# Two-phase setup repair: stock LEGACY loop + bottleneck TNS recovery
++# TNS-weighted cut-point search for SplitLoad isolation of shared bottleneck nets
+ 
+ ## Problem
+-In-loop TNS-aware changes found large Ibex TNS gains but perturbed the stock greedy trajectory and lost WNS on AES/gcd/JPEG. Shared trunk drivers (e.g. Ibex `_26153_` fanout 943, JPEG HA/FA drivers) are only touched when they sit on the worst path of the endpoint currently being repaired.
++Shared high-fanout nets (Ibex `_26153_/ZN` fanout 943, JPEG `ddin[8]/Q`) dominate the remaining violations. Stock SplitLoad always moves the less critical *half* of the sinks (by count) behind one buffer, regardless of how many sinks are actually violating or how much capacitance the cut removes.
+ 
+ ## Current heuristic
+-`SetupLegacyPolicy::iterate` / `repairEndpoint` (src/policy/SetupLegacyPolicy.cc) walks violating endpoints worst-first and repairs each one's worst path via `SetupLegacyBase::repairPath`. Nothing ranks drivers by how many violating paths they serve.
++`src/move/SplitLoadGenerator.cc`: `chooseSplitLoads` (stock) used `fanout_slacks.size() / 2` as the cut. One candidate was emitted.
+ 
+ ## New approach
+-The stock loop is unchanged. After it, for the LEGACY phase only, `SetupLegacyPolicy::runTnsRecovery`:
+-1. Snapshots design WNS W* (absolute floor, never rolled).
+-2. Up to 5 rounds: re-collect violating endpoints, unroll the worst path of the top 400, and rank driver pins by sum of (-endpoint slack) over those paths.
+-3. For the top 50 drivers (resolved by name each time), open a journal, run the stock generator sequence via `tryRepairTarget` (up to 3 attempts, excluding move types already rejected for that driver), refresh parasitics/timing, then keep the move only if WNS >= W* and TNS improves by >= 0.5 ps. Otherwise `restoreJournal`.
+-4. Stops when a round keeps nothing, after 5 rounds, or at max(30, 10% of stock moves) kept moves.
++`SplitLoadGenerator::generate` now calls `rankCutPoints`. It evaluates up to four cut points (number of critical sinks kept on the driver: count of negative-slack sinks, n/4, n/2 = stock, 3n/4), each moving the remaining less-critical sinks behind the buffer. Each cut is scored with a first-order model: the driver speeds up by `g = Rdrv*(Cmoved - Cbuf)`; kept sinks gain `g`; moved sinks gain `g - bufferDelay(Cmoved)`. Every sink contributes its own negative slack to the predicted dTNS. Cuts whose predicted worst slack is below the current worst are dropped. The remaining cuts are emitted as separate `SplitLoadCandidate`s in order of predicted dTNS, with the stock cut kept as a last resort. The existing move commit and journal are untouched, so every move is still undoable.
+ 
+ ## Why WNS/TNS should improve
+-Final WNS >= stock WNS by construction. Moves on shared trunks help many endpoints at once, so TNS rises. Moves on shared drivers of the worst cone can also raise WNS.
++On a trunk with few violating sinks and a lot of slack-rich load, a larger cut removes more capacitance from the critical stage, so every violating endpoint behind the net speeds up. When too large a cut would push moved sinks below the critical slack, a smaller cut is chosen instead.
+ 
+ ## What to look for in the path report
+-Fewer violating endpoints sharing a common upstream driver (upsized/buffered trunk); unchanged or better worst path; `RSZ_EVOLVE bottleneck_kept` > 0.
++Fewer violating endpoints behind the big shared nets. Split buffers (`split*`) on `_26153_` and similar drivers, with a different moved fraction than 1/2.
+ 
+ ## Risks
+-TNS-only gains may be under-weighted by the score. Each trial needs a timing update, which may slow JPEG (bounded by 5 rounds x 50 drivers x 3 attempts). Pass count `bottleneck_rejected_*` shows how selective the floor is.
++- **Deviation from the hypothesis:** `src/policy/*` is not in the editable list, so I did not add a separate post-loop trial phase. The cut-point search runs inside the generator, so it also affects the stock loop and the existing `runTnsRecovery`. Cut points are ranked by a model, not measured by journaled incremental STA per variant. The existing recovery phase does measure and roll back (WNS floor plus TNS gain), but only for the first accepted candidate.
++- The model ignores wire RC and post-legalization displacement.
++- Counters are printed when the last SplitLoadGenerator is destroyed. If generators are created and destroyed in several waves, the lines may print more than once.
++- Nothing was built or run here.
+ 
+ ## Counters
+-`bottleneck_rounds`, `bottleneck_drivers_ranked`, `bottleneck_trials`, `bottleneck_kept`, `bottleneck_rejected_wns`, `bottleneck_rejected_tns` (printed as `RSZ_EVOLVE <name> fired=<n>`).
++`split_cutpoint_reranked` (best cut differs from stock), `split_cutpoint_candidates` (candidates emitted), `split_cutpoint_dropped` (empty cuts). Printed as `RSZ_EVOLVE <name> fired=<n>`.
+ 
+ ## Files changed
+-- src/policy/SetupLegacyPolicy.cc: `runTnsRecovery` and its call after the stock loop, plus counters.
+-- src/policy/SetupLegacyPolicy.hh: declaration of `runTnsRecovery`.
++- src/move/SplitLoadGenerator.cc: cut-point ranking, multi-candidate emission, counters.
++- src/move/SplitLoadGenerator.hh: destructor declaration (prints counters).
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0015_buffering/rsz/src/move/SplitLoadGenerator.cc
+index 8746a15..92d73ce 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0015_buffering/rsz/src/move/SplitLoadGenerator.cc	
+@@ -4,6 +4,7 @@
+ #include "SplitLoadGenerator.hh"
+ 
+ #include <algorithm>
++#include <cstdint>
+ #include <memory>
+ #include <utility>
+ #include <vector>
+@@ -76,7 +77,8 @@ bool resolveDriverPin(Resizer& resizer,
+ 
+ std::vector<FanoutSlack> collectRankedFanoutSlacks(Resizer& resizer,
+                                                    const Target& target,
+-                                                   sta::Vertex* drvr_vertex)
++                                                   sta::Vertex* drvr_vertex,
++                                                   sta::Slack& drvr_slack_out)
+ {
+   std::vector<FanoutSlack> fanout_slacks;
+   const sta::Path* driver_path = target.driverPath(resizer);
+@@ -89,6 +91,7 @@ std::vector<FanoutSlack> collectRankedFanoutSlacks(Resizer& resizer,
+ 
+   const sta::Slack drvr_slack
+       = resizer.sta()->slack(drvr_vertex, resizer.maxAnalysisMode());
++  drvr_slack_out = drvr_slack;
+   sta::VertexOutEdgeIterator edge_iter(drvr_vertex, resizer.graph());
+   while (edge_iter.hasNext()) {
+     sta::Edge* edge = edge_iter.next();
+@@ -112,13 +115,13 @@ std::vector<FanoutSlack> collectRankedFanoutSlacks(Resizer& resizer,
+   return fanout_slacks;
+ }
+ 
+-std::unique_ptr<sta::PinSet> chooseSplitLoads(
++std::unique_ptr<sta::PinSet> makeLoadSet(
+     Resizer& resizer,
+-    const std::vector<FanoutSlack>& fanout_slacks)
++    const std::vector<FanoutSlack>& fanout_slacks,
++    const int moved_count)
+ {
+   auto load_pins = std::make_unique<sta::PinSet>(resizer.network());
+-  const int split_index = fanout_slacks.size() / 2;
+-  for (int i = 0; i < split_index; ++i) {
++  for (int i = 0; i < moved_count; ++i) {
+     sta::Pin* split_pin = fanout_slacks[i].first->pin();
+     if (!resizer.network()->isTopLevelPort(split_pin)) {
+       load_pins->insert(split_pin);
+@@ -127,11 +130,150 @@ std::unique_ptr<sta::PinSet> chooseSplitLoads(
+   return load_pins;
+ }
+ 
++// Evolved: TNS-weighted critical-sink isolation.  The stock recipe always
++// moves the less critical half of the sinks behind a buffer.  Here several
++// cut points (number of critical sinks kept on the driver) are scored with a
++// first-order model: moving capacitance Cm off the driver speeds every kept
++// sink up by g = Rdrv * (Cm - Cbuf) and every moved sink by g - bufferDelay.
++// Each sink is weighted by its own negative slack (TNS contribution).
++struct CutPlan
++{
++  int moved{0};
++  bool feasible{false};
++  float d_tns{0.0f};
++  float new_worst{0.0f};
++};
++
++// Returns moved-sink counts in order of preference.
++std::vector<int> rankCutPoints(Resizer& resizer,
++                               const std::vector<FanoutSlack>& fanout_slacks,
++                               const sta::Slack drvr_slack,
++                               const sta::Pin* drvr_pin,
++                               sta::LibertyCell* buffer_cell)
++{
++  const int n = static_cast<int>(fanout_slacks.size());
++  const int stock_moved = n / 2;
++  std::vector<int> order{stock_moved};
++  if (n < 4 || buffer_cell == nullptr) {
++    return order;
++  }
++
++  const sta::Scene* scene = resizer.sta()->cmdScene();
++  const sta::MinMax* min_max = resizer.maxAnalysisMode();
++  sta::LibertyPort* buf_in = nullptr;
++  sta::LibertyPort* buf_out = nullptr;
++  buffer_cell->bufferPorts(buf_in, buf_out);
++  const float rdrv = resizer.driveResistance(drvr_pin);
++  if (rdrv <= 0.0f || buf_in == nullptr) {
++    return order;
++  }
++  const float cbuf = resizer.portCapacitance(buf_in, scene);
++
++  std::vector<float> slack(n);
++  std::vector<float> cap(n, 0.0f);
++  int neg_count = 0;
++  for (int i = 0; i < n; ++i) {
++    slack[i] = static_cast<float>(drvr_slack)
++               + static_cast<float>(fanout_slacks[i].second);
++    if (slack[i] < 0.0f) {
++      ++neg_count;
++    }
++    const sta::Pin* pin = fanout_slacks[i].first->pin();
++    sta::LibertyPort* port = resizer.network()->libertyPort(pin);
++    if (port != nullptr) {
++      cap[i] = resizer.portCapacitance(port, scene);
++    }
++  }
++  const float base_worst = *std::ranges::min_element(slack);
++
++  // Candidate numbers of critical sinks kept on the driver.
++  const int keeps[] = {neg_count, n / 4, n - stock_moved, (3 * n) / 4};
++  std::vector<int> moved_counts;
++  for (const int raw_keep : keeps) {
++    const int keep = std::clamp(raw_keep, 1, n - 1);
++    const int moved = n - keep;
++    if (std::ranges::find(moved_counts, moved) == moved_counts.end()) {
++      moved_counts.push_back(moved);
++    }
++  }
++
++  std::vector<CutPlan> plans;
++  for (const int moved : moved_counts) {
++    float cm = 0.0f;
++    for (int i = 0; i < moved; ++i) {
++      cm += cap[i];
++    }
++    CutPlan plan;
++    plan.moved = moved;
++    const float gain = rdrv * (cm - cbuf);
++    if (cm > 0.0f && gain > 0.0f) {
++      const float buf_delay
++          = resizer.bufferDelay(buffer_cell, cm, scene, min_max);
++      float worst = slack[0] + gain - buf_delay;
++      float d_tns = 0.0f;
++      for (int i = 0; i < n; ++i) {
++        const float delta = i < moved ? gain - buf_delay : gain;
++        const float after = slack[i] + delta;
++        worst = std::min(worst, after);
++        d_tns += std::min(0.0f, after) - std::min(0.0f, slack[i]);
++      }
++      plan.new_worst = worst;
++      plan.d_tns = d_tns;
++      plan.feasible = worst >= base_worst;
++    }
++    plans.push_back(plan);
++  }
++
++  std::ranges::stable_sort(plans, [](const CutPlan& a, const CutPlan& b) {
++    if (a.feasible != b.feasible) {
++      return a.feasible;
++    }
++    if (a.d_tns != b.d_tns) {
++      return a.d_tns > b.d_tns;
++    }
++    return a.new_worst > b.new_worst;
++  });
++
++  order.clear();
++  for (const CutPlan& plan : plans) {
++    if (plan.feasible) {
++      order.push_back(plan.moved);
++    }
++  }
++  if (std::ranges::find(order, stock_moved) == order.end()) {
++    order.push_back(stock_moved);  // stock recipe stays as last resort
++  }
++  return order;
++}
++
++// Counters, reported once when the last generator is destroyed.
++int64_t g_cutpoint_reranked = 0;
++int64_t g_cutpoint_candidates = 0;
++int64_t g_cutpoint_dropped = 0;
++int g_live_generators = 0;
++
+ }  // namespace
+ 
+ SplitLoadGenerator::SplitLoadGenerator(const GeneratorContext& context)
+     : MoveGenerator(context)
+ {
++  ++g_live_generators;
++}
++
++SplitLoadGenerator::~SplitLoadGenerator()
++{
++  if (--g_live_generators == 0) {
++    utl::Logger* logger = resizer_.logger();
++    logger->report("RSZ_EVOLVE split_cutpoint_reranked fired={}",
++                   g_cutpoint_reranked);
++    logger->report("RSZ_EVOLVE split_cutpoint_candidates fired={}",
++                   g_cutpoint_candidates);
++    logger->report("RSZ_EVOLVE split_cutpoint_dropped fired={}",
++                   g_cutpoint_dropped);
++    g_cutpoint_reranked = 0;
++    g_cutpoint_candidates = 0;
++    g_cutpoint_dropped = 0;
++  }
+ }
+ 
+ std::vector<std::unique_ptr<MoveCandidate>> SplitLoadGenerator::generate(
+@@ -144,18 +286,13 @@ std::vector<std::unique_ptr<MoveCandidate>> SplitLoadGenerator::generate(
+     return candidates;
+   }
+ 
++  sta::Slack drvr_slack = 0.0;
+   std::vector<FanoutSlack> fanout_slacks
+-      = collectRankedFanoutSlacks(resizer_, target, drvr_vertex);
++      = collectRankedFanoutSlacks(resizer_, target, drvr_vertex, drvr_slack);
+   if (fanout_slacks.empty()) {
+     return candidates;
+   }
+ 
+-  std::unique_ptr<sta::PinSet> load_pins
+-      = chooseSplitLoads(resizer_, fanout_slacks);
+-  if (load_pins->empty()) {
+-    return candidates;
+-  }
+-
+   sta::LibertyCell* buffer_cell = resizer_.lowestDriveBufferCell();
+   odb::dbNet* db_drvr_net = nullptr;
+   odb::dbModNet* db_mod_drvr_net = nullptr;
+@@ -165,9 +302,30 @@ std::vector<std::unique_ptr<MoveCandidate>> SplitLoadGenerator::generate(
+     return candidates;
+   }
+ 
++  const std::vector<int> cut_order = rankCutPoints(
++      resizer_, fanout_slacks, drvr_slack, drvr_pin, buffer_cell);
++  const int stock_moved = static_cast<int>(fanout_slacks.size()) / 2;
++  if (cut_order.front() != stock_moved) {
++    ++g_cutpoint_reranked;
++  }
++
+   const odb::Point drvr_loc = resizer_.dbNetwork()->location(drvr_pin);
+-  candidates.push_back(std::make_unique<SplitLoadCandidate>(
+-      resizer_, target, drvr_net, buffer_cell, drvr_loc, std::move(load_pins)));
++  for (const int moved : cut_order) {
++    std::unique_ptr<sta::PinSet> load_pins
++        = makeLoadSet(resizer_, fanout_slacks, moved);
++    if (load_pins->empty()) {
++      ++g_cutpoint_dropped;
++      continue;
++    }
++    ++g_cutpoint_candidates;
++    candidates.push_back(std::make_unique<SplitLoadCandidate>(
++        resizer_,
++        target,
++        drvr_net,
++        buffer_cell,
++        drvr_loc,
++        std::move(load_pins)));
++  }
+   return candidates;
+ }
+ 
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0015_buffering/rsz/src/move/SplitLoadGenerator.hh
+index 594932a..b32989f 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0015_buffering/rsz/src/move/SplitLoadGenerator.hh	
+@@ -22,6 +22,7 @@ class SplitLoadGenerator : public MoveGenerator
+  public:
+   // === Construction =========================================================
+   explicit SplitLoadGenerator(const GeneratorContext& context);
++  ~SplitLoadGenerator() override;
+ 
+   // === MoveGenerator API ====================================================
+   MoveType type() const override { return MoveType::kSplitLoad; }

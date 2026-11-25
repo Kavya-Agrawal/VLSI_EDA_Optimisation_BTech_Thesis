@@ -15,3 +15,8 @@
 | 12 | setup_strategy | TNS-weighted lexicographic acceptance (WNS guard band + design TNS gain) replacing endpoint-only slack acceptance in the LEGACY repair loop | rejected | -0.00493 | score -0.00493 below required gain +0.00200 |
 | 13 | setup_strategy | Two-phase repair: unchanged stock LEGACY loop, then a bottleneck-driven TNS-recovery phase with a hard post-stock WNS floor | accepted | +0.00206 |  |
 | 14 | sizing | Joint path-window sizing by dynamic programming as a compound move inside the post-stock TNS-recovery phase | rejected | -0.00038 | score -0.00038 below required gain +0.00200 |
+| 15 | buffering | TNS-weighted critical-sink isolation with measured cut-point search on shared bottleneck nets, inside the post-stock recovery phase | rejected | -0.00064 | score -0.00064 below required gain +0.00200 |
+| 16 | setup_strategy | Lagrangian endpoint pricing with best-of-k measured moves and a ratcheting WNS floor in the post-stock TNS-recovery phase | rejected | -0.00014 | score -0.00014 below required gain +0.00200 |
+| 17 | buffering | Required-time-ordered (LT-tree) fanout tree synthesis for shared high-fanout drivers as a measured move in the post-stock recovery phase | rejected | +0.00000 | score +0.00000 below required gain +0.00200 |
+| 18 | buffering | Measured best-of-k criticality-partitioned gate cloning (critical-sink replica + stock van Ginneken on tolerant sinks) for shared high-fanou | rejected | -0.00024 | score -0.00024 below required gain +0.00200 |
+| 19 | setup_strategy | Measured depth-2 beam search over coupled sizing sequences on data-path-only bottleneck stages, with ratcheting WNS floor and per-endpoint g | rejected | -0.00145 | score -0.00145 below required gain +0.00200 |

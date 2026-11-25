@@ -1,0 +1,108 @@
+# Iteration 17 — Required-time-ordered (LT-tree) fanout tree synthesis for shared high-fanout drivers as a measured move in the post-stock recovery phase
+
+cluster: `buffering`
+
+# Plan for iteration 17: buffering cluster, an LT-tree rebuild of high-fanout nets after stock repair
+
+## Observation
+
+- **Ibex sets the score, and one net sets Ibex.** In iteration 16, every one of Ibex's ten worst paths passes through AND2_X1 `_26153_/ZN`. That cell has fanout **943** and the paths run **39 stages**. Ibex lost **12.668 ns** of TNS against the champion and caused the rejection.
+- **Stock repair never rebuilds that net.** Stock Ibex makes 149 resizes, 14 swaps, 9 clones and **0 buffer insertions**. The champion's recovery phase (iteration 13) and the price ranking (iteration 16) mostly upsize or clone the AND2 and its neighbours. Iteration 16 shows that re-ranking targets does not change this: the ordering changed in only 1 of 6 rounds, and the same trunk stayed critical.
+- **Changing the structure of shared drivers helps Ibex a lot.** Iteration 8 reached Ibex TNS -8.1 ns and iteration 9 reached -31.3 ns. Both lost because they disturbed the stock greedy loop and so lost WNS on AES, gcd and JPEG.
+- **Running after the stock loop is safe.** Iteration 13 is the only accepted change. It keeps the stock trajectory unchanged, then runs a measured, journaled recovery phase with a WNS floor.
+- **Earlier buffering attempts failed for specific reasons:**
+  - Iteration 6 widened which nets stock buffering may touch, inside the stock loop. AES regressed.
+  - Iteration 7 chose splits from predictions only. AES lost 5.3 ps of WNS.
+  - Iteration 11 re-ranked only at the root of the existing tree search. Ibex did not change.
+  - Iteration 15 cut loads with a first-order RC model, used one lowest-drive buffer placed at the driver, and ran inside the stock loop.
+  
+  None of these built a full timing-driven fanout tree, and none of them reached the 943-fanout net.
+- The evaluator's recommendation #2 for iteration 16 was to reserve structural evaluations for `_26153_/ZN`.
+
+## Cluster choice and why
+
+**Cluster: `buffering`.** The cluster history is 15 buffering, then 16 setup_strategy, so this keeps the rotation rules. The dominant cause is **high_fanout** on Ibex, and the next recovery gain has to come from a different topology, not more sizing or re-ranking. Iteration 16 has already shown that ranking does not move this trunk. The change runs only inside the champion's post-stock recovery phase, so the stock trajectory stays unchanged (iteration 13 is the supporting evidence). It does not repeat the in-loop perturbations of iterations 6, 9 and 15.
+
+## Hypothesis
+
+**Problem.** One weak driver feeds hundreds of sinks, and their required times differ a lot. The critical sinks pay the delay of the whole net load: the slow slew from 943 pins of capacitance, plus Steiner wire. That delay is then repeated along 39-stage paths to many endpoints.
+
+**Current heuristic.**
+- Stock `BufferGenerator` / `Rebuffer::fullyRebuffer` runs a van Ginneken pass. It has fanout and eligibility cutoffs and prunes on two values (slack, cap) with a root-only choice. On Ibex it never fires on this net.
+- `SplitLoadGenerator` splits off roughly half the sinks under one buffer.
+- `runTnsRecovery` in the champion can size, swap or clone this driver, but it never rebuilds the tree.
+
+**New approach: required-time-ordered fanout trees (LT-tree / Touati-style timing-driven fanout optimisation).** The rebuild happens as a measured move in the post-stock recovery phase, in five steps:
+
+1. **Choose nets.** For each candidate driver with fanout ≥ 16 that sits on the recovery phase's top violating paths, read the required time of every sink from STA.
+2. **Sort and group sinks.** Order the sinks by required time and cut them into levels:
+   - The level-0 group is the most critical sinks. Their total pin capacitance must fit within a budget set by the driver's best size. They stay directly on the driver.
+   - Each later level, which is less critical, goes behind one buffer.
+   - The buffers form a chain or a balanced tree, so the least critical sinks absorb the extra stages.
+3. **Choose the buffer size and position at each level.** Try every buffer master in the library, not only the lowest drive. Place each buffer at the centroid of the sinks it drives, then let the placer legalise it. Then size the driver for the level-0 load. `Rebuffer::sizeDriverWithTree` already does this.
+4. **Build several trees.** Make 3 to 4 alternatives per net from different level-0 cap budgets. Test each one with real incremental STA inside a journal. Keep the best one only if:
+   - TNS improves, and
+   - WNS stays at or above a ratcheting floor: max(stock-final WNS, best WNS committed so far in recovery), and
+   - no endpoint that started above −1 ps slack becomes worse than −1 ps. This explicitly covers the near-zero `instr_addr_o[*]` outputs.
+5. **Then hand over.** The champion's sizing and clone recovery runs unchanged on the new state.
+
+**Why WNS and TNS should improve.** Critical sinks lose almost all of the 943-pin load, so their stage delay and output slew fall sharply. The 39-stage Ibex paths gain at that stage and at the next one, which has a faster input slew. The non-critical sinks have positive slack to spare for the extra buffer stages. Every endpoint downstream of the trunk gains at the same time, so TNS should improve much more than WNS. Iterations 8 and 9 suggest roughly 20 ns or more of Ibex TNS is available. Measured acceptance with the ratchet means AES, gcd and JPEG can at worst stay at champion values. The −1 ps local guard also closes the regression gap seen on the iteration-13 and iteration-16 IO endpoints.
+
+**Risks.**
+- After legalisation, buffer displacement may change wire parasitics. Mitigation: estimate parasitics again after placement, before the accept check.
+- Runtime on JPEG. Mitigation: at most 40 nets × 4 trees per design.
+- Max-slew or max-cap violations created on the buffered levels. Mitigation: reject any tree whose DRV count goes above the pre-move count.
+- Very few AES nets may qualify.
+
+**What to look for in the path report.** `_26153_/ZN` should drop from fanout 943 to under about 100 on the critical paths, with 1–2 new buffer stages on the non-critical branches. Ibex worst paths should no longer be dominated by the AND2_X1 stage delay and its slew. The `instr_addr_o[22]`/`[29]` outputs should not become violating.
+
+## Trigger estimate
+
+| Design | What the change alters | Share of relevant moves |
+|---|---|---|
+| Ibex | Adds structural decisions where stock and the champion make none (0 of 172 stock moves are buffers). Expect 5–20 committed trees, including the 943-fanout trunk. | About 3–12 % of 172 stock decisions, but the trunk is on 10 of the 10 worst paths and on thousands of violating endpoints |
+| AES | Nets with fanout ≥ 16 on violating paths, around 30–80 candidates. Many already carry stock buffers, and those trees would be rebuilt. | About 6–17 % of the 481 stock buffer decisions |
+| JPEG | Shared launch DFFs `ddin[*]` with fanout 11–15 are below the threshold. Expect few triggers. | Small (this is acceptable) |
+
+## Implementation sketch
+
+1. **`src/Rebuffer.cc` / `Rebuffer.hh`:** add `BufferedNetPtr buildRequiredTimeTree(const sta::Pin* drvr, float level0_cap_budget, LibertyCell* buf_cell)`. It:
+   - uses `makeBufferedNet` and `annotateLoadSlacks` to get sink slacks,
+   - sorts the sinks by required time and groups them into levels,
+   - builds a Steiner subtree per group with `resteiner`,
+   - places each buffer at the centroid of its group,
+   - calls `sizeDriverWithTree` for the root.
+   
+   Commit through the existing `exportBufferTree` / `applyRebufferTreePlan` path.
+2. **`src/move/BufferGenerator.cc`** (or a small `LtTreeGenerator` inside it): wrap the step above as a candidate that sweeps 4 cap budgets × the best 2 buffer masters. Each candidate carries its predicted dTNS for logging.
+3. **`src/policy/SetupLegacyPolicy.cc::runTnsRecovery`:** this is only a hook. At the start of each recovery round, try LT-tree moves on high-fanout drivers before sizing and cloning. Then:
+   - Use a journal checkpoint and `estimateParasitics` after legalisation.
+   - Decide acceptance with the ratcheting floor plus the −1 ps local guard on endpoints that started near zero.
+   - Mark drivers that fail as tried for the rest of the phase. Do not clear that mark when another round succeeds; iteration 16 had that bug.
+   - Leave the stock loop and the champion's ranking otherwise unchanged.
+4. **Counters to print (`RSZ_EVOLVE`):**
+   - `lt_candidates`, `lt_trees_built`, `lt_rejected_{wns,local,drv,tns}`, `lt_committed`
+   - for each committed net: name, fanout before and after, predicted vs measured dTNS
+   - the floor value
+   - stock-phase move counts, to prove the stock phase is byte-identical
+
+## Success criteria
+
+- Ibex TNS better than champion **−44.40 ns**, target ≤ −35 ns.
+- Ibex WNS no worse than **−0.0742 ns**.
+- `_26153_/ZN` committed with critical-path fanout under 100.
+- AES, gcd and JPEG WNS no worse than champion (within 0.1 ps) and TNS no worse.
+- Score vs champion ≥ **+0.0020**.
+- JPEG runs within the timeout.
+
+## Fallback if it fails
+
+| What happens | Next step |
+|---|---|
+| Trees are built but rejected on WNS or the local guard | Move to `timing_model`: account for post-legalisation parasitics in the prediction |
+| Trees are committed but the Ibex gain is small | The bottleneck is the 39-stage logic depth, not load. Change paradigm to `sizing` on JPEG/Ibex arithmetic arcs with input slew propagated |
+| Runtime blows up | Limit to the top 10 nets by violating-endpoint coverage |
+
+```json
+{"cluster": "buffering", "title": "Required-time-ordered (LT-tree) fanout tree synthesis for shared high-fanout drivers as a measured move in the post-stock recovery phase", "hypothesis": "Ibex's worst paths all cross AND2_X1 _26153_/ZN with fanout 943, which stock repair never buffers and the champion's recovery phase only sizes or clones. Replace this with Touati-style timing-driven fanout trees: sort sinks by STA required time, keep the most critical group directly on a resized driver within a load-cap budget, and push less critical groups behind buffers placed at group centroids and chosen from all buffer masters. Several trees per net are built and judged on measured incremental STA inside a journal, under a ratcheting WNS floor plus a local guard for endpoints that start near zero slack. Only the champion's post-stock recovery phase runs this, so the stock trajectory stays byte-identical. Removing hundreds of pins of load from critical sinks should cut stage delay and slew on the shared trunk and improve TNS across thousands of Ibex endpoints without giving back WNS elsewhere.", "files": ["src/Rebuffer.cc", "src/Rebuffer.hh", "src/move/BufferGenerator.cc", "src/move/BufferGenerator.hh", "src/policy/SetupLegacyPolicy.cc"], "evidence_iterations": [13, 9, 8, 16, 15, 6], "success_criteria": "Ibex TNS better than -44.40 ns (target <= -35 ns) with WNS >= -0.0742 ns, _26153_/ZN critical fanout < 100, no WNS/TNS loss on gcd/aes/jpeg vs champion, score >= +0.0020", "risk": "Post-legalisation buffer displacement or new slew/cap violations erase the predicted gain so most trees are rejected, or AES has few qualifying nets and the score gain comes from Ibex alone", "rule_updates": "Structural tree rebuilds must print per-net fanout before/after and predicted vs measured dTNS, and must guard every endpoint whose pre-move slack is above -1 ps against falling below -1 ps, not only global WNS."}
+```

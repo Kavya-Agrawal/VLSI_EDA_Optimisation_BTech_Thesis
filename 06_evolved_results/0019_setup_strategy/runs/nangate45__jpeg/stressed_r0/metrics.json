@@ -1,0 +1,56 @@
+{
+  "clock_period_ns": 1.0,
+  "endpoints": 8355,
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "repair_ms": 49765,
+  "placement_violations": 0,
+  "pre": {
+    "wns_setup": -0.11649559424633563,
+    "tns_setup": -48.30013858914408,
+    "wns_hold": 0.008633649595173817,
+    "tns_hold": 0.0,
+    "setup_violations": 661,
+    "hold_violations": 0,
+    "instances": 59533,
+    "pins": 192965,
+    "area_um2": 89948.96205649638,
+    "util": 0.8303249806633303,
+    "buffers": 5526,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "post": {
+    "wns_setup": -0.08662237838866445,
+    "tns_setup": -31.87814902279832,
+    "wns_hold": 0.008403000755284745,
+    "tns_hold": 0.0,
+    "setup_violations": 611,
+    "hold_violations": 0,
+    "instances": 59579,
+    "pins": 193057,
+    "area_um2": 90207.51434718477,
+    "util": 0.8327116916920491,
+    "buffers": 5572,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "evolve_counters": {
+    "beam_rounds": 2,
+    "beam_seeds_ranked": 8343,
+    "beam_clock_arcs_skipped": 0,
+    "beam_single_trials": 4,
+    "beam_pair_trials": 4,
+    "beam_committed_single": 0,
+    "beam_committed_pair": 1,
+    "beam_rejected_wns": 6,
+    "beam_rejected_tns": 0,
+    "beam_rejected_guard": 0,
+    "beam_replay_mismatch": 0
+  },
+  "repair_stats": {
+    "resized": 289,
+    "pins_swapped": 119
+  }
+}

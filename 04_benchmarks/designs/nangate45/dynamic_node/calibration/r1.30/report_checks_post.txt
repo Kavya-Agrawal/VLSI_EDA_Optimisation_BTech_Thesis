@@ -1,0 +1,642 @@
+[WARNING STA-0503] report_checks -group_count is deprecated. Use -group_path_count instead.
+Startpoint: validIn_P (input port clocked by vclk)
+Endpoint: u3024 (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock vclk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                            2.100    2.180 ^ input external delay
+     1    1.824    0.000    0.000    2.180 ^ validIn_P (in)
+                                             validIn_P (net)
+                   0.000    0.000    2.180 ^ input651/A (BUF_X1)
+     2   16.559    0.038    0.053    2.233 ^ input651/Z (BUF_X1)
+                                             net651 (net)
+                   0.039    0.003    2.236 ^ place5110/A (BUF_X8)
+     2   51.396    0.018    0.040    2.276 ^ place5110/Z (BUF_X8)
+                                             net5110 (net)
+                   0.018    0.000    2.276 ^ u6886/A (INV_X32)
+     2    7.053    0.004    0.006    2.282 v u6886/ZN (INV_X32)
+                                             n8710 (net)
+                   0.004    0.000    2.282 v u6888/A1 (NOR3_X4)
+     2    8.841    0.034    0.037    2.319 ^ u6888/ZN (NOR3_X4)
+                                             n8713 (net)
+                   0.034    0.000    2.319 ^ u6901/A1 (NAND2_X4)
+     3   10.499    0.014    0.020    2.339 v u6901/ZN (NAND2_X4)
+                                             n8724 (net)
+                   0.014    0.000    2.339 v u6902/A1 (NOR3_X2)
+     2    6.492    0.038    0.049    2.388 ^ u6902/ZN (NOR3_X2)
+                                             n8725 (net)
+                   0.038    0.000    2.388 ^ place3550/A (BUF_X4)
+     6   39.746    0.024    0.045    2.433 ^ place3550/Z (BUF_X4)
+                                             net3550 (net)
+                   0.025    0.007    2.440 ^ place3549/A (BUF_X8)
+    12   37.692    0.013    0.032    2.473 ^ place3549/Z (BUF_X8)
+                                             net3549 (net)
+                   0.014    0.004    2.477 ^ u8105/S (MUX2_X1)
+     1    1.443    0.010    0.058    2.535 v u8105/Z (MUX2_X1)
+                                             n4208 (net)
+                   0.010    0.000    2.535 v u3024/D (DFF_X1)
+                                     2.535   data arrival time
+
+                   0.000    2.600    2.600   clock clk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                                     2.680 ^ u3024/CK (DFF_X1)
+                           -0.041    2.639   library setup time
+                                     2.639   data required time
+---------------------------------------------------------------------------------
+                                     2.639   data required time
+                                    -2.535   data arrival time
+---------------------------------------------------------------------------------
+                                     0.104   slack (MET)
+
+
+Startpoint: validIn_P (input port clocked by vclk)
+Endpoint: u4459 (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock vclk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                            2.100    2.180 ^ input external delay
+     1    1.824    0.000    0.000    2.180 ^ validIn_P (in)
+                                             validIn_P (net)
+                   0.000    0.000    2.180 ^ input651/A (BUF_X1)
+     2   16.559    0.038    0.053    2.233 ^ input651/Z (BUF_X1)
+                                             net651 (net)
+                   0.039    0.003    2.236 ^ place5112/A (BUF_X4)
+     2    7.578    0.008    0.028    2.264 ^ place5112/Z (BUF_X4)
+                                             net5112 (net)
+                   0.008    0.000    2.264 ^ u6913/A1 (NAND3_X4)
+     2    2.498    0.021    0.014    2.278 v u6913/ZN (NAND3_X4)
+                                             n8732 (net)
+                   0.021    0.000    2.278 v u6914/A1 (OR2_X1)
+     2    6.243    0.014    0.059    2.337 v u6914/ZN (OR2_X1)
+                                             n8733 (net)
+                   0.014    0.000    2.337 v u6915/A1 (NOR3_X2)
+     2    7.233    0.041    0.051    2.389 ^ u6915/ZN (NOR3_X2)
+                                             n8734 (net)
+                   0.041    0.000    2.389 ^ place3290/A (BUF_X2)
+     2   15.196    0.020    0.043    2.432 ^ place3290/Z (BUF_X2)
+                                             net3290 (net)
+                   0.020    0.000    2.432 ^ place3288/A (BUF_X16)
+    23   72.285    0.009    0.026    2.458 ^ place3288/Z (BUF_X16)
+                                             net3288 (net)
+                   0.023    0.017    2.475 ^ u8683/S (MUX2_X1)
+     1    1.443    0.010    0.060    2.535 v u8683/Z (MUX2_X1)
+                                             n6203 (net)
+                   0.010    0.000    2.535 v u4459/D (DFF_X1)
+                                     2.535   data arrival time
+
+                   0.000    2.600    2.600   clock clk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                                     2.680 ^ u4459/CK (DFF_X1)
+                           -0.041    2.639   library setup time
+                                     2.639   data required time
+---------------------------------------------------------------------------------
+                                     2.639   data required time
+                                    -2.535   data arrival time
+---------------------------------------------------------------------------------
+                                     0.105   slack (MET)
+
+
+Startpoint: validIn_P (input port clocked by vclk)
+Endpoint: u2936 (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock vclk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                            2.100    2.180 ^ input external delay
+     1    1.824    0.000    0.000    2.180 ^ validIn_P (in)
+                                             validIn_P (net)
+                   0.000    0.000    2.180 ^ input651/A (BUF_X1)
+     2   16.559    0.038    0.053    2.233 ^ input651/Z (BUF_X1)
+                                             net651 (net)
+                   0.039    0.003    2.236 ^ place5110/A (BUF_X8)
+     2   51.396    0.018    0.040    2.276 ^ place5110/Z (BUF_X8)
+                                             net5110 (net)
+                   0.018    0.000    2.276 ^ u6886/A (INV_X32)
+     2    7.053    0.004    0.006    2.282 v u6886/ZN (INV_X32)
+                                             n8710 (net)
+                   0.004    0.000    2.282 v u6888/A1 (NOR3_X4)
+     2    8.841    0.034    0.037    2.319 ^ u6888/ZN (NOR3_X4)
+                                             n8713 (net)
+                   0.034    0.000    2.319 ^ u6901/A1 (NAND2_X4)
+     3   10.499    0.014    0.020    2.339 v u6901/ZN (NAND2_X4)
+                                             n8724 (net)
+                   0.014    0.000    2.339 v u6902/A1 (NOR3_X2)
+     2    6.492    0.038    0.049    2.388 ^ u6902/ZN (NOR3_X2)
+                                             n8725 (net)
+                   0.038    0.000    2.388 ^ place3550/A (BUF_X4)
+     6   39.746    0.024    0.045    2.433 ^ place3550/Z (BUF_X4)
+                                             net3550 (net)
+                   0.025    0.007    2.440 ^ place3549/A (BUF_X8)
+    12   37.692    0.013    0.032    2.473 ^ place3549/Z (BUF_X8)
+                                             net3549 (net)
+                   0.014    0.004    2.476 ^ u8069/S (MUX2_X1)
+     1    1.443    0.010    0.058    2.535 v u8069/Z (MUX2_X1)
+                                             n4085 (net)
+                   0.010    0.000    2.535 v u2936/D (DFF_X1)
+                                     2.535   data arrival time
+
+                   0.000    2.600    2.600   clock clk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                                     2.680 ^ u2936/CK (DFF_X1)
+                           -0.041    2.639   library setup time
+                                     2.639   data required time
+---------------------------------------------------------------------------------
+                                     2.639   data required time
+                                    -2.535   data arrival time
+---------------------------------------------------------------------------------
+                                     0.105   slack (MET)
+
+
+Startpoint: validIn_P (input port clocked by vclk)
+Endpoint: u4972 (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock vclk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                            2.100    2.180 ^ input external delay
+     1    1.824    0.000    0.000    2.180 ^ validIn_P (in)
+                                             validIn_P (net)
+                   0.000    0.000    2.180 ^ input651/A (BUF_X1)
+     2   16.559    0.038    0.053    2.233 ^ input651/Z (BUF_X1)
+                                             net651 (net)
+                   0.039    0.003    2.236 ^ place5112/A (BUF_X4)
+     2    7.578    0.008    0.028    2.264 ^ place5112/Z (BUF_X4)
+                                             net5112 (net)
+                   0.008    0.000    2.264 ^ u6913/A1 (NAND3_X4)
+     2    2.498    0.021    0.014    2.278 v u6913/ZN (NAND3_X4)
+                                             n8732 (net)
+                   0.021    0.000    2.278 v u6914/A1 (OR2_X1)
+     2    6.243    0.014    0.059    2.337 v u6914/ZN (OR2_X1)
+                                             n8733 (net)
+                   0.014    0.000    2.337 v u6915/A1 (NOR3_X2)
+     2    7.233    0.041    0.051    2.389 ^ u6915/ZN (NOR3_X2)
+                                             n8734 (net)
+                   0.041    0.000    2.389 ^ place3290/A (BUF_X2)
+     2   15.196    0.020    0.043    2.432 ^ place3290/Z (BUF_X2)
+                                             net3290 (net)
+                   0.020    0.000    2.432 ^ place3288/A (BUF_X16)
+    23   72.285    0.009    0.026    2.458 ^ place3288/Z (BUF_X16)
+                                             net3288 (net)
+                   0.023    0.017    2.475 ^ u8891/S (MUX2_X1)
+     1    1.369    0.010    0.060    2.535 v u8891/Z (MUX2_X1)
+                                             n6917 (net)
+                   0.010    0.000    2.535 v u4972/D (DFF_X1)
+                                     2.535   data arrival time
+
+                   0.000    2.600    2.600   clock clk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                                     2.680 ^ u4972/CK (DFF_X1)
+                           -0.041    2.639   library setup time
+                                     2.639   data required time
+---------------------------------------------------------------------------------
+                                     2.639   data required time
+                                    -2.535   data arrival time
+---------------------------------------------------------------------------------
+                                     0.105   slack (MET)
+
+
+Startpoint: validIn_P (input port clocked by vclk)
+Endpoint: u2778 (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock vclk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                            2.100    2.180 ^ input external delay
+     1    1.824    0.000    0.000    2.180 ^ validIn_P (in)
+                                             validIn_P (net)
+                   0.000    0.000    2.180 ^ input651/A (BUF_X1)
+     2   16.559    0.038    0.053    2.233 ^ input651/Z (BUF_X1)
+                                             net651 (net)
+                   0.039    0.003    2.236 ^ place5110/A (BUF_X8)
+     2   51.396    0.018    0.040    2.276 ^ place5110/Z (BUF_X8)
+                                             net5110 (net)
+                   0.018    0.000    2.276 ^ u6886/A (INV_X32)
+     2    7.053    0.004    0.006    2.282 v u6886/ZN (INV_X32)
+                                             n8710 (net)
+                   0.004    0.000    2.282 v u6888/A1 (NOR3_X4)
+     2    8.841    0.034    0.037    2.319 ^ u6888/ZN (NOR3_X4)
+                                             n8713 (net)
+                   0.034    0.000    2.319 ^ u6901/A1 (NAND2_X4)
+     3   10.499    0.014    0.020    2.339 v u6901/ZN (NAND2_X4)
+                                             n8724 (net)
+                   0.014    0.000    2.339 v u6902/A1 (NOR3_X2)
+     2    6.492    0.038    0.049    2.388 ^ u6902/ZN (NOR3_X2)
+                                             n8725 (net)
+                   0.038    0.000    2.388 ^ place3550/A (BUF_X4)
+     6   39.746    0.024    0.045    2.433 ^ place3550/Z (BUF_X4)
+                                             net3550 (net)
+                   0.025    0.007    2.440 ^ place3549/A (BUF_X8)
+    12   37.692    0.013    0.032    2.473 ^ place3549/Z (BUF_X8)
+                                             net3549 (net)
+                   0.014    0.004    2.476 ^ u8005/S (MUX2_X1)
+     1    1.428    0.010    0.058    2.535 v u8005/Z (MUX2_X1)
+                                             n3865 (net)
+                   0.010    0.000    2.535 v u2778/D (DFF_X1)
+                                     2.535   data arrival time
+
+                   0.000    2.600    2.600   clock clk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                                     2.680 ^ u2778/CK (DFF_X1)
+                           -0.041    2.639   library setup time
+                                     2.639   data required time
+---------------------------------------------------------------------------------
+                                     2.639   data required time
+                                    -2.535   data arrival time
+---------------------------------------------------------------------------------
+                                     0.105   slack (MET)
+
+
+Startpoint: u42 (rising edge-triggered flip-flop clocked by clk)
+Endpoint: thanksIn_P (output port clocked by vclk)
+Path Group: vclk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock clk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                   0.000    0.000    0.080 ^ u42/CK (DFF_X1)
+     3   10.977    0.027    0.105    0.185 ^ u42/Q (DFF_X1)
+                                             dynamic_node_top.south_input.NIB.head_ptr_f[1] (net)
+                   0.027    0.000    0.185 ^ u45/A (INV_X4)
+    26   66.494    0.020    0.033    0.218 v u45/ZN (INV_X4)
+                                             n64 (net)
+                   0.020    0.001    0.219 v place4638/A (BUF_X4)
+     2    4.176    0.005    0.029    0.248 v place4638/Z (BUF_X4)
+                                             net4638 (net)
+                   0.005    0.000    0.248 v u4722/A (AOI21_X2)
+     1    3.332    0.021    0.037    0.284 ^ u4722/ZN (AOI21_X2)
+                                             n6569 (net)
+                   0.021    0.000    0.285 ^ u4725/B1 (AOI22_X2)
+     2    7.149    0.016    0.028    0.312 v u4725/ZN (AOI22_X2)
+                                             n6573 (net)
+                   0.016    0.000    0.313 v u6137/A (XOR2_X2)
+     1    5.702    0.014    0.056    0.369 v u6137/Z (XOR2_X2)
+                                             n7926 (net)
+                   0.014    0.000    0.369 v u6140/A3 (NOR4_X4)
+     1    7.584    0.045    0.081    0.450 ^ u6140/ZN (NOR4_X4)
+                                             n7930 (net)
+                   0.045    0.000    0.451 ^ u6150/A2 (NAND3_X4)
+     4   12.299    0.021    0.034    0.484 v u6150/ZN (NAND3_X4)
+                                             n7944 (net)
+                   0.021    0.001    0.485 v u6187/A1 (NOR2_X4)
+     3    7.175    0.016    0.029    0.514 ^ u6187/ZN (NOR2_X4)
+                                             n7989 (net)
+                   0.016    0.000    0.514 ^ u6221/A1 (AND3_X4)
+     1    3.494    0.008    0.037    0.551 ^ u6221/ZN (AND3_X4)
+                                             n8031 (net)
+                   0.008    0.000    0.551 ^ u6229/A (AOI21_X2)
+     3    6.433    0.013    0.014    0.565 v u6229/ZN (AOI21_X2)
+                                             n8039 (net)
+                   0.013    0.000    0.565 v u6562/A1 (OR2_X4)
+     2    4.571    0.008    0.042    0.607 v u6562/ZN (OR2_X4)
+                                             n8397 (net)
+                   0.008    0.000    0.607 v u6563/A1 (OR4_X4)
+     2    9.922    0.017    0.077    0.683 v u6563/ZN (OR4_X4)
+                                             n8398 (net)
+                   0.017    0.001    0.684 v u6564/A2 (NAND2_X4)
+     2    7.278    0.010    0.021    0.706 ^ u6564/ZN (NAND2_X4)
+                                             n8399 (net)
+                   0.010    0.000    0.706 ^ u6573/A1 (NAND2_X4)
+     2    3.818    0.006    0.011    0.717 v u6573/ZN (NAND2_X4)
+                                             n8408 (net)
+                   0.006    0.000    0.717 v u6574/C1 (OAI221_X2)
+     2    6.159    0.043    0.037    0.754 ^ u6574/ZN (OAI221_X2)
+                                             n8409 (net)
+                   0.043    0.000    0.754 ^ u6578/A1 (OR2_X4)
+     2    7.244    0.008    0.030    0.784 ^ u6578/ZN (OR2_X4)
+                                             net1017 (net)
+                   0.008    0.001    0.784 ^ output1017/A (BUF_X1)
+     1    1.025    0.006    0.020    0.804 ^ output1017/Z (BUF_X1)
+                                             thanksIn_P (net)
+                   0.006    0.000    0.804 ^ thanksIn_P (out)
+                                     0.804   data arrival time
+
+                   0.000    2.600    2.600   clock vclk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                           -2.100    0.580   output external delay
+                                     0.580   data required time
+---------------------------------------------------------------------------------
+                                     0.580   data required time
+                                    -0.804   data arrival time
+---------------------------------------------------------------------------------
+                                    -0.224   slack (VIOLATED)
+
+
+Startpoint: u42 (rising edge-triggered flip-flop clocked by clk)
+Endpoint: validOut_P (output port clocked by vclk)
+Path Group: vclk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock clk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                   0.000    0.000    0.080 ^ u42/CK (DFF_X1)
+     3   10.977    0.027    0.105    0.185 ^ u42/Q (DFF_X1)
+                                             dynamic_node_top.south_input.NIB.head_ptr_f[1] (net)
+                   0.027    0.000    0.185 ^ u45/A (INV_X4)
+    26   66.494    0.020    0.033    0.218 v u45/ZN (INV_X4)
+                                             n64 (net)
+                   0.020    0.001    0.219 v place4638/A (BUF_X4)
+     2    4.176    0.005    0.029    0.248 v place4638/Z (BUF_X4)
+                                             net4638 (net)
+                   0.005    0.000    0.248 v u4722/A (AOI21_X2)
+     1    3.332    0.021    0.037    0.284 ^ u4722/ZN (AOI21_X2)
+                                             n6569 (net)
+                   0.021    0.000    0.285 ^ u4725/B1 (AOI22_X2)
+     2    7.149    0.016    0.028    0.312 v u4725/ZN (AOI22_X2)
+                                             n6573 (net)
+                   0.016    0.000    0.313 v u6137/A (XOR2_X2)
+     1    5.702    0.014    0.056    0.369 v u6137/Z (XOR2_X2)
+                                             n7926 (net)
+                   0.014    0.000    0.369 v u6140/A3 (NOR4_X4)
+     1    7.584    0.045    0.081    0.450 ^ u6140/ZN (NOR4_X4)
+                                             n7930 (net)
+                   0.045    0.000    0.451 ^ u6150/A2 (NAND3_X4)
+     4   12.299    0.021    0.034    0.484 v u6150/ZN (NAND3_X4)
+                                             n7944 (net)
+                   0.021    0.001    0.485 v u6187/A1 (NOR2_X4)
+     3    7.175    0.016    0.029    0.514 ^ u6187/ZN (NOR2_X4)
+                                             n7989 (net)
+                   0.016    0.000    0.514 ^ u6221/A1 (AND3_X4)
+     1    3.494    0.008    0.037    0.551 ^ u6221/ZN (AND3_X4)
+                                             n8031 (net)
+                   0.008    0.000    0.551 ^ u6229/A (AOI21_X2)
+     3    6.433    0.013    0.014    0.565 v u6229/ZN (AOI21_X2)
+                                             n8039 (net)
+                   0.013    0.000    0.565 v u6562/A1 (OR2_X4)
+     2    4.571    0.008    0.042    0.607 v u6562/ZN (OR2_X4)
+                                             n8397 (net)
+                   0.008    0.000    0.607 v u6563/A1 (OR4_X4)
+     2    9.922    0.017    0.077    0.683 v u6563/ZN (OR4_X4)
+                                             n8398 (net)
+                   0.017    0.001    0.684 v u6564/A2 (NAND2_X4)
+     2    7.278    0.010    0.021    0.706 ^ u6564/ZN (NAND2_X4)
+                                             n8399 (net)
+                   0.010    0.000    0.706 ^ place3069/A (BUF_X1)
+     1    1.917    0.007    0.023    0.729 ^ place3069/Z (BUF_X1)
+                                             net3069 (net)
+                   0.007    0.000    0.729 ^ u6565/A1 (AND2_X2)
+     1   12.053    0.017    0.039    0.768 ^ u6565/ZN (AND2_X2)
+                                             net1011 (net)
+                   0.017    0.002    0.771 ^ output1011/A (BUF_X1)
+     1    0.754    0.005    0.022    0.793 ^ output1011/Z (BUF_X1)
+                                             validOut_P (net)
+                   0.005    0.000    0.793 ^ validOut_P (out)
+                                     0.793   data arrival time
+
+                   0.000    2.600    2.600   clock vclk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                           -2.100    0.580   output external delay
+                                     0.580   data required time
+---------------------------------------------------------------------------------
+                                     0.580   data required time
+                                    -0.793   data arrival time
+---------------------------------------------------------------------------------
+                                    -0.213   slack (VIOLATED)
+
+
+Startpoint: u42 (rising edge-triggered flip-flop clocked by clk)
+Endpoint: validOut_N (output port clocked by vclk)
+Path Group: vclk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock clk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                   0.000    0.000    0.080 ^ u42/CK (DFF_X1)
+     3   10.977    0.027    0.105    0.185 ^ u42/Q (DFF_X1)
+                                             dynamic_node_top.south_input.NIB.head_ptr_f[1] (net)
+                   0.027    0.000    0.185 ^ place5032/A (BUF_X4)
+    18   44.391    0.027    0.048    0.233 ^ place5032/Z (BUF_X4)
+                                             net5032 (net)
+                   0.027    0.002    0.235 ^ place5027/A (BUF_X2)
+     4    6.488    0.011    0.030    0.265 ^ place5027/Z (BUF_X2)
+                                             net5027 (net)
+                   0.011    0.000    0.265 ^ place5025/A (BUF_X2)
+     2    3.806    0.008    0.022    0.287 ^ place5025/Z (BUF_X2)
+                                             net5025 (net)
+                   0.008    0.000    0.287 ^ u2816/A (AOI21_X1)
+     1    3.373    0.012    0.014    0.301 v u2816/ZN (AOI21_X1)
+                                             n3918 (net)
+                   0.012    0.000    0.301 v u2821/A2 (AOI22_X2)
+     3    9.103    0.038    0.051    0.353 ^ u2821/ZN (AOI22_X2)
+                                             n3925 (net)
+                   0.038    0.001    0.354 ^ u6217/A1 (NAND2_X1)
+     2    3.160    0.015    0.023    0.377 v u6217/ZN (NAND2_X1)
+                                             n8027 (net)
+                   0.015    0.000    0.377 v u6218/A (OAI21_X1)
+     1    2.017    0.020    0.024    0.400 ^ u6218/ZN (OAI21_X1)
+                                             n8028 (net)
+                   0.020    0.000    0.400 ^ u6219/A3 (NOR3_X1)
+     1    3.748    0.010    0.017    0.418 v u6219/ZN (NOR3_X1)
+                                             n8029 (net)
+                   0.010    0.000    0.418 v u6220/A2 (AND2_X4)
+     2    9.437    0.006    0.031    0.449 v u6220/ZN (AND2_X4)
+                                             n8030 (net)
+                   0.006    0.000    0.449 v u6234/A (AOI221_X2)
+     1    1.797    0.036    0.064    0.513 ^ u6234/ZN (AOI221_X2)
+                                             n8044 (net)
+                   0.036    0.000    0.513 ^ u6240/B1 (AOI21_X1)
+     1    4.936    0.017    0.029    0.542 v u6240/ZN (AOI21_X1)
+                                             n8050 (net)
+                   0.017    0.000    0.542 v u6245/B2 (OAI33_X1)
+     1    3.625    0.071    0.095    0.638 ^ u6245/ZN (OAI33_X1)
+                                             n8055 (net)
+                   0.071    0.000    0.638 ^ place3083/A (BUF_X4)
+     2    7.138    0.009    0.030    0.668 ^ place3083/Z (BUF_X4)
+                                             net3083 (net)
+                   0.009    0.001    0.668 ^ u6246/A1 (NOR2_X2)
+     2    7.270    0.008    0.011    0.680 v u6246/ZN (NOR2_X2)
+                                             n8056 (net)
+                   0.008    0.000    0.680 v u6247/A1 (NOR2_X4)
+     2    2.969    0.011    0.018    0.697 ^ u6247/ZN (NOR2_X4)
+                                             net1007 (net)
+                   0.011    0.000    0.697 ^ place3073/A (BUF_X1)
+     4    8.819    0.022    0.040    0.738 ^ place3073/Z (BUF_X1)
+                                             net3073 (net)
+                   0.022    0.000    0.738 ^ output1007/A (BUF_X1)
+     1    6.603    0.017    0.038    0.776 ^ output1007/Z (BUF_X1)
+                                             validOut_N (net)
+                   0.017    0.001    0.776 ^ validOut_N (out)
+                                     0.776   data arrival time
+
+                   0.000    2.600    2.600   clock vclk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                           -2.100    0.580   output external delay
+                                     0.580   data required time
+---------------------------------------------------------------------------------
+                                     0.580   data required time
+                                    -0.776   data arrival time
+---------------------------------------------------------------------------------
+                                    -0.196   slack (VIOLATED)
+
+
+Startpoint: u57 (rising edge-triggered flip-flop clocked by clk)
+Endpoint: validOut_E (output port clocked by vclk)
+Path Group: vclk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock clk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                   0.000    0.000    0.080 ^ u57/CK (DFF_X2)
+     4   20.335    0.026    0.130    0.210 ^ u57/Q (DFF_X2)
+                                             dynamic_node_top.west_input.NIB.head_ptr_f[1] (net)
+                   0.026    0.000    0.210 ^ u60/A (INV_X4)
+    12   36.734    0.014    0.024    0.234 v u60/ZN (INV_X4)
+                                             n85 (net)
+                   0.014    0.001    0.234 v u4280/A (AOI21_X2)
+     1    6.457    0.028    0.049    0.283 ^ u4280/ZN (AOI21_X2)
+                                             n5953 (net)
+                   0.028    0.000    0.283 ^ u4283/B1 (AOI22_X4)
+     2    5.514    0.015    0.025    0.308 v u4283/ZN (AOI22_X4)
+                                             n5957 (net)
+                   0.015    0.000    0.308 v u6274/A (XOR2_X2)
+     1    6.091    0.013    0.056    0.364 v u6274/Z (XOR2_X2)
+                                             n8087 (net)
+                   0.013    0.000    0.364 v u6275/A4 (NOR4_X4)
+     1    7.352    0.044    0.085    0.449 ^ u6275/ZN (NOR4_X4)
+                                             n8088 (net)
+                   0.044    0.000    0.449 ^ u6276/A1 (NAND3_X4)
+     3   14.748    0.021    0.034    0.483 v u6276/ZN (NAND3_X4)
+                                             n8089 (net)
+                   0.021    0.003    0.486 v u6304/A1 (OR4_X4)
+     2    6.858    0.016    0.079    0.566 v u6304/ZN (OR4_X4)
+                                             n8117 (net)
+                   0.016    0.000    0.566 v u6329/B1 (OAI21_X4)
+     2    4.663    0.018    0.027    0.593 ^ u6329/ZN (OAI21_X4)
+                                             n8142 (net)
+                   0.018    0.000    0.593 ^ u6330/A1 (NAND2_X2)
+     1    3.183    0.008    0.015    0.608 v u6330/ZN (NAND2_X2)
+                                             n8143 (net)
+                   0.008    0.000    0.608 v u6338/A1 (NAND2_X2)
+     2   13.448    0.020    0.026    0.634 ^ u6338/ZN (NAND2_X2)
+                                             n8151 (net)
+                   0.020    0.003    0.636 ^ u6339/A2 (NAND2_X2)
+     2    4.276    0.008    0.017    0.654 v u6339/ZN (NAND2_X2)
+                                             n8152 (net)
+                   0.008    0.000    0.654 v u6352/A1 (AOI222_X2)
+     2    3.856    0.050    0.055    0.708 ^ u6352/ZN (AOI222_X2)
+                                             net1008 (net)
+                   0.050    0.000    0.708 ^ place3078/A (BUF_X2)
+     2    7.068    0.012    0.034    0.743 ^ place3078/Z (BUF_X2)
+                                             net3078 (net)
+                   0.012    0.001    0.743 ^ output1008/A (BUF_X1)
+     1    0.948    0.006    0.021    0.764 ^ output1008/Z (BUF_X1)
+                                             validOut_E (net)
+                   0.006    0.000    0.764 ^ validOut_E (out)
+                                     0.764   data arrival time
+
+                   0.000    2.600    2.600   clock vclk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                           -2.100    0.580   output external delay
+                                     0.580   data required time
+---------------------------------------------------------------------------------
+                                     0.580   data required time
+                                    -0.764   data arrival time
+---------------------------------------------------------------------------------
+                                    -0.184   slack (VIOLATED)
+
+
+Startpoint: u12 (rising edge-triggered flip-flop clocked by clk)
+Endpoint: validOut_S (output port clocked by vclk)
+Path Group: vclk
+Path Type: max
+
+Fanout      Cap     Slew    Delay     Time   Description
+---------------------------------------------------------------------------------
+                   0.000    0.000    0.000   clock clk (rise edge)
+                            0.080    0.080   clock network delay (ideal)
+                   0.000    0.000    0.080 ^ u12/CK (DFF_X1)
+     2    9.818    0.025    0.103    0.183 ^ u12/Q (DFF_X1)
+                                             dynamic_node_top.north_input.NIB.head_ptr_f[1] (net)
+                   0.025    0.000    0.183 ^ place5105/A (BUF_X4)
+    19   50.997    0.030    0.050    0.233 ^ place5105/Z (BUF_X4)
+                                             net5105 (net)
+                   0.030    0.002    0.235 ^ u3294/A (AOI21_X1)
+     1    3.311    0.013    0.021    0.255 v u3294/ZN (AOI21_X1)
+                                             n4582 (net)
+                   0.013    0.000    0.255 v u3295/A2 (NAND2_X2)
+     1    6.258    0.013    0.022    0.278 ^ u3295/ZN (NAND2_X2)
+                                             n4583 (net)
+                   0.013    0.000    0.278 ^ u3301/A1 (NAND2_X4)
+     2    8.539    0.008    0.014    0.293 v u3301/ZN (NAND2_X4)
+                                             n4591 (net)
+                   0.008    0.000    0.293 v u6371/B1 (AOI22_X4)
+     2    4.831    0.024    0.038    0.331 ^ u6371/ZN (AOI22_X4)
+                                             n8191 (net)
+                   0.024    0.000    0.331 ^ u6372/A (OAI221_X2)
+     2    3.056    0.020    0.035    0.367 v u6372/ZN (OAI221_X2)
+                                             n8192 (net)
+                   0.020    0.000    0.367 v u6378/A1 (OR3_X2)
+     2    4.225    0.013    0.066    0.432 v u6378/ZN (OR3_X2)
+                                             n8198 (net)
+                   0.013    0.000    0.433 v u6380/A2 (OR3_X4)
+     1    3.499    0.011    0.068    0.500 v u6380/ZN (OR3_X4)
+                                             n8200 (net)
+                   0.011    0.000    0.501 v u6400/A (MUX2_X2)
+     2    6.811    0.012    0.061    0.561 v u6400/Z (MUX2_X2)
+                                             n8220 (net)
+                   0.012    0.000    0.561 v u6429/A2 (NOR4_X4)
+     1    7.047    0.044    0.067    0.629 ^ u6429/ZN (NOR4_X4)
+                                             n8249 (net)
+                   0.044    0.000    0.629 ^ u6439/B1 (OAI21_X4)
+     2   11.845    0.018    0.024    0.653 v u6439/ZN (OAI21_X4)
+                                             n8259 (net)
+                   0.018    0.002    0.655 v u6440/A1 (NAND2_X4)
+     2    7.615    0.010    0.019    0.674 ^ u6440/ZN (NAND2_X4)
+                                             n8260 (net)
+                   0.010    0.000    0.674 ^ place3072/A (BUF_X1)
+     1    3.257    0.010    0.026    0.700 ^ place3072/Z (BUF_X1)
+                                             net3072 (net)
+                   0.010    0.000    0.700 ^ u6453/A1 (AND2_X4)
+     2   12.149    0.011    0.033    0.733 ^ u6453/ZN (AND2_X4)
+                                             net1009 (net)
+                   0.011    0.002    0.735 ^ output1009/A (BUF_X1)
+     1    0.800    0.005    0.020    0.755 ^ output1009/Z (BUF_X1)
+                                             validOut_S (net)
+                   0.005    0.000    0.755 ^ validOut_S (out)
+                                     0.755   data arrival time
+
+                   0.000    2.600    2.600   clock vclk (rise edge)
+                            0.080    2.680   clock network delay (ideal)
+                            0.000    2.680   clock reconvergence pessimism
+                           -2.100    0.580   output external delay
+                                     0.580   data required time
+---------------------------------------------------------------------------------
+                                     0.580   data required time
+                                    -0.755   data arrival time
+---------------------------------------------------------------------------------
+                                    -0.175   slack (VIOLATED)
+
+

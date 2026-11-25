@@ -1,0 +1,154 @@
+{
+  "iteration": 19,
+  "tag": "0019_setup_strategy",
+  "status": "rejected",
+  "cluster": "setup_strategy",
+  "title": "Measured depth-2 beam search over coupled sizing sequences on data-path-only bottleneck stages, with ratcheting WNS floor and per-endpoint guard, in the post-stock recovery phase",
+  "hypothesis": "The remaining WNS/TNS lies on deep FA/HA/AOI data chains (Ibex [703]: six FA_X1 arcs ~679 ps; JPEG 20-23 stage multiplier paths), where single-stage upsizes are rejected because their input-cap penalty needs a matching upstream resize. Replace runTnsRecovery's first-improving single-move greedy with a measured beam search: seed stages are ranked by slack-weighted violating-endpoint coverage times arc delay over launch-Q-to-D data arcs only (clock-network pins such as Ibex _26153_ excluded). For each seed, single moves and depth-2 sequences (stage + upstream driver or downstream stage) are evaluated by journaled incremental STA from one restored checkpoint, and only the best sequence per round is committed. Acceptance uses a ratcheting WNS floor and rejects any sequence that pushes an endpoint above -1 ps below -1 ps. This should capture the coupled TNS gains iter 14's DP found while avoiding its WNS losses and iter 13/18's endpoint collateral.",
+  "planned_files": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh"
+  ],
+  "evidence_iterations": [
+    12,
+    13,
+    14,
+    16,
+    18
+  ],
+  "files_changed": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 332,
+    "lines_deleted": 16
+  },
+  "accepted": false,
+  "score_vs_champion": -0.0014506390438913804,
+  "score_vs_baseline": 0.0006088682411675662,
+  "reasons": [
+    "score -0.00145 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": -0.0015902110325554282,
+      "wns_cand": -0.02290181997755351,
+      "wns_ref": -0.0222145086391452,
+      "tns_cand": -0.3783992393195709,
+      "tns_ref": -0.3420142599269762,
+      "d_wns_ns": -0.0006873113384083113,
+      "d_tns_ns": -0.03638497939259472,
+      "d_wns_pct_period": -0.18328302357554965,
+      "d_tns_pct": -10.638439286234238,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 822.7379888481323,
+      "area_ref": 831.7819766290313,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -0.0012377463300085256,
+      "wns_cand": -0.02584094122934333,
+      "wns_ref": -0.024127922565050468,
+      "tns_cand": -1.140958693152,
+      "tns_ref": -0.9988178344899452,
+      "d_wns_ns": -0.0017130186642928605,
+      "d_tns_ns": -0.14214085866205473,
+      "d_wns_pct_period": -0.23211635017518434,
+      "d_tns_pct": -14.23090915618664,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20554.617563561806,
+      "area_ref": 20584.410620472227,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": -0.002271082054922129,
+      "wns_cand": -0.07941181270670272,
+      "wns_ref": -0.07423972757790741,
+      "tns_cand": -65.66544827087755,
+      "tns_ref": -44.39935833548254,
+      "d_wns_ns": -0.005172085128795315,
+      "d_tns_ns": -21.26608993539501,
+      "d_wns_pct_period": -0.261216420646228,
+      "d_tns_pct": -47.89729116062435,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28627.185955087953,
+      "area_ref": 28643.944105510855,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": -0.0007035167580794388,
+      "wns_cand": -0.08662237838866445,
+      "wns_ref": -0.08530243419735703,
+      "tns_cand": -31.87814902279832,
+      "tns_ref": -31.15051771366437,
+      "d_wns_ns": -0.0013199441913074178,
+      "d_tns_ns": -0.7276313091339475,
+      "d_wns_pct_period": -0.13199441913074178,
+      "d_tns_pct": -2.335856231419125,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90207.51434718477,
+      "area_ref": 90252.47038607631,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 13,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0019_setup_strategy",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0019_setup_strategy",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0019_setup_strategy/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "setup_strategy",
+    "dominant_cause": "deep_logic",
+    "lesson": "Measured depth-2 recovery improved JPEG baseline TNS by 0.525 ns but lost champion recovery because AES generated no trials and Ibex failed replay.",
+    "dead_end": "Do not replace champion greedy recovery with a fixed top-eight beam that regenerates moves during replay and cannot resize its dominant FA_X1/HA_X1 seeds.",
+    "good_changes": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: measured pair evaluation committed one JPEG pair with unchanged baseline WNS",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: measured single-move recovery improved GCD baseline TNS by 0.097 ns"
+    ],
+    "bad_changes": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: runTnsRecovery bypasses champion runGreedyTnsRecovery",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: Cand stores pin names and exclusions rather than exact replayable operations",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: fixed top-eight seed selection produced zero AES trials",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: endpoint protection omits endpoints initially above +50 ps"
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc",
+      "src/rsz/src/policy/SetupLegacyPolicy.hh",
+      "src/rsz/src/policy/SetupLegacyBase.cc",
+      "src/rsz/src/MoveCommitter.cc",
+      "src/rsz/src/move/SizeUpGenerator.cc"
+    ],
+    "files_to_avoid": []
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0019",
+  "seconds": 658,
+  "when": "2026-11-25T17:12:52Z",
+  "schema_version": 1,
+  "valid_experiment": true
+}

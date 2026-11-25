@@ -1,0 +1,374 @@
+{
+  "stressed": {
+    "nangate45/gcd": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 0.375,
+      "endpoints": 72,
+      "pre": {
+        "wns_setup": -0.02495898003363754,
+        "tns_setup": -0.7322117563961893,
+        "setup_violations": 42
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.0222145086391452,
+          "min": -0.0222145086391452,
+          "max": -0.0222145086391452
+        },
+        "tns_setup": {
+          "mean": -0.3420142599269762,
+          "min": -0.3420142599269762,
+          "max": -0.3420142599269762
+        },
+        "wns_hold": {
+          "mean": 0.087038809179191,
+          "min": 0.087038809179191,
+          "max": 0.087038809179191
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 26.0,
+          "min": 26.0,
+          "max": 26.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 831.7819766290313,
+          "min": 831.7819766290313,
+          "max": 831.7819766290313
+        },
+        "util": {
+          "mean": 0.7724802371541555,
+          "min": 0.7724802371541555,
+          "max": 0.7724802371541555
+        },
+        "instances": {
+          "mean": 706.0,
+          "min": 706.0,
+          "max": 706.0
+        },
+        "buffers": {
+          "mean": 159.0,
+          "min": 159.0,
+          "max": 159.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 3647.0,
+        "min": 3647.0,
+        "max": 3647.0
+      },
+      "deterministic": true,
+      "evolve_counters": {
+        "split_cutpoint_reranked": 0,
+        "split_cutpoint_candidates": 0,
+        "split_cutpoint_dropped": 0,
+        "bottleneck_rounds": 5,
+        "bottleneck_drivers_ranked": 874,
+        "bottleneck_trials": 328,
+        "bottleneck_kept": 17,
+        "bottleneck_rejected_wns": 22,
+        "bottleneck_rejected_tns": 56
+      },
+      "repair_stats": {
+        "resized": 37,
+        "pins_swapped": 4
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0015_buffering/runs/nangate45__gcd/stressed_r0"
+      ]
+    },
+    "nangate45/aes": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 0.738,
+      "endpoints": 1248,
+      "pre": {
+        "wns_setup": -0.07898321109592449,
+        "tns_setup": -8.11572343411087,
+        "setup_violations": 160
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.025966285412368485,
+          "min": -0.025966285412368485,
+          "max": -0.025966285412368485
+        },
+        "tns_setup": {
+          "mean": -1.0574394992272294,
+          "min": -1.0574394992272294,
+          "max": -1.0574394992272294
+        },
+        "wns_hold": {
+          "mean": 0.10201455247075145,
+          "min": 0.10201455247075145,
+          "max": 0.10201455247075145
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 126.0,
+          "min": 126.0,
+          "max": 126.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 20561.00179004261,
+          "min": 20561.00179004261,
+          "max": 20561.00179004261
+        },
+        "util": {
+          "mean": 0.389523281596389,
+          "min": 0.389523281596389,
+          "max": 0.389523281596389
+        },
+        "instances": {
+          "mean": 15339.0,
+          "min": 15339.0,
+          "max": 15339.0
+        },
+        "buffers": {
+          "mean": 3351.0,
+          "min": 3351.0,
+          "max": 3351.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 41915.0,
+        "min": 41915.0,
+        "max": 41915.0
+      },
+      "deterministic": true,
+      "evolve_counters": {
+        "split_cutpoint_reranked": 6,
+        "split_cutpoint_candidates": 18,
+        "split_cutpoint_dropped": 0,
+        "bottleneck_rounds": 5,
+        "bottleneck_drivers_ranked": 5682,
+        "bottleneck_trials": 294,
+        "bottleneck_kept": 22,
+        "bottleneck_rejected_wns": 24,
+        "bottleneck_rejected_tns": 20
+      },
+      "repair_stats": {
+        "buffers_removed": 6,
+        "buffers_inserted": 486,
+        "resized": 1377,
+        "pins_swapped": 135,
+        "cloned": 69
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0015_buffering/runs/nangate45__aes/stressed_r0"
+      ]
+    },
+    "nangate45/ibex": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 1.98,
+      "endpoints": 5565,
+      "pre": {
+        "wns_setup": -0.19248381211517587,
+        "tns_setup": -164.0219313462487,
+        "setup_violations": 1572
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.07400835709303191,
+          "min": -0.07400835709303191,
+          "max": -0.07400835709303191
+        },
+        "tns_setup": {
+          "mean": -44.244072768904076,
+          "min": -44.244072768904076,
+          "max": -44.244072768904076
+        },
+        "wns_hold": {
+          "mean": 0.044729221592639395,
+          "min": 0.044729221592639395,
+          "max": 0.044729221592639395
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 1346.0,
+          "min": 1346.0,
+          "max": 1346.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 28643.944105510855,
+          "min": 28643.944105510855,
+          "max": 28643.944105510855
+        },
+        "util": {
+          "mean": 0.5109730809563391,
+          "min": 0.5109730809563391,
+          "max": 0.5109730809563391
+        },
+        "instances": {
+          "mean": 14616.0,
+          "min": 14616.0,
+          "max": 14616.0
+        },
+        "buffers": {
+          "mean": 1099.0,
+          "min": 1099.0,
+          "max": 1099.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 56110.0,
+        "min": 56110.0,
+        "max": 56110.0
+      },
+      "deterministic": true,
+      "evolve_counters": {
+        "split_cutpoint_reranked": 23,
+        "split_cutpoint_candidates": 61,
+        "split_cutpoint_dropped": 0,
+        "bottleneck_rounds": 4,
+        "bottleneck_drivers_ranked": 2879,
+        "bottleneck_trials": 256,
+        "bottleneck_kept": 30,
+        "bottleneck_rejected_wns": 13,
+        "bottleneck_rejected_tns": 86
+      },
+      "repair_stats": {
+        "buffers_inserted": 73,
+        "resized": 157,
+        "pins_swapped": 22,
+        "cloned": 10
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0015_buffering/runs/nangate45__ibex/stressed_r0"
+      ]
+    },
+    "nangate45/jpeg": {
+      "ok": true,
+      "replicates": 1,
+      "failed": 0,
+      "period_ns": 1.0,
+      "endpoints": 8355,
+      "pre": {
+        "wns_setup": -0.11649559424633563,
+        "tns_setup": -48.30013858914408,
+        "setup_violations": 661
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -0.08800282973652519,
+          "min": -0.08800282973652519,
+          "max": -0.08800282973652519
+        },
+        "tns_setup": {
+          "mean": -30.917662194429145,
+          "min": -30.917662194429145,
+          "max": -30.917662194429145
+        },
+        "wns_hold": {
+          "mean": 0.008403000755284745,
+          "min": 0.008403000755284745,
+          "max": 0.008403000755284745
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 609.0,
+          "min": 609.0,
+          "max": 609.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 90276.40857084407,
+          "min": 90276.40857084407,
+          "max": 90276.40857084407
+        },
+        "util": {
+          "mean": 0.8333476568735677,
+          "min": 0.8333476568735677,
+          "max": 0.8333476568735677
+        },
+        "instances": {
+          "mean": 59609.0,
+          "min": 59609.0,
+          "max": 59609.0
+        },
+        "buffers": {
+          "mean": 5602.0,
+          "min": 5602.0,
+          "max": 5602.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 48686.0,
+        "min": 48686.0,
+        "max": 48686.0
+      },
+      "deterministic": true,
+      "evolve_counters": {
+        "split_cutpoint_reranked": 20,
+        "split_cutpoint_candidates": 57,
+        "split_cutpoint_dropped": 0,
+        "bottleneck_rounds": 2,
+        "bottleneck_drivers_ranked": 8407,
+        "bottleneck_trials": 161,
+        "bottleneck_kept": 39,
+        "bottleneck_rejected_wns": 57,
+        "bottleneck_rejected_tns": 21
+      },
+      "repair_stats": {
+        "buffers_inserted": 76,
+        "resized": 335,
+        "pins_swapped": 133
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0015_buffering/runs/nangate45__jpeg/stressed_r0"
+      ]
+    }
+  },
+  "tier": "A",
+  "replicates": 1,
+  "when": "2026-11-25T16:04:41Z",
+  "rsz_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0015_buffering/rsz"
+}

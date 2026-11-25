@@ -89,6 +89,13 @@ validate-champion: ## full Tier C evaluation of the current champion
 eval-candidate: ## evaluate an arbitrary rsz tree: make eval-candidate RSZ=path/to/rsz
 	@$(PY) evaluate --rsz $(RSZ) --tier $(TIER) --replicates $(REPLICATES) --tag manual
 
+# ---- held-out test (like an ML test split; never shown to agents) ----
+.PHONY: test-baseline test-champion
+test-baseline: ## stock OpenROAD on the held-out TEST designs -> 12_test_results/baseline.json
+	@$(PY) test --baseline-only
+test-champion: ## build current champion, run it on held-out TEST designs, compare with stock
+	@$(PY) test
+
 # ---- results ---------------------------------------------------------------
 .PHONY: report viz show-champion status
 report: ## print summary tables (baseline vs champion vs iterations, cost per iteration)

@@ -1,0 +1,548 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/HYPOTHESIS.md
+index 8c3dc61..0335a5e 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/HYPOTHESIS.md	
+@@ -1,30 +1,36 @@
+-# Two-phase setup repair: stock LEGACY loop + bottleneck TNS recovery
++# Required-time-ordered (LT-tree) fanout trees for shared high-fanout drivers
+ 
+ ## Problem
+-In-loop TNS-aware changes found large Ibex TNS gains but perturbed the stock greedy trajectory and lost WNS on AES/gcd/JPEG. Shared trunk drivers (e.g. Ibex `_26153_` fanout 943, JPEG HA/FA drivers) are only touched when they sit on the worst path of the endpoint currently being repaired.
++Ibex's worst paths cross `AND2_X1 _26153_/ZN` with fanout 943. Stock `SplitLoadGenerator` only moves the less-critical half of the sinks behind ONE lowest-drive buffer, so the trunk keeps ~470 pins and a weak buffer drives the other ~470. Stock Rebuffer is limited to fanout < 20.
+ 
+ ## Current heuristic
+-`SetupLegacyPolicy::iterate` / `repairEndpoint` (src/policy/SetupLegacyPolicy.cc) walks violating endpoints worst-first and repairs each one's worst path via `SetupLegacyBase::repairPath`. Nothing ranks drivers by how many violating paths they serve.
++`src/move/SplitLoadGenerator.cc: chooseSplitLoads` (fanout > 8): sort sinks by slack, put the top half (most slack) behind one `lowestDriveBufferCell()` at the driver location.
+ 
+ ## New approach
+-The stock loop is unchanged. After it, for the LEGACY phase only, `SetupLegacyPolicy::runTnsRecovery`:
+-1. Snapshots design WNS W* (absolute floor, never rolled).
+-2. Up to 5 rounds: re-collect violating endpoints, unroll the worst path of the top 400, and rank driver pins by sum of (-endpoint slack) over those paths.
+-3. For the top 50 drivers (resolved by name each time), open a journal, run the stock generator sequence via `tryRepairTarget` (up to 3 attempts, excluding move types already rejected for that driver), refresh parasitics/timing, then keep the move only if WNS >= W* and TNS improves by >= 0.5 ps. Otherwise `restoreJournal`.
+-4. Stops when a round keeps nothing, after 5 rounds, or at max(30, 10% of stock moves) kept moves.
++For drivers with fanout >= 40, `generateFanoutTree` (SplitLoadGenerator.cc) builds a Touati-style tree:
++1. Sinks are sorted by STA slack (equivalent to required time, same driver arrival), most critical first.
++2. The most critical sinks stay directly on the driver, up to a cap budget of 3/8/15/30% of the total sink pin cap.
++3. The rest are cut into 1..4 contiguous groups of equal pin cap (still slack ordered). Each group gets its own buffer at the group centroid. The buffer is chosen from ALL non-dont-use buffer masters, minimising `t_intr + R_buf*C_group + R_drvr*Cin_buf`, with the group cap limited to 90% of the buffer max-cap.
++4. All 16 (fraction, groups) variants are scored with a lumped model: gain = `R_drvr * (C_offloaded - sum Cin_buf)`. The predicted min slack is the min of (critical slack + gain) and (group slack + gain - buffer delay). The best variant is used only if the predicted min-slack gain is >= 1 ps; otherwise the stock half-split is used (`fanout_tree_stock_fallback`).
++5. `SplitLoadCandidate::applyFanoutTree` inserts the buffers with `Resizer::insertBufferBeforeLoads`. The move is a kSplitLoad MoveResult, so the existing commit, journal and rollback path covers it. Acceptance stays with the caller (the endpoint loop or the bottleneck recovery's WNS-floor/TNS check, which journals and restores).
+ 
+ ## Why WNS/TNS should improve
+-Final WNS >= stock WNS by construction. Moves on shared trunks help many endpoints at once, so TNS rises. Moves on shared drivers of the worst cone can also raise WNS.
++Removing hundreds of pins of load from the critical trunk cuts the driver stage delay and output slew for all critical sinks, and the buffer cost is paid only by sinks with slack to spare. Thousands of Ibex endpoints share this trunk.
+ 
+ ## What to look for in the path report
+-Fewer violating endpoints sharing a common upstream driver (upsized/buffered trunk); unchanged or better worst path; `RSZ_EVOLVE bottleneck_kept` > 0.
++`_26153_/ZN` max fanout < 100, new `fotree*` buffers on the net, lower slew on critical sinks. `RSZ_EVOLVE fanout_tree_built` > 0.
+ 
+ ## Risks
+-TNS-only gains may be under-weighted by the score. Each trial needs a timing update, which may slow JPEG (bounded by 5 rounds x 50 drivers x 3 attempts). Pass count `bottleneck_rejected_*` shows how selective the floor is.
++- The model ignores wire RC and slew effects, so some trees are worse than predicted. The recovery phase's journal rejects those, but in the stock endpoint loop a bad tree is only reverted by the pass-level "better" check.
++- SplitLoad runs in the stock phase too. `SetupLegacyPolicy.cc` is not editable, so I could not gate the move on the recovery phase. The stock trajectory therefore changes for nets with fanout >= 40 (it stays byte-identical elsewhere).
++- Buffers placed at centroids may be displaced by legalisation.
++- Per-tree measured STA selection (several trees judged inside a journal) is NOT implemented. Variants are ranked by the analytic model only, because nested journals are unsafe.
+ 
+-## Counters
+-`bottleneck_rounds`, `bottleneck_drivers_ranked`, `bottleneck_trials`, `bottleneck_kept`, `bottleneck_rejected_wns`, `bottleneck_rejected_tns` (printed as `RSZ_EVOLVE <name> fired=<n>`).
++## Counters (printed by `~SplitLoadGenerator`, then cleared)
++`fanout_tree_built`, `fanout_tree_buffers`, `fanout_tree_sinks_isolated`, `fanout_tree_stock_fallback`.
+ 
+ ## Files changed
+-- src/policy/SetupLegacyPolicy.cc: `runTnsRecovery` and its call after the stock loop, plus counters.
+-- src/policy/SetupLegacyPolicy.hh: declaration of `runTnsRecovery`.
++- `src/move/SplitLoadGenerator.cc`: tree synthesis, variant scoring, counter printing, hookup in `generate`.
++- `src/move/SplitLoadGenerator.hh`: destructor declaration.
++- `src/move/SplitLoadCandidate.cc`: tree-form constructor, `applyFanoutTree`, stats storage.
++- `src/move/SplitLoadCandidate.hh`: `FanoutTreeStats`, `FanoutTreeGroup`, new constructor and members.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadCandidate.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/src/move/SplitLoadCandidate.cc
+index 06b6ce6..c05b63d 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadCandidate.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/src/move/SplitLoadCandidate.cc	
+@@ -34,13 +34,75 @@ SplitLoadCandidate::SplitLoadCandidate(Resizer& resizer,
+ {
+ }
+ 
++SplitLoadCandidate::SplitLoadCandidate(Resizer& resizer,
++                                       const Target& target,
++                                       sta::Net* drvr_net,
++                                       std::vector<FanoutTreeGroup> groups)
++    : MoveCandidate(resizer, target),
++      drvr_net_(drvr_net),
++      tree_groups_(std::move(groups))
++{
++}
++
+ SplitLoadCandidate::~SplitLoadCandidate() = default;
+ 
++FanoutTreeStats& fanoutTreeStats()
++{
++  static FanoutTreeStats stats;
++  return stats;
++}
++
+ MoveResult SplitLoadCandidate::apply()
+ {
++  if (!tree_groups_.empty()) {
++    return applyFanoutTree();
++  }
+   return applySplitBuffer();
+ }
+ 
++MoveResult SplitLoadCandidate::applyFanoutTree()
++{
++  MoveResult result{.accepted = true,
++                    .type = MoveType::kSplitLoad,
++                    .move_count = 0,
++                    .touched_instances = {}};
++  FanoutTreeStats& stats = fanoutTreeStats();
++  for (FanoutTreeGroup& group : tree_groups_) {
++    sta::Instance* buffer
++        = resizer_.insertBufferBeforeLoads(drvr_net_,
++                                           group.loads.get(),
++                                           group.buffer_cell,
++                                           &group.loc,
++                                           "fotree",
++                                           nullptr,
++                                           odb::dbNameUniquifyType::IF_NEEDED);
++    if (buffer == nullptr) {
++      continue;
++    }
++    sta::LibertyPort *input, *output;
++    group.buffer_cell->bufferPorts(input, output);
++    sta::Pin* out_pin = resizer_.network()->findPin(buffer, output);
++    resizer_.invalidateParasitics(resizer_.network()->net(out_pin));
++    result.touched_instances.push_back(buffer);
++    ++result.move_count;
++    ++stats.buffers_inserted;
++    stats.sinks_isolated += static_cast<int64_t>(group.loads->size());
++  }
++  if (result.move_count == 0) {
++    return rejectedMove();
++  }
++  resizer_.invalidateParasitics(drvr_net_);
++  ++stats.trees_built;
++  debugPrint(resizer_.logger(),
++             RSZ,
++             "split_load_move",
++             1,
++             "ACCEPT FanoutTree {}: {} buffers",
++             resizer_.network()->pathName(target_.driver_pin),
++             result.move_count);
++  return result;
++}
++
+ int SplitLoadCandidate::resizeInsertedBuffer(sta::Instance* buffer) const
+ {
+   sta::LibertyPort *input, *output;
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadCandidate.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/src/move/SplitLoadCandidate.hh
+index 6cb0e2a..ce9f41e 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadCandidate.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/src/move/SplitLoadCandidate.hh	
+@@ -3,7 +3,9 @@
+ 
+ #pragma once
+ 
++#include <cstdint>
+ #include <memory>
++#include <vector>
+ 
+ #include "MoveCandidate.hh"
+ #include "OptimizerTypes.hh"
+@@ -25,10 +27,34 @@ namespace rsz {
+ // the load pins in load_pins_ to the buffer output, and then optionally
+ // resizes the inserted buffer.  Useful for high-fanout nets where the full
+ // Rebuffer tree-search is too expensive.  Single-threaded only.
++// Counters for the required-time-ordered fanout tree move.  Shared by all
++// candidates and printed (then cleared) by ~SplitLoadGenerator.
++struct FanoutTreeStats
++{
++  int64_t trees_built{0};
++  int64_t buffers_inserted{0};
++  int64_t sinks_isolated{0};
++  int64_t stock_fallback{0};
++};
++FanoutTreeStats& fanoutTreeStats();
++
++// One buffered group of a fanout tree.
++struct FanoutTreeGroup
++{
++  std::unique_ptr<sta::PinSet> loads;
++  odb::Point loc;
++  sta::LibertyCell* buffer_cell{nullptr};
++};
++
+ class SplitLoadCandidate : public MoveCandidate
+ {
+  public:
+   // === Construction =========================================================
++  // Fanout-tree form: one buffer per group, most critical sinks stay direct.
++  SplitLoadCandidate(Resizer& resizer,
++                     const Target& target,
++                     sta::Net* drvr_net,
++                     std::vector<FanoutTreeGroup> groups);
+   SplitLoadCandidate(Resizer& resizer,
+                      const Target& target,
+                      sta::Net* drvr_net,
+@@ -46,12 +72,14 @@ class SplitLoadCandidate : public MoveCandidate
+   int resizeInsertedBuffer(sta::Instance* buffer) const;
+   void invalidateAffectedParasitics(sta::Instance* buffer) const;
+   MoveResult applySplitBuffer();
++  MoveResult applyFanoutTree();
+ 
+   // === Candidate state ======================================================
+   sta::Net* drvr_net_{nullptr};
+   sta::LibertyCell* buffer_cell_{nullptr};
+   odb::Point drvr_loc_;
+   std::unique_ptr<sta::PinSet> load_pins_;
++  std::vector<FanoutTreeGroup> tree_groups_;
+ };
+ 
+ }  // namespace rsz
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/src/move/SplitLoadGenerator.cc
+index 8746a15..ddb8504 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/src/move/SplitLoadGenerator.cc	
+@@ -4,7 +4,10 @@
+ #include "SplitLoadGenerator.hh"
+ 
+ #include <algorithm>
++#include <cstdint>
+ #include <memory>
++#include <string>
++#include <string_view>
+ #include <utility>
+ #include <vector>
+ 
+@@ -127,6 +130,179 @@ std::unique_ptr<sta::PinSet> chooseSplitLoads(
+   return load_pins;
+ }
+ 
++// Required-time-ordered (LT-tree) fanout synthesis for shared high-fanout
++// drivers.  Nets below kTreeMinFanout keep the stock half-split move.
++constexpr int kTreeMinFanout = 40;
++constexpr int kTreeMaxGroups = 4;
++constexpr float kTreeMinGain = 1e-12f;  // predicted min-slack gain, seconds
++constexpr float kDirectCapFractions[] = {0.03f, 0.08f, 0.15f, 0.30f};
++
++struct TreeSink
++{
++  sta::Pin* pin;
++  float cap;
++  float rel_slack;  // slack relative to the driver, most critical first
++  odb::Point loc;
++  bool is_port;
++};
++
++struct BufferModel
++{
++  sta::LibertyCell* cell;
++  float cin;
++  float res;
++  float intrinsic;
++  float max_cap;
++};
++
++struct TreePlan
++{
++  std::vector<int> group_begin;  // indices into sinks, size = groups + 1
++  std::vector<int> group_buf;    // buffer model index per group
++  size_t direct_count{0};
++  float score{-1e30f};
++};
++
++std::vector<BufferModel> buildBufferModels(Resizer& resizer)
++{
++  sta::LibertyCellSeq cells;
++  resizer.getBufferList(cells);
++  std::ranges::sort(cells, [](const sta::LibertyCell* a, const sta::LibertyCell* b) {
++    return std::string_view(a->name()) < std::string_view(b->name());
++  });
++  std::vector<BufferModel> models;
++  for (sta::LibertyCell* cell : cells) {
++    if (resizer.dontUse(cell)) {
++      continue;
++    }
++    sta::LibertyPort *input, *output;
++    cell->bufferPorts(input, output);
++    if (input == nullptr || output == nullptr) {
++      continue;
++    }
++    float max_cap = 0.0f;
++    bool has_limit = false;
++    output->capacitanceLimit(sta::MinMax::max(), max_cap, has_limit);
++    models.push_back({cell,
++                      input->capacitance(),
++                      output->driveResistance(),
++                      sta::delayAsFloat(output->intrinsicDelay(resizer.staState())),
++                      has_limit ? max_cap : 1e30f});
++  }
++  return models;
++}
++
++// Pick the buffer minimising delay of the group plus the driver-side cost of
++// its input pin; returns -1 when no buffer respects the max-cap limit.
++int bestBufferForGroup(const std::vector<BufferModel>& models,
++                       const float group_cap,
++                       const float drvr_res)
++{
++  int best = -1;
++  float best_cost = 1e30f;
++  for (size_t i = 0; i < models.size(); ++i) {
++    const BufferModel& m = models[i];
++    if (group_cap > 0.9f * m.max_cap) {
++      continue;
++    }
++    const float cost
++        = m.intrinsic + m.res * group_cap + drvr_res * m.cin;
++    if (cost < best_cost) {
++      best_cost = cost;
++      best = static_cast<int>(i);
++    }
++  }
++  return best;
++}
++
++// Evaluate one (direct fraction, group count) variant with a lumped model:
++// removing C_off of load from the driver speeds every direct sink by
++// R_drvr * (C_off - sum Cin); every buffered group pays buffer delay.
++TreePlan evaluateVariant(const std::vector<TreeSink>& sinks,
++                         const std::vector<BufferModel>& models,
++                         const float drvr_res,
++                         const float total_cap,
++                         const float direct_fraction,
++                         const int num_groups)
++{
++  TreePlan plan;
++  size_t direct = 0;
++  float direct_cap = 0.0f;
++  while (direct < sinks.size()
++         && (sinks[direct].is_port || direct == 0
++             || direct_cap < direct_fraction * total_cap)) {
++    direct_cap += sinks[direct].cap;
++    ++direct;
++  }
++  // Ports further down the order also stay on the driver.
++  if (direct >= sinks.size()) {
++    return plan;
++  }
++  float rest_cap = 0.0f;
++  for (size_t i = direct; i < sinks.size(); ++i) {
++    if (!sinks[i].is_port) {
++      rest_cap += sinks[i].cap;
++    }
++  }
++  if (rest_cap <= 0.0f) {
++    return plan;
++  }
++  plan.direct_count = direct;
++  plan.group_begin.push_back(static_cast<int>(direct));
++  const float target_cap = rest_cap / static_cast<float>(num_groups);
++  float acc = 0.0f;
++  float group_cap = 0.0f;
++  std::vector<float> group_caps;
++  std::vector<float> group_slack;
++  float group_min = 1e30f;
++  for (size_t i = direct; i < sinks.size(); ++i) {
++    if (sinks[i].is_port) {
++      continue;
++    }
++    group_cap += sinks[i].cap;
++    group_min = std::min(group_min, sinks[i].rel_slack);
++    acc += sinks[i].cap;
++    const bool close_group
++        = static_cast<int>(group_caps.size()) + 1 < num_groups
++          && acc >= target_cap * static_cast<float>(group_caps.size() + 1);
++    if (close_group) {
++      group_caps.push_back(group_cap);
++      group_slack.push_back(group_min);
++      plan.group_begin.push_back(static_cast<int>(i + 1));
++      group_cap = 0.0f;
++      group_min = 1e30f;
++    }
++  }
++  if (group_cap > 0.0f) {
++    group_caps.push_back(group_cap);
++    group_slack.push_back(group_min);
++    plan.group_begin.push_back(static_cast<int>(sinks.size()));
++  }
++  if (group_caps.empty()) {
++    return plan;
++  }
++  float buf_cin = 0.0f;
++  for (const float gc : group_caps) {
++    const int b = bestBufferForGroup(models, gc, drvr_res);
++    if (b < 0) {
++      plan.score = -1e30f;
++      return plan;
++    }
++    plan.group_buf.push_back(b);
++    buf_cin += models[b].cin;
++  }
++  const float gain = drvr_res * (rest_cap - buf_cin);
++  // Direct sinks keep their relative slack and gain from the lighter load.
++  float worst = sinks.front().rel_slack + gain;
++  for (size_t g = 0; g < group_caps.size(); ++g) {
++    const BufferModel& m = models[plan.group_buf[g]];
++    const float delay = m.intrinsic + m.res * group_caps[g];
++    worst = std::min(worst, group_slack[g] + gain - delay);
++  }
++  plan.score = worst - sinks.front().rel_slack;
++  return plan;
++}
++
+ }  // namespace
+ 
+ SplitLoadGenerator::SplitLoadGenerator(const GeneratorContext& context)
+@@ -134,6 +310,106 @@ SplitLoadGenerator::SplitLoadGenerator(const GeneratorContext& context)
+ {
+ }
+ 
++SplitLoadGenerator::~SplitLoadGenerator()
++{
++  FanoutTreeStats& stats = fanoutTreeStats();
++  utl::Logger* logger = resizer_.logger();
++  logger->report("RSZ_EVOLVE fanout_tree_built fired={}", stats.trees_built);
++  logger->report("RSZ_EVOLVE fanout_tree_buffers fired={}",
++                 stats.buffers_inserted);
++  logger->report("RSZ_EVOLVE fanout_tree_sinks_isolated fired={}",
++                 stats.sinks_isolated);
++  logger->report("RSZ_EVOLVE fanout_tree_stock_fallback fired={}",
++                 stats.stock_fallback);
++  stats = FanoutTreeStats{};
++}
++
++static std::vector<std::unique_ptr<MoveCandidate>> generateFanoutTree(
++    Resizer& resizer_,
++    const Target& target,
++    sta::Pin* drvr_pin,
++    sta::Net* drvr_net,
++    const std::vector<FanoutSlack>& ranked)
++{
++  std::vector<std::unique_ptr<MoveCandidate>> candidates;
++  const float drvr_res = resizer_.driveResistance(drvr_pin);
++  const std::vector<BufferModel> models = buildBufferModels(resizer_);
++  if (models.empty() || drvr_res <= 0.0f) {
++    return candidates;
++  }
++
++  // `ranked` is most-slack-first; the tree wants the most critical first.
++  std::vector<TreeSink> sinks;
++  sinks.reserve(ranked.size());
++  float total_cap = 0.0f;
++  for (auto it = ranked.rbegin(); it != ranked.rend(); ++it) {
++    sta::Pin* pin = it->first->pin();
++    const sta::LibertyPort* port = resizer_.network()->libertyPort(pin);
++    const bool is_port = resizer_.network()->isTopLevelPort(pin);
++    const float cap = port != nullptr ? port->capacitance() : 0.0f;
++    sinks.push_back({pin,
++                     cap,
++                     static_cast<float>(it->second),
++                     resizer_.dbNetwork()->location(pin),
++                     is_port || port == nullptr});
++    if (!is_port) {
++      total_cap += cap;
++    }
++  }
++  if (total_cap <= 0.0f) {
++    return candidates;
++  }
++
++  TreePlan best;
++  for (const float fraction : kDirectCapFractions) {
++    for (int groups = 1; groups <= kTreeMaxGroups; ++groups) {
++      TreePlan plan = evaluateVariant(
++          sinks, models, drvr_res, total_cap, fraction, groups);
++      if (plan.group_buf.empty()) {
++        continue;
++      }
++      if (plan.score > best.score) {
++        best = std::move(plan);
++      }
++    }
++  }
++  if (best.group_buf.empty() || best.score < kTreeMinGain) {
++    ++fanoutTreeStats().stock_fallback;
++    return candidates;
++  }
++
++  std::vector<FanoutTreeGroup> groups;
++  for (size_t g = 0; g < best.group_buf.size(); ++g) {
++    FanoutTreeGroup group;
++    group.loads = std::make_unique<sta::PinSet>(resizer_.network());
++    int64_t sx = 0;
++    int64_t sy = 0;
++    int count = 0;
++    for (int i = best.group_begin[g]; i < best.group_begin[g + 1]; ++i) {
++      if (sinks[i].is_port) {
++        continue;
++      }
++      group.loads->insert(sinks[i].pin);
++      sx += sinks[i].loc.x();
++      sy += sinks[i].loc.y();
++      ++count;
++    }
++    if (count == 0) {
++      continue;
++    }
++    group.loc = odb::Point(static_cast<int>(sx / count),
++                           static_cast<int>(sy / count));
++    group.buffer_cell = models[best.group_buf[g]].cell;
++    groups.push_back(std::move(group));
++  }
++  if (groups.empty()) {
++    return candidates;
++  }
++  candidates.push_back(std::make_unique<SplitLoadCandidate>(
++      resizer_, target, drvr_net, std::move(groups)));
++  return candidates;
++}
++
+ std::vector<std::unique_ptr<MoveCandidate>> SplitLoadGenerator::generate(
+     const Target& target)
+ {
+@@ -150,6 +426,21 @@ std::vector<std::unique_ptr<MoveCandidate>> SplitLoadGenerator::generate(
+     return candidates;
+   }
+ 
++  odb::dbNet* db_drvr_net = nullptr;
++  odb::dbModNet* db_mod_drvr_net = nullptr;
++  resizer_.dbNetwork()->net(drvr_pin, db_drvr_net, db_mod_drvr_net);
++  sta::Net* drvr_net = resizer_.dbNetwork()->dbToSta(db_drvr_net);
++
++  // High-fanout shared drivers: LT-tree instead of the stock half split.
++  if (drvr_net != nullptr
++      && static_cast<int>(fanout_slacks.size()) >= kTreeMinFanout) {
++    candidates = generateFanoutTree(
++        resizer_, target, drvr_pin, drvr_net, fanout_slacks);
++    if (!candidates.empty()) {
++      return candidates;
++    }
++  }
++
+   std::unique_ptr<sta::PinSet> load_pins
+       = chooseSplitLoads(resizer_, fanout_slacks);
+   if (load_pins->empty()) {
+@@ -157,10 +448,6 @@ std::vector<std::unique_ptr<MoveCandidate>> SplitLoadGenerator::generate(
+   }
+ 
+   sta::LibertyCell* buffer_cell = resizer_.lowestDriveBufferCell();
+-  odb::dbNet* db_drvr_net = nullptr;
+-  odb::dbModNet* db_mod_drvr_net = nullptr;
+-  resizer_.dbNetwork()->net(drvr_pin, db_drvr_net, db_mod_drvr_net);
+-  sta::Net* drvr_net = resizer_.dbNetwork()->dbToSta(db_drvr_net);
+   if (buffer_cell == nullptr || drvr_net == nullptr) {
+     return candidates;
+   }
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/src/move/SplitLoadGenerator.hh
+index 594932a..a73cdd9 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SplitLoadGenerator.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0017_buffering/rsz/src/move/SplitLoadGenerator.hh	
+@@ -22,6 +22,8 @@ class SplitLoadGenerator : public MoveGenerator
+  public:
+   // === Construction =========================================================
+   explicit SplitLoadGenerator(const GeneratorContext& context);
++  // Prints the RSZ_EVOLVE fanout-tree counters.
++  ~SplitLoadGenerator() override;
+ 
+   // === MoveGenerator API ====================================================
+   MoveType type() const override { return MoveType::kSplitLoad; }

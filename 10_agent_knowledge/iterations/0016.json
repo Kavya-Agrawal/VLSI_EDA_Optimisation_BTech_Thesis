@@ -1,0 +1,157 @@
+{
+  "iteration": 16,
+  "tag": "0016_setup_strategy",
+  "status": "rejected",
+  "cluster": "setup_strategy",
+  "title": "Lagrangian endpoint pricing with best-of-k measured moves and a ratcheting WNS floor in the post-stock TNS-recovery phase",
+  "hypothesis": "The champion's post-stock recovery (runTnsRecovery) ranks drivers with a memoryless shared-driver score and accepts the first improving move against a fixed stock-WNS floor, so it saturates on Ibex's fanout-943 driver, rarely reaches JPEG's independent deep arithmetic cones, and gives back WNS (iterations 14, 15). Replace it with a multiplicative-weights Lagrangian loop: each violating endpoint carries a price lambda_e that grows while it stays violated, drivers are ranked by the lambda-weighted sum over their deduplicated downstream endpoints, and each chosen driver gets best-of-k measured evaluation across the existing size/swap/clone/split generators from one journal checkpoint. Commits must satisfy a ratcheting WNS floor max(stock-final, best-so-far) and a per-endpoint veto protecting high-price endpoints. The stock loop stays byte-identical; a 600-trial or 6-round budget bounds runtime, avoiding iteration 8's timeout.",
+  "planned_files": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh"
+  ],
+  "evidence_iterations": [
+    8,
+    9,
+    13,
+    14,
+    15
+  ],
+  "files_changed": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 338,
+    "lines_deleted": 17
+  },
+  "accepted": false,
+  "score_vs_champion": -0.00013930173233839236,
+  "score_vs_baseline": 0.0019202055527205544,
+  "reasons": [
+    "score -0.00014 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.00013500466558903737,
+      "wns_cand": -0.0222146751726036,
+      "wns_ref": -0.0222145086391452,
+      "tns_cand": -0.33471201757616326,
+      "tns_ref": -0.3420142599269762,
+      "d_wns_ns": -1.66533458401813e-07,
+      "d_tns_ns": 0.007302242350812949,
+      "d_wns_pct_period": -4.440892224048347e-05,
+      "d_tns_pct": 2.1350695589043736,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 837.3680082662815,
+      "area_ref": 831.7819766290313,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -5.023465687588583e-05,
+      "wns_cand": -0.02418582069742214,
+      "wns_ref": -0.024127922565050468,
+      "tns_cand": -1.0190956145190087,
+      "tns_ref": -0.9988178344899452,
+      "d_wns_ns": -5.789813237167332e-05,
+      "d_tns_ns": -0.02027778002906344,
+      "d_wns_pct_period": -0.007845275389115626,
+      "d_tns_pct": -2.0301780093282438,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20579.090431738223,
+      "area_ref": 20584.410620472227,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": -0.0006727012150411962,
+      "wns_cand": -0.07462719542445992,
+      "wns_ref": -0.07423972757790741,
+      "tns_cand": -57.06768552576667,
+      "tns_ref": -44.39935833548254,
+      "d_wns_ns": -0.0003874678465525111,
+      "d_tns_ns": -12.668327190284131,
+      "d_wns_pct_period": -0.019569083159217734,
+      "d_tns_pct": -28.532680798136695,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28646.072181004456,
+      "area_ref": 28643.944105510855,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": 3.072427697447513e-05,
+      "wns_cand": -0.08530243419735703,
+      "wns_ref": -0.08530243419735703,
+      "tns_cand": -30.63711504542089,
+      "tns_ref": -31.15051771366437,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.5134026682434794,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 1.6481352668442877,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90280.13181477945,
+      "area_ref": 90252.47038607631,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 13,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0016_setup_strategy",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0016_setup_strategy",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0016_setup_strategy/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "setup_strategy",
+    "dominant_cause": "high_fanout",
+    "lesson": "Multiplicative endpoint prices retained Ibex's shared-driver bias and worsened TNS magnitude by 28.53% versus champion; isolate cone diversity and structural move coverage before retuning prices.",
+    "dead_end": "Do not repeat the bundled lambda-sum recovery replacement with only higher price growth or larger search budgets.",
+    "good_changes": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: measured alternatives selected later moves on 17 of 57 JPEG commits; JPEG TNS improved 0.513403 ns versus champion, although causal contribution is not isolated.",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: six-round/600-trial bounds completed all four measured runs."
+    ],
+    "bad_changes": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: lambda-sum ranking over 400 paths and 50 drivers changed Ibex ordering in only one of six rounds.",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: fixed 16-endpoint veto excludes most endpoints and initially nonviolating outputs.",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc: best-of-three move types does not ensure clone/split/buffer coverage."
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc",
+      "src/rsz/src/move/CloneGenerator.cc",
+      "src/rsz/src/move/SplitLoadGenerator.cc",
+      "src/rsz/src/move/BufferGenerator.cc",
+      "src/rsz/src/move/SizeUpGenerator.cc"
+    ],
+    "files_to_avoid": [
+      "src/sta/",
+      "src/rsz/src/policy/SetupLegacyBase.cc",
+      "src/rsz/src/Optimizer.cc"
+    ]
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0016",
+  "seconds": 2257,
+  "when": "2026-11-25T16:44:18Z",
+  "schema_version": 1,
+  "valid_experiment": true
+}

@@ -1,0 +1,107 @@
+{
+  "per_design": {
+    "nangate45/gcd": {
+      "bottleneck_rounds": 6,
+      "bottleneck_drivers_ranked": 949,
+      "bottleneck_trials": 469,
+      "bottleneck_kept": 21,
+      "bottleneck_rejected_wns": 47,
+      "bottleneck_rejected_tns": 32,
+      "lr_rank_changed_vs_static": 6,
+      "lr_price_updates": 139,
+      "lr_best_of_k_evals": 443,
+      "lr_best_not_first": 1,
+      "lr_endpoint_veto_blocked": 39,
+      "lr_wns_floor_ratchets": 1
+    },
+    "nangate45/aes": {
+      "bottleneck_rounds": 6,
+      "bottleneck_drivers_ranked": 7017,
+      "bottleneck_trials": 370,
+      "bottleneck_kept": 12,
+      "bottleneck_rejected_wns": 18,
+      "bottleneck_rejected_tns": 12,
+      "lr_rank_changed_vs_static": 6,
+      "lr_price_updates": 526,
+      "lr_best_of_k_evals": 354,
+      "lr_best_not_first": 4,
+      "lr_endpoint_veto_blocked": 8,
+      "lr_wns_floor_ratchets": 0
+    },
+    "nangate45/ibex": {
+      "bottleneck_rounds": 6,
+      "bottleneck_drivers_ranked": 4463,
+      "bottleneck_trials": 526,
+      "bottleneck_kept": 39,
+      "bottleneck_rejected_wns": 32,
+      "bottleneck_rejected_tns": 105,
+      "lr_rank_changed_vs_static": 1,
+      "lr_price_updates": 7368,
+      "lr_best_of_k_evals": 479,
+      "lr_best_not_first": 6,
+      "lr_endpoint_veto_blocked": 11,
+      "lr_wns_floor_ratchets": 5
+    },
+    "nangate45/jpeg": {
+      "bottleneck_rounds": 5,
+      "bottleneck_drivers_ranked": 21183,
+      "bottleneck_trials": 600,
+      "bottleneck_kept": 57,
+      "bottleneck_rejected_wns": 241,
+      "bottleneck_rejected_tns": 52,
+      "lr_rank_changed_vs_static": 5,
+      "lr_price_updates": 2421,
+      "lr_best_of_k_evals": 543,
+      "lr_best_not_first": 17,
+      "lr_endpoint_veto_blocked": 24,
+      "lr_wns_floor_ratchets": 1
+    }
+  },
+  "total_fired": 48676,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 44,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 489,
+      "resized": 1408,
+      "pins_swapped": 134,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "buffers_inserted": 84,
+      "resized": 153,
+      "pins_swapped": 13,
+      "cloned": 12
+    },
+    "nangate45/jpeg": {
+      "resized": 324,
+      "pins_swapped": 119,
+      "cloned": 1
+    }
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

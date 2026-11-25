@@ -1,0 +1,60 @@
+{
+  "clock_period_ns": 0.738,
+  "endpoints": 1248,
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "repair_ms": 25932,
+  "placement_violations": 0,
+  "pre": {
+    "wns_setup": -0.07898321109592449,
+    "tns_setup": -8.11572343411087,
+    "wns_hold": 0.10213867540841498,
+    "tns_hold": 0.0,
+    "setup_violations": 160,
+    "hold_violations": 0,
+    "instances": 14790,
+    "pins": 51400,
+    "area_um2": 18801.67843637537,
+    "util": 0.3561933078007881,
+    "buffers": 2839,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "post": {
+    "wns_setup": -0.02418582069742214,
+    "tns_setup": -1.0190956145190087,
+    "wns_hold": 0.10201455247075145,
+    "tns_hold": 0.0,
+    "setup_violations": 121,
+    "hold_violations": 0,
+    "instances": 15342,
+    "pins": 52540,
+    "area_um2": 20579.090431738223,
+    "util": 0.38986595444460487,
+    "buffers": 3354,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "evolve_counters": {
+    "bottleneck_rounds": 6,
+    "bottleneck_drivers_ranked": 7017,
+    "bottleneck_trials": 370,
+    "bottleneck_kept": 12,
+    "bottleneck_rejected_wns": 18,
+    "bottleneck_rejected_tns": 12,
+    "lr_rank_changed_vs_static": 6,
+    "lr_price_updates": 526,
+    "lr_best_of_k_evals": 354,
+    "lr_best_not_first": 4,
+    "lr_endpoint_veto_blocked": 8,
+    "lr_wns_floor_ratchets": 0
+  },
+  "repair_stats": {
+    "buffers_removed": 7,
+    "buffers_inserted": 489,
+    "resized": 1408,
+    "pins_swapped": 134,
+    "cloned": 70
+  }
+}

@@ -1,0 +1,402 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0016_setup_strategy/rsz/HYPOTHESIS.md
+index 8c3dc61..e7ee1e5 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0016_setup_strategy/rsz/HYPOTHESIS.md	
+@@ -1,30 +1,28 @@
+-# Two-phase setup repair: stock LEGACY loop + bottleneck TNS recovery
++# Lagrangian endpoint pricing, best-of-k measured moves, ratcheting WNS floor
+ 
+ ## Problem
+-In-loop TNS-aware changes found large Ibex TNS gains but perturbed the stock greedy trajectory and lost WNS on AES/gcd/JPEG. Shared trunk drivers (e.g. Ibex `_26153_` fanout 943, JPEG HA/FA drivers) are only touched when they sit on the worst path of the endpoint currently being repaired.
++The post-stock `runTnsRecovery` ranked drivers by a memoryless sum of endpoint violations. It accepted the first improving move against a fixed stock-WNS floor. It saturates on shared trunks (Ibex fanout-943), misses independent cones (JPEG), and gives back WNS.
+ 
+ ## Current heuristic
+-`SetupLegacyPolicy::iterate` / `repairEndpoint` (src/policy/SetupLegacyPolicy.cc) walks violating endpoints worst-first and repairs each one's worst path via `SetupLegacyBase::repairPath`. Nothing ranks drivers by how many violating paths they serve.
++`src/policy/SetupLegacyPolicy.cc: SetupLegacyPolicy::runTnsRecovery`. The stock loop (`runMainRepairLoop`) is unchanged. The old routine is kept as the unused `runTnsRecoveryStatic`.
+ 
+ ## New approach
+-The stock loop is unchanged. After it, for the LEGACY phase only, `SetupLegacyPolicy::runTnsRecovery`:
+-1. Snapshots design WNS W* (absolute floor, never rolled).
+-2. Up to 5 rounds: re-collect violating endpoints, unroll the worst path of the top 400, and rank driver pins by sum of (-endpoint slack) over those paths.
+-3. For the top 50 drivers (resolved by name each time), open a journal, run the stock generator sequence via `tryRepairTarget` (up to 3 attempts, excluding move types already rejected for that driver), refresh parasitics/timing, then keep the move only if WNS >= W* and TNS improves by >= 0.5 ps. Otherwise `restoreJournal`.
+-4. Stops when a round keeps nothing, after 5 rounds, or at max(30, 10% of stock moves) kept moves.
++- Each violating endpoint has a price lambda_e. It starts at 1, is multiplied by (1 + 0.5 * slack/WNS) each round while the endpoint stays violated, and is halved once it is repaired.
++- Drivers are ranked by the sum of lambda_e over the distinct downstream endpoints. These come from the worst-path expansion of up to 400 endpoints.
++- Per driver, best-of-3: up to 3 distinct move types are measured from the same journal checkpoint, each rolled back. The best-TNS type is re-applied alone, re-verified and committed.
++- A commit requires WNS >= max(stock-final, best-so-far), and none of the 16 highest-price endpoints may lose more than 0.2 ps.
++- Drivers that fail are skipped in later rounds until something commits, so repricing reaches deeper drivers.
++- Budget: 6 rounds and 600 trials.
+ 
+ ## Why WNS/TNS should improve
+-Final WNS >= stock WNS by construction. Moves on shared trunks help many endpoints at once, so TNS rises. Moves on shared drivers of the worst cone can also raise WNS.
++Prices persistently focus effort on endpoints that stay violated (independent JPEG cones). Best-of-k avoids first-improving local traps. The ratchet and veto prevent WNS give-back.
+ 
+-## What to look for in the path report
+-Fewer violating endpoints sharing a common upstream driver (upsized/buffered trunk); unchanged or better worst path; `RSZ_EVOLVE bottleneck_kept` > 0.
++## Path report
++Look for fewer residual violators in deep cones and WNS never below stock. Check the `RSZ_EVOLVE lr_*` counters, especially `lr_rank_changed_vs_static`.
+ 
+ ## Risks
+-TNS-only gains may be under-weighted by the score. Each trial needs a timing update, which may slow JPEG (bounded by 5 rounds x 50 drivers x 3 attempts). Pass count `bottleneck_rejected_*` shows how selective the floor is.
+-
+-## Counters
+-`bottleneck_rounds`, `bottleneck_drivers_ranked`, `bottleneck_trials`, `bottleneck_kept`, `bottleneck_rejected_wns`, `bottleneck_rejected_tns` (printed as `RSZ_EVOLVE <name> fired=<n>`).
++Best-of-k adds runtime (capped at 600 trials). Gains may not survive detailed placement. The veto may block AES moves.
+ 
+ ## Files changed
+-- src/policy/SetupLegacyPolicy.cc: `runTnsRecovery` and its call after the stock loop, plus counters.
+-- src/policy/SetupLegacyPolicy.hh: declaration of `runTnsRecovery`.
++- src/policy/SetupLegacyPolicy.cc: new `runTnsRecovery` (LR pricing, best-of-k, ratchet, veto, counters). The old version is renamed `runTnsRecoveryStatic`.
++- src/policy/SetupLegacyPolicy.hh: declares `runTnsRecoveryStatic`.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0016_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc
+index 891df17..87ae373 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0016_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc	
+@@ -7,6 +7,8 @@
+ #include <cmath>
+ #include <cstdint>
+ #include <cstring>
++#include <map>
++#include <set>
+ #include <optional>
+ #include <string>
+ #include <unordered_map>
+@@ -443,6 +445,325 @@ void SetupLegacyPolicy::runMainRepairLoop(const ViolatingEnds& violating_ends,
+ }
+ 
+ void SetupLegacyPolicy::runTnsRecovery()
++{
++  constexpr int kTopPaths = 400;
++  constexpr int kTopDrivers = 50;
++  constexpr int kMaxRounds = 6;
++  constexpr int kMaxTrials = 600;
++  constexpr int kBestOfK = 3;
++  constexpr int kProtected = 16;
++  constexpr double kPriceGrowth = 0.5;
++  constexpr double kPriceDecay = 0.5;
++  constexpr double kPriceMin = 0.1;
++  constexpr double kPriceMax = 1000.0;
++  constexpr float kMinTnsGain = 0.5e-12f;
++  constexpr float kVetoTol = 0.2e-12f;
++
++  int64_t trials = 0;
++  int64_t kept = 0;
++  int64_t rounds = 0;
++  int64_t rejected_wns = 0;
++  int64_t rejected_tns = 0;
++  int64_t drivers_ranked = 0;
++  int64_t rank_changed = 0;
++  int64_t best_not_first = 0;
++  int64_t veto_blocked = 0;
++  int64_t floor_ratchets = 0;
++  int64_t price_updates = 0;
++  int64_t best_of_k_evals = 0;
++
++  const MoveType all_types[] = {MoveType::kSizeUp,
++                                MoveType::kSizeUpMatch,
++                                MoveType::kSizeDownFanout,
++                                MoveType::kBuffer,
++                                MoveType::kClone,
++                                MoveType::kSwapPins,
++                                MoveType::kVtSwap,
++                                MoveType::kUnbuffer,
++                                MoveType::kSplitLoad,
++                                MoveType::kReroute};
++
++  sta::Slack wns_floor = 0.0;  // ratcheting: max(stock-final, best-so-far)
++  sta::Vertex* wns_vertex = nullptr;
++  target_collector_->worstSlack(wns_floor, wns_vertex);
++  const float setup_slack_margin = config_.setup_slack_margin;
++
++  if (wns_vertex != nullptr && wns_floor < setup_slack_margin) {
++    float cur_tns = totalNegativeSlack();
++    // Endpoint prices (Lagrange multipliers), keyed by name for determinism.
++    std::map<std::string, double> price;
++    std::set<std::string> failed_drivers;
++
++    for (int round = 0; round < kMaxRounds && trials < kMaxTrials; ++round) {
++      if (resizer_.overMaxArea()) {
++        break;
++      }
++      ++rounds;
++      const ViolatingEnds ends = collectViolatingEndpoints(setup_slack_margin);
++      if (ends.empty()) {
++        break;
++      }
++      const double wns_mag
++          = std::max(1e-15, -static_cast<double>(ends.front().second));
++
++      // Price update: violated endpoints grow, repaired ones decay.
++      if (round > 0) {
++        std::map<std::string, double> now;
++        for (const auto& [v, s] : ends) {
++          const std::string n = v->name(network_);
++          auto it = price.find(n);
++          double p = it == price.end() ? 1.0 : it->second;
++          p *= 1.0
++               + kPriceGrowth
++                     * std::min(1.0, -static_cast<double>(s) / wns_mag);
++          now[n] = std::min(p, kPriceMax);
++          ++price_updates;
++        }
++        for (const auto& [n, p] : price) {
++          if (now.find(n) == now.end()) {
++            now[n] = std::max(p * kPriceDecay, kPriceMin);
++          }
++        }
++        price.swap(now);
++      } else {
++        for (const auto& [v, s] : ends) {
++          price[v->name(network_)] = 1.0;
++        }
++      }
++
++      // Rank drivers by price-weighted count of downstream endpoints.
++      struct Bottleneck
++      {
++        std::string name;
++        double lr_weight{0.0};
++        double static_weight{0.0};
++      };
++      std::vector<Bottleneck> bottlenecks;
++      std::unordered_map<const sta::Pin*, size_t> index_of;
++      const int path_count
++          = std::min(static_cast<int>(ends.size()), kTopPaths);
++      for (int i = 0; i < path_count; ++i) {
++        sta::Path* path = endpointWorstPath(ends[i].first);
++        if (path == nullptr) {
++          continue;
++        }
++        sta::PathExpanded expanded(path, sta_);
++        const double lambda = price[ends[i].first->name(network_)];
++        const double weight = -static_cast<double>(ends[i].second);
++        for (size_t k = expanded.startIndex(); k < expanded.size(); ++k) {
++          const sta::Path* p = expanded.path(k);
++          sta::Vertex* v = p->vertex(sta_);
++          const sta::Pin* pin = p->pin(sta_);
++          if (!v->isDriver(network_) || network_->isTopLevelPort(pin)) {
++            continue;
++          }
++          auto [it, inserted] = index_of.emplace(pin, bottlenecks.size());
++          if (inserted) {
++            bottlenecks.push_back({network_->pathName(pin), 0.0, 0.0});
++          }
++          bottlenecks[it->second].lr_weight += lambda;
++          bottlenecks[it->second].static_weight += weight;
++        }
++      }
++      std::vector<Bottleneck> static_order = bottlenecks;
++      std::ranges::stable_sort(
++          static_order, [](const Bottleneck& a, const Bottleneck& b) {
++            if (a.static_weight != b.static_weight) {
++              return a.static_weight > b.static_weight;
++            }
++            return a.name < b.name;
++          });
++      std::ranges::stable_sort(
++          bottlenecks, [](const Bottleneck& a, const Bottleneck& b) {
++            if (a.lr_weight != b.lr_weight) {
++              return a.lr_weight > b.lr_weight;
++            }
++            return a.name < b.name;
++          });
++      drivers_ranked += static_cast<int64_t>(bottlenecks.size());
++      {
++        const size_t n = std::min<size_t>(
++            kTopDrivers, std::min(bottlenecks.size(), static_order.size()));
++        for (size_t i = 0; i < n; ++i) {
++          if (bottlenecks[i].name != static_order[i].name) {
++            ++rank_changed;
++            break;
++          }
++        }
++      }
++
++      // Protected high-price endpoints (veto set).
++      std::vector<std::pair<std::string, sta::Vertex*>> by_price;
++      for (const auto& [v, s] : ends) {
++        by_price.emplace_back(v->name(network_), v);
++      }
++      std::ranges::stable_sort(by_price, [&](const auto& a, const auto& b) {
++        const double pa = price[a.first];
++        const double pb = price[b.first];
++        if (pa != pb) {
++          return pa > pb;
++        }
++        return a.first < b.first;
++      });
++      if (by_price.size() > static_cast<size_t>(kProtected)) {
++        by_price.resize(kProtected);
++      }
++      std::vector<std::pair<sta::Vertex*, sta::Slack>> protected_ends;
++      for (const auto& [n, v] : by_price) {
++        protected_ends.emplace_back(v, target_collector_->endpointSlack(v));
++      }
++
++      auto measure = [&](float& tns, sta::Slack& wns, bool& veto_ok) {
++        resizer_.updateParasiticsAndTiming();
++        sta::Vertex* wv = nullptr;
++        target_collector_->worstSlack(wns, wv);
++        tns = totalNegativeSlack();
++        veto_ok = true;
++        for (const auto& [v, s0] : protected_ends) {
++          if (target_collector_->endpointSlack(v) < s0 - kVetoTol) {
++            veto_ok = false;
++            break;
++          }
++        }
++      };
++
++      int round_kept = 0;
++      int tried_drivers = 0;
++      for (size_t d = 0; d < bottlenecks.size() && tried_drivers < kTopDrivers
++                         && trials < kMaxTrials;
++           ++d) {
++        const std::string dname = bottlenecks[d].name;
++        if (failed_drivers.count(dname) != 0) {
++          continue;
++        }
++        ++tried_drivers;
++
++        // Best-of-k: measure up to k distinct move types from one state.
++        std::unordered_set<MoveType> rejected_types;
++        std::optional<MoveType> best_type;
++        float best_tns = cur_tns + kMinTnsGain;
++        int best_idx = -1;
++        for (int attempt = 0; attempt < kBestOfK && trials < kMaxTrials;
++             ++attempt) {
++          const sta::Pin* pin = network_->findPin(dname.c_str());
++          if (pin == nullptr) {
++            break;
++          }
++          Target target;
++          if (!makePinTarget(pin, wns_floor, target)) {
++            break;
++          }
++          committer_.beginJournal();
++          int changed = 0;
++          std::optional<MoveType> accepted_type;
++          ++trials;
++          ++best_of_k_evals;
++          const bool moved = tryRepairTarget(
++              target, 1, changed, &rejected_types, accepted_type);
++          if (!moved) {
++            committer_.restoreJournal();
++            break;
++          }
++          float tns = 0.0f;
++          sta::Slack wns = 0.0;
++          bool veto_ok = true;
++          measure(tns, wns, veto_ok);
++          if (!sta::fuzzyGreaterEqual(wns, wns_floor)) {
++            ++rejected_wns;
++          } else if (!veto_ok) {
++            ++veto_blocked;
++          } else if (tns > best_tns) {
++            best_tns = tns;
++            best_type = accepted_type;
++            best_idx = attempt;
++          } else {
++            ++rejected_tns;
++          }
++          committer_.restoreJournal();
++          resizer_.updateParasiticsAndTiming();
++          if (!accepted_type) {
++            break;
++          }
++          rejected_types.insert(*accepted_type);
++        }
++
++        bool committed = false;
++        if (best_type) {
++          // Re-apply only the winning move type and verify it again.
++          std::unordered_set<MoveType> exclude;
++          for (const MoveType t : all_types) {
++            if (t != *best_type) {
++              exclude.insert(t);
++            }
++          }
++          const sta::Pin* pin = network_->findPin(dname.c_str());
++          Target target;
++          if (pin != nullptr && makePinTarget(pin, wns_floor, target)) {
++            committer_.beginJournal();
++            int changed = 0;
++            std::optional<MoveType> accepted_type;
++            ++trials;
++            const bool moved = tryRepairTarget(
++                target, 1, changed, &exclude, accepted_type);
++            if (moved) {
++              float tns = 0.0f;
++              sta::Slack wns = 0.0;
++              bool veto_ok = true;
++              measure(tns, wns, veto_ok);
++              if (sta::fuzzyGreaterEqual(wns, wns_floor) && veto_ok
++                  && tns >= cur_tns + kMinTnsGain) {
++                committer_.commitJournal();
++                cur_tns = tns;
++                if (wns > wns_floor) {
++                  wns_floor = wns;
++                  ++floor_ratchets;
++                }
++                for (auto& [v, s0] : protected_ends) {
++                  s0 = std::max(s0, target_collector_->endpointSlack(v));
++                }
++                if (best_idx > 0) {
++                  ++best_not_first;
++                }
++                ++kept;
++                ++round_kept;
++                committed = true;
++              }
++            }
++            if (!committed) {
++              committer_.restoreJournal();
++              resizer_.updateParasiticsAndTiming();
++            }
++          }
++        }
++        if (!committed) {
++          failed_drivers.insert(dname);
++        }
++      }
++      if (round_kept > 0) {
++        failed_drivers.clear();
++      } else if (tried_drivers == 0) {
++        break;
++      }
++    }
++  }
++
++  logger_->report("RSZ_EVOLVE bottleneck_rounds fired={}", rounds);
++  logger_->report("RSZ_EVOLVE bottleneck_drivers_ranked fired={}",
++                  drivers_ranked);
++  logger_->report("RSZ_EVOLVE bottleneck_trials fired={}", trials);
++  logger_->report("RSZ_EVOLVE bottleneck_kept fired={}", kept);
++  logger_->report("RSZ_EVOLVE bottleneck_rejected_wns fired={}", rejected_wns);
++  logger_->report("RSZ_EVOLVE bottleneck_rejected_tns fired={}", rejected_tns);
++  logger_->report("RSZ_EVOLVE lr_rank_changed_vs_static fired={}",
++                  rank_changed);
++  logger_->report("RSZ_EVOLVE lr_price_updates fired={}", price_updates);
++  logger_->report("RSZ_EVOLVE lr_best_of_k_evals fired={}", best_of_k_evals);
++  logger_->report("RSZ_EVOLVE lr_best_not_first fired={}", best_not_first);
++  logger_->report("RSZ_EVOLVE lr_endpoint_veto_blocked fired={}", veto_blocked);
++  logger_->report("RSZ_EVOLVE lr_wns_floor_ratchets fired={}", floor_ratchets);
++}
++
++void SetupLegacyPolicy::runTnsRecoveryStatic()
+ {
+   constexpr int kTopPaths = 400;
+   constexpr int kTopDrivers = 50;
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0016_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh
+index eeb1359..3fd0198 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0016_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh	
+@@ -60,6 +60,8 @@ class SetupLegacyPolicy : public SetupLegacyBase
+   // a trial move only if design WNS stays >= the post-stock WNS and design TNS
+   // improves.  Only active for the LEGACY phase.
+   void runTnsRecovery();
++  // Previous memoryless bottleneck recovery (kept for reference, unused).
++  void runTnsRecoveryStatic();
+   bool pathImproved(sta::Slack end_slack,
+                     sta::Slack worst_slack,
+                     sta::Slack prev_end_slack,
