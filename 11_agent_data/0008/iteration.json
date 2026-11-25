@@ -1,0 +1,136 @@
+{
+  "iteration": 8,
+  "tag": "0008_setup_strategy",
+  "status": "rejected",
+  "cluster": "setup_strategy",
+  "title": "Select LEGACY path repairs by journaled measured WNS/TNS gain",
+  "hypothesis": "The champion tries load-delay-ranked drivers and accepts the first applicable move before comparing its endpoint impact with alternatives. Replace this decision in LEGACY path repair with deterministic journaled trials of existing legal candidates from the same checkpoint. After parasitic and STA refresh, admit only candidates that preserve global WNS, global TNS, and focus-endpoint slack, then maximize delta WNS plus delta TNS divided by the constrained endpoint count. Iteration 6 supports investigating shared endpoint benefit through its 14.636 ns Ibex TNS improvement, while iteration 7 demonstrates the collateral risk of prediction-only selection. Reapply and verify the winner, and require its gains to survive final detailed placement.",
+  "planned_files": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh"
+  ],
+  "evidence_iterations": [
+    5,
+    6,
+    7
+  ],
+  "files_changed": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 305,
+    "lines_deleted": 20
+  },
+  "accepted": false,
+  "score_vs_champion": 0.0006261508613998552,
+  "score_vs_baseline": 0.0006261508613998552,
+  "reasons": [
+    "nangate45/jpeg: candidate evaluation failed (timeout)",
+    "score +0.00063 below required gain +0.00200",
+    "instrumentation missing: no RSZ_EVOLVE counter lines printed, cannot tell if the new logic ran"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.006162168172369679,
+      "wns_cand": -0.020122959423900817,
+      "wns_ref": -0.02336561565920771,
+      "tns_cand": -0.3755243722271485,
+      "tns_ref": -0.474810204593015,
+      "d_wns_ns": 0.003242656235306892,
+      "d_tns_ns": 0.09928583236586647,
+      "d_wns_pct_period": 0.8647083294151712,
+      "d_tns_pct": 20.910635745701722,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 833.1120238125322,
+      "area_ref": 822.2060254858832,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -0.011672767156782315,
+      "wns_cand": -0.04263106655021167,
+      "wns_ref": -0.02584094122934333,
+      "tns_cand": -1.688679688324861,
+      "tns_ref": -1.140958693152,
+      "d_wns_ns": -0.016790125320868342,
+      "d_tns_ns": -0.547720995172861,
+      "d_wns_pct_period": -2.2750847318249785,
+      "d_tns_pct": -48.00533082049912,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 19999.209399657047,
+      "area_ref": 20554.617563561806,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.007389051568612201,
+      "wns_cand": -0.060493389787435584,
+      "wns_ref": -0.07941181270670272,
+      "tns_cand": -8.110986778464648,
+      "tns_ref": -65.66544827087755,
+      "d_wns_ns": 0.01891842291926714,
+      "d_tns_ns": 57.5544614924129,
+      "d_wns_pct_period": 0.9554759050134918,
+      "d_tns_pct": 87.64801430273363,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28805.13960690223,
+      "area_ref": 28627.185955087953,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 0,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0008_setup_strategy",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0008_setup_strategy",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0008_setup_strategy/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "setup_strategy",
+    "dominant_cause": "high_fanout",
+    "lesson": "Shared-cone repair coincided with a 57.554 ns Ibex TNS gain, but uninstrumented local monotonic trials did not establish final-placement safety or runtime feasibility.",
+    "dead_end": "Do not repeat uncapped exhaustive journaled search with graph-wide electrical scans and one winner per pass without execution counters and final-placement validation.",
+    "good_changes": [
+      "Global TNS-aware scoring and checkpoint promotion in src/policy/SetupLegacyPolicy.cc remain plausible mechanisms for shared-endpoint benefit; causal attribution is unverified.",
+      "Winner regeneration and measured replay in src/policy/SetupLegacyPolicy.cc provide a verification point that needs explicit counters."
+    ],
+    "bad_changes": [
+      "Exhaustive regeneration, timing refresh, and graph-wide DRV scans in src/policy/SetupLegacyPolicy.cc create a plausible runtime bottleneck; JPEG timed out at 1800.95 seconds.",
+      "Strict isolated-move admission and one winner per pass in src/policy/SetupLegacyPolicy.cc may suppress useful AES repair sequences.",
+      "Local acceptance in src/policy/SetupLegacyPolicy.cc does not enforce gain survival after final detailed placement."
+    ],
+    "files_to_revisit": [
+      "src/policy/SetupLegacyPolicy.cc",
+      "src/policy/SetupLegacyPolicy.hh",
+      "src/MoveCommitter.cc",
+      "src/move/CloneGenerator.cc",
+      "src/move/BufferGenerator.cc",
+      "src/move/SizeUpGenerator.cc"
+    ],
+    "files_to_avoid": [
+      "src/move/SizeUpMtGenerator.cc",
+      "src/move/RebufferMtGenerator.cc"
+    ]
+  },
+  "agents": {
+    "planner": "codex",
+    "coder": "codex",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0008",
+  "seconds": 3527,
+  "when": "2026-11-25T13:25:05Z"
+}

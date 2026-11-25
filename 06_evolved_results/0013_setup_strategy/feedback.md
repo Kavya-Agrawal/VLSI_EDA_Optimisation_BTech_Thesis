@@ -1,0 +1,150 @@
+# Feedback for iteration 13 (0013_setup_strategy, cluster setup_strategy)
+
+```
+vs champion:
+ACCEPT  score=+0.00206
+  nangate45/gcd      WNS -0.0234 -> -0.0222 ns  TNS -0.475 -> -0.342 ns  score +0.00399
+  nangate45/aes      WNS -0.0258 -> -0.0241 ns  TNS -1.141 -> -0.999 ns  score +0.00124
+  nangate45/ibex     WNS -0.0794 -> -0.0742 ns  TNS -65.665 -> -44.399 ns  score +0.00227
+  nangate45/jpeg     WNS -0.0866 -> -0.0853 ns  TNS -32.403 -> -31.151 ns  score +0.00074
+
+vs baseline:
+ACCEPT  score=+0.00206
+  nangate45/gcd      WNS -0.0234 -> -0.0222 ns  TNS -0.475 -> -0.342 ns  score +0.00399
+  nangate45/aes      WNS -0.0258 -> -0.0241 ns  TNS -1.141 -> -0.999 ns  score +0.00124
+  nangate45/ibex     WNS -0.0794 -> -0.0742 ns  TNS -65.665 -> -44.399 ns  score +0.00227
+  nangate45/jpeg     WNS -0.0866 -> -0.0853 ns  TNS -32.403 -> -31.151 ns  score +0.00074
+```
+
+Could not save `feedback.md`: the sandbox rejected the write because this workspace is read-only. Contents follow.
+
+# 1. Outcome
+
+**ACCEPT** candidate `0013_setup_strategy`, iteration 13. Score: **+0.00206** against both champion and baseline; both comparisons use identical reference results.
+
+Positive deltas indicate improvement. Values use the unrounded verdict JSON.
+
+| nangate45 design | WNS reference → candidate (ns) | ΔWNS (ps) | TNS reference → candidate (ns) | ΔTNS (ns) | TNS reduction | Score |
+|---|---:|---:|---:|---:|---:|---:|
+| gcd | -0.023366 → -0.022215 | +1.151 | -0.474810 → -0.342014 | +0.132796 | 27.97% | +0.00399 |
+| aes | -0.025841 → -0.024128 | +1.713 | -1.140959 → -0.998818 | +0.142141 | 12.46% | +0.00124 |
+| ibex | -0.079412 → -0.074240 | +5.172 | -65.665448 → -44.399358 | +21.266090 | 32.39% | +0.00227 |
+| jpeg | -0.086623 → -0.085302 | +1.320 | -32.403059 → -31.150518 | +1.252541 | 3.87% | +0.00074 |
+
+Total TNS reduction: **22.793568 ns**, with **93.30% from Ibex**.
+
+All six unit targets and ten smoke tests passed. Verdict data show unchanged hold slack, zero DRV violations and zero placement violations across all designs. Area increased by 1.165% for gcd, 0.145% for AES, 0.059% for Ibex and 0.058% for JPEG. The evaluation used one replicate; runtime overhead and variability are not established.
+
+# 2. Did the hypothesis do what it predicted?
+
+**The design-level prediction holds:** WNS and TNS improved on every design, avoiding the AES/gcd/JPEG WNS losses reported for iterations 8, 9 and 12.
+
+Source inspection identifies `src/rsz/src/policy/SetupLegacyPolicy.cc::runTnsRecovery` as the recovery implementation. It uses 400 endpoint-worst paths, 50 ranked drivers, three attempts per driver, five rounds, a fixed stock-WNS floor and a 0.5 ps incremental TNS threshold. The WNS comparison uses STA fuzzy comparison, so preservation is subject to that tolerance.
+
+| Design | Rounds | Trials | Kept | Keep rate | WNS rejects | TNS rejects | Search limit |
+|---|---:|---:|---:|---:|---:|---:|---|
+| gcd | 5 | 328 | 17 | 5.18% | 22 | 56 | Reached five rounds; below 30-move cap |
+| aes | 5 | 285 | 22 | 7.72% | 19 | 17 | Reached five rounds; below move cap |
+| ibex | 4 | 288 | 30 | 10.42% | 17 | 89 | Reached 30-move cap |
+| jpeg | 2 | 169 | 34 | 20.12% | 77 | 12 | Below implied 39-move cap; inspect no-progress/area exit |
+
+The phase kept **103/1,070 trials, or 9.63%**. Rejection counters do not exhaust trials because unsuccessful generator calls also increment trials.
+
+Observed structural effects:
+
+- **Ibex:** Register-file endpoints improved approximately 4.1–6.4 ps versus reference, consistent with shared-cone repair. However, all ten listed worst paths still traverse `AND2_X1@_26153_/ZN`, fanout 943, over 33–37 stages. Additional repair counts are nine resizes, eight pin swaps and one clone. These counts do not establish that `_26153_` itself was repaired.
+- **JPEG:** The former worst endpoint, block 6/unit 4/result bit 18, improved from -86.623 to -83.447 ps. Block 5/unit 4/bit 18 became worst at -85.302 ps. Additional counts are 26 resizes, six pin swaps and one clone, with no additional buffers reported. HA/FA drivers remain prominent. Shared arithmetic-cone repair delivered only a 3.87% TNS reduction.
+- **AES:** Former worst `sa33_sr[3]` improved about 5.25 ps, but `sa10_sr[3]` lost 1.406 ps and became worst.
+- **gcd:** Shared register-cone endpoints improved while output margins decreased.
+
+The path-table `pre-repair` values precede the complete repair flow. Their larger improvements must not be attributed to this recovery phase. Incremental comparisons must use `diff_vs_baseline`. Entry into a truncated worst-path list does not alone establish regression.
+
+# 3. Where the remaining negative slack comes from
+
+The **five worst endpoints globally are all JPEG endpoints**.
+
+For the following table:
+
+- `P = fdct_zigzag.dct_mod.`
+- `S = $_DFFE_PP_/D`
+- Full endpoint = `P` + listed stem + `S`.
+
+Causes and explanations below are structural inferences; the report lacks measured cell/net delay decomposition.
+
+| Endpoint stem | Slack; stages; max fanout | Likely cause | Relevant moves | Why recovery likely left it |
+|---|---|---|---|---|
+| `dct_block_5.dct_unit_4.macu.mult_res[18]` | -85.302 ps; 22; 15 | Deep logic, shared load and weak drive: launch `DFFR_X2@ddin[8]/Q`, `HA_X1@_114238_/S` | Eligible launch/HA sizing; branch buffering, load splitting or combinational cloning | Launch sizing can increase upstream load; HA equivalents may be limited. A branch repair may breach WNS elsewhere. Only three attempts are allowed. |
+| `dct_block_2.dct_unit_4.macu.mult_res[18]` | -85.137 ps; 19; 12 | Deep arithmetic logic, weak `HA_X1@_115515_/S`; slow `NOR3_X2@_106305_/ZN` | HA sizing where available; equivalent pin swap; downstream split/clone/buffer | Already regressed 0.873 ps. Global acceptance permits this loss. No added JPEG buffers are reported; single-move acceptance cannot cross an intermediate timing loss. |
+| `dct_block_7.dct_unit_4.macu.mult_res[15]` | -84.674 ps; 20; 15 | Deep logic, weak `HA_X1@_115122_/S`, shared `ddin[8]` launch load | HA sizing/pin swap where legal; branch buffering or cloning | Shares the launch bottleneck with ranks 1 and 5. Shared-path weighting can repeatedly select the trunk while independent downstream branches remain. |
+| `dct_block_7.dct_unit_2.macu.mult_res[18]` | -83.894 ps; 22; 17 | Deep logic, weak `FA_X1@_109354_/S` and `HA_X1@_115805_/S` | Eligible FA/HA sizing or pin swaps; split-load/clone; bounded paired repair | Legal equivalent availability is unknown. Isolated sizing can increase input capacitance; coordinated repairs are outside single-move acceptance. |
+| `dct_block_5.dct_unit_4.macu.mult_res[17]` | -83.520 ps; 21; 15 | Deep logic, weak `OAI221_X1@_095447_/ZN`, shared `ddin[8]` | OAI sizing/pin swap; branch-load isolation; eligible launch sizing | Same shared-load tradeoff as rank 1. Three attempts and rankings refreshed only between rounds can miss viable later combinations. |
+
+Sizing, pin swapping, buffering and cloning can reduce electrical delay; they generally do not remove arithmetic logic depth.
+
+Long wire and clock skew are unproven: the supplied report has no wire RC, net-delay breakdown or clock-arrival comparison. IO constraints characterize sampled output paths, not these five register endpoints. Raw slew values lack trustworthy displayed units; use their relative ordering without converting them to physical time.
+
+Other residual bottlenecks:
+
+- **Ibex:** Fanout-943 `_26153_` trunk plus 33–37 stages remains the largest shared-load opportunity.
+- **AES:** Worst path has 15 stages and fanout only four through `OAI33_X1@_19597_`; cell/logic delay is more plausible than extreme fanout.
+- **gcd:** Fourteen-stage shared cone launched by `DFF_X1@a_reg.out[7]/Q`, traversing `AOI21_X4@_604_`. Check available equivalents and upstream loading before further sizing.
+
+# 4. Regressions
+
+The sampled matched endpoints contain **22 regressions**: gcd 4, AES 1, Ibex 13 and JPEG 4. These are not exhaustive design-wide counts.
+
+A fixed design-WNS floor allows individual endpoint losses, new violations and consumption of earlier recovery WNS gains. Aggregate TNS can still improve.
+
+| Design / endpoints | Δslack (ps), respectively | Consequence and probable mechanism |
+|---|---|---|
+| gcd `resp_msg[9,8,3,2]` | -0.002, -16.894, -0.103, -0.637 | All remain positive. Bit 8 falls from +21.223 to +4.329 ps. Shared-cone loading or branch redistribution plausibly exchanges output margin for register-cone gains. |
+| AES `sa10_sr[3]$_DFF_P_/D` | -1.406 | -22.722 → -24.128 ps; becomes worst while staying above stock design WNS. Upstream loading or reconvergent pin-delay tradeoff is plausible. |
+| Ibex `instr_addr_o[30,22,23,26,27,24,20,21,25,12,18]` | -6.454, -15.573, -7.264, -16.535, -6.154, -4.541, -2.571, -7.403, -3.001, -5.006, -1.419 | Bit 22 crosses +0.096 → -15.477 ps; bit 30 worsens -52.230 → -58.684 ps. Register-file gains dominate aggregate TNS despite address-cone losses. Shared loading/branch redistribution is plausible. |
+| Ibex `data_addr_o[22,20]` | -15.805, -2.969 | Both remain positive; same possible shared-cone loading mechanism. |
+| JPEG block 2/unit 4/bit 18; block 3/unit 3/bit 16; block 2/unit 2/bit 16; block 7/unit 4/bit 17 | -0.873, -0.154, -0.041, -0.614 | All remain violating. Shared arithmetic/launch loading and reconvergence can redistribute delay. The first endpoint finishes only 0.165 ps above final WNS. |
+
+These comparisons establish endpoint losses, not which accepted move caused them. Record accepted driver, move type and affected endpoint timing before modifying a generator based on attribution alone.
+
+# 5. Recommendation for the next iteration
+
+**Recommended cluster: `setup_strategy`.** Preserve the stock loop and fixed recovery WNS floor. Run the following as separate experiments, ranked:
+
+1. **Extend bounded recovery search.** Increase the cap from `max(30, stock_moves/10)` to `max(60, stock_moves/10)` and rounds from five to eight; retain current ranking and acceptance. Ibex hit the move cap; gcd/AES hit the round limit. Add explicit stop reasons and per-round keeps, TNS and runtime. JPEG’s two-round exit suggests little benefit there. Retain only if additional measured gain justifies runtime.
+
+2. **Diversify driver coverage.** Keep 400 endpoint paths and 50 driver slots, reserving 10 slots for worst endpoints and underrepresented cones. Refresh rankings after a small batch of keeps. Count failed generation, legality rejection, WNS rejection and TNS rejection by driver/move type. This tests whether shared-cone concentration and three-attempt exhaustion exclude independent JPEG/AES opportunities.
+
+3. **Trial bounded compound moves under one journal.** Pair a stock split/clone/buffer with sizing on an eligible shared driver; evaluate final WNS/TNS after both, restoring both on failure. Select by measured structure, without hardcoded instance names. JPEG’s 77 WNS rejections and absence of additional buffers motivate this experiment, but do not establish benefit. Preserve existing legality, area, hold and DRV checks.
+
+4. **Test a selective output guard.** Reject moves that turn a previously nonviolating output into a violation, retaining the existing WNS floor and TNS threshold. Ibex `instr_addr_o[22]` supplies a concrete trigger. Measure the lost TNS opportunity; avoid full endpoint monotonicity, which could reject useful shared-cone repairs.
+
+**Do not try again:** put shared-cone/TNS ranking inside the stock worst-path-first loop or relax the stock-WNS floor to harvest more Ibex TNS. Iterations 8/9/12 already demonstrated the cross-design WNS failure that phase separation addresses.
+
+Paths below are repository-relative; candidate snapshots store this subtree under `rsz/`. Files to avoid should remain unchanged for the next search-budget/coverage experiment.
+
+```json
+{
+  "recommended_cluster": "setup_strategy",
+  "dominant_cause": "high_fanout",
+  "lesson": "A separate journaled TNS recovery phase with a fixed stock-WNS floor improved WNS on all four designs and reduced Ibex TNS by 32.39%, while still permitting individual endpoint regressions.",
+  "dead_end": "Do not reintroduce shared-cone/TNS ranking inside the stock greedy loop: iterations 8, 9 and 12 traded Ibex gains for AES/gcd/JPEG WNS losses.",
+  "good_changes": [
+    "src/rsz/src/policy/SetupLegacyPolicy.cc::runTnsRecovery preserves the stock trajectory and ranks shared drivers for a separate recovery phase",
+    "Fixed stock-WNS acceptance, measured incremental TNS acceptance and journal rollback filter harmful recovery trials"
+  ],
+  "bad_changes": [
+    "Global WNS/TNS acceptance permits local losses, including Ibex instr_addr_o[22] becoming violating",
+    "Top-50 coverage, three attempts per driver and fixed within-round ranking may limit search; this is not established as the cause of endpoint regressions"
+  ],
+  "files_to_revisit": [
+    "src/rsz/src/policy/SetupLegacyPolicy.cc",
+    "src/rsz/src/policy/SetupLegacyPolicy.hh"
+  ],
+  "files_to_avoid": [
+    "src/rsz/src/policy/SetupLegacyBase.cc",
+    "src/rsz/src/move/SizeUpGenerator.cc",
+    "src/rsz/src/move/CloneGenerator.cc",
+    "src/rsz/src/Rebuffer.cc",
+    "src/rsz/src/SkewBudget.cc"
+  ]
+}
+```

@@ -1,0 +1,41 @@
+[
+  {
+    "step": "planned",
+    "t": 59.6,
+    "ts": "2026-11-25T13:54:52Z",
+    "cluster": "setup_strategy",
+    "title": "TNS-weighted lexicographic acceptance (WNS guard band + design TNS gain) replacing endpoint-only slack acceptance in the LEGACY repair loop"
+  },
+  {
+    "step": "coded",
+    "t": 134.0,
+    "ts": "2026-11-25T13:56:06Z",
+    "files": [
+      "src/policy/SetupLegacyPolicy.cc",
+      "src/policy/SetupLegacyPolicy.hh",
+      "src/policy/SetupLegacyBase.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 199.8,
+    "ts": "2026-11-25T13:57:12Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 66
+  },
+  {
+    "step": "evaluated",
+    "t": 421.4,
+    "ts": "2026-11-25T14:00:54Z",
+    "accepted": false,
+    "score": -0.004930116196459374
+  },
+  {
+    "step": "feedback",
+    "t": 832.0,
+    "ts": "2026-11-25T14:07:44Z"
+  }
+]

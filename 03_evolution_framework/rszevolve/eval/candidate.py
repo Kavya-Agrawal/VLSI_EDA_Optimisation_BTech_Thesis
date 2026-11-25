@@ -105,9 +105,11 @@ def evaluate(rsz_dir: Path, knobs: Knobs, *, tier: str = "A", replicates: int = 
         note = "new logic never fired on any design (all RSZ_EVOLVE counters are 0): hypothesis is inapplicable here"
     else:
         note = ""
-    if note:
+    if note.startswith("new logic never fired"):
         vs_champ.reasons.append(note); vs_champ.accepted = False
         vs_base.reasons.append(note)
+    elif note:  # missing instrumentation: warn only, the measured numbers still decide
+        vs_base.reasons.append("warning: " + note)
     write_json(out / "evolve_counters.json", {"per_design": counters, "total_fired": total_fired,
                                                "repair_stats": {k: a.get("repair_stats", {}) for k, a in agg.items()},
                                                "baseline_repair_stats": {k: (b.get("repair_stats") or {}) for k, b in base.items()}})

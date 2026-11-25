@@ -1,0 +1,51 @@
+{
+  "clock_period_ns": 0.738,
+  "endpoints": 1248,
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "repair_ms": 46282,
+  "placement_violations": 0,
+  "pre": {
+    "wns_setup": -0.07898321109592449,
+    "tns_setup": -8.11572343411087,
+    "wns_hold": 0.10213867540841498,
+    "tns_hold": 0.0,
+    "setup_violations": 160,
+    "hold_violations": 0,
+    "instances": 14790,
+    "pins": 51400,
+    "area_um2": 18801.67843637537,
+    "util": 0.3561933078007881,
+    "buffers": 2839,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "post": {
+    "wns_setup": -0.02584094122934333,
+    "tns_setup": -1.1337753279349108,
+    "wns_hold": 0.10201455247075145,
+    "tns_hold": 0.0,
+    "setup_violations": 129,
+    "hold_violations": 0,
+    "instances": 15325,
+    "pins": 52506,
+    "area_um2": 20530.94405596312,
+    "util": 0.3889538399515596,
+    "buffers": 3337,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "evolve_counters": {
+    "sizing_choice_differs": 4,
+    "sizing_neighbor_weighted": 2117,
+    "sizing_selections": 2124
+  },
+  "repair_stats": {
+    "buffers_removed": 6,
+    "buffers_inserted": 471,
+    "resized": 1368,
+    "pins_swapped": 135,
+    "cloned": 70
+  }
+}

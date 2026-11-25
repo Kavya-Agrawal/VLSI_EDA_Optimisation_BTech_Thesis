@@ -1,0 +1,22 @@
+I changed size-up selection in `SizeUpGenerator` to weight neighbour delay by how badly it violates. I haven't compiled or run anything, so it's untested. I wasn't allowed to build or test here.
+
+**What changed**
+- **Neighbour weights:** For each candidate, `upsizeCell` takes the live setup slack of the upstream driver and of the other pins on the input net. Each becomes a weight of `max(0, -slack) / |WNS|`, clamped to [0, 1].
+- **New score:** `upsizeCell` now scores a master as `((own-gate gain) − up_weight × prev_drive × ΔC_in) / cost_ratio`, where `up_weight = 1 + min(Σλ, 4)`. A master that adds input capacitance on a critical net now costs more.
+- **No violating neighbours:** `up_weight` is 1 and the score equals the stock one.
+- **Eligibility unchanged:** The test for which masters qualify is stock. The new score only ranks the eligible ones, and it can go negative without dropping a move. That should avoid the JPEG move-count collapse from iteration 9.
+- **Counters:** The three counters are printed from the generator's destructor. If more than one policy or phase builds its own generator, you'll see more than one set of lines per run. I didn't check this. The lines are:
+  - `RSZ_EVOLVE sizing_choice_differs fired=N`
+  - `RSZ_EVOLVE sizing_neighbor_weighted fired=N`
+  - `RSZ_EVOLVE sizing_selections fired=N`
+
+**Risks**
+- **Stale slacks:** Slacks can be stale between incremental timing updates.
+- **Possible compile errors:** The build is the first real check. Calls I haven't verified against the headers are `network->findPin(inst, LibertyPort*)`, `isDriver`/`isLoad`, and the `Network` and `Graph` includes.
+- **15% target:** The 15% `sizing_choice_differs` target on AES and Ibex depends on how often the input net has violating neighbours. I don't know that rate yet.
+
+The rationale and risks are in `HYPOTHESIS.md` in the tree root.
+
+```json
+{"files_changed": ["src/move/SizeUpGenerator.cc", "src/move/SizeUpGenerator.hh", "HYPOTHESIS.md"], "summary": "SizeUpGenerator::upsizeCell now ranks eligible masters by own-stage gain minus upstream input-cap penalty, where the penalty is multiplied by 1 + sum of violation weights (max(0,-slack)/|WNS|) of the upstream driver and side loads of the input net. Eligibility is stock, so move counts are preserved. It reduces to stock ranking when no neighbour violates. RSZ_EVOLVE counters are printed from the generator destructor.", "new_flags": [], "determinism_notes": "The weights use only STA slacks and net pin iteration order, which are deterministic. The loop over swappable cells runs in fixed order with strict > tie-breaking, and there is no randomness or threading."}
+```

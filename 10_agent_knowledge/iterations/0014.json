@@ -1,0 +1,157 @@
+{
+  "iteration": 14,
+  "tag": "0014_sizing",
+  "status": "rejected",
+  "cluster": "sizing",
+  "title": "Joint path-window sizing by dynamic programming as a compound move inside the post-stock TNS-recovery phase",
+  "hypothesis": "Remaining violations sit on deep HA/FA (JPEG) and fanout-943-trunk (Ibex) paths where one-cell-at-a-time upsizing is cancelled by the extra input-cap load on the upstream stage, so recovery rejects most single moves (77 WNS rejects on JPEG). Replace greedy single-driver master selection with a Viterbi-style dynamic program over a 4-stage window of the worst path. It chooses masters jointly using load-aware arc delays plus a violation-weighted side-load penalty, and applies the result as one journaled compound move. The move is offered only inside runTnsRecovery, under the unchanged fixed stock-WNS floor and 0.5 ps TNS threshold, so the stock trajectory is preserved. Coordinated sizing should turn rejected single moves into accepted joint moves and raise the recovery keep rate on JPEG and Ibex.",
+  "planned_files": [
+    "src/move/PathWindowSizingGenerator.cc",
+    "src/move/PathWindowSizingGenerator.hh",
+    "src/LRSubproblem.cc",
+    "src/LRSubproblem.hh",
+    "src/policy/SetupLegacyPolicy.cc"
+  ],
+  "evidence_iterations": [
+    9,
+    10,
+    12,
+    13
+  ],
+  "files_changed": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 410,
+    "lines_deleted": 17
+  },
+  "accepted": false,
+  "score_vs_champion": -0.00037769909084747196,
+  "score_vs_baseline": 0.001681808194211475,
+  "reasons": [
+    "score -0.00038 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 1.3660369518498836e-05,
+      "wns_cand": -0.022240765414420178,
+      "wns_ref": -0.0222145086391452,
+      "tns_cand": -0.3393861121531788,
+      "tns_ref": -0.3420142599269762,
+      "d_wns_ns": -2.625677527497844e-05,
+      "d_tns_ns": 0.0026281477737973846,
+      "d_wns_pct_period": -0.00700180673999425,
+      "d_tns_pct": 0.768432221030352,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 835.2399882838313,
+      "area_ref": 831.7819766290313,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": 3.627658753683558e-06,
+      "wns_cand": -0.024127922565050468,
+      "wns_ref": -0.024127922565050468,
+      "tns_cand": -0.9921355129380399,
+      "tns_ref": -0.9988178344899452,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.00668232155190529,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.6690230511670503,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20587.33628018672,
+      "area_ref": 20584.410620472227,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": -0.0008871118600879485,
+      "wns_cand": -0.07944445326454984,
+      "wns_ref": -0.07423972757790741,
+      "tns_cand": -34.984698794819565,
+      "tns_ref": -44.39935833548254,
+      "d_wns_ns": -0.005204725686642431,
+      "d_tns_ns": 9.414659540662974,
+      "d_wns_pct_period": -0.26286493366880964,
+      "d_tns_pct": 21.204494599957048,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28673.204255369455,
+      "area_ref": 28643.944105510855,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": -0.0006409725315741217,
+      "wns_cand": -0.08659107009848456,
+      "wns_ref": -0.08530243419735703,
+      "tns_cand": -31.09461576234743,
+      "tns_ref": -31.15051771366437,
+      "d_wns_ns": -0.00128863590112753,
+      "d_tns_ns": 0.05590195131694031,
+      "d_wns_pct_period": -0.128863590112753,
+      "d_tns_pct": 0.17945753528333358,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90269.49499002512,
+      "area_ref": 90252.47038607631,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 13,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0014_sizing",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0014_sizing",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0014_sizing/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "setup_strategy",
+    "dominant_cause": "high_fanout",
+    "lesson": "Joint sizing under a fixed stock-WNS floor displaced recovery moves and improved Ibex TNS by 21.20% versus champion while surrendering 5.205 ps of Ibex WNS and 1.289 ps of JPEG WNS.",
+    "dead_end": "Do not repeat default-slew four-stage master-only DP before fallback recovery under only a fixed stock-WNS floor; JPEG rejected 49 of 75 DP trials for WNS and retained the same 34 total recovery moves.",
+    "good_changes": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc compound journals and measured STA acceptance retained 15 Ibex and 14 JPEG DP trials, though their isolated TNS contribution is unmeasured",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc window_dp counters expose predicted-gain failures and distinguish joint proposals from retained moves"
+    ],
+    "bad_changes": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc::planWindow omits propagated input slew and explicit endpoint-violation weighting of side loads",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc::runTnsRecovery tries DP first, skips fallback after acceptance and consumes the shared recovery budget",
+      "src/rsz/src/policy/SetupLegacyPolicy.cc fixed stock-WNS acceptance permits losing WNS gains already achieved during recovery"
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc",
+      "src/rsz/src/move/BufferGenerator.cc",
+      "src/rsz/src/move/SplitLoadGenerator.cc",
+      "src/rsz/src/move/CloneGenerator.cc"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/policy/SetupLegacyBase.cc",
+      "src/rsz/src/move/SizeUpGenerator.cc",
+      "src/rsz/src/SkewBudget.cc"
+    ]
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0014",
+  "seconds": 637,
+  "when": "2026-11-25T14:28:36Z",
+  "schema_version": 1,
+  "valid_experiment": true
+}

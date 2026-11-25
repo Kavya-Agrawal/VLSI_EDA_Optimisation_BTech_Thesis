@@ -5,6 +5,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <optional>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 #include <utility>
 
 #include "MoveCommitter.hh"
@@ -21,6 +28,7 @@
 #include "sta/Network.hh"
 #include "sta/NetworkClass.hh"
 #include "sta/Path.hh"
+#include "sta/PathExpanded.hh"
 #include "utl/Logger.h"
 #include "utl/timer.h"
 
@@ -48,6 +56,10 @@ void SetupLegacyPolicy::iterate()
   ViolatingEnds violating_ends;
   if (initializeMainRepair(main_state, violating_ends)) {
     runMainRepairLoop(violating_ends, main_state);
+  }
+
+  if (std::strcmp(phaseName(), "LEGACY") == 0) {
+    runTnsRecovery();
   }
 
   committer_.printTrackerPhaseSummary(
@@ -428,6 +440,161 @@ void SetupLegacyPolicy::runMainRepairLoop(const ViolatingEnds& violating_ends,
 
   printProgress(main_state.opto_iteration, true, main_state.phase_marker);
   reportPhaseComplete(phaseName(), main_state.phase_marker);
+}
+
+void SetupLegacyPolicy::runTnsRecovery()
+{
+  constexpr int kTopPaths = 400;
+  constexpr int kTopDrivers = 50;
+  constexpr int kMaxRounds = 5;
+  constexpr int kAttemptsPerDriver = 3;
+  constexpr float kMinTnsGain = 0.5e-12f;
+
+  int64_t trials = 0;
+  int64_t kept = 0;
+  int64_t rounds = 0;
+  int64_t rejected_wns = 0;
+  int64_t rejected_tns = 0;
+  int64_t drivers_ranked = 0;
+
+  const MoveType all_types[] = {MoveType::kSizeUp,
+                                MoveType::kSizeUpMatch,
+                                MoveType::kSizeDownFanout,
+                                MoveType::kBuffer,
+                                MoveType::kClone,
+                                MoveType::kSwapPins,
+                                MoveType::kVtSwap,
+                                MoveType::kUnbuffer,
+                                MoveType::kSplitLoad,
+                                MoveType::kReroute};
+  int stock_moves = 0;
+  for (const MoveType type : all_types) {
+    stock_moves += committedMoves(type);
+  }
+  const int move_cap = std::max(30, stock_moves / 10);
+
+  sta::Slack wns_floor = 0.0;
+  sta::Vertex* wns_vertex = nullptr;
+  target_collector_->worstSlack(wns_floor, wns_vertex);
+  const float setup_slack_margin = config_.setup_slack_margin;
+
+  if (wns_vertex != nullptr && wns_floor < setup_slack_margin) {
+    float cur_tns = totalNegativeSlack();
+    for (int round = 0; round < kMaxRounds && kept < move_cap; ++round) {
+      if (resizer_.overMaxArea()) {
+        break;
+      }
+      ++rounds;
+      const ViolatingEnds ends = collectViolatingEndpoints(setup_slack_margin);
+      if (ends.empty()) {
+        break;
+      }
+
+      // Rank drivers by slack-weighted count of violating paths through them.
+      struct Bottleneck
+      {
+        std::string name;
+        double weight{0.0};
+      };
+      std::vector<Bottleneck> bottlenecks;
+      std::unordered_map<const sta::Pin*, size_t> index_of;
+      const int path_count
+          = std::min(static_cast<int>(ends.size()), kTopPaths);
+      for (int i = 0; i < path_count; ++i) {
+        sta::Path* path = endpointWorstPath(ends[i].first);
+        if (path == nullptr) {
+          continue;
+        }
+        sta::PathExpanded expanded(path, sta_);
+        const double weight = -static_cast<double>(ends[i].second);
+        for (size_t k = expanded.startIndex(); k < expanded.size(); ++k) {
+          const sta::Path* p = expanded.path(k);
+          sta::Vertex* v = p->vertex(sta_);
+          const sta::Pin* pin = p->pin(sta_);
+          if (!v->isDriver(network_) || network_->isTopLevelPort(pin)) {
+            continue;
+          }
+          auto [it, inserted] = index_of.emplace(pin, bottlenecks.size());
+          if (inserted) {
+            bottlenecks.push_back({network_->pathName(pin), 0.0});
+          }
+          bottlenecks[it->second].weight += weight;
+        }
+      }
+      std::ranges::stable_sort(
+          bottlenecks, [](const Bottleneck& a, const Bottleneck& b) {
+            if (a.weight != b.weight) {
+              return a.weight > b.weight;
+            }
+            return a.name < b.name;
+          });
+      drivers_ranked += static_cast<int64_t>(bottlenecks.size());
+
+      int round_kept = 0;
+      const int driver_count
+          = std::min(static_cast<int>(bottlenecks.size()), kTopDrivers);
+      for (int d = 0; d < driver_count && kept < move_cap; ++d) {
+        std::unordered_set<MoveType> rejected_types;
+        for (int attempt = 0; attempt < kAttemptsPerDriver; ++attempt) {
+          // Resolve by name: earlier trials may have replaced objects.
+          const sta::Pin* pin = network_->findPin(bottlenecks[d].name.c_str());
+          if (pin == nullptr) {
+            break;
+          }
+          Target target;
+          if (!makePinTarget(pin, wns_floor, target)) {
+            break;
+          }
+          committer_.beginJournal();
+          int changed = 0;
+          std::optional<MoveType> accepted_type;
+          ++trials;
+          const bool moved = tryRepairTarget(
+              target, 1, changed, &rejected_types, accepted_type);
+          if (!moved) {
+            committer_.restoreJournal();
+            break;
+          }
+          resizer_.updateParasiticsAndTiming();
+          sta::Slack wns = 0.0;
+          sta::Vertex* wv = nullptr;
+          target_collector_->worstSlack(wns, wv);
+          const float tns = totalNegativeSlack();
+          const bool wns_ok = sta::fuzzyGreaterEqual(wns, wns_floor);
+          if (wns_ok && tns >= cur_tns + kMinTnsGain) {
+            committer_.commitJournal();
+            cur_tns = tns;
+            ++kept;
+            ++round_kept;
+            break;
+          }
+          if (!wns_ok) {
+            ++rejected_wns;
+          } else {
+            ++rejected_tns;
+          }
+          committer_.restoreJournal();
+          resizer_.updateParasiticsAndTiming();
+          if (accepted_type) {
+            rejected_types.insert(*accepted_type);
+          } else {
+            break;
+          }
+        }
+      }
+      if (round_kept == 0) {
+        break;
+      }
+    }
+  }
+
+  logger_->report("RSZ_EVOLVE bottleneck_rounds fired={}", rounds);
+  logger_->report("RSZ_EVOLVE bottleneck_drivers_ranked fired={}",
+                  drivers_ranked);
+  logger_->report("RSZ_EVOLVE bottleneck_trials fired={}", trials);
+  logger_->report("RSZ_EVOLVE bottleneck_kept fired={}", kept);
+  logger_->report("RSZ_EVOLVE bottleneck_rejected_wns fired={}", rejected_wns);
+  logger_->report("RSZ_EVOLVE bottleneck_rejected_tns fired={}", rejected_tns);
 }
 
 bool SetupLegacyPolicy::pathImproved(const sta::Slack end_slack,

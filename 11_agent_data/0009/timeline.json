@@ -1,0 +1,41 @@
+[
+  {
+    "step": "planned",
+    "t": 65.8,
+    "ts": "2026-11-25T13:26:10Z",
+    "cluster": "setup_strategy",
+    "title": "Rank repair targets by slack-weighted count of violating endpoints sharing each driver (multi-endpoint path-sharing) instead of per-path load delay"
+  },
+  {
+    "step": "coded",
+    "t": 151.5,
+    "ts": "2026-11-25T13:27:36Z",
+    "files": [
+      "src/policy/SetupLegacyBase.cc",
+      "src/policy/SetupLegacyBase.hh",
+      "src/Optimizer.cc",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 209.5,
+    "ts": "2026-11-25T13:28:34Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 58
+  },
+  {
+    "step": "evaluated",
+    "t": 536.4,
+    "ts": "2026-11-25T13:34:01Z",
+    "accepted": false,
+    "score": -0.0027572130746616637
+  },
+  {
+    "step": "feedback",
+    "t": 644.5,
+    "ts": "2026-11-25T13:35:49Z"
+  }
+]

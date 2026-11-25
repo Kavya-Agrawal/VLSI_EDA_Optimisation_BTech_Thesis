@@ -1,0 +1,20 @@
+I added the two-phase repair to `src/policy/SetupLegacyPolicy.cc` and `.hh`. Nothing was built or run, per the resource rule.
+
+The stock LEGACY loop is untouched. After it, `SetupLegacyPolicy::runTnsRecovery()` takes the post-stock WNS as a fixed floor. It then runs up to 5 rounds of the following:
+- **Ranking:** it unrolls the worst path of the top 400 violating endpoints and ranks driver pins by the sum of their endpoint slack deficits.
+- **Trials:** for the top 50 drivers, it opens a journal and runs the stock generator sequence on that driver. A driver gets up to 3 attempts, skipping move types already rejected for it.
+- **Keep or undo:** a move is committed only if WNS stays at or above the floor and TNS improves by 0.5 ps or more. Otherwise the journal is restored.
+- **Stop:** a round that keeps nothing, the fifth round, or max(30, 10% of stock moves) kept moves ends the phase.
+
+It only runs when the phase name is `LEGACY`, so the subclassed phases are unaffected. The new counters print once at the end, even when zero. They are `bottleneck_rounds`, `bottleneck_drivers_ranked`, `bottleneck_trials`, `bottleneck_kept`, `bottleneck_rejected_wns` and `bottleneck_rejected_tns`, each as `RSZ_EVOLVE <name> fired=<n>`.
+
+Things to know before building:
+- **Paths:** the hypothesis says top-400 paths. I used the worst path of each of the top 400 violating endpoints, one path per endpoint.
+- **Pin lookup:** pins are stored by name and looked up with `network_->findPin(name)` on each trial, so a move that replaced an object can't leave a dangling pointer. That single-argument `findPin` overload is the one thing I didn't confirm exists, since the grep only showed two-argument calls. Check it first if the build fails.
+- **Move cap:** the cap counts moves committed across all stock move types, taken from `committedMoves`.
+
+`HYPOTHESIS.md` is in the tree root.
+
+```json
+{"files_changed": ["src/policy/SetupLegacyPolicy.cc", "src/policy/SetupLegacyPolicy.hh", "HYPOTHESIS.md"], "summary": "Stock LEGACY loop runs unchanged, then runTnsRecovery ranks drivers by slack-weighted count of violating paths (top 400 endpoint worst paths) and trials stock generator moves on the top 50 under a journal. A move is kept only if WNS >= the post-stock WNS and TNS improves by >= 0.5 ps, with at most 5 rounds and max(30, 10% of stock moves) kept moves. RSZ_EVOLVE counters are printed for rounds, ranked drivers, trials, kept and the two rejection reasons.", "new_flags": [], "determinism_notes": "Drivers are ranked by weight with a name tie-break via stable sort, and pins are re-resolved by name. The unordered_map is only used for lookup, never iterated. Trial order, caps and thresholds are fixed, and all state changes go through the existing journal."}
+```

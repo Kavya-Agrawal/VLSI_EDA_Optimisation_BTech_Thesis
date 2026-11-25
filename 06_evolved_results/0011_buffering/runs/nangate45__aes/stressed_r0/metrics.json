@@ -1,0 +1,47 @@
+{
+  "clock_period_ns": 0.738,
+  "endpoints": 1248,
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "repair_ms": 41949,
+  "placement_violations": 0,
+  "pre": {
+    "wns_setup": -0.07898321109592449,
+    "tns_setup": -8.11572343411087,
+    "wns_hold": 0.10213867540841498,
+    "tns_hold": 0.0,
+    "setup_violations": 160,
+    "hold_violations": 0,
+    "instances": 14790,
+    "pins": 51400,
+    "area_um2": 18801.67843637537,
+    "util": 0.3561933078007881,
+    "buffers": 2839,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "post": {
+    "wns_setup": -0.025938585347120676,
+    "tns_setup": -1.291797261279561,
+    "wns_hold": 0.10201455247075145,
+    "tns_hold": 0.0,
+    "setup_violations": 136,
+    "hold_violations": 0,
+    "instances": 15234,
+    "pins": 52316,
+    "area_um2": 20285.957802457233,
+    "util": 0.3843126385808693,
+    "buffers": 3255,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "evolve_counters": {},
+  "repair_stats": {
+    "buffers_removed": 8,
+    "buffers_inserted": 398,
+    "resized": 1198,
+    "pins_swapped": 123,
+    "cloned": 54
+  }
+}

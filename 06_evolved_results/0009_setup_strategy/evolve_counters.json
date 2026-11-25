@@ -1,0 +1,78 @@
+{
+  "per_design": {
+    "nangate45/gcd": {
+      "shared_rank_builds": 28,
+      "shared_rank_paths_expanded": 1126,
+      "shared_rank_passes": 678,
+      "shared_rank_reordered_targets": 6269,
+      "shared_rank_changed_first": 279
+    },
+    "nangate45/aes": {
+      "shared_rank_builds": 153,
+      "shared_rank_paths_expanded": 22872,
+      "shared_rank_passes": 3816,
+      "shared_rank_reordered_targets": 38568,
+      "shared_rank_changed_first": 1894
+    },
+    "nangate45/ibex": {
+      "shared_rank_builds": 127,
+      "shared_rank_paths_expanded": 50800,
+      "shared_rank_passes": 3150,
+      "shared_rank_reordered_targets": 75078,
+      "shared_rank_changed_first": 2566
+    },
+    "nangate45/jpeg": {
+      "shared_rank_builds": 140,
+      "shared_rank_paths_expanded": 56000,
+      "shared_rank_passes": 3488,
+      "shared_rank_reordered_targets": 49828,
+      "shared_rank_changed_first": 3238
+    }
+  },
+  "total_fired": 320098,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 36,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 139,
+      "buffers_inserted": 554,
+      "resized": 1084,
+      "pins_swapped": 113,
+      "cloned": 57
+    },
+    "nangate45/ibex": {
+      "buffers_removed": 8,
+      "resized": 214,
+      "pins_swapped": 47,
+      "cloned": 21
+    },
+    "nangate45/jpeg": {
+      "resized": 54,
+      "pins_swapped": 9
+    }
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

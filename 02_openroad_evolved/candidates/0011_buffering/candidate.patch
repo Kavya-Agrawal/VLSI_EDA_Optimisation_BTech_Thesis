@@ -1,0 +1,288 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering/rsz/HYPOTHESIS.md
+new file mode 100644
+index 0000000..9a3c81e
+--- /dev/null
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering/rsz/HYPOTHESIS.md	
+@@ -0,0 +1,44 @@
++# TNS-aware root choice for van Ginneken rebuffering
++
++## Problem
++`Rebuffer` picks the root buffer-tree option by worst-sink slack only. On shared nets with
++several violating sinks, trees with the same worst slack can differ a lot in total violation (TNS).
++
++## Current heuristic
++`src/Rebuffer.cc:Rebuffer::selectTimingOptions` (max_plans==1 branch, used by `rebufferPin` and
++`bufferForTiming`) picks the first unconstrained option, else the strictly largest driver slack.
++The multi-plan branch sorts with `Rebuffer::timingOrder` (slack, cap, area, buffer count).
++
++## New approach
++The option-level total violation V is computed per root option, not as a third Pareto dimension
++in the DP. `Rebuffer::totalSinkViolation` walks the option tree and accumulates the delays the DP
++already stored (`BufferedNet::delay()` on wire/buffer nodes) plus the driver correction.
++Each load's slack at the driver is `load->slack() - path delay + correction`. V is the sum of
++the negative ones, and a count of violating sinks comes with it.
++`Rebuffer::chooseLowestTnsOption` takes the stock-best option. If it has >= 2 violating sinks,
++it considers every evaluated root option with slack >= S* - eps, where
++eps = min(1 ps, 5% |S*|). It then picks the one with strictly lowest V. Ties keep the stock
++order. With <= 1 violating sink it returns the stock choice exactly. The multi-plan branch moves
++the chosen option to the front of the ranked list.
++
++This is a post-hoc V over the (cap, slack) Pareto root set rather than a 3-D DP front. It adds no
++DP cost, but it can only choose among options the 2-D front kept.
++
++## Why WNS/TNS should improve
++Among near-equal worst slack options, the one that leaves fewer/shallower violating sinks lowers
++endpoint TNS on shared-net cones, while WNS stays within 1 ps of the stock pick.
++
++## What to look for in the path report
++Lower TNS / fewer violating endpoints on high-fanout shared nets, with an unchanged worst path.
++Log lines: `RSZ_EVOLVE root_evals`, `multi_viol`, `root_choice_changed`, `tns_reduced`.
++
++## Risks
++- The Elmore V can mis-rank trees. The 1 ps tolerance may add up along the critical cone.
++- The 2-D Pareto front may already have pruned the true TNS winner.
++- Counters are cumulative atomics, printed and cleared at the end of each rebuffer phase
++  (`RebufferMtGenerator::finishPhase`), `fullyRebuffer` and `rebufferNet`. Sum them for totals.
++
++## Files changed
++- `src/Rebuffer.cc`: V computation, TNS-aware root choice, counters and report.
++- `src/Rebuffer.hh`: declarations for the helpers and `reportEvolveCounters`.
++- `src/move/RebufferMtGenerator.cc`: print the counters when a rebuffer phase finishes.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/Rebuffer.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering/rsz/src/Rebuffer.cc
+index a174930..ac29f93 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/Rebuffer.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering/rsz/src/Rebuffer.cc	
+@@ -4,6 +4,8 @@
+ #include "Rebuffer.hh"
+ 
+ #include <algorithm>
++#include <atomic>
++#include <cstdint>
+ #include <cassert>
+ #include <cmath>
+ #include <cstddef>
+@@ -1270,14 +1272,111 @@ FixedDelay Rebuffer::slackLossFloor(const FixedDelay best_slack) const
+   return best_slack - FixedDelay(slack_loss_budget, resizer_);
+ }
+ 
++namespace {
++// RSZ_EVOLVE counters; atomic because worker planners run concurrently.
++// Totals are order independent, so the report is deterministic.
++std::atomic<int64_t> g_evolve_root_evals{0};
++std::atomic<int64_t> g_evolve_multi_viol{0};
++std::atomic<int64_t> g_evolve_root_choice_changed{0};
++std::atomic<int64_t> g_evolve_tns_reduced{0};
++}  // namespace
++
++void Rebuffer::reportEvolveCounters(utl::Logger* logger)
++{
++  logger->report("RSZ_EVOLVE root_evals fired={}", g_evolve_root_evals.exchange(0));
++  logger->report("RSZ_EVOLVE multi_viol fired={}", g_evolve_multi_viol.exchange(0));
++  logger->report("RSZ_EVOLVE root_choice_changed fired={}",
++                 g_evolve_root_choice_changed.exchange(0));
++  logger->report("RSZ_EVOLVE tns_reduced fired={}", g_evolve_tns_reduced.exchange(0));
++}
++
++double Rebuffer::totalSinkViolation(const BufferedNetPtr& option,
++                                    const FixedDelay driver_correction,
++                                    int& violating_sinks)
++{
++  double total = 0.0;
++  violating_sinks = 0;
++  // Walk with the accumulated delay from the driver (negated into slack).
++  std::vector<std::pair<const BufferedNet*, FixedDelay>> stack;
++  stack.emplace_back(option.get(), driver_correction);
++  while (!stack.empty()) {
++    const auto [node, acc] = stack.back();
++    stack.pop_back();
++    switch (node->type()) {
++      case BnetType::junction:
++        stack.emplace_back(node->ref2().get(), acc);
++        stack.emplace_back(node->ref().get(), acc);
++        break;
++      case BnetType::load: {
++        if (node->slackTransition() == nullptr) {
++          break;  // unconstrained sink
++        }
++        const double slack = (node->slack() + acc).toSeconds();
++        if (slack < 0.0) {
++          total -= slack;
++          violating_sinks++;
++        }
++        break;
++      }
++      default:
++        stack.emplace_back(node->ref().get(), acc - node->delay());
++        break;
++    }
++  }
++  return total;
++}
++
++size_t Rebuffer::chooseLowestTnsOption(
++    const std::vector<RankedOption>& evaluated,
++    const size_t stock_best)
++{
++  g_evolve_root_evals++;
++  const RankedOption& best = evaluated[stock_best];
++  if (best.unconstrained) {
++    return stock_best;
++  }
++  int best_count = 0;
++  double best_v = totalSinkViolation(
++      best.option, best.slack - best.option->slack(), best_count);
++  if (best_count < 2) {
++    return stock_best;  // at most one violating sink: identical to stock
++  }
++  g_evolve_multi_viol++;
++  const double stock_v = best_v;
++  const double best_slack = best.slack.toSeconds();
++  const double epsilon = std::min(1e-12, 0.05 * std::abs(best_slack));
++  size_t choice = stock_best;
++  for (size_t i = 0; i < evaluated.size(); i++) {
++    const RankedOption& cand = evaluated[i];
++    if (i == stock_best || cand.unconstrained
++        || cand.slack.toSeconds() < best_slack - epsilon) {
++      continue;
++    }
++    int count = 0;
++    const double v = totalSinkViolation(
++        cand.option, cand.slack - cand.option->slack(), count);
++    // Strictly lower V wins; ties keep the earlier (stock-ordered) option.
++    if (v < best_v) {
++      best_v = v;
++      choice = i;
++    }
++  }
++  if (choice != stock_best) {
++    g_evolve_root_choice_changed++;
++    if (best_v < stock_v) {
++      g_evolve_tns_reduced++;
++    }
++  }
++  return choice;
++}
++
+ std::vector<Rebuffer::RankedOption> Rebuffer::selectTimingOptions(
+     const BnetSeq& top_opts,
+     const int max_plans)
+ {
+   if (max_plans == 1) {
+-    FixedDelay best_slack = -FixedDelay::INF;
+-    BufferedNetPtr best_option = nullptr;
+-    int best_index = 0;
++    std::vector<RankedOption> evaluated;
++    size_t best_pos = 0;
+     int i = 1;
+     debugPrint(logger_, RSZ, "rebuffer", 2, "timing-optimized options");
+     for (const BufferedNetPtr& p : top_opts) {
+@@ -1289,23 +1388,24 @@ std::vector<Rebuffer::RankedOption> Rebuffer::selectTimingOptions(
+         continue;
+       }
+ 
+-      if (best_option == nullptr
+-          || p->slackTransition() == nullptr /* buffer tree unconstrained */
+-          || slack.value() > best_slack) {
+-        best_slack = slack.value();
+-        best_option = p;
+-        best_index = i;
++      evaluated.push_back({.option = p,
++                           .slack = slack.value(),
++                           .unconstrained = p->slackTransition() == nullptr,
++                           .index = i});
++      // Stock choice: an unconstrained tree, else strictly larger slack.
++      if (evaluated.size() > 1
++          && (evaluated.back().unconstrained
++              || evaluated.back().slack > evaluated[best_pos].slack)) {
++        best_pos = evaluated.size() - 1;
+       }
+       i++;
+     }
+ 
+-    if (best_option) {
+-      debugPrint(logger_, RSZ, "rebuffer", 2, "best option {}", best_index);
+-      return {RankedOption{
+-          .option = best_option,
+-          .slack = best_slack,
+-          .unconstrained = best_option->slackTransition() == nullptr,
+-          .index = best_index}};
++    if (!evaluated.empty()) {
++      best_pos = chooseLowestTnsOption(evaluated, best_pos);
++      const RankedOption& chosen = evaluated[best_pos];
++      debugPrint(logger_, RSZ, "rebuffer", 2, "best option {}", chosen.index);
++      return {chosen};
+     }
+ 
+     debugPrint(logger_, RSZ, "rebuffer", 2, "no available option");
+@@ -1335,6 +1435,13 @@ std::vector<Rebuffer::RankedOption> Rebuffer::selectTimingOptions(
+   std::ranges::sort(ranked_options, timingOrder);
+ 
+   if (!ranked_options.empty()) {
++    const size_t pick = chooseLowestTnsOption(ranked_options, 0);
++    if (pick != 0) {
++      // Move the TNS-preferred option to the front, keeping the rest ordered.
++      std::rotate(ranked_options.begin(),
++                  ranked_options.begin() + pick,
++                  ranked_options.begin() + pick + 1);
++    }
+     debugPrint(logger_,
+                RSZ,
+                "rebuffer",
+@@ -3336,6 +3443,7 @@ void Rebuffer::fullyRebuffer(sta::Pin* user_pin)
+   propagate_edits();
+ 
+   printProgress(filtered_pins.size(), false, true, 0);
++  reportEvolveCounters(logger_);
+   if (size_driver_) {
+     logger_->info(RSZ,
+                   2023,
+@@ -3791,6 +3899,7 @@ void Rebuffer::rebufferNet(const sta::Pin* drvr_pin)
+   est::IncrementalParasiticsGuard guard(estimate_parasitics_);
+   const int inserted_buffer_count = rebufferPin(drvr_pin);
+   logger_->report("Inserted {} buffers.", inserted_buffer_count);
++  reportEvolveCounters(logger_);
+ }
+ 
+ };  // namespace rsz
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/Rebuffer.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering/rsz/src/Rebuffer.hh
+index 7912920..25fc15a 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/Rebuffer.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering/rsz/src/Rebuffer.hh	
+@@ -110,6 +110,8 @@ class Rebuffer : public sta::dbStaState
+   ~Rebuffer() override;
+   void fullyRebuffer(sta::Pin* user_pin = nullptr);
+   void rebufferNet(const sta::Pin* drvr_pin);
++  // Prints (and clears) the RSZ_EVOLVE counters of the TNS-aware root choice.
++  static void reportEvolveCounters(utl::Logger* logger);
+   // Prepare makeRebufferTreePlans() on `corner`.  A worker planner gets its own
+   // delay calculator, because OpenSTA's keeps per-call scratch state.
+   void initForPlanning(sta::Scene* corner, bool worker = false);
+@@ -271,6 +273,16 @@ class Rebuffer : public sta::dbStaState
+   // The timing options ranked by driver slack, each with the slack it was
+   // evaluated at: the single best when max_plans is 1, as the serial Rebuffer
+   // picks, else the max_plans best.
++  // Sum of the sink violations an option has at the driver pin (the DP's own
++  // delay model: load slack minus path delays, plus the driver correction),
++  // and the number of violating sinks.
++  static double totalSinkViolation(const BufferedNetPtr& option,
++                                   FixedDelay driver_correction,
++                                   int& violating_sinks);
++  // Among the evaluated options within epsilon of the stock-best slack, the
++  // index of the one with the lowest total sink violation.
++  size_t chooseLowestTnsOption(const std::vector<RankedOption>& evaluated,
++                               size_t stock_best);
+   std::vector<RankedOption> selectTimingOptions(const BufferedNetSeq& top_opts,
+                                                 int max_plans);
+   std::vector<RankedOption> bufferForTimingTopK(const BufferedNetPtr& tree,
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/RebufferMtGenerator.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering/rsz/src/move/RebufferMtGenerator.cc
+index c1a6c00..ec45cc9 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/RebufferMtGenerator.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering/rsz/src/move/RebufferMtGenerator.cc	
+@@ -213,6 +213,7 @@ void RebufferMtGenerator::finishPhase()
+                             counts);
+   }
+ 
++  Rebuffer::reportEvolveCounters(resizer_.logger());
+   planners_.reset(resizer_.sta()->cmdScene(), 0);
+ }
+ 

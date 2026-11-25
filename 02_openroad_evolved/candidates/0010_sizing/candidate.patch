@@ -1,0 +1,265 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0010_sizing/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0010_sizing/rsz/HYPOTHESIS.md
+new file mode 100644
+index 0000000..d609e35
+--- /dev/null
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0010_sizing/rsz/HYPOTHESIS.md	
+@@ -0,0 +1,30 @@
++# Hypothesis: criticality-weighted size-up selection
++
++## Problem
++Stock SizeUpGenerator ranks eligible masters by (own-stage gain minus upstream input-cap penalty) per unit cost. The upstream penalty is charged at a fixed weight of 1, whatever the slack of the upstream driver or of the other sinks on the input net. Upsizing a gate in a shared cone therefore slows critical neighbours (e.g. AES `_13069_/Z`).
++
++## Current heuristic
++`src/move/SizeUpGenerator.cc: SizeUpGenerator::upsizeCell`. Score = (delay_old - delay_new) / cost_ratio, where delay = gateDelay + prev_drive * in_cap.
++
++## New approach
++In `upsizeCell` we compute lambda = clamp(max(0, -slack) / |WNS|, 0, 1) for the upstream driver and each side load of the input net, using live STA vertex slacks. The upstream penalty is charged by up_weight = 1 + min(sum lambda, 4). The new score is ((gate_old - gate_new) - up_weight * prev_drive * dCin) / cost_ratio.
++
++- The stock eligibility test is unchanged, so the move count is preserved. The weighted score only picks among eligible masters, and it is allowed to go negative, so a move is never suppressed.
++- With no violating neighbours up_weight = 1 and the score equals the stock score.
++
++## Why WNS/TNS should improve
++Masters with a large input-cap increase lose when the upstream driver or the other sinks are critical. Smaller steps win there, which protects shared cones. Where the upstream is slack-rich, stock ranking is kept.
++
++## What to look for in the path report
++- Fewer cases where a shared upstream driver's delay grows after an upsize.
++- Smaller input-cap steps on cells fed by critical nets.
++- The `RSZ_EVOLVE` lines: `sizing_choice_differs`, `sizing_neighbor_weighted` and `sizing_selections`.
++
++## Risks
++- Slacks can be stale between incremental timing updates.
++- Weights are capped, and the stock eligibility rule is kept, to avoid a move-count collapse.
++- Counters are printed from the generator destructor, so there may be one set of lines per policy or phase.
++
++## Files changed
++- `src/move/SizeUpGenerator.cc`: weighted selection, neighbour lambdas and counters.
++- `src/move/SizeUpGenerator.hh`: destructor, counters, and `drvr_pin` parameter.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpGenerator.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0010_sizing/rsz/src/move/SizeUpGenerator.cc
+index 1570d0f..98bcf6e 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpGenerator.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0010_sizing/rsz/src/move/SizeUpGenerator.cc	
+@@ -5,6 +5,7 @@
+ 
+ #include <algorithm>
+ #include <array>
++#include <cmath>
+ #include <memory>
+ #include <optional>
+ #include <string>
+@@ -18,6 +19,7 @@
+ #include "db_sta/dbSta.hh"
+ #include "odb/db.h"
+ #include "rsz/Resizer.hh"
++#include "sta/Graph.hh"
+ #include "sta/GraphDelayCalc.hh"
+ #include "sta/Liberty.hh"
+ #include "sta/LibertyClass.hh"
+@@ -36,6 +38,16 @@ SizeUpGenerator::SizeUpGenerator(const GeneratorContext& context)
+ {
+ }
+ 
++SizeUpGenerator::~SizeUpGenerator()
++{
++  resizer_.logger()->report("RSZ_EVOLVE sizing_choice_differs fired={}",
++                            choice_differs_count_);
++  resizer_.logger()->report("RSZ_EVOLVE sizing_neighbor_weighted fired={}",
++                            neighbor_weighted_count_);
++  resizer_.logger()->report("RSZ_EVOLVE sizing_selections fired={}",
++                            selections_count_);
++}
++
+ std::vector<std::unique_ptr<MoveCandidate>> SizeUpGenerator::generate(
+     const Target& target)
+ {
+@@ -68,7 +80,15 @@ std::vector<std::unique_ptr<MoveCandidate>> SizeUpGenerator::generate(
+   }
+ 
+   sta::LibertyCell* replacement = selectReplacement(
+-      in_port, in_rf, drvr_port, drvr_rf, load_cap, prev_drive, scene, min_max);
++      in_port,
++      in_rf,
++      drvr_port,
++      drvr_rf,
++      load_cap,
++      prev_drive,
++      scene,
++      min_max,
++      drvr_pin);
+   if (replacement == nullptr
+       || !resizer_.replacementPreservesMaxCap(
+           inst, replacement, scene != nullptr ? scene->mode() : nullptr)) {
+@@ -161,10 +181,18 @@ sta::LibertyCell* SizeUpGenerator::selectReplacement(
+     const float load_cap,
+     const float prev_drive,
+     const sta::Scene* scene,
+-    const sta::MinMax* min_max) const
++    const sta::MinMax* min_max,
++    const sta::Pin* drvr_pin) const
+ {
+-  return upsizeCell(
+-      in_port, in_rf, drvr_port, drvr_rf, load_cap, prev_drive, scene, min_max);
++  return upsizeCell(in_port,
++                    in_rf,
++                    drvr_port,
++                    drvr_rf,
++                    load_cap,
++                    prev_drive,
++                    scene,
++                    min_max,
++                    drvr_pin);
+ }
+ 
+ enum class CostType
+@@ -181,7 +209,8 @@ sta::LibertyCell* SizeUpGenerator::upsizeCell(sta::LibertyPort* in_port,
+                                               const float load_cap,
+                                               const float prev_drive,
+                                               const sta::Scene* scene,
+-                                              const sta::MinMax* min_max) const
++                                              const sta::MinMax* min_max,
++                                              const sta::Pin* drvr_pin) const
+ {
+   if (scene == nullptr || min_max == nullptr || in_port == nullptr
+       || drvr_port == nullptr) {
+@@ -273,12 +302,62 @@ sta::LibertyCell* SizeUpGenerator::upsizeCell(sta::LibertyPort* in_port,
+              : resizer_.gateDelay(drvr_port, load_cap, scene, min_max))
+         + prev_drive * in_cap;
+ 
++  // Violation weights (lambda = max(0,-slack)/|WNS|, clamped to [0,1]) of the
++  // upstream driver and of the side loads of the input net. Raising the input
++  // pin cap slows all of them, so the upstream penalty is charged by
++  // 1 + sum(lambda). With no violating neighbours this is exactly stock.
++  float up_weight = 1.0f;
++  {
++    sta::dbSta* sta_obj = resizer_.sta();
++    sta::Network* network = resizer_.network();
++    const sta::MinMax* max_mm = resizer_.maxAnalysisMode();
++    const float wns = sta::delayAsFloat(sta_obj->worstSlack(max_mm));
++    const float wns_abs = std::max(std::abs(wns), 1e-15f);
++    auto lambda_of = [&](sta::Vertex* v) -> float {
++      if (v == nullptr || wns >= 0.0f) {
++        return 0.0f;
++      }
++      const float slack = sta::delayAsFloat(sta_obj->slack(v, max_mm));
++      if (slack >= 0.0f || slack < -1e30f) {
++        return 0.0f;
++      }
++      return std::min(1.0f, -slack / wns_abs);
++    };
++    const sta::Instance* drvr_inst
++        = drvr_pin != nullptr ? network->instance(drvr_pin) : nullptr;
++    const sta::Pin* in_pin
++        = drvr_inst != nullptr ? network->findPin(drvr_inst, in_port) : nullptr;
++    const sta::Net* in_net = in_pin != nullptr ? network->net(in_pin) : nullptr;
++    if (in_net != nullptr) {
++      float sum = 0.0f;
++      std::unique_ptr<sta::NetPinIterator> it(network->pinIterator(in_net));
++      while (it->hasNext()) {
++        const sta::Pin* p = it->next();
++        if (p == in_pin) {
++          continue;
++        }
++        if (network->isDriver(p)) {
++          sum += lambda_of(resizer_.graph()->pinDrvrVertex(p));
++        } else if (network->isLoad(p)) {
++          sum += lambda_of(resizer_.graph()->pinLoadVertex(p));
++        }
++      }
++      up_weight += std::min(sum, 4.0f);
++    }
++  }
++  const float gate_delay_old
++      = drvr_rf != nullptr
++            ? resizer_.gateDelay(drvr_port, drvr_rf, load_cap, scene, min_max)
++            : resizer_.gateDelay(drvr_port, load_cap, scene, min_max);
++
+   // Among cells that do not weaken drive resistance on either edge and improve
+   // stage delay (corner-robust eligibility that protects downstream max-slew/
+   // max-cap), pick the most cost-effective by delay-gain per unit power rather
+   // than the first adequate cell, to avoid over-sizing.
+-  sta::LibertyCell* best_cell = nullptr;
+-  float best_score = 0.0f;
++  sta::LibertyCell* stock_cell = nullptr;
++  float stock_score = 0.0f;
++  sta::LibertyCell* weighted_cell = nullptr;
++  float weighted_score = 0.0f;
+   for (sta::LibertyCell* swappable : swappable_cells) {
+     if (swappable == cell) {
+       continue;
+@@ -317,14 +396,35 @@ sta::LibertyCell* SizeUpGenerator::upsizeCell(sta::LibertyPort* in_port,
+     if (!ratio) {
+       continue;
+     }
+-    const float score = (delay - swappable_delay) / std::max(1.0f, *ratio);
+-    if (score > best_score) {
+-      best_cell = swappable;
+-      best_score = score;
++    const float denom = std::max(1.0f, *ratio);
++    const float score = (delay - swappable_delay) / denom;
++    if (score > stock_score) {
++      stock_cell = swappable;
++      stock_score = score;
++    }
++    // Criticality-weighted score: own-stage gain minus the upstream/side-load
++    // delay increase, charged by violation weight.
++    const float gate_delay_new
++        = swappable_delay - prev_drive * swappable_in_cap;
++    const float up_pen = prev_drive * (swappable_in_cap - in_cap);
++    const float wscore
++        = ((gate_delay_old - gate_delay_new) - up_weight * up_pen) / denom;
++    if (weighted_cell == nullptr || wscore > weighted_score) {
++      weighted_cell = swappable;
++      weighted_score = wscore;
+     }
+   }
+ 
+-  return best_cell;
++  if (stock_cell != nullptr) {
++    ++selections_count_;
++    if (up_weight > 1.0f) {
++      ++neighbor_weighted_count_;
++    }
++    if (weighted_cell != stock_cell) {
++      ++choice_differs_count_;
++    }
++  }
++  return weighted_cell;
+ }
+ 
+ }  // namespace rsz
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpGenerator.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0010_sizing/rsz/src/move/SizeUpGenerator.hh
+index 96725f6..9382d25 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/move/SizeUpGenerator.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0010_sizing/rsz/src/move/SizeUpGenerator.hh	
+@@ -35,6 +35,7 @@ class SizeUpGenerator : public MoveGenerator
+  public:
+   // === Construction =========================================================
+   explicit SizeUpGenerator(const GeneratorContext& context);
++  ~SizeUpGenerator() override;
+ 
+   // === MoveGenerator API ====================================================
+   MoveType type() const override { return MoveType::kSizeUp; }
+@@ -63,7 +64,8 @@ class SizeUpGenerator : public MoveGenerator
+                                       float load_cap,
+                                       float prev_drive,
+                                       const sta::Scene* scene,
+-                                      const sta::MinMax* min_max) const;
++                                      const sta::MinMax* min_max,
++                                      const sta::Pin* drvr_pin) const;
+ 
+  protected:
+   sta::LibertyCell* upsizeCell(sta::LibertyPort* in_port,
+@@ -73,7 +75,13 @@ class SizeUpGenerator : public MoveGenerator
+                                float load_cap,
+                                float prev_drive,
+                                const sta::Scene* scene,
+-                               const sta::MinMax* min_max) const;
++                               const sta::MinMax* min_max,
++                               const sta::Pin* drvr_pin = nullptr) const;
++
++ private:
++  mutable int choice_differs_count_{0};
++  mutable int neighbor_weighted_count_{0};
++  mutable int selections_count_{0};
+ };
+ 
+ }  // namespace rsz

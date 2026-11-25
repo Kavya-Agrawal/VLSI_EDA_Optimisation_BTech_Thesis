@@ -56,6 +56,10 @@ class SetupLegacyPolicy : public SetupLegacyBase
   {
     return "LEGACY Phase Endpoint Profiler";
   }
+  // Bottleneck-driven TNS recovery run after the unchanged stock loop.  Keeps
+  // a trial move only if design WNS stays >= the post-stock WNS and design TNS
+  // improves.  Only active for the LEGACY phase.
+  void runTnsRecovery();
   bool pathImproved(sta::Slack end_slack,
                     sta::Slack worst_slack,
                     sta::Slack prev_end_slack,

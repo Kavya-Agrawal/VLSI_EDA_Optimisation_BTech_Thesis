@@ -1,0 +1,78 @@
+{
+  "per_design": {
+    "nangate45/gcd": {
+      "tns_lex_evaluations": 610,
+      "tns_lex_accept_flip": 5,
+      "wns_guard_band_reject": 1,
+      "tns_loss_veto": 1,
+      "tns_weighted_reject": 0
+    },
+    "nangate45/aes": {
+      "tns_lex_evaluations": 3948,
+      "tns_lex_accept_flip": 15,
+      "wns_guard_band_reject": 127,
+      "tns_loss_veto": 585,
+      "tns_weighted_reject": 7
+    },
+    "nangate45/ibex": {
+      "tns_lex_evaluations": 2192,
+      "tns_lex_accept_flip": 4,
+      "wns_guard_band_reject": 133,
+      "tns_loss_veto": 94,
+      "tns_weighted_reject": 0
+    },
+    "nangate45/jpeg": {
+      "tns_lex_evaluations": 1794,
+      "tns_lex_accept_flip": 6,
+      "wns_guard_band_reject": 67,
+      "tns_loss_veto": 247,
+      "tns_weighted_reject": 0
+    }
+  },
+  "total_fired": 9836,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 58,
+      "pins_swapped": 4
+    },
+    "nangate45/aes": {
+      "buffers_removed": 11,
+      "buffers_inserted": 574,
+      "resized": 1704,
+      "pins_swapped": 176,
+      "cloned": 65
+    },
+    "nangate45/ibex": {
+      "buffers_inserted": 93,
+      "resized": 193,
+      "pins_swapped": 14,
+      "cloned": 8
+    },
+    "nangate45/jpeg": {
+      "resized": 357,
+      "pins_swapped": 149
+    }
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

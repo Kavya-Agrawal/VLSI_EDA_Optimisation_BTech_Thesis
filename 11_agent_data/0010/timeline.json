@@ -1,0 +1,40 @@
+[
+  {
+    "step": "planned",
+    "t": 47.6,
+    "ts": "2026-11-25T13:36:37Z",
+    "cluster": "sizing",
+    "title": "Criticality-weighted (Lagrangian-style) cell selection that charges upstream and side-load delay by their violation weight"
+  },
+  {
+    "step": "coded",
+    "t": 145.4,
+    "ts": "2026-11-25T13:38:15Z",
+    "files": [
+      "src/move/SizeUpGenerator.cc",
+      "src/move/SizeUpGenerator.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 186.0,
+    "ts": "2026-11-25T13:38:55Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 41
+  },
+  {
+    "step": "evaluated",
+    "t": 386.4,
+    "ts": "2026-11-25T13:42:16Z",
+    "accepted": false,
+    "score": 9.749155854094433e-07
+  },
+  {
+    "step": "feedback",
+    "t": 530.1,
+    "ts": "2026-11-25T13:44:39Z"
+  }
+]

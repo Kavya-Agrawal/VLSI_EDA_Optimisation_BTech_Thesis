@@ -1,0 +1,82 @@
+{
+  "per_design": {
+    "nangate45/gcd": {
+      "bottleneck_rounds": 5,
+      "bottleneck_drivers_ranked": 874,
+      "bottleneck_trials": 328,
+      "bottleneck_kept": 17,
+      "bottleneck_rejected_wns": 22,
+      "bottleneck_rejected_tns": 56
+    },
+    "nangate45/aes": {
+      "bottleneck_rounds": 5,
+      "bottleneck_drivers_ranked": 5892,
+      "bottleneck_trials": 285,
+      "bottleneck_kept": 22,
+      "bottleneck_rejected_wns": 19,
+      "bottleneck_rejected_tns": 17
+    },
+    "nangate45/ibex": {
+      "bottleneck_rounds": 4,
+      "bottleneck_drivers_ranked": 2879,
+      "bottleneck_trials": 288,
+      "bottleneck_kept": 30,
+      "bottleneck_rejected_wns": 17,
+      "bottleneck_rejected_tns": 89
+    },
+    "nangate45/jpeg": {
+      "bottleneck_rounds": 2,
+      "bottleneck_drivers_ranked": 8425,
+      "bottleneck_trials": 169,
+      "bottleneck_kept": 34,
+      "bottleneck_rejected_wns": 77,
+      "bottleneck_rejected_tns": 12
+    }
+  },
+  "total_fired": 19568,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 37,
+      "pins_swapped": 4
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 486,
+      "resized": 1415,
+      "pins_swapped": 139,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 158,
+      "pins_swapped": 22,
+      "cloned": 10
+    },
+    "nangate45/jpeg": {
+      "resized": 308,
+      "pins_swapped": 123,
+      "cloned": 1
+    }
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

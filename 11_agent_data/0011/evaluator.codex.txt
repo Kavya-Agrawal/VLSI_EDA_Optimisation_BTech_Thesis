@@ -1,0 +1,130 @@
+Cannot save `feedback.md`: this session’s filesystem is read-only. Completed content follows.
+
+# 1. Outcome
+
+**REJECT versus champion.** Score **−0.00004**, below the required **+0.00200** gain. The authoritative baseline verdict is **ACCEPT**, with the same score and timing deltas; it does not establish an improvement.
+
+Deltas below are candidate minus reference; positive means improved timing. Both comparisons have identical timing values.
+
+| Design | WNS reference → candidate (ns) | ΔWNS (ns) | TNS reference → candidate (ns) | ΔTNS (ns) |
+|---|---:|---:|---:|---:|
+| nangate45/gcd | −0.023366 → −0.023366 | 0 | −0.474810 → −0.474810 | 0 |
+| nangate45/aes | −0.025841 → −0.025939 | −0.000097644 | −1.140959 → −1.291797 | −0.150839 |
+| nangate45/ibex | −0.079412 → −0.079412 | 0 | −65.665448 → −65.665448 | 0 |
+| nangate45/jpeg | −0.086623 → −0.086631 | −0.000007661 | −32.403059 → −32.356021 | +0.047038 |
+
+AES violation magnitude increased **13.22%**; JPEG decreased **0.145%**. AES lost **3.21×** the TNS recovered by JPEG. All six unit targets and ten smoke cases passed. No `RSZ_EVOLVE` counters were captured.
+
+# 2. Did the hypothesis do what it predicted?
+
+**The implementation did not fully test the stated hypothesis.** Source comparison with champion shows:
+
+- `Rebuffer.cc::totalSinkViolation()` traverses completed trees and sums estimated sink violations.
+- `chooseLowestTnsOption()` reranks surviving root options within the stated epsilon.
+- `BufferedNet.hh` is unchanged, and option construction/pruning remains unchanged. There is **no third Pareto dimension retained during tree construction**. A potentially useful low-V tree can still disappear before root selection.
+
+| Prediction | Observation | Interpretation |
+|---|---|---|
+| Ibex shared-cone TNS improves | Exactly unchanged; worst-path list unchanged | No demonstrated benefit on the principal shared-fanout bottleneck |
+| JPEG shared-cone TNS improves | +0.047038 ns; four listed endpoints improve, five regress | Small benefit, without verified attribution to V selection |
+| WNS stays within 1 ps | AES loss 0.097644 ps; JPEG loss 0.007661 ps | Design-level bound met |
+| Local selection avoids AES damage | AES TNS worsens 0.150839 ns | Locality alone did not protect aggregate timing |
+| At most one violating sink preserves stock behavior | Explicit early return exists in source | Not verified by runtime counters or a targeted equivalence test |
+
+JPEG’s largest listed gains are **0.945 ps** at block 6/unit 6/result 16 and **0.605 ps** at block 7/unit 4/result 17. These do not materially change its worst arithmetic paths.
+
+Repair activity changed substantially:
+
+- AES: buffers inserted **481 → 398**, resizing **1388 → 1198**, cloning **70 → 54**, pin swaps **132 → 123**.
+- JPEG: resizing **282 → 262**, pin swaps **117 → 103**; neither run reports buffer insertion.
+- Ibex: resizing and cloning unchanged; pin swaps **14 → 13**.
+
+These changes establish a different repair trajectory, not that the V selector caused the measured improvements. Missing counters mean activation remains unknown; `total_fired=0` must not be interpreted as measured inactivity.
+
+Pre-repair improvements describe the entire repair flow and are not evidence of candidate-over-reference benefit.
+
+# 3. Where the remaining negative slack comes from
+
+The **five globally worst reported endpoints are all JPEG endpoints**. In the table, endpoint suffixes follow `fdct_zigzag.dct_mod.`.
+
+| Endpoint suffix | Slack (ns) | Structural evidence and likely cause | Moves that should address it | Why this change likely did not |
+|---|---:|---|---|---|
+| `dct_block_6.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | −0.086631 | 20 stages, fanout ≤12; `HA_X1@_115442_/S`, `FA_X1@_108721_/S`: deep arithmetic logic with weak-driver/slew contribution | Legal arithmetic-cell sizing/substitution, load isolation, logic restructuring | Root-tree reranking does not shorten arithmetic depth or directly strengthen these cells |
+| `dct_block_5.dct_unit_2.macu.mult_res[16]$_DFFE_PP_/D` | −0.085650 | 23 stages, fanout ≤50; `HA_X1@_114387_/S`, `OAI21_X1@_096477_/ZN`: deep logic plus fanout loading | Size legal equivalents; buffer or clone the actual high-fanout branch | Existing tree choices may not cover the limiting branch; improvement is only 0.002 ps |
+| `dct_block_5.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | −0.085302 | 22 stages, fanout ≤15; shared `ddin[8]` DFFR_X2 launch driver and `HA_X1@_114238_/S` | Launch-load isolation/cloning where legal; arithmetic-cell sizing | Requires cell/load changes beyond choosing among surviving buffer trees |
+| `dct_block_7.dct_unit_4.macu.mult_res[15]$_DFFE_PP_/D` | −0.084674 | 20 stages, fanout ≤15; `HA_X1@_115122_/S` and the same `ddin[8]` driver | HA sizing/substitution and shared-launch load reduction | Per-net V does not directly optimize accumulated arithmetic delay or shared upstream effects |
+| `dct_block_2.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | −0.084280 | 19 stages, fanout ≤12; `HA_X1@_115515_/S`, `NOR3_X2@_106305_/ZN` | Legal sizing, pin swaps on suitable cells, local logic restructuring | Root selection leaves logic depth and cell implementation unchanged; endpoint regresses 0.016 ps |
+
+These are structural inferences. The report does not establish long-wire delay, IO constraints, or clock skew as the cause of these five paths. Reported slew units require validation before physical interpretation.
+
+Ibex remains the clearest shared-cone opportunity: its ten worst paths share `AND2_X1@_26153_/ZN`, have **35 stages** and path maximum fanout **943**. Buffering, cloning, or driver sizing should target the actual overloaded net. Unchanged timing suggests a coverage, retained-option, or acceptance limitation; the absent counters prevent distinguishing them.
+
+# 4. Regressions
+
+AES endpoint deltas use the six-decimal path records.
+
+| AES endpoint | Reference → candidate (ns) | Δslack (ps) |
+|---|---:|---:|
+| `sa23_sr[0]$_DFF_P_/D` | −0.024186 → −0.025939 | −1.753 |
+| `sa23_sr[4]$_DFF_P_/D` | −0.021932 → −0.024098 | −2.166 |
+| `sa20_sr[7]$_DFF_P_/D` | −0.022714 → −0.023570 | −0.856 |
+| `sa02_sr[7]$_DFF_P_/D` | −0.021124 → −0.022006 | −0.882 |
+| `sa11_sr[6]$_DFF_P_/D` | −0.018996 → −0.020533 | −1.537 |
+
+AES has eight improved and five regressed matched endpoints, plus seven entries entering and seven leaving the worst list. The matched-path counts do not represent total TNS.
+
+Probable mechanism: root reranking changes applied plans and subsequent repair opportunities. AES performs 83 fewer insertions, 190 fewer resizes, and 16 fewer clones. Estimated sink V may also differ from downstream endpoint TNS because of reconvergence, slew effects, and subsequent timing updates. These mechanisms remain unverified.
+
+The **1 ps local option bound is not an endpoint regression bound**: multiple moves and downstream interactions can accumulate. AES’s worst endpoint also changes, explaining why individual losses exceed 1 ps while design WNS loses only 0.098 ps.
+
+JPEG regressed endpoints, using the same prefix convention:
+
+| Endpoint suffix | Δslack (ps) |
+|---|---:|
+| `dct_block_6.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | −0.008 |
+| `dct_block_2.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | −0.016 |
+| `dct_block_6.dct_unit_7.macu.mult_res[16]$_DFFE_PP_/D` | −0.008 |
+| `dct_block_6.dct_unit_4.macu.mult_res[17]$_DFFE_PP_/D` | −0.007 |
+| `dct_block_6.dct_unit_7.macu.mult_res[18]$_DFFE_PP_/D` | −0.008 |
+
+These are small regressions consistent with altered repair choices; the logs do not identify the responsible moves. GCD and Ibex have no reported timing regressions.
+
+# 5. Recommendation for the next iteration
+
+1. **Buffering — establish activation and measured acceptance.** Emit counters from the actual setup-repair completion path, including zero counts. Record evaluated roots, multi-violating roots, changed choices, applied plans, and rollback reasons. Compare predicted V changes with actual affected-endpoint TNS after timing update. Reject or roll back choices that worsen measured TNS or exceed the WNS budget. First resolve whether the measured executable contains this selector.
+
+2. **Buffering — test the missing Pareto retention in isolation.** Preserve V-aware alternatives during wire, buffer, and junction pruning, using a delay-dependent violation representation that handles sink threshold crossings. Compare against root-only reranking with identical eligibility and target order. Include targeted cases for a two-dimensionally dominated but lower-V tree, reconvergence, and zero/one violating sink.
+
+3. **Sizing — address JPEG’s arithmetic bottlenecks if buffering coverage is insufficient.** Target the identified HA/FA and launch-driver cones using legal equivalents and measured downstream timing. Inspect Ibex’s `_26153_` net to distinguish eligibility, candidate generation, and acceptance failures before proposing broader buffering access.
+
+Require **score ≥+0.00200**, verified activation, and elimination of the AES TNS regression before promotion.
+
+**Do not retry global endpoint reordering to compensate for weak local V results.** Prior iterations already exposed AES/JPEG regressions, and this candidate provides no evidence that reordering would fix the local model.
+
+```json
+{
+  "recommended_cluster": "buffering",
+  "dominant_cause": "deep_logic",
+  "lesson": "Root-only sink-violation reranking left Ibex unchanged and traded a 0.047038 ns JPEG TNS gain for a 0.150839 ns AES loss; verify activation and actual endpoint TNS before testing V-aware Pareto retention.",
+  "dead_end": "Do not repeat global endpoint reordering or promote uninstrumented root-only V reranking as a substitute for three-dimensional Pareto retention.",
+  "good_changes": [],
+  "bad_changes": [
+    "src/rsz/src/Rebuffer.cc: chooseLowestTnsOption reranking coincided with AES TNS regression and no Ibex timing benefit; causality is unverified.",
+    "src/rsz/src/Rebuffer.cc: V is evaluated only on surviving root options, leaving two-dimensional pruning unchanged.",
+    "src/rsz/src/move/RebufferMtGenerator.cc: added counter reporting produced no captured RSZ_EVOLVE lines."
+  ],
+  "files_to_revisit": [
+    "src/rsz/src/Rebuffer.cc",
+    "src/rsz/src/Rebuffer.hh",
+    "src/rsz/src/BufferedNet.hh",
+    "src/rsz/src/BufferedNet.cc",
+    "src/rsz/src/move/RebufferMtGenerator.cc",
+    "src/rsz/src/move/RebufferMtCandidate.cc",
+    "src/rsz/src/move/SizeUpGenerator.cc",
+    "src/rsz/src/move/CloneGenerator.cc"
+  ],
+  "files_to_avoid": [
+    "src/rsz/src/RepairSetupAnalysisTarget.cc"
+  ]
+}
+```

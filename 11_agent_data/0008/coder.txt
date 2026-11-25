@@ -1,4 +1,4 @@
-Implemented measured, journaled LEGACY candidate selection and added `HYPOTHESIS.md`. Winner replay verifies measured gain; admission guards setup, focus slack, hold metrics, DRV counts, and area.
+fImplemented measured, journaled LEGACY candidate selection and added `HYPOTHESIS.md`. Winner replay verifies measured gain; admission guards setup, focus slack, hold metrics, DRV counts, and area.
 
 Only lightweight checks ran. Builds, tests, and final detailed-placement gain survival remain for the orchestrator.
 

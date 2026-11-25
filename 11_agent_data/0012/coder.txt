@@ -1,0 +1,17 @@
+I replaced the LEGACY loop's endpoint-only acceptance with the TNS-weighted rule, and added the `RSZ_EVOLVE` counters and `HYPOTHESIS.md`. I haven't built or run anything, per the resource rule, so none of it is compiled or tested.
+
+The stock test lives in `SetupLegacyPolicy::pathImproved`. It accepts a pass if design WNS improves, or if WNS is equal and the target endpoint's slack improves. The new `SetupLegacyPolicy::passAccepted` replaces it in `repairEndpoint`. It reads design TNS after each pass and applies these rules in order:
+
+1. **Guard band:** reject if design WNS or the endpoint slack worsens by more than 1 ps.
+2. **Veto:** reject a pass whose TNS loss exceeds 2× its endpoint gain plus 1 ps.
+3. **Weighted sum:** otherwise accept only if `dTNS + λ·dEndpointSlack > 0`, with λ = max(1, violators/4).
+
+The last TNS I kept is stored per endpoint, so the rule compares against the last accepted state. A rejected pass takes the existing non-improving path, so the journal restore is unchanged.
+
+Five counters print at the end of `iterate()`: `tns_lex_evaluations`, `tns_lex_accept_flip`, `wns_guard_band_reject`, `tns_loss_veto` and `tns_weighted_reject`. They print even when zero.
+
+I did not check whether any subclass overrides `pathImproved` or relies on `repairEndpoint` in a way the new rule breaks.
+
+```json
+{"files_changed": ["src/policy/SetupLegacyPolicy.cc", "src/policy/SetupLegacyPolicy.hh", "src/policy/SetupLegacyBase.hh", "HYPOTHESIS.md"], "summary": "LEGACY per-pass acceptance now uses a lexicographic rule: reject if design WNS or endpoint slack worsens by more than 1 ps, veto passes whose TNS loss exceeds 2x endpoint gain, otherwise accept when dTNS + (violators/4)*dEndpointSlack > 0. Design TNS is read after each pass and stored per endpoint at each checkpoint. RSZ_EVOLVE counters are printed at the end of the phase.", "new_flags": [], "determinism_notes": "The rule depends only on STA slack/TNS values and the violator count, which are deterministic. There is no pointer-ordered or unordered-container iteration, and no threading or randomness. Rollback uses the unchanged journal."}
+```

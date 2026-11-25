@@ -1,0 +1,39 @@
+[
+  {
+    "step": "planned",
+    "t": 54.0,
+    "ts": "2026-11-25T14:18:53Z",
+    "cluster": "sizing",
+    "title": "Joint path-window sizing by dynamic programming as a compound move inside the post-stock TNS-recovery phase"
+  },
+  {
+    "step": "coded",
+    "t": 247.1,
+    "ts": "2026-11-25T14:22:06Z",
+    "files": [
+      "src/policy/SetupLegacyPolicy.cc",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 275.9,
+    "ts": "2026-11-25T14:22:35Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 29
+  },
+  {
+    "step": "evaluated",
+    "t": 512.7,
+    "ts": "2026-11-25T14:26:32Z",
+    "accepted": false,
+    "score": -0.00037769909084747196
+  },
+  {
+    "step": "feedback",
+    "t": 636.6,
+    "ts": "2026-11-25T14:28:36Z"
+  }
+]

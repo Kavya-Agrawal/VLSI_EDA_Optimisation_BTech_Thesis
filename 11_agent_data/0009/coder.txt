@@ -1,0 +1,12 @@
+I made the shared-criticality re-ranking in `SetupLegacyBase::repairPath`. I haven't built or run anything, as instructed, so none of it is compiled or tested. `HYPOTHESIS.md` is written.
+
+- **Map build:** `buildSharedCriticality()` takes the 400 worst violating endpoints, sorted by slack and then endpoint name. It expands each endpoint's worst path and adds `slack / worst_slack` (0 to 1) to every non-port driver pin on it. It rebuilds every 25 `repairPath` calls, counting calls rather than endpoints.
+- **Ranking:** the stable-sort key in `repairPath` is now `load_delay * (1 + share)`. The generators, acceptance and repair budget are untouched, and every move still goes through the existing journal.
+- **Determinism:** the map is only looked up, never iterated, and the endpoint sort doesn't depend on pointer order.
+- **Counters:** the run prints the `RSZ_EVOLVE` lines once, from `Optimizer.cc` after the phase loop and on the early-exit path. They are `shared_rank_builds`, `shared_rank_paths_expanded`, `shared_rank_passes`, `shared_rank_reordered_targets` and `shared_rank_changed_first`. Counters reset at the start of `prepareForPhasePipeline`. I reported `paths_expanded` instead of build time in ms so the log doesn't vary between replicates.
+- **Hypothesis fit:** `shared_rank_changed_first` is the count behind the "5% of passes" target. The counter is per `repairPath` call (shown as `passes`), which is what that criterion measures.
+- **Cost:** each rebuild expands up to 400 paths, so JPEG runtime is the thing to watch.
+
+```json
+{"files_changed": ["src/policy/SetupLegacyBase.cc", "src/policy/SetupLegacyBase.hh", "src/Optimizer.cc", "HYPOTHESIS.md"], "summary": "repairPath now ranks path drivers by load_delay*(1+share), where share sums the normalised negative slack of the top 400 violating endpoints whose worst path passes through the driver. The map is rebuilt every 25 repairPath calls. Generators, acceptance and budget are unchanged, and shared_rank_* RSZ_EVOLVE counters are printed once at the end of the run.", "new_flags": [], "determinism_notes": "The share map is lookup-only (never iterated). Violators are sorted by slack, then endpoint pathName, never by pointer. Counters are integer work counts, not timings."}
+```

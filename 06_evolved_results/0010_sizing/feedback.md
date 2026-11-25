@@ -1,0 +1,131 @@
+# Feedback for iteration 10 (0010_sizing, cluster sizing)
+
+```
+vs champion:
+REJECT  score=+0.00000
+  nangate45/gcd      WNS -0.0234 -> -0.0234 ns  TNS -0.475 -> -0.475 ns  score +0.00000
+  nangate45/aes      WNS -0.0258 -> -0.0258 ns  TNS -1.141 -> -1.134 ns  score +0.00000
+  nangate45/ibex     WNS -0.0794 -> -0.0794 ns  TNS -65.665 -> -65.665 ns  score +0.00000
+  nangate45/jpeg     WNS -0.0866 -> -0.0866 ns  TNS -32.403 -> -32.403 ns  score +0.00000
+  ! score +0.00000 below required gain +0.00200
+
+vs baseline:
+ACCEPT  score=+0.00000
+  nangate45/gcd      WNS -0.0234 -> -0.0234 ns  TNS -0.475 -> -0.475 ns  score +0.00000
+  nangate45/aes      WNS -0.0258 -> -0.0258 ns  TNS -1.141 -> -1.134 ns  score +0.00000
+  nangate45/ibex     WNS -0.0794 -> -0.0794 ns  TNS -65.665 -> -65.665 ns  score +0.00000
+  nangate45/jpeg     WNS -0.0866 -> -0.0866 ns  TNS -32.403 -> -32.403 ns  score +0.00000
+```
+
+Could not save `feedback.md`: the read-only sandbox rejected the write. Contents follow.
+
+## 1. Outcome
+
+**REJECT vs champion:** score **+0.00000**, below required **+0.00200**. Baseline verdict: **ACCEPT**, score **+0.00000**. All six unit targets and ten smoke cases passed.
+
+Champion and baseline reference metrics are identical. Positive deltas indicate improvement; units are ns.
+
+| Design | WNS reference → candidate | ΔWNS | TNS reference → candidate | ΔTNS |
+|---|---:|---:|---:|---:|
+| nangate45/gcd | -0.0234 → -0.0234 | 0 | -0.475 → -0.475 | 0 |
+| nangate45/aes | -0.0258 → -0.0258 | 0 | -1.141 → -1.134 | +0.007183 |
+| nangate45/ibex | -0.0794 → -0.0794 | 0 | -65.665 → -65.665 | 0 |
+| nangate45/jpeg | -0.0866 → -0.0866 | 0 | -32.403 → -32.403 | 0 |
+
+AES reduces |TNS| by **0.630%**. No design improves WNS. Results cover one replicate.
+
+## 2. Did the hypothesis do what it predicted?
+
+**A small AES TNS improvement occurred; protection of critical shared cones remains unproven.**
+
+| Design | Weighted selections / total | Choices differing from stock | Difference rate |
+|---|---:|---:|---:|
+| gcd | 548 / 548 | 0 | 0% |
+| aes | 2117 / 2124 | 4 | 0.188% |
+| ibex | 944 / 944 | 19 | 2.013% |
+| jpeg | 1469 / 1470 | 0 | 0% |
+| **Total** | **5078 / 5086** | **23** | **0.452%** |
+
+The logic activated on **99.84%** of selections. Activation is not the bottleneck: JPEG never selected a different master, while Ibex’s 19 different choices produced unchanged final timing, area, and move counts. Selection counters do not establish that those choices committed.
+
+The implementation tests a narrower surrogate than the proposed affected-arc objective:
+
+```text
+score =
+  (gate_gain − [1 + min(sum(neighbour_lambda), 4)] × prev_drive × delta_Cin)
+  / cost_ratio
+```
+
+It leaves target gain unweighted, combines neighbours into one capped input-capacitance penalty, and retains cost normalization. It does not estimate separate delay changes for affected arcs. Stock eligibility remains unchanged, and a replacement can win even when every weighted score is negative; collateral loss cannot independently veto the move.
+
+With no violating neighbours, the formula recovers stock scoring. Passing gates supports compatibility, but does not independently verify this boundary case.
+
+AES used **20 fewer resizes**, **10 fewer buffer insertions**, **three more pin swaps**, and unchanged cloning. This indicates a changed repair trajectory. Its worst endpoint remains `sa33_sr[3]$_DFF_P_/D` at **-0.025841 ns**. No before/after driver-delay evidence establishes protection of `_13069_/Z`. Large pre-to-post repair gains cannot be credited to this candidate without the reference comparison.
+
+## 3. Where the remaining negative slack comes from
+
+The **five globally worst reported endpoints are all JPEG**. Endpoint prefix below: `fdct_zigzag.dct_mod.`.
+
+| Endpoint after prefix | Slack (ns) | Likely cause and evidence | Relevant moves; why sizing selection missed it |
+|---|---:|---|---|
+| `dct_block_6.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | -0.086623 | **Deep logic / weak drive:** 20 stages, max fanout 12; HA_X1 `_115442_/S`, FA_X1 `_108721_/S` | Legal arithmetic resizing and output-load isolation. Ranking cannot create unavailable masters or reduce logic depth; JPEG changed zero choices. |
+| `dct_block_5.dct_unit_2.macu.mult_res[16]$_DFFE_PP_/D` | -0.085652 | **Deep logic / high fanout:** 23 stages, max fanout 50; HA_X1 `_114387_/S`, OAI21_X1 `_096477_/ZN` | Split/rebuffer the actual fanout-50 net; clone an eligible driver; size the OAI stage. Input-cap weighting does not partition loads. |
+| `dct_block_5.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | -0.085302 | **Shared launch load / deep logic:** 22 stages, max fanout 15; DFFR_X2 `ddin[8].../Q`, HA_X1 `_114238_/S` | Buffer/split launch loads and resize downstream stages. Existing combinational cloning excludes the launching flop. |
+| `dct_block_7.dct_unit_4.macu.mult_res[15]$_DFFE_PP_/D` | -0.084674 | **Weak drive / shared load:** 20 stages, max fanout 15; HA_X1 `_115122_/S`, same `ddin[8]` launch | Partition launch loads; isolate or legally resize the HA output. Selection-only changes do not alter topology or explicitly model both arithmetic-cell outputs. |
+| `dct_block_2.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | -0.084264 | **Deep logic / drive-load mismatch:** 19 stages, max fanout 12; HA_X1 `_115515_/S`, NOR3_X2 `_106305_/ZN` | Legal HA/NOR resizing, asymmetric pin swapping, load isolation. JPEG retains identical 282 resizes, 117 pin swaps, and endpoint results. |
+
+Verify available HA/FA equivalents before proposing larger masters. Path maximum fanout need not belong to the listed worst-slew driver. The supplied report does not establish long wire, IO constraint, or clock skew as causes for these five endpoints. Raw slew values lack trustworthy physical units; do not interpret their magnitudes as ns.
+
+Outside these five, **Ibex is the strongest shared-net target**: its ten worst endpoints have 35 stages and maximum fanout **943**, repeatedly implicating AND2_X1 `_26153_/ZN`. Its **-65.665 ns TNS** dominates residual negative slack. GCD repeats `_950_/ZN` and `_977_/ZN`; AES retains slow XOR/XNOR/AOI cones.
+
+## 4. Regressions
+
+AES `sa02_sr[7]$_DFF_P_/D` worsened:
+
+- Reference: **-0.021124 ns**
+- Candidate: **-0.021234 ns**
+- Δslack: **-0.000110 ns**, or **-0.110 ps**
+
+A smaller selected master may preserve upstream slack while worsening target-output slew. Subsequent changes in buffering and resizing may also redistribute delay. These are plausible mechanisms; no move trace establishes causality. Accepting negative weighted scores prevents a strict collateral-protection guarantee.
+
+AES `sa03_sr[7]$_DFF_P_/D` improved by **0.000068 ns**. `sa21_sr[1]$_DFF_P_/D` entered the worst list and `sa30_sr[2]$_DFF_P_/D` left; membership changes alone do not prove regression or improvement.
+
+No matched-endpoint regressions were reported for GCD, Ibex, or JPEG. All WNS values remained unchanged.
+
+## 5. Recommendation for the next iteration
+
+1. **Cluster `buffering`: target shared-net topology.** Start with Ibex `_26153_/ZN`, then JPEG’s fanout-50 nets and shared `ddin[8]` launch. Trace target discovery, legality, generation, acceptance, and rollback. Test capacitance- and distance-aware load partitions: `SplitLoadGenerator.cc` currently selects half the loads ranked by slack difference. Require measured TNS reduction without WNS loss.
+
+2. **Cluster `cloning`: improve useful partition selection.** For legal combinational drivers, partition sinks using criticality, capacitance, and locality rather than a fixed half. Measure added upstream loading. Use buffering for flop launch nets; existing combinational cloning does not cover them.
+
+3. **Cluster `sizing`: validate collateral predictions before further tuning.** Trace all 23 differing selections through commit/rollback. Record eligible masters, ΔCin, target gain, neighbour penalty, and actual affected-endpoint slack changes. Compare shortlisted replacements against leaving the cell unchanged; allow rejection when measured collateral outweighs benefit.
+
+**Do not repeat:** tuning the capped neighbour multiplier within unchanged eligibility and candidate sets. It weighted 5,078 selections but changed only 23 choices and left Ibex/JPEG timing unchanged.
+
+```json
+{
+  "recommended_cluster": "buffering",
+  "dominant_cause": "high_fanout",
+  "lesson": "Neighbour weighting activated on 5078 of 5086 size selections but changed only 23 choices, improving AES TNS by 0.007183 ns without WNS gain; prioritize shared-net topology repair.",
+  "dead_end": "Repeating capped input-capacitance penalty tuning within unchanged stock eligibility does not address the measured Ibex and JPEG bottlenecks.",
+  "good_changes": [
+    "src/rsz/src/move/SizeUpGenerator.cc: counters distinguish weighted-score activation from actual master-choice changes.",
+    "src/rsz/src/move/SizeUpGenerator.cc: retaining stock eligibility and zero-neighbour scoring fallback preserved passing compatibility gates."
+  ],
+  "bad_changes": [
+    "src/rsz/src/move/SizeUpGenerator.cc: capped aggregate neighbour weighting changed no JPEG choices and yielded no Ibex timing improvement.",
+    "src/rsz/src/move/SizeUpGenerator.cc: selecting a replacement despite a negative weighted score prevents explicit rejection of predicted collateral loss."
+  ],
+  "files_to_revisit": [
+    "src/rsz/src/move/SplitLoadGenerator.cc",
+    "src/rsz/src/move/BufferGenerator.cc",
+    "src/rsz/src/Rebuffer.cc",
+    "src/rsz/src/move/CloneGenerator.cc",
+    "src/rsz/src/move/SizeUpGenerator.cc"
+  ],
+  "files_to_avoid": [
+    "src/rsz/src/move/SizeUpMatchGenerator.cc",
+    "src/rsz/src/move/SizeUpMtGenerator.cc"
+  ]
+}
+```

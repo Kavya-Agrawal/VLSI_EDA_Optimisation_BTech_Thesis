@@ -1,0 +1,184 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy/rsz/HYPOTHESIS.md
+new file mode 100644
+index 0000000..7d4cd7b
+--- /dev/null
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy/rsz/HYPOTHESIS.md	
+@@ -0,0 +1,44 @@
++# TNS-weighted lexicographic acceptance in the LEGACY setup loop
++
++## Problem
++Stock LEGACY repair promotes a pass only if design WNS improves, or WNS is
++equal and the targeted endpoint's slack improves. Moves that help many
++violating endpoints through a shared cone (Ibex trunk) but do not move the
++target are rolled back, while locally helpful moves that damage side paths
++(AES) can be kept.
++
++## Current heuristic
++`src/policy/SetupLegacyPolicy.cc: SetupLegacyPolicy::pathImproved`, used in
++`repairEndpoint` to choose between `saveImprovedCheckpoint` and the
++decreasing-slack counter / `restoreEndpointState`.
++
++## New approach
++`SetupLegacyPolicy::passAccepted` (called in place of `pathImproved`), using
++OpenSTA's incrementally maintained design TNS read after each pass:
++1. Reject if design WNS or the endpoint slack worsens by more than 1 ps
++   (guard band).
++2. Veto a pass if its TNS loss exceeds 2x its endpoint gain (+1 ps).
++3. Otherwise accept iff `dTNS + lambda * dEndpointSlack > 0`, with
++   `lambda = max(1, violators/4)`.
++When dTNS equals the endpoint's own change this reduces to stock behaviour.
++Target ranking, generators and journaling are unchanged; a rejected pass takes
++the existing non-improving path (counter, force_single_repair, restore).
++`EndpointRepairState::prev_pass_tns` holds TNS at the last checkpoint.
++
++## Why WNS/TNS should improve
++Shared-trunk moves with large aggregate TNS gain are kept; moves that trade
++side-path slack for a small endpoint gain are dropped, so AES TNS stops
++regressing. The 1 ps band keeps WNS from degrading.
++
++## What to look for in the path report
++Ibex trunk (`_26153_`) cell upsized/buffered and several endpoints improving
++together; fewer AES side-path regressions. Lines `RSZ_EVOLVE ... fired=`.
++
++## Risks
++TNS-driven accepts may allow up to 1 ps WNS loss per accepted pass and may
++stall per-endpoint progress; one TNS query per pass adds a little runtime.
++
++## Files changed
++- src/policy/SetupLegacyPolicy.cc: `passAccepted`, counters, RSZ_EVOLVE output, TNS checkpointing.
++- src/policy/SetupLegacyPolicy.hh: declaration and counter members.
++- src/policy/SetupLegacyBase.hh: `prev_pass_tns` in `EndpointRepairState`.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyBase.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy/rsz/src/policy/SetupLegacyBase.hh
+index 6116d77..246cc08 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyBase.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy/rsz/src/policy/SetupLegacyBase.hh	
+@@ -85,6 +85,7 @@ class SetupLegacyBase : public OptimizationPolicy
+     sta::Slack worst_slack{0.0};
+     sta::Slack prev_end_slack{0.0};
+     sta::Slack prev_worst_slack{0.0};
++    float prev_pass_tns{0.0f};  // design TNS at the last accepted checkpoint
+     int pass{1};
+     int decreasing_slack_passes{0};
+     bool journal_open{false};
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc
+index 7b7c254..b6ff126 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc	
+@@ -53,6 +53,15 @@ void SetupLegacyPolicy::iterate()
+   committer_.printTrackerPhaseSummary(
+       phaseSummaryTitle(), phaseEndpointProfilerTitle(), true);
+ 
++  logger_->report("RSZ_EVOLVE tns_lex_evaluations fired={}", tns_evaluations_);
++  logger_->report("RSZ_EVOLVE tns_lex_accept_flip fired={}",
++                  tns_accept_flips_);
++  logger_->report("RSZ_EVOLVE wns_guard_band_reject fired={}",
++                  tns_reject_guard_);
++  logger_->report("RSZ_EVOLVE tns_loss_veto fired={}", tns_reject_veto_);
++  logger_->report("RSZ_EVOLVE tns_weighted_reject fired={}",
++                  tns_reject_other_);
++
+   // Propagate accumulator deltas back to the sequencer.
+   setup_context_.iteration = main_state.opto_iteration;
+   setup_context_.violation_count = main_state.num_viols;
+@@ -134,6 +143,7 @@ bool SetupLegacyPolicy::beginEndpointRepair(
+ 
+   endpoint_state.prev_end_slack = endpoint_state.end_slack;
+   endpoint_state.prev_worst_slack = endpoint_state.worst_slack;
++  endpoint_state.prev_pass_tns = totalNegativeSlack();
+   return true;
+ }
+ 
+@@ -243,17 +253,10 @@ void SetupLegacyPolicy::repairEndpoint(EndpointRepairState& endpoint_state,
+     refreshEndpointSlacks(endpoint_state);
+ 
+     // Promote only the passes that improve the tracked objective.
+-    const bool better = pathImproved(endpoint_state.end_slack,
+-                                     endpoint_state.worst_slack,
+-                                     endpoint_state.prev_end_slack,
+-                                     endpoint_state.prev_worst_slack);
+-
+-    float new_tns = 0.0f;
++    const float new_tns = totalNegativeSlack();
++    const bool better = passAccepted(endpoint_state, new_tns, main_state.num_viols);
+ 
+-    // The profiler records the per-pass WNS/TNS trajectory even when the
+-    // debug summary does not need the TNS query.
+     if (log_change_summary || RepairSetupProfiler::enabled()) {
+-      new_tns = totalNegativeSlack();
+       RepairSetupProfiler::qor(
+           "pass_after", endpoint_state.worst_slack, new_tns);
+     }
+@@ -284,6 +287,7 @@ void SetupLegacyPolicy::repairEndpoint(EndpointRepairState& endpoint_state,
+       }
+       endpoint_state.prev_end_slack = endpoint_state.end_slack;
+       endpoint_state.prev_worst_slack = endpoint_state.worst_slack;
++      endpoint_state.prev_pass_tns = new_tns;
+       endpoint_state.decreasing_slack_passes = 0;
+       endpoint_state.force_single_repair = false;
+       saveImprovedCheckpoint(endpoint_state);
+@@ -440,4 +444,43 @@ bool SetupLegacyPolicy::pathImproved(const sta::Slack end_slack,
+              && sta::fuzzyGreater(end_slack, prev_end_slack));
+ }
+ 
++bool SetupLegacyPolicy::passAccepted(const EndpointRepairState& endpoint_state,
++                                     const float new_tns,
++                                     const int num_viols)
++{
++  constexpr double kBand = 1.0e-12;  // 1 ps guard band
++  const bool stock = pathImproved(endpoint_state.end_slack,
++                                  endpoint_state.worst_slack,
++                                  endpoint_state.prev_end_slack,
++                                  endpoint_state.prev_worst_slack);
++
++  const double d_end = endpoint_state.end_slack - endpoint_state.prev_end_slack;
++  const double d_wns
++      = endpoint_state.worst_slack - endpoint_state.prev_worst_slack;
++  const double d_tns = static_cast<double>(new_tns)
++                       - static_cast<double>(endpoint_state.prev_pass_tns);
++  const double lambda = std::max(1.0, num_viols / 4.0);
++
++  ++tns_evaluations_;
++
++  bool accept = false;
++  if (d_wns < -kBand || d_end < -kBand) {
++    if (stock) {
++      ++tns_reject_guard_;
++    }
++    return false;
++  }
++  if (stock && -d_tns > 2.0 * std::max(d_end, 0.0) + kBand) {
++    ++tns_reject_veto_;
++    return false;
++  }
++  accept = d_tns + lambda * d_end > 0.0;
++  if (accept && !stock) {
++    ++tns_accept_flips_;
++  } else if (!accept && stock) {
++    ++tns_reject_other_;
++  }
++  return accept;
++}
++
+ }  // namespace rsz
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh
+index 1d47ea6..0328251 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh	
+@@ -60,6 +60,17 @@ class SetupLegacyPolicy : public SetupLegacyBase
+                     sta::Slack worst_slack,
+                     sta::Slack prev_end_slack,
+                     sta::Slack prev_worst_slack) const;
++  // TNS-weighted lexicographic acceptance (replaces pathImproved in the loop).
++  bool passAccepted(const EndpointRepairState& endpoint_state,
++                    float new_tns,
++                    int num_viols);
++
++ private:
++  int tns_evaluations_{0};
++  int tns_accept_flips_{0};   // stock rejects, TNS rule accepts
++  int tns_reject_guard_{0};   // stock accepts, WNS guard band rejects
++  int tns_reject_veto_{0};    // stock accepts, TNS-loss veto rejects
++  int tns_reject_other_{0};   // stock accepts, weighted sum rejects
+ };
+ 
+ }  // namespace rsz

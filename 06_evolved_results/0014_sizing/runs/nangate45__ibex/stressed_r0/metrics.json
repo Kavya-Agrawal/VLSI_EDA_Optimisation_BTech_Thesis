@@ -1,0 +1,60 @@
+{
+  "clock_period_ns": 1.98,
+  "endpoints": 5565,
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "repair_ms": 68613,
+  "placement_violations": 0,
+  "pre": {
+    "wns_setup": -0.19248381211517587,
+    "tns_setup": -164.0219313462487,
+    "wns_hold": 0.04505762557261142,
+    "tns_hold": 0.0,
+    "setup_violations": 1572,
+    "hold_violations": 0,
+    "instances": 14533,
+    "pins": 55126,
+    "area_um2": 28364.112836243294,
+    "util": 0.5059812188304302,
+    "buffers": 1020,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "post": {
+    "wns_setup": -0.07944445326454984,
+    "tns_setup": -34.984698794819565,
+    "wns_hold": 0.044729221592639395,
+    "tns_hold": 0.0,
+    "setup_violations": 1166,
+    "hold_violations": 0,
+    "instances": 14615,
+    "pins": 55298,
+    "area_um2": 28673.204255369455,
+    "util": 0.511495043726158,
+    "buffers": 1098,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "evolve_counters": {
+    "window_dp_examined": 67,
+    "window_dp_with_gain": 41,
+    "window_joint_changed_vs_greedy": 30,
+    "window_dp_stages_changed": 89,
+    "window_dp_trials": 41,
+    "window_dp_kept": 15,
+    "window_dp_rejected_wns": 14,
+    "window_dp_rejected_tns": 12,
+    "bottleneck_rounds": 4,
+    "bottleneck_drivers_ranked": 2844,
+    "bottleneck_trials": 245,
+    "bottleneck_kept": 30,
+    "bottleneck_rejected_wns": 16,
+    "bottleneck_rejected_tns": 78
+  },
+  "repair_stats": {
+    "resized": 151,
+    "pins_swapped": 17,
+    "cloned": 9
+  }
+}

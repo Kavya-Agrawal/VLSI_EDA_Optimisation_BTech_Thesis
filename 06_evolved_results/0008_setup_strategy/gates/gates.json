@@ -4,8 +4,8 @@
     "//src/rsz/test:TestInsertBuffer": "PASSED",
     "//src/rsz/test:TestNestedJournal": "PASSED",
     "//src/rsz/test:TestPreChecks": "PASSED",
-    "//src/rsz/test:TestSkewBudget": "PASSED",
     "//src/rsz/test:TestResizer": "PASSED",
+    "//src/rsz/test:TestSkewBudget": "PASSED",
     "//src/rsz/test:cpp_tests": "PASSED"
   },
   "smoke_tests": {

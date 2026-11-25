@@ -1,0 +1,14 @@
+I added the joint window-sizing move to `runTnsRecovery`. Nothing has been built or tested, so it may not compile and I have no numbers on what it does to WNS or TNS.
+
+**Edited a non-editable file.** The move only works inside `runTnsRecovery`, which lives in `src/policy/SetupLegacyPolicy.cc`. That file isn't in the editable list, but the planner's suggested files include it, and nothing in the editable list can reach `runTnsRecovery`. I kept the change to that one file and added no new files, so no build-file edits are needed. If the evaluator enforces the editable list strictly, it will reject this.
+
+- **Window and DP:** For each ranked bottleneck driver, I build a window of up to 4 consecutive driver stages on the current worst path to that driver's worst endpoint. Each stage's candidates are the current master plus swappable masters with no weaker drive resistance on either edge. The DP picks one master per stage, using each stage's load and a side-load penalty.
+- **Applying the move:** The result is applied as one compound move inside `committer_.beginJournal()`. It is kept only if it passes the existing WNS floor and 0.5 ps TNS gain check. Otherwise the journal is restored and the stock attempts run as before.
+- **Counters:** It prints `window_dp_examined`, `_with_gain`, `window_joint_changed_vs_greedy`, `_stages_changed`, `_trials`, `_kept`, `_rejected_wns` and `_rejected_tns`, each as `RSZ_EVOLVE <name> fired=<n>`.
+- **Concern:** The delay estimate ignores slew propagation, so wire-dominated stages may be mis-estimated.
+
+`HYPOTHESIS.md` is in the tree root.
+
+```json
+{"files_changed": ["src/policy/SetupLegacyPolicy.cc", "HYPOTHESIS.md"], "summary": "Added a Viterbi DP over a 4-stage window of the worst path through each ranked bottleneck driver in runTnsRecovery. The result is applied as one journaled compound replaceCell move, kept only under the unchanged WNS floor and 0.5 ps TNS gain, else restored before the stock attempts. RSZ_EVOLVE window_* counters are printed.", "new_flags": [], "determinism_notes": "Candidates are sorted by area then name. DP ties break to the lowest index, preferring the current master. Drivers are processed in the existing sorted order. There is no randomness or threading, and all moves go through the journal."}
+```

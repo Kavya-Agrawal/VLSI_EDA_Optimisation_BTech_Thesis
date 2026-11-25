@@ -1,9 +1,43 @@
 {
-  "clock_period_ns": 0.225000,
+  "clock_period_ns": 0.375,
   "endpoints": 72,
   "repair_args": "-setup -repair_tns 100 -verbose",
-  "repair_ms": 2941,
+  "repair_ms": 2868,
   "placement_violations": 0,
-  "pre": {"wns_setup": -0.1749589966869834, "tns_setup": -8.003023359426166, "wns_hold": 0.08650024691360766, "tns_hold": 0.0, "setup_violations": 53, "hold_violations": 0, "instances": 702, "pins": 1899, "area_um2": 805.980004958684, "util": 0.7485177865612701, "buffers": 155, "drv_slew": 0, "drv_cap": 0, "drv_fanout": 0},
-  "post": {"wns_setup": -0.17173818409030378, "tns_setup": -7.414839174753439, "wns_hold": 0.09129948444571948, "tns_hold": 0.0, "setup_violations": 52, "hold_violations": 0, "instances": 711, "pins": 1917, "area_um2": 859.7120237929801, "util": 0.7984189723320214, "buffers": 164, "drv_slew": 0, "drv_cap": 0, "drv_fanout": 0}
+  "pre": {
+    "wns_setup": -0.02495898003363754,
+    "tns_setup": -0.7322117563961893,
+    "wns_hold": 0.08650024691360766,
+    "tns_hold": 0.0,
+    "setup_violations": 42,
+    "hold_violations": 0,
+    "instances": 702,
+    "pins": 1899,
+    "area_um2": 805.980004958684,
+    "util": 0.7485177865612701,
+    "buffers": 155,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "post": {
+    "wns_setup": -0.020122959423900817,
+    "tns_setup": -0.3755243722271485,
+    "wns_hold": 0.087038809179191,
+    "tns_hold": 0.0,
+    "setup_violations": 41,
+    "hold_violations": 0,
+    "instances": 708,
+    "pins": 1911,
+    "area_um2": 833.1120238125322,
+    "util": 0.773715415019768,
+    "buffers": 161,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "evolve_counters": {},
+  "repair_stats": {
+    "resized": 34
+  }
 }

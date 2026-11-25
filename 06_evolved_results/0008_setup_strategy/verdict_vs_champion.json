@@ -1,0 +1,68 @@
+{
+  "accepted": false,
+  "score": 0.000626,
+  "reasons": [
+    "nangate45/jpeg: candidate evaluation failed (timeout)",
+    "score +0.00063 below required gain +0.00200",
+    "instrumentation missing: no RSZ_EVOLVE counter lines printed, cannot tell if the new logic ran"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.006162168172369679,
+      "wns_cand": -0.020122959423900817,
+      "wns_ref": -0.02336561565920771,
+      "tns_cand": -0.3755243722271485,
+      "tns_ref": -0.474810204593015,
+      "d_wns_ns": 0.003242656235306892,
+      "d_tns_ns": 0.09928583236586647,
+      "d_wns_pct_period": 0.8647083294151712,
+      "d_tns_pct": 20.910635745701722,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 833.1120238125322,
+      "area_ref": 822.2060254858832,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -0.011672767156782315,
+      "wns_cand": -0.04263106655021167,
+      "wns_ref": -0.02584094122934333,
+      "tns_cand": -1.688679688324861,
+      "tns_ref": -1.140958693152,
+      "d_wns_ns": -0.016790125320868342,
+      "d_tns_ns": -0.547720995172861,
+      "d_wns_pct_period": -2.2750847318249785,
+      "d_tns_pct": -48.00533082049912,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 19999.209399657047,
+      "area_ref": 20554.617563561806,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.007389051568612201,
+      "wns_cand": -0.060493389787435584,
+      "wns_ref": -0.07941181270670272,
+      "tns_cand": -8.110986778464648,
+      "tns_ref": -65.66544827087755,
+      "d_wns_ns": 0.01891842291926714,
+      "d_tns_ns": 57.5544614924129,
+      "d_wns_pct_period": 0.9554759050134918,
+      "d_tns_pct": 87.64801430273363,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28805.13960690223,
+      "area_ref": 28627.185955087953,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  }
+}

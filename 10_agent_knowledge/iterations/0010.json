@@ -1,0 +1,156 @@
+{
+  "iteration": 10,
+  "tag": "0010_sizing",
+  "status": "rejected",
+  "cluster": "sizing",
+  "title": "Criticality-weighted (Lagrangian-style) cell selection that charges upstream and side-load delay by their violation weight",
+  "hypothesis": "Stock SizeUpGenerator picks a replacement master from a single-stage delay estimate on the repaired path, treating upstream and side-load collateral as unweighted, which explains AES/JPEG regressions in iterations 8-9 where shared local drivers (e.g. AES _13069_/Z) degraded. Replace the selection score with sum over affected arcs of lambda_arc * delta_delay, where lambda = max(0,-slack)/|WNS| for the target arc, the upstream driver arc (input-cap increase) and side loads of the input net. With no violating neighbours the score reduces to stock ranking, preserving unit-test contracts that broke iteration 4. Masters that steal slack from critical neighbours lose; sizes on targets with slack-rich upstream win, improving TNS in shared cones without the WNS damage of ranking-based approaches.",
+  "planned_files": [
+    "src/move/SizeUpGenerator.cc",
+    "src/DelayEstimator.cc",
+    "src/DelayEstimator.hh",
+    "src/LRSubproblem.cc"
+  ],
+  "evidence_iterations": [
+    4,
+    5,
+    8,
+    9
+  ],
+  "files_changed": [
+    "src/move/SizeUpGenerator.cc",
+    "src/move/SizeUpGenerator.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 152,
+    "lines_deleted": 14
+  },
+  "accepted": false,
+  "score_vs_champion": 9.749155854094433e-07,
+  "score_vs_baseline": 9.749155854094433e-07,
+  "reasons": [
+    "score +0.00000 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.0,
+      "wns_cand": -0.02336561565920771,
+      "wns_ref": -0.02336561565920771,
+      "tns_cand": -0.474810204593015,
+      "tns_ref": -0.474810204593015,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 822.2060254858832,
+      "area_ref": 822.2060254858832,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": 3.899662341637773e-06,
+      "wns_cand": -0.02584094122934333,
+      "wns_ref": -0.02584094122934333,
+      "tns_cand": -1.1337753279349108,
+      "tns_ref": -1.140958693152,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.007183365217089177,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.6295902963186591,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20530.94405596312,
+      "area_ref": 20554.617563561806,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.0,
+      "wns_cand": -0.07941181270670272,
+      "wns_ref": -0.07941181270670272,
+      "tns_cand": -65.66544827087755,
+      "tns_ref": -65.66544827087755,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28627.185955087953,
+      "area_ref": 28627.185955087953,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": 0.0,
+      "wns_cand": -0.08662293350019246,
+      "wns_ref": -0.08662293350019246,
+      "tns_cand": -32.40305893097288,
+      "tns_ref": -32.40305893097288,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90200.33076012623,
+      "area_ref": 90200.33076012623,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 0,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0010_sizing",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0010_sizing",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0010_sizing/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "buffering",
+    "dominant_cause": "high_fanout",
+    "lesson": "Neighbour weighting activated on 5078 of 5086 size selections but changed only 23 choices, improving AES TNS by 0.007183 ns without WNS gain; prioritize shared-net topology repair.",
+    "dead_end": "Repeating capped input-capacitance penalty tuning within unchanged stock eligibility does not address the measured Ibex and JPEG bottlenecks.",
+    "good_changes": [
+      "src/rsz/src/move/SizeUpGenerator.cc: counters distinguish weighted-score activation from actual master-choice changes.",
+      "src/rsz/src/move/SizeUpGenerator.cc: retaining stock eligibility and zero-neighbour scoring fallback preserved passing compatibility gates."
+    ],
+    "bad_changes": [
+      "src/rsz/src/move/SizeUpGenerator.cc: capped aggregate neighbour weighting changed no JPEG choices and yielded no Ibex timing improvement.",
+      "src/rsz/src/move/SizeUpGenerator.cc: selecting a replacement despite a negative weighted score prevents explicit rejection of predicted collateral loss."
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/move/SplitLoadGenerator.cc",
+      "src/rsz/src/move/BufferGenerator.cc",
+      "src/rsz/src/Rebuffer.cc",
+      "src/rsz/src/move/CloneGenerator.cc",
+      "src/rsz/src/move/SizeUpGenerator.cc"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/move/SizeUpMatchGenerator.cc",
+      "src/rsz/src/move/SizeUpMtGenerator.cc"
+    ]
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0010",
+  "seconds": 530,
+  "when": "2026-11-25T13:44:39Z",
+  "schema_version": 1,
+  "valid_experiment": true
+}

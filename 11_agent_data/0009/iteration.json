@@ -1,0 +1,154 @@
+{
+  "iteration": 9,
+  "tag": "0009_setup_strategy",
+  "status": "rejected",
+  "cluster": "setup_strategy",
+  "title": "Rank repair targets by slack-weighted count of violating endpoints sharing each driver (multi-endpoint path-sharing) instead of per-path load delay",
+  "hypothesis": "Stock SetupLegacyBase::rankPathDrivers orders drivers on a single endpoint's worst path by local load-dependent delay, so a driver on hundreds of violating paths (Ibex _26153_/ZN, fanout 943) gets no priority over a driver on one path. Build a deterministic, capped (top 400 violators, refreshed every 25 endpoints) shared-criticality map summing normalised negative slack of every violating endpoint whose worst path passes through each driver, and rank targets by load_delay*(1+share). Acceptance, generators and repair budget stay stock, avoiding iteration 8's admission/trial machinery that collapsed AES's move mix and timed out JPEG. Each move on a high-share driver improves many endpoints at once, so TNS should drop sharply on Ibex/JPEG while AES (diffuse sharing) stays near stock. RSZ_EVOLVE counters will report builds, rank changes and build time.",
+  "planned_files": [
+    "src/policy/SetupLegacyBase.cc",
+    "src/policy/SetupLegacyBase.hh",
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh"
+  ],
+  "evidence_iterations": [
+    6,
+    7,
+    8
+  ],
+  "files_changed": [
+    "src/policy/SetupLegacyBase.cc",
+    "src/policy/SetupLegacyBase.hh",
+    "src/Optimizer.cc",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 168,
+    "lines_deleted": 0
+  },
+  "accepted": false,
+  "score_vs_champion": -0.0027572130746616637,
+  "score_vs_baseline": -0.0027572130746616637,
+  "reasons": [
+    "score -0.00276 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": -0.002321781721487443,
+      "wns_cand": -0.025544345139926407,
+      "wns_ref": -0.02336561565920771,
+      "tns_cand": -0.44331789494159063,
+      "tns_ref": -0.474810204593015,
+      "d_wns_ns": -0.0021787294807186983,
+      "d_tns_ns": 0.031492309651424355,
+      "d_wns_pct_period": -0.5809945281916529,
+      "d_tns_pct": 6.632610113849193,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 833.1120238125322,
+      "area_ref": 822.2060254858832,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -0.010248070464443015,
+      "wns_cand": -0.04042610804979439,
+      "wns_ref": -0.02584094122934333,
+      "tns_cand": -1.816108204115397,
+      "tns_ref": -1.140958693152,
+      "d_wns_ns": -0.014585166820451065,
+      "d_tns_ns": -0.6751495109633971,
+      "d_wns_pct_period": -1.976309867269792,
+      "d_tns_pct": -59.17387851248466,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20255.10248415685,
+      "area_ref": 20554.617563561806,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.004976771221089419,
+      "wns_cand": -0.06587219844926263,
+      "wns_ref": -0.07941181270670272,
+      "tns_cand": -31.338303505895674,
+      "tns_ref": -65.66544827087755,
+      "d_wns_ns": 0.013539614257440089,
+      "d_tns_ns": 34.327144764981874,
+      "d_wns_pct_period": 0.6838189018909135,
+      "d_tns_pct": 52.27580968210015,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28785.722250290746,
+      "area_ref": 28627.185955087953,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": -0.0034357713338056158,
+      "wns_cand": -0.09305267930685222,
+      "wns_ref": -0.08662293350019246,
+      "tns_cand": -36.094271704222365,
+      "tns_ref": -32.40305893097288,
+      "d_wns_ns": -0.006429745806659767,
+      "d_tns_ns": -3.6912127732494824,
+      "d_wns_pct_period": -0.6429745806659768,
+      "d_tns_pct": -11.391556522835529,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90022.6453381947,
+      "area_ref": 90200.33076012623,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 0,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0009_setup_strategy",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0009_setup_strategy",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0009_setup_strategy/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "setup_strategy",
+    "dominant_cause": "deep_logic",
+    "lesson": "Shared-criticality ranking reduced Ibex TNS magnitude by 52.28% but changed repair trajectories enough to worsen AES and JPEG, so sharing needs bounded influence and evidence of structural concentration.",
+    "dead_end": "Applying load_delay*(1+share) broadly while keeping acceptance and generators stock does not preserve the move mix or protect QoR.",
+    "good_changes": [
+      "src/rsz/src/policy/SetupLegacyBase.cc: shared-criticality target ranking coincided with Ibex TNS improving by 34.327145 ns and increased resizing and cloning",
+      "src/rsz/src/policy/SetupLegacyBase.cc: changed-first counters establish that the new ranking executed and materially affected target selection"
+    ],
+    "bad_changes": [
+      "src/rsz/src/policy/SetupLegacyBase.cc: uncapped-influence share multiplication changed JPEG's first target on 92.8% of ranking passes while resizes fell from 282 to 54",
+      "src/rsz/src/policy/SetupLegacyBase.cc: broad shared ranking failed the AES near-stock prediction, with TNS magnitude increasing 59.17%",
+      "src/rsz/src/policy/SetupLegacyBase.hh: the 400-path cap and 25-call refresh bound path expansion but do not ensure repairability, freshness, or measured build cost"
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/policy/SetupLegacyBase.cc",
+      "src/rsz/src/policy/SetupLegacyBase.hh"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/MoveCommitter.cc",
+      "src/rsz/src/move/SizeUpGenerator.cc",
+      "src/rsz/src/move/BufferGenerator.cc",
+      "src/rsz/src/move/CloneGenerator.cc"
+    ]
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0009",
+  "seconds": 645,
+  "when": "2026-11-25T13:35:49Z"
+}

@@ -1,0 +1,47 @@
+{
+  "per_design": {
+    "nangate45/gcd": {},
+    "nangate45/aes": {},
+    "nangate45/ibex": {}
+  },
+  "total_fired": 0,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 34
+    },
+    "nangate45/aes": {
+      "buffers_inserted": 706,
+      "resized": 612,
+      "pins_swapped": 2,
+      "cloned": 13
+    },
+    "nangate45/ibex": {
+      "buffers_inserted": 191,
+      "resized": 218,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {}
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

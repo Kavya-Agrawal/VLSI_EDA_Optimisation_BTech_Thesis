@@ -1,0 +1,58 @@
+# Iteration 14 plan: joint sizing of a path window by dynamic programming, used inside the TNS-recovery phase
+
+## Observation
+- The iteration 13 champion (score +0.00206) adds a post-stock TNS-recovery phase in `SetupLegacyPolicy.cc::runTnsRecovery`. It kept only 103 of 1,070 trials (9.6%).
+- JPEG made 77 WNS rejections and exited after 2 rounds. Its five worst endpoints are deep HA/FA/OAI arithmetic paths (19–22 stages, fanout 12–17). The feedback says isolated sizing raises input capacitance upstream, and that "coordinated repairs are outside single-move acceptance."
+- Ibex still runs through the fanout-943 `_26153_` trunk on 33–37-stage paths. Upsizing one cell there loads its upstream driver, so the net gain is small.
+- In the recovery phase every move is still a single cell changed with nothing else considered. That is the same greedy one-cell-at-a-time upsizing the stock loop uses.
+
+## Cluster choice and why
+**`sizing`.** Iterations 12 and 13 were both `setup_strategy`, and the rotation rule forbids a third in a row.
+- Earlier sizing attempts (iterations 3, 4, 5, 10) all changed how a single cell is scored inside the stock `SizeUpGenerator`. Iteration 10 changed only 23 choices and gained nothing.
+- The evidence says the problem is not the per-cell score. It is that sizing is decided one cell at a time and inside the stock loop. Iterations 8, 9 and 12 show that perturbing the stock trajectory loses WNS on AES, gcd and JPEG.
+- So this iteration changes the sizing paradigm and applies it only inside the post-stock phase that iteration 13 validated.
+
+## Hypothesis
+- **Problem:** The remaining violations sit on deep paths where stage delays depend on each other. Upsizing cell *i* cuts its own delay but adds load on cell *i−1*. Each single move is either too small to clear the 0.5 ps TNS threshold or breaks the WNS floor through side loads, so it gets rejected.
+- **Current heuristic:** `SizeUpGenerator` picks the best master for one driver, given its current load and current input slew. The recovery phase tries up to 3 such moves per ranked driver.
+- **New approach (sizing a path window jointly with dynamic programming):**
+  - For each recovery target driver, take a window of K=4 consecutive stages on its worst path, centred on the driver.
+  - Enumerate each stage's equivalent masters, restricted to the same footprint plus the stock VT/size candidate filter.
+  - Run a Viterbi-style dynamic program from the window's output back to its input. Each state is (stage, master), and its cost is the estimated arc delay given the next stage's input capacitance as load and the previous stage's output slew.
+  - Add a penalty for side-load delay on off-path fanouts, weighted by whether those fanouts violate.
+  - Apply the best joint assignment as one compound journaled move. The existing fixed stock-WNS floor and incremental-TNS acceptance accept or reject it.
+  - This replaces greedy single-cell upsizing with joint optimisation over the window, in the spirit of Lagrangian/DP path sizing.
+- **Why WNS/TNS should improve:**
+  - Joint sizing can produce combinations that no single move reaches, for example a stronger HA_X1 followed by a smaller downstream input pin.
+  - That should turn some of JPEG's 77 WNS rejections into accepts.
+  - On Ibex, it can size `_26153_` together with its fanin so the trunk speed-up is not cancelled upstream.
+  - The stock trajectory stays untouched, so the WNS-preserving property of iteration 13 holds.
+- **Trigger estimate:**
+  - The new generator is offered on every ranked recovery driver. That is about 285 trials on AES and 288 on Ibex. I expect it to change at least 30% of recovery decisions, more than 85 per design.
+  - This is far above 5% of the relevant (recovery-phase) moves. It is below 5% of all stock moves (2,078 on AES), but by design it leaves stock moves alone.
+- **Risks:**
+  - A window can cost up to 4 × (number of masters) delay estimates. Bound the number of masters per stage at 6 and keep JPEG within the timeout.
+  - A compound move that changes area could break placement legality. The existing legality and area checks still apply.
+  - The delay estimator can be wrong on wire-dominated stages, and the measured acceptance will reject those cases.
+
+## Implementation sketch
+- **New `src/move/PathWindowSizingGenerator.{cc,hh}` (sizing surface):** builds the window from the `PathExpanded` of the target endpoint and runs the dynamic program, using the `DelayEstimator` / `LRSubproblem.cc` delay helpers. It emits a candidate that resizes up to 4 instances under one journal.
+- **`src/LRSubproblem.cc`:** reuse or extend its per-arc delay and load model for the dynamic-programming cost. No changes to how the stock path calls it.
+- **`src/policy/SetupLegacyPolicy.cc::runTnsRecovery`:** a minimal hook that tries the window-sizing candidate first, before the existing generators. Leave ranking, floor, threshold and caps unchanged.
+- **Leave untouched:** `SizeUpGenerator.cc` and `SetupLegacyBase.cc`, so the stock loop stays byte-identical.
+- **Counters:** print `RSZ_EVOLVE pwsize` with windows_built, dp_states, joint_changed_vs_greedy (cases where the DP master differs from the single-cell choice at the target), trials, kept, wns_rej and tns_rej, all per design.
+
+## Success criteria
+- Score versus champion at least +0.002, with WNS no worse than the champion on any design.
+- JPEG recovery keep rate above 20%, WNS rejections below 50, and TNS better than −30.5 ns.
+- Ibex TNS better than −40 ns.
+- `joint_changed_vs_greedy` above 30% of windows.
+- The stock-phase move counts are identical to the champion's.
+
+## Fallback if it fails
+- If DP joints are chosen but rejected for WNS: the side-load model is the weak point, so move on to the `buffering` cluster with critical-sink isolation on the `_26153_`-class nets inside recovery.
+- If `joint_changed_vs_greedy` is near 0: the window is too short or the master sets too narrow. Abandon path-window sizing rather than tuning K.
+
+```json
+{"cluster": "sizing", "title": "Joint path-window sizing by dynamic programming as a compound move inside the post-stock TNS-recovery phase", "hypothesis": "Remaining violations sit on deep HA/FA (JPEG) and fanout-943-trunk (Ibex) paths where one-cell-at-a-time upsizing is cancelled by the extra input-cap load on the upstream stage, so recovery rejects most single moves (77 WNS rejects on JPEG). Replace greedy single-driver master selection with a Viterbi-style dynamic program over a 4-stage window of the worst path. It chooses masters jointly using load-aware arc delays plus a violation-weighted side-load penalty, and applies the result as one journaled compound move. The move is offered only inside runTnsRecovery, under the unchanged fixed stock-WNS floor and 0.5 ps TNS threshold, so the stock trajectory is preserved. Coordinated sizing should turn rejected single moves into accepted joint moves and raise the recovery keep rate on JPEG and Ibex.", "files": ["src/move/PathWindowSizingGenerator.cc", "src/move/PathWindowSizingGenerator.hh", "src/LRSubproblem.cc", "src/LRSubproblem.hh", "src/policy/SetupLegacyPolicy.cc"], "evidence_iterations": [13, 10, 9, 12], "success_criteria": "score vs champion >= +0.002 with no design WNS loss; JPEG recovery keep rate >20% and TNS > -30.5 ns; Ibex TNS > -40 ns; joint_changed_vs_greedy >30% of windows; stock-phase move counts identical to champion", "risk": "DP runtime and delay-estimator error on wire-dominated stages; compound moves may hit the WNS floor through side loads", "rule_updates": "New move generators should first be introduced only inside the post-stock recovery phase, with stock-phase move counts printed to prove the stock trajectory is byte-identical."}
+```

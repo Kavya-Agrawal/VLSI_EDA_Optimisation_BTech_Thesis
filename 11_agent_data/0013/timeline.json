@@ -1,0 +1,40 @@
+[
+  {
+    "step": "planned",
+    "t": 56.4,
+    "ts": "2026-11-25T14:08:41Z",
+    "cluster": "setup_strategy",
+    "title": "Two-phase repair: unchanged stock LEGACY loop, then a bottleneck-driven TNS-recovery phase with a hard post-stock WNS floor"
+  },
+  {
+    "step": "coded",
+    "t": 150.1,
+    "ts": "2026-11-25T14:10:15Z",
+    "files": [
+      "src/policy/SetupLegacyPolicy.cc",
+      "src/policy/SetupLegacyPolicy.hh",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 187.6,
+    "ts": "2026-11-25T14:10:52Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 38
+  },
+  {
+    "step": "evaluated",
+    "t": 423.6,
+    "ts": "2026-11-25T14:14:48Z",
+    "accepted": true,
+    "score": 0.002059507285058947
+  },
+  {
+    "step": "feedback",
+    "t": 614.3,
+    "ts": "2026-11-25T14:17:59Z"
+  }
+]

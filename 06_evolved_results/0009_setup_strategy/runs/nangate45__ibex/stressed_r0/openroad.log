@@ -1,0 +1,854 @@
+EVO_METRICS pre -0.19248381211517587 -164.0219313462487 0.04505762557261142 0.0 inst=14533 area=28364.112836243294 buf=1020 drv=0/0/0
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+EVO_PATHS wrote 61 paths to /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0009_setup_strategy/runs/nangate45__ibex/stressed_r0/paths_pre.json
+EVO_REPAIR_CMD repair_timing -setup -repair_tns 100 -verbose
+[INFO RSZ-0100] Repair move sequence: UnbufferMove SizeUpMove SwapPinsMove BufferMove CloneMove SplitLoadMove 
+[INFO RSZ-0094] Found 1572 endpoints with setup violations.
+[INFO RSZ-0099] Repairing 1572 out of 1572 (100.00%) violating endpoints...
+   Iter   | Removed | Resized | Inserted | Cloned |  Pin  |   Area   |    WNS   |    TNS     |  Viol  |  Worst
+          | Buffers |  Gates  | Buffers  |  Gates | Swaps |          |          |            | Endpts | Endpoint
+------------------------------------------------------------------------------------------------------------------------------
+       0* |       0 |       0 |        0 |      0 |     0 |    +0.0% |   -0.192 |     -164.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+      10* |       0 |       4 |        4 |      0 |     1 |    +0.0% |   -0.166 |     -158.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+      20* |       0 |       6 |        8 |      0 |     5 |    +0.0% |   -0.156 |     -158.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+      30* |       0 |      13 |       10 |      0 |     6 |    +0.1% |   -0.145 |     -140.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[575\]$_DFFE_PN0P_/D
+      40* |       0 |      18 |       12 |      1 |     8 |    +0.1% |   -0.144 |     -138.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[1013\]$_DFFE_PN0P_/D
+      50* |       0 |      24 |       14 |      2 |     9 |    +0.2% |   -0.133 |     -137.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[373\]$_DFFE_PN0P_/D
+      60* |       0 |      31 |       17 |      2 |     9 |    +0.2% |   -0.120 |     -133.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[364\]$_DFFE_PN0P_/D
+      70* |       0 |      38 |       19 |      3 |     9 |    +0.2% |   -0.112 |     -129.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[373\]$_DFFE_PN0P_/D
+      80* |       0 |      43 |       22 |      4 |    10 |    +0.3% |   -0.110 |     -113.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[373\]$_DFFE_PN0P_/D
+      90* |       0 |      47 |       24 |      6 |    12 |    +0.3% |   -0.109 |     -111.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[467\]$_DFFE_PN0P_/D
+     100* |       0 |      53 |       25 |      7 |    14 |    +0.4% |   -0.114 |     -112.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     110* |       0 |      59 |       28 |      9 |    14 |    +0.4% |   -0.100 |     -108.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[575\]$_DFFE_PN0P_/D
+     120* |       0 |      64 |       30 |     11 |    15 |    +0.5% |   -0.094 |     -101.6 |   1572 | cs_registers_i.minstret_counter_i.counter_val_o\[46\]$_DFFE_PN0P_/D
+     130* |       0 |      74 |       30 |     11 |    15 |    +0.5% |   -0.093 |      -95.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[246\]$_DFFE_PN0P_/D
+     140* |       2 |      79 |       33 |     11 |    15 |    +0.5% |   -0.090 |      -93.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[888\]$_DFFE_PN0P_/D
+     150* |       7 |      79 |       38 |     11 |    15 |    +0.5% |   -0.090 |      -93.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[888\]$_DFFE_PN0P_/D
+     160* |       8 |      85 |       42 |     11 |    15 |    +0.6% |   -0.085 |      -89.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     170* |       8 |      90 |       46 |     13 |    17 |    +0.6% |   -0.089 |      -89.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[829\]$_DFFE_PN0P_/D
+     180* |       8 |      96 |       51 |     13 |    17 |    +0.7% |   -0.084 |      -88.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     190* |       8 |     103 |       58 |     13 |    17 |    +0.7% |   -0.082 |      -83.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     200* |       8 |     108 |       60 |     13 |    21 |    +0.8% |   -0.079 |      -72.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[383\]$_DFFE_PN0P_/D
+     210* |       8 |     112 |       67 |     13 |    25 |    +0.8% |   -0.077 |      -70.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     220* |       8 |     118 |       70 |     13 |    27 |    +0.8% |   -0.079 |      -67.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     230* |       8 |     124 |       74 |     13 |    28 |    +0.9% |   -0.071 |      -64.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     240* |       8 |     128 |       75 |     14 |    32 |    +0.9% |   -0.069 |      -63.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     250* |       8 |     135 |       75 |     16 |    33 |    +1.0% |   -0.070 |      -63.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     260* |       8 |     141 |       76 |     17 |    35 |    +1.1% |   -0.072 |      -64.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     270* |       8 |     144 |       82 |     18 |    38 |    +1.2% |   -0.066 |      -54.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     280* |       8 |     149 |       86 |     21 |    38 |    +1.2% |   -0.086 |      -82.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     290* |       8 |     155 |       92 |     22 |    38 |    +1.3% |   -0.080 |      -68.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     300* |       8 |     163 |       93 |     23 |    38 |    +1.5% |   -0.081 |      -65.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     304* |       8 |     145 |       82 |     18 |    38 |    +1.2% |   -0.065 |      -54.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     310* |       8 |     148 |       83 |     19 |    38 |    +1.2% |   -0.069 |      -55.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     312* |       8 |     147 |       83 |     18 |    38 |    +1.2% |   -0.065 |      -53.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     317* |       8 |     147 |       83 |     18 |    38 |    +1.2% |   -0.065 |      -53.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     320* |       8 |     148 |       83 |     19 |    38 |    +1.2% |   -0.069 |      -55.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     322* |       8 |     147 |       83 |     18 |    38 |    +1.2% |   -0.065 |      -53.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     327* |       8 |     147 |       83 |     18 |    38 |    +1.2% |   -0.065 |      -53.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     330* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     332* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     336* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     340* |       8 |     150 |       83 |     18 |    40 |    +1.2% |   -0.066 |      -53.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     340* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     344* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     348* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     350* |       8 |     148 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     352* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     355* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     359* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     360* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     362* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     366* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     370* |       8 |     150 |       83 |     18 |    40 |    +1.2% |   -0.066 |      -53.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     370* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     374* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     378* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     380* |       8 |     148 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     382* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     386* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     390* |       8 |     149 |       83 |     19 |    40 |    +1.2% |   -0.066 |      -53.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     391* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     396* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     400* |       8 |     149 |       83 |     19 |    40 |    +1.2% |   -0.066 |      -53.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     400* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     405* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     410* |       8 |     150 |       83 |     19 |    40 |    +1.2% |   -0.069 |      -53.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     410* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     415* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     419* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     420* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     424* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     428* |       8 |     147 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -53.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     430* |       8 |     148 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -51.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     434* |       8 |     148 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -51.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     438* |       8 |     148 |       83 |     18 |    40 |    +1.2% |   -0.065 |      -51.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     440* |       8 |     149 |       83 |     18 |    40 |    +1.2% |   -0.063 |      -50.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     450* |       8 |     155 |       86 |     19 |    41 |    +1.2% |   -0.069 |      -53.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     460* |       8 |     161 |       90 |     19 |    41 |    +1.3% |   -0.071 |      -54.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     469* |       8 |     150 |       84 |     18 |    40 |    +1.2% |   -0.063 |      -50.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     470* |       8 |     150 |       84 |     18 |    40 |    +1.2% |   -0.063 |      -50.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     480* |       8 |     156 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     489* |       8 |     152 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -50.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     490* |       8 |     152 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -50.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     500* |       8 |     160 |       89 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     503* |       8 |     152 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -50.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     510* |       8 |     158 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     517* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     520* |       8 |     156 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     529* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     530* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     540* |       8 |     162 |       89 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     541* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     550* |       8 |     160 |       89 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     554* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     560* |       8 |     159 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     566* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     570* |       8 |     157 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     579* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     580* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     590* |       8 |     162 |       89 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     592* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     600* |       8 |     159 |       89 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     604* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     610* |       8 |     159 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     617* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     620* |       8 |     156 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     630* |       8 |     163 |       90 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     630* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     640* |       8 |     161 |       89 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     644* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     650* |       8 |     159 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     657* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     660* |       8 |     156 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     668* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     670* |       8 |     155 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     677* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     680* |       8 |     156 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     687* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     690* |       8 |     156 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     698* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     700* |       8 |     155 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     710* |       8 |     161 |       89 |     19 |    43 |    +1.2% |   -0.063 |      -51.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     715* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     720* |       8 |     158 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     730* |       8 |     165 |       89 |     19 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     731* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     740* |       8 |     158 |       90 |     19 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     742* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     750* |       8 |     158 |       89 |     19 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     753* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     760* |       8 |     157 |       89 |     19 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     763* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     770* |       8 |     157 |       89 |     19 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     773* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     780* |       8 |     158 |       88 |     19 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     789* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     790* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     800* |       8 |     161 |       89 |     19 |    42 |    +1.2% |   -0.063 |      -51.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     804* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     810* |       8 |     156 |       89 |     19 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     814* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     820* |       8 |     156 |       89 |     19 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     824* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     830* |       8 |     156 |       89 |     19 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     835* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     840* |       8 |     156 |       88 |     19 |    42 |    +1.2% |   -0.063 |      -51.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     846* |       8 |     154 |       87 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     850* |       8 |     156 |       88 |     18 |    42 |    +1.2% |   -0.063 |      -51.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     860* |       8 |     162 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     864* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     870* |       8 |     166 |       90 |     19 |    43 |    +1.3% |   -0.072 |      -49.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     870* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     878* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     880* |       8 |     162 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     884* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     890* |       8 |     166 |       90 |     19 |    43 |    +1.3% |   -0.072 |      -49.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     890* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     896* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     900* |       8 |     164 |       90 |     19 |    43 |    +1.3% |   -0.072 |      -49.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     905* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     910* |       8 |     165 |       90 |     19 |    43 |    +1.3% |   -0.072 |      -49.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     911* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     917* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     920* |       8 |     163 |       90 |     19 |    43 |    +1.3% |   -0.072 |      -49.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     923* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     929* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     930* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     935* |       8 |     161 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -48.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     940* |       8 |     165 |       90 |     19 |    43 |    +1.3% |   -0.063 |      -44.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+     950* |       8 |     171 |       91 |     19 |    46 |    +1.3% |   -0.072 |      -48.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     952* |       8 |     166 |       91 |     19 |    46 |    +1.3% |   -0.062 |      -48.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+     960* |       8 |     173 |       91 |     19 |    46 |    +1.3% |   -0.072 |      -42.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     969* |       8 |     169 |       91 |     19 |    46 |    +1.3% |   -0.062 |      -44.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+     970* |       8 |     169 |       91 |     19 |    46 |    +1.3% |   -0.062 |      -44.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+     977* |       8 |     169 |       91 |     19 |    46 |    +1.3% |   -0.062 |      -44.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+     980* |       8 |     171 |       91 |     19 |    46 |    +1.3% |   -0.072 |      -44.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     990* |       8 |     178 |       93 |     19 |    47 |    +1.3% |   -0.072 |      -42.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+     991* |       8 |     169 |       91 |     19 |    46 |    +1.3% |   -0.062 |      -44.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+     999* |       8 |     169 |       91 |     19 |    46 |    +1.3% |   -0.062 |      -44.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1000* |       8 |     169 |       91 |     19 |    46 |    +1.3% |   -0.062 |      -44.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1010* |      11 |     172 |       95 |     19 |    46 |    +1.3% |   -0.072 |      -44.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1020* |      16 |     172 |      100 |     19 |    46 |    +1.3% |   -0.072 |      -44.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1030* |      21 |     172 |      105 |     19 |    46 |    +1.3% |   -0.072 |      -44.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1040* |      26 |     172 |      110 |     19 |    46 |    +1.3% |   -0.072 |      -44.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1050* |      31 |     172 |      115 |     19 |    46 |    +1.3% |   -0.072 |      -44.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1053* |       8 |     171 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -44.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1058* |       8 |     171 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -44.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1060* |       8 |     172 |       92 |     19 |    46 |    +1.3% |   -0.072 |      -44.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1067* |       8 |     171 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -44.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1070* |       8 |     173 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1080* |       8 |     181 |       92 |     21 |    46 |    +1.4% |   -0.065 |      -44.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1080* |       8 |     175 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1090* |      12 |     176 |       96 |     19 |    46 |    +1.3% |   -0.072 |      -43.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1100* |      17 |     176 |      101 |     19 |    46 |    +1.3% |   -0.072 |      -43.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1110* |      18 |     183 |      103 |     19 |    46 |    +1.3% |   -0.072 |      -38.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1111* |       8 |     175 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1116* |       8 |     175 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1120* |       8 |     178 |       92 |     19 |    46 |    +1.3% |   -0.072 |      -43.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1121* |       8 |     175 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1127* |       8 |     176 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1130* |       9 |     177 |       92 |     19 |    46 |    +1.3% |   -0.082 |      -48.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1140* |      14 |     177 |       97 |     19 |    46 |    +1.3% |   -0.082 |      -48.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1150* |      19 |     177 |      102 |     19 |    46 |    +1.3% |   -0.082 |      -48.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1160* |      24 |     177 |      107 |     19 |    46 |    +1.3% |   -0.082 |      -48.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1170* |      29 |     177 |      112 |     19 |    46 |    +1.3% |   -0.082 |      -48.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1178* |       8 |     176 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1180* |       8 |     177 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1187* |       8 |     176 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1190* |       8 |     178 |       92 |     19 |    46 |    +1.3% |   -0.072 |      -43.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1193* |       8 |     176 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1200* |       8 |     180 |       92 |     21 |    46 |    +1.4% |   -0.062 |      -43.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1202* |       8 |     176 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1210* |       8 |     181 |       92 |     21 |    46 |    +1.4% |   -0.062 |      -43.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1211* |       8 |     176 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1220* |       8 |     182 |       92 |     21 |    46 |    +1.4% |   -0.065 |      -44.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1220* |       8 |     176 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1229* |       8 |     176 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1230* |       8 |     176 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1240* |       8 |     184 |       93 |     20 |    46 |    +1.4% |   -0.063 |      -44.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1241* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1250* |       8 |     184 |       93 |     21 |    46 |    +1.4% |   -0.063 |      -44.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1250* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1258* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1260* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1266* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1270* |       8 |     181 |       92 |     20 |    46 |    +1.4% |   -0.062 |      -43.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1274* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1280* |       8 |     180 |       96 |     19 |    46 |    +1.3% |   -0.072 |      -44.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1283* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1290* |       8 |     182 |       94 |     21 |    46 |    +1.4% |   -0.062 |      -44.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1291* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1299* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1300* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1307* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1310* |       8 |     180 |       92 |     20 |    46 |    +1.4% |   -0.062 |      -43.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1315* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1320* |       8 |     181 |       94 |     20 |    46 |    +1.4% |   -0.062 |      -44.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1323* |       8 |     179 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -43.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1330* |       8 |     182 |       94 |     21 |    46 |    +1.4% |   -0.062 |      -41.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1332* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1340* |       8 |     183 |       94 |     21 |    46 |    +1.4% |   -0.062 |      -42.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1340* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1349* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1350* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1357* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1360* |       8 |     181 |       92 |     20 |    46 |    +1.4% |   -0.062 |      -40.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1365* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1370* |       8 |     182 |       92 |     21 |    46 |    +1.4% |   -0.062 |      -41.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1373* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1380* |       8 |     183 |       93 |     21 |    46 |    +1.4% |   -0.062 |      -41.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1381* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1389* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1390* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1398* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1400* |       8 |     181 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1407* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1410* |       8 |     181 |       92 |     20 |    46 |    +1.4% |   -0.062 |      -40.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1415* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1420* |       8 |     182 |       92 |     21 |    46 |    +1.4% |   -0.062 |      -40.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1424* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1430* |       8 |     183 |       92 |     21 |    46 |    +1.4% |   -0.062 |      -41.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1433* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1440* |       8 |     182 |       96 |     19 |    46 |    +1.4% |   -0.072 |      -41.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1442* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1450* |       8 |     183 |       96 |     19 |    46 |    +1.4% |   -0.072 |      -41.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1451* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1460* |       8 |     185 |       94 |     21 |    46 |    +1.4% |   -0.062 |      -42.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1460* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1468* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1470* |       8 |     181 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1477* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1480* |       8 |     181 |       93 |     19 |    46 |    +1.3% |   -0.062 |      -41.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1487* |       8 |     180 |       92 |     19 |    46 |    +1.3% |   -0.062 |      -40.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1490* |       8 |     181 |       93 |     19 |    46 |    +1.3% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1500* |       8 |     187 |       95 |     21 |    46 |    +1.4% |   -0.062 |      -41.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1500* |       8 |     185 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1507* |       8 |     185 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1510* |       8 |     186 |       94 |     20 |    46 |    +1.4% |   -0.062 |      -41.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1514* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1520* |       8 |     188 |       95 |     21 |    46 |    +1.4% |   -0.062 |      -41.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1520* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1526* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1530* |       8 |     187 |       94 |     21 |    46 |    +1.4% |   -0.062 |      -41.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1532* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1538* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1540* |       8 |     186 |       94 |     20 |    46 |    +1.4% |   -0.062 |      -41.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1544* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1550* |       8 |     188 |       95 |     21 |    46 |    +1.4% |   -0.062 |      -41.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1550* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1556* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1560* |       8 |     187 |       94 |     21 |    46 |    +1.4% |   -0.062 |      -41.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1562* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1568* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1570* |       8 |     186 |       94 |     20 |    46 |    +1.4% |   -0.062 |      -41.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1574* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1580* |       8 |     188 |       95 |     21 |    46 |    +1.4% |   -0.062 |      -41.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1580* |       8 |     186 |       94 |     19 |    46 |    +1.4% |   -0.062 |      -41.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1586* |       8 |     188 |       95 |     19 |    46 |    +1.4% |   -0.062 |      -41.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1589* |       8 |     188 |       95 |     19 |    46 |    +1.4% |   -0.062 |      -41.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1590* |       8 |     188 |       95 |     19 |    46 |    +1.4% |   -0.062 |      -41.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1593* |       8 |     188 |       95 |     19 |    46 |    +1.4% |   -0.062 |      -41.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1597* |       8 |     188 |       95 |     19 |    46 |    +1.4% |   -0.062 |      -41.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1600* |       8 |     190 |       95 |     19 |    46 |    +1.4% |   -0.062 |      -38.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1609* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1610* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1613* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1617* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1620* |       8 |     196 |       95 |     20 |    47 |    +1.4% |   -0.062 |      -35.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1621* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1625* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1629* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1630* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1633* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1637* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1640* |       8 |     196 |       95 |     20 |    47 |    +1.4% |   -0.062 |      -35.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1641* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1645* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1649* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1650* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1653* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1657* |       8 |     195 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1660* |       8 |     197 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1668* |       8 |     197 |       95 |     19 |    47 |    +1.4% |   -0.062 |      -35.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1670* |       8 |     198 |       95 |     19 |    47 |    +1.4% |   -0.061 |      -35.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1680* |       8 |     204 |       98 |     21 |    47 |    +1.5% |   -0.066 |      -36.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1690* |       8 |     209 |      100 |     22 |    49 |    +1.5% |   -0.066 |      -35.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1700* |       8 |     212 |      102 |     22 |    54 |    +1.5% |   -0.066 |      -34.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1701* |       8 |     198 |       97 |     19 |    47 |    +1.4% |   -0.061 |      -34.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1710* |       8 |     202 |       98 |     20 |    49 |    +1.5% |   -0.067 |      -38.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1720* |       8 |     210 |       99 |     20 |    50 |    +1.5% |   -0.067 |      -37.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1726* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1730* |       8 |     202 |       98 |     19 |    47 |    +1.4% |   -0.062 |      -35.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    1740* |       8 |     210 |       99 |     20 |    47 |    +1.5% |   -0.067 |      -38.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1748* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1750* |       8 |     200 |       98 |     19 |    47 |    +1.4% |   -0.066 |      -35.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1760* |       8 |     207 |       99 |     21 |    47 |    +1.5% |   -0.068 |      -39.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1770* |       8 |     216 |      100 |     21 |    47 |    +1.5% |   -0.072 |      -35.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1771* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1780* |       8 |     204 |       98 |     21 |    48 |    +1.5% |   -0.067 |      -37.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1790* |       8 |     211 |      100 |     21 |    49 |    +1.5% |   -0.068 |      -36.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1796* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1800* |       8 |     201 |       98 |     20 |    47 |    +1.4% |   -0.061 |      -34.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1800* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1809* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1810* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1820* |       8 |     208 |       99 |     19 |    47 |    +1.5% |   -0.062 |      -34.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1824* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1830* |       8 |     202 |       99 |     20 |    47 |    +1.4% |   -0.063 |      -34.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1840* |       8 |     208 |      102 |     21 |    47 |    +1.5% |   -0.063 |      -32.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1843* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1850* |       8 |     203 |       98 |     21 |    47 |    +1.4% |   -0.061 |      -34.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1852* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1860* |       8 |     205 |       98 |     20 |    47 |    +1.4% |   -0.065 |      -35.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1861* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1870* |       8 |     206 |       98 |     20 |    47 |    +1.5% |   -0.065 |      -35.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1871* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1880* |       8 |     204 |      100 |     20 |    47 |    +1.4% |   -0.063 |      -33.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1890* |       8 |     210 |      105 |     22 |    47 |    +1.5% |   -0.067 |      -35.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1900* |       8 |     211 |      107 |     22 |    54 |    +1.5% |   -0.065 |      -34.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1902* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1910* |       8 |     204 |      100 |     19 |    47 |    +1.4% |   -0.061 |      -30.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1920* |       8 |     208 |      102 |     20 |    50 |    +1.5% |   -0.067 |      -34.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1930* |       8 |     214 |      103 |     22 |    51 |    +1.5% |   -0.068 |      -34.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1940* |       8 |     220 |      104 |     22 |    54 |    +1.6% |   -0.070 |      -32.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1941* |       8 |     199 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1947* |       8 |     200 |       98 |     19 |    47 |    +1.4% |   -0.061 |      -34.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1950* |       8 |     201 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -33.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1950* |       8 |     201 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -33.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1960* |       8 |     207 |      101 |     20 |    47 |    +1.5% |   -0.063 |      -31.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1970* |       8 |     213 |      103 |     22 |    47 |    +1.5% |   -0.068 |      -32.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1980* |       8 |     221 |      103 |     22 |    49 |    +1.6% |   -0.069 |      -33.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    1990* |       8 |     228 |      106 |     22 |    50 |    +1.6% |   -0.072 |      -35.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    1993* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2000* |       8 |     207 |      100 |     19 |    47 |    +1.5% |   -0.062 |      -32.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2009* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2010* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2020* |       8 |     208 |      101 |     21 |    47 |    +1.5% |   -0.063 |      -29.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2030* |       8 |     216 |      102 |     22 |    47 |    +1.5% |   -0.068 |      -32.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2040* |       8 |     224 |      103 |     22 |    48 |    +1.6% |   -0.070 |      -34.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2042* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2050* |       8 |     207 |       99 |     21 |    47 |    +1.5% |   -0.061 |      -32.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2053* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2060* |       8 |     206 |       99 |     21 |    47 |    +1.5% |   -0.061 |      -32.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2063* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2070* |       8 |     206 |      101 |     19 |    47 |    +1.4% |   -0.062 |      -29.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2080* |       8 |     215 |      102 |     19 |    47 |    +1.5% |   -0.063 |      -28.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2083* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2090* |       8 |     206 |      101 |     19 |    47 |    +1.4% |   -0.062 |      -31.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2100* |       8 |     212 |      103 |     21 |    47 |    +1.5% |   -0.064 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2106* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2110* |       8 |     204 |       99 |     20 |    47 |    +1.4% |   -0.061 |      -32.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2116* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2120* |       8 |     204 |      100 |     19 |    47 |    +1.4% |   -0.062 |      -32.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2130* |       8 |     213 |      101 |     19 |    47 |    +1.5% |   -0.063 |      -29.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2133* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2140* |       8 |     207 |      100 |     19 |    47 |    +1.5% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2144* |       8 |     202 |       99 |     19 |    47 |    +1.4% |   -0.061 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2150* |       8 |     205 |      101 |     19 |    47 |    +1.4% |   -0.063 |      -30.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2160* |       8 |     211 |      103 |     21 |    47 |    +1.5% |   -0.063 |      -28.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2170* |       8 |     218 |      105 |     22 |    47 |    +1.6% |   -0.069 |      -33.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2180* |       8 |     226 |      107 |     22 |    47 |    +1.6% |   -0.070 |      -34.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2181* |       8 |     203 |      100 |     19 |    47 |    +1.4% |   -0.061 |      -30.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2190* |       8 |     209 |      101 |     20 |    47 |    +1.5% |   -0.061 |      -28.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2200* |       8 |     216 |      102 |     22 |    47 |    +1.5% |   -0.068 |      -31.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2200* |       8 |     203 |      100 |     19 |    47 |    +1.4% |   -0.061 |      -30.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2210* |       8 |     209 |      101 |     21 |    47 |    +1.5% |   -0.065 |      -30.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2211* |       8 |     203 |      100 |     19 |    47 |    +1.4% |   -0.061 |      -30.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2220* |       8 |     209 |      101 |     20 |    47 |    +1.5% |   -0.065 |      -30.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2222* |       8 |     203 |      100 |     19 |    47 |    +1.4% |   -0.061 |      -30.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2230* |       8 |     209 |      101 |     19 |    47 |    +1.5% |   -0.062 |      -29.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2240* |       8 |     218 |      102 |     19 |    47 |    +1.5% |   -0.065 |      -28.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2241* |       8 |     203 |      100 |     19 |    47 |    +1.4% |   -0.061 |      -30.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2250* |       8 |     210 |      101 |     19 |    47 |    +1.5% |   -0.067 |      -31.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2260* |       8 |     215 |      105 |     19 |    48 |    +1.5% |   -0.065 |      -32.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2270* |       8 |     221 |      108 |     20 |    50 |    +1.5% |   -0.066 |      -32.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2280* |       8 |     228 |      109 |     20 |    52 |    +1.6% |   -0.066 |      -27.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2280* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2290* |       8 |     215 |      102 |     19 |    47 |    +1.5% |   -0.065 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2298* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2299* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2300* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2310* |       8 |     214 |      102 |     21 |    47 |    +1.5% |   -0.065 |      -28.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2310* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2320* |       8 |     213 |      102 |     21 |    47 |    +1.5% |   -0.065 |      -28.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2321* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2322* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2330* |       8 |     213 |      102 |     19 |    47 |    +1.5% |   -0.065 |      -28.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2333* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2340* |       8 |     211 |      102 |     20 |    47 |    +1.5% |   -0.063 |      -28.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2350* |       8 |     217 |      108 |     21 |    47 |    +1.5% |   -0.062 |      -26.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2352* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2360* |       8 |     213 |      102 |     19 |    47 |    +1.5% |   -0.062 |      -27.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2370* |       8 |     222 |      102 |     20 |    47 |    +1.5% |   -0.069 |      -30.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2371* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2380* |       8 |     212 |      102 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2382* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2390* |       8 |     212 |      105 |     19 |    47 |    +1.5% |   -0.065 |      -30.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    2400* |       8 |     217 |      106 |     21 |    49 |    +1.6% |   -0.071 |      -37.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2400* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2410* |       8 |     212 |      103 |     21 |    47 |    +1.5% |   -0.063 |      -26.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2420* |       8 |     219 |      109 |     21 |    47 |    +1.5% |   -0.064 |      -26.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2430* |       8 |     227 |      109 |     22 |    48 |    +1.6% |   -0.068 |      -29.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2438* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2439* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2440* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2440* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2441* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2450* |       8 |     212 |      102 |     21 |    47 |    +1.5% |   -0.069 |      -34.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2460* |       8 |     219 |      104 |     22 |    47 |    +1.6% |   -0.071 |      -34.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2468* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2469* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2470* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2480* |       8 |     214 |      102 |     21 |    47 |    +1.5% |   -0.065 |      -28.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2480* |       8 |     207 |      101 |     19 |    47 |    +1.4% |   -0.061 |      -27.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2490* |       8 |     213 |      102 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2492* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2500* |       8 |     212 |      103 |     20 |    47 |    +1.5% |   -0.063 |      -27.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2509* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2510* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2520* |       8 |     215 |      102 |     21 |    47 |    +1.5% |   -0.065 |      -28.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2520* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2530* |       8 |     214 |      102 |     21 |    47 |    +1.5% |   -0.065 |      -28.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2530* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2540* |       8 |     212 |      104 |     21 |    47 |    +1.5% |   -0.063 |      -27.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2550* |       8 |     221 |      104 |     22 |    47 |    +1.5% |   -0.068 |      -30.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2555* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2560* |       8 |     210 |      103 |     19 |    47 |    +1.5% |   -0.062 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2570* |       8 |     219 |      103 |     20 |    47 |    +1.5% |   -0.063 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2570* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2580* |       8 |     214 |      103 |     20 |    47 |    +1.5% |   -0.062 |      -28.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2582* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2590* |       8 |     213 |      102 |     20 |    47 |    +1.5% |   -0.065 |      -28.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2592* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2600* |       8 |     213 |      103 |     19 |    47 |    +1.5% |   -0.062 |      -27.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2607* |       8 |     207 |      102 |     19 |    47 |    +1.5% |   -0.061 |      -28.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2610* |       8 |     207 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -28.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2620* |       8 |     217 |      103 |     20 |    47 |    +1.5% |   -0.062 |      -28.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    2620* |       8 |     207 |      103 |     19 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2630* |       8 |     214 |      104 |     20 |    47 |    +1.5% |   -0.062 |      -27.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2634* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2640* |       8 |     212 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2645* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2650* |       8 |     210 |      104 |     21 |    47 |    +1.5% |   -0.063 |      -28.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2660* |       8 |     217 |      106 |     22 |    47 |    +1.5% |   -0.062 |      -26.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2670* |       8 |     223 |      112 |     23 |    47 |    +1.6% |   -0.068 |      -31.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2680* |       8 |     232 |      112 |     23 |    48 |    +1.6% |   -0.070 |      -31.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2680* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2690* |       8 |     213 |      105 |     22 |    47 |    +1.5% |   -0.065 |      -30.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2700* |       8 |     222 |      106 |     22 |    47 |    +1.6% |   -0.069 |      -29.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2700* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2710* |       8 |     216 |      103 |     21 |    47 |    +1.5% |   -0.062 |      -29.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    2713* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2720* |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2724* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2730* |       8 |     212 |      103 |     21 |    47 |    +1.5% |   -0.064 |      -28.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2740* |       8 |     221 |      103 |     22 |    47 |    +1.5% |   -0.067 |      -33.1 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2743* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2750* |       8 |     212 |      103 |     22 |    47 |    +1.5% |   -0.066 |      -32.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    2760* |       8 |     222 |      103 |     22 |    47 |    +1.6% |   -0.066 |      -32.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    2761* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2770* |       8 |     215 |      103 |     21 |    47 |    +1.5% |   -0.065 |      -28.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2772* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2780* |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.062 |      -28.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    2781* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2790* |       8 |     214 |      104 |     21 |    47 |    +1.5% |   -0.063 |      -27.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2795* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2800* |       8 |     211 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2806* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2810* |       8 |     210 |      104 |     20 |    47 |    +1.5% |   -0.061 |      -27.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2820* |       8 |     217 |      106 |     21 |    47 |    +1.5% |   -0.061 |      -26.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2823* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2830* |       8 |     212 |      103 |     22 |    47 |    +1.5% |   -0.068 |      -33.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    2840* |       8 |     221 |      103 |     22 |    48 |    +1.6% |   -0.068 |      -34.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    2847* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2850* |       8 |     209 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.4 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2857* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2860* |       8 |     210 |      103 |     20 |    47 |    +1.5% |   -0.062 |      -27.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2869* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2870* |       8 |     208 |      103 |     20 |    47 |    +1.5% |   -0.061 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2878* |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2880* |       8 |     211 |      103 |     21 |    47 |    +1.5% |   -0.063 |      -27.8 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2890* |       8 |     216 |      107 |     23 |    47 |    +1.5% |   -0.063 |      -26.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2900* |       8 |     224 |      108 |     24 |    47 |    +1.6% |   -0.070 |      -32.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2900* |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2910* |       8 |     218 |      104 |     21 |    47 |    +1.5% |   -0.062 |      -28.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2920* |       8 |     226 |      105 |     22 |    47 |    +1.6% |   -0.068 |      -28.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2926* |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2930* |       8 |     212 |      104 |     21 |    47 |    +1.5% |   -0.063 |      -27.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2940* |       8 |     219 |      106 |     22 |    47 |    +1.5% |   -0.065 |      -29.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2945* |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2950* |       8 |     212 |      104 |     22 |    47 |    +1.5% |   -0.063 |      -28.6 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2960* |       8 |     221 |      105 |     22 |    47 |    +1.5% |   -0.068 |      -27.9 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[831\]$_DFFE_PN0P_/D
+    2967* |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2970* |       8 |     212 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.7 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2977* |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    2980* |       8 |     212 |      103 |     21 |    47 |    +1.5% |   -0.062 |      -28.3 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    2990* |       8 |     221 |      106 |     21 |    47 |    +1.6% |   -0.065 |      -27.5 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[761\]$_DFFE_PN0P_/D
+    3000* |       8 |     229 |      107 |     22 |    47 |    +1.6% |   -0.071 |      -33.2 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3000* |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3000* |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1572 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3000+ |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3001+ |       8 |     210 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -28.0 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3003+ |       8 |     211 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3004+ |       8 |     211 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3005+ |       8 |     211 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3006+ |       8 |     211 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3009+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3010+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3010+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3011+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3012+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3013+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3014+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3015+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3016+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3017+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3018+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3019+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3020+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3020+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3021+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3022+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3023+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3024+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3025+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3026+ |       8 |     213 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.9 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3028+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3029+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3030+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3030+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3031+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3032+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3033+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3034+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3035+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3036+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3037+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3038+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3039+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3040+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3040+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3041+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3042+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3043+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3044+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3045+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3046+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3047+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3048+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3049+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3050+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3050+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3051+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3052+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3053+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3054+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3055+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3056+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3057+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3058+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3059+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3060+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3060+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3061+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3062+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3063+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3064+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3065+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3066+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3067+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3068+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3069+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3070+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3070+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3071+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3072+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3073+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3074+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3075+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3076+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3077+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3078+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3079+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3080+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3080+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3081+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3082+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3083+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3084+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3085+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3086+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3087+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3088+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3089+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3090+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3090+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3091+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3092+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3093+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3094+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3095+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3096+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3097+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3098+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3099+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3100+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3101+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3102+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3103+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3104+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3105+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3106+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3107+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3108+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3109+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3110+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3110+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3111+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3112+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3113+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3114+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3115+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3116+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3117+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3118+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3119+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3120+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3120+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3121+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3122+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3123+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3124+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3125+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3126+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3127+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3128+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3129+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3130+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3130+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3131+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3132+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3133+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3134+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3135+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3136+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3137+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3138+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3139+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3140+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3140+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3141+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3142+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3143+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3144+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3145+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3146+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3147+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3148+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3149+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3150+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3150+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3151+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3152+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3153+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3154+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3155+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3156+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3157+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3158+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3159+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3160+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3160+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3161+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3162+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3163+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3164+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3165+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3166+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3167+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3168+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3169+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3170+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3170+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3171+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3172+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3173+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3174+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3175+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3176+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3177+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3178+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3179+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3180+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3180+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3181+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3182+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3183+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3184+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3185+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3186+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3187+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3188+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3189+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3190+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3190+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3191+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3192+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3193+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3194+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3195+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3196+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3197+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3198+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3199+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+    3200+ |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+RSZ_EVOLVE shared_rank_builds fired=127
+RSZ_EVOLVE shared_rank_paths_expanded fired=50800
+RSZ_EVOLVE shared_rank_passes fired=3150
+RSZ_EVOLVE shared_rank_reordered_targets fired=75078
+RSZ_EVOLVE shared_rank_changed_first fired=2566
+    final |       8 |     214 |      103 |     21 |    47 |    +1.5% |   -0.061 |      -27.8 |   1003 | gen_regfile_ff.register_file_i.rf_reg\[982\]$_DFFE_PN0P_/D
+------------------------------------------------------------------------------------------------------------------------------
+[INFO RSZ-0059] Removed 8 buffers.
+[INFO RSZ-0040] Inserted 103 buffers.
+[INFO RSZ-0051] Resized 214 instances: 214 up, 0 up match, 0 down, 0 VT
+[INFO RSZ-0043] Swapped pins on 47 instances.
+[INFO RSZ-0049] Cloned 21 instances.
+[WARNING RSZ-0062] Unable to repair all setup violations.
+[INFO RSZ-0505] Runtime: 96.12s
+[INFO DPL-0006] Core area: 56057.64 um^2
+[INFO DPL-0007] Movable instances area: 28673.20 um^2
+[INFO DPL-0008] Fixed instances area within core: 112.52 um^2
+[INFO DPL-0009] Utilization: 51.4%
+[INFO DPL-0005] Diamond search max displacement: +/- 500 sites horizontally, +/- 100 rows vertically.
+[INFO DPL-1102] Legalizing using negotiation legalizer.
+[INFO DPL-1103] Negotiation base search window: +/-20 sites horizontally, +/-5 rows vertically 
+	Automatic search window extension enabled.
+	Search window extendable up to the max displacement cap of +/-500 sites, +/-100 rows near walls.
+[INFO DPL-1104] NegotiationLegalizer DRC penalty: 5.
+[INFO DPL-0392] Negotiation cell height distribution (1 unique row-count(s)):
+[INFO DPL-0393]   height 1 row(s): 14649 cells
+          |      Total |  Illegal |  Illegal
+Iteration | Violations |    Cells |    Sites
+---------------------------------------------
+        0 |        657 |       147 |       510
+        1 |         75 |        15 |        60
+        2 |         16 |         4 |        12
+        3 |          0 |         0 |         0
+Negotiation phase 1 converged at iteration 3.
+[INFO DPL-0500] Runtime: 0.09s
+Detailed Placement Analysis
+---------------------------------
+legalizer            negotiation
+total moves                4380
+total displacement       6111.5 u
+average displacement        0.4 u
+max displacement            6.5 u
+original HPWL          192883.9 u
+legalized HPWL         196046.2 u
+delta HPWL                    2 %
+
+EVO_PLACEMENT_VIOLATIONS 0
+EVO_METRICS post -0.06587219844926263 -31.338303505895674 0.044729221592639395 0.0 inst=14649 area=28785.722250290746 buf=1126 drv=0/0/0
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+EVO_PATHS wrote 61 paths to /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0009_setup_strategy/runs/nangate45__ibex/stressed_r0/paths_post.json
+EVO_DONE wns_pre=-0.19248381211517587 wns_post=-0.06587219844926263 tns_pre=-164.0219313462487 tns_post=-31.338303505895674 repair_ms=96351

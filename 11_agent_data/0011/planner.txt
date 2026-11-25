@@ -1,0 +1,91 @@
+# Iteration 11 plan: TNS-aware buffer-tree selection
+
+## Observation
+
+- **Ibex holds most of the remaining negative slack.** Its TNS is −65.67 ns, versus −1.14 for AES and −32.40 for JPEG. Its ten worst endpoints all go through one shared net: AND2_X1 `_26153_/ZN`, fanout 943.
+- **JPEG's worst endpoints also hang off shared nets.** They depend on a fanout-50 net and the shared `ddin[8]` launch flop (fanouts 12–15).
+- **Shared-net repair moves Ibex TNS a lot.** Iteration 8 gained +57.55 ns and iteration 9 gained +34.33 ns. Both broke AES WNS (−16.8 ps and −14.6 ps) because they changed the *global* repair order.
+- **Changing local choices without changing topology moves almost nothing.** Iteration 10 changed 23 of 5,086 sizing choices and measured +0.007 ns.
+- **Earlier buffering attempts failed for specific reasons.** Iteration 6 widened which nets get rebuffered; Ibex improved (+14.6 ns TNS) but AES regressed. Iteration 7 replaced the "split at half the sinks" rule with predicted slack budgets and regressed AES by 5.3 ps. Neither touched *how a buffer tree is scored*.
+- **Current scoring only looks at the worst sink.** `Rebuffer::rebufferNet` (`src/Rebuffer.cc` ~L210) merges branches with `T = min(T_k)` and picks the root option that maximises `T_root − R_drvr·C_root`. On a net with many violating sinks, every tree with the same worst sink looks equally good, even if one leaves far more total violation.
+
+## Cluster choice and why
+
+I'm choosing **`buffering`**. The last three iterations were setup_strategy, setup_strategy, sizing, so this also satisfies the rotation rule.
+
+- The evaluator's dominant cause is high fanout, and its recommendation was `buffering`.
+- Iterations 8 and 9 show TNS on shared nets is where the large gains are. Their failure was global reordering (AES/JPEG trajectory drift). This plan keeps target ordering stock and changes only how one net's tree is chosen, so any change in influence stays local to that net.
+- It avoids the iteration 6 dead end: the fanout cutoff and which nets qualify for rebuffering are untouched.
+- It avoids the iteration 7 dead end: no change to the split-load partition and no prediction-only prefix replacement.
+
+## Hypothesis
+
+**Problem.** On nets with several violating sinks, the buffer tree is chosen by the worst sink alone. Trees that tie on the worst sink but differ a lot in total violation are treated as equal. Ties are then broken by area or capacitance order, which tends to keep more violating sinks behind a slower branch.
+
+**Current heuristic.** Van Ginneken dynamic programming with one figure of merit per option: (load capacitance C, earliest required time T_min). Branches merge with `T = min(T_k)`. Pruning is two-dimensional on (C, T_min). The root pick is the option with the largest `T_min − R_drvr·C`.
+
+**New approach: TNS-aware Pareto dynamic programming.** Each option also carries `V`, the sum of `max(0, −slack)` over the sinks it covers, worked out from the sinks' required times and the delay already built into that option.
+
+- **Wire and buffer propagation.** These add delay `d` to every sink below the point, so update `V` with a piecewise-linear bound: `V' = V + d · n_viol`, where `n_viol` is the number of covered sinks that are violating or within `d` of violating. `n_viol` is carried alongside `V`.
+- **Junction merge.** `V = V_a + V_b`, `n_viol = n_a + n_b`.
+- **Pruning.** It becomes three-dimensional on (C, T_min, V), with the number of options per node capped (e.g. 2× the current list size) so runtime stays bounded.
+- **Root choice: largest T_min first, then lowest TNS, with a tolerance.** Let `S* = max(T_min − R·C)` be the stock answer. Among options with `T_min − R·C ≥ S* − ε`, pick the lowest `V_root`, where `ε = min(1 ps, 5 % of |S*|)`. If the net has at most one violating sink, every option has the same `V`, and the choice is exactly stock (unit-test contracts stay intact).
+
+**Why WNS/TNS should improve.**
+- On shared nets like Ibex `_26153_` and JPEG's fanout-50 net, critical sinks get shorter, faster branches. Non-critical sinks get the slower, buffered branches.
+- This is the iteration 8/9 shared-endpoint benefit, captured locally to one net rather than by reordering all targets.
+- The worst sink on any rebuffered net can lose at most ε, so WNS is bounded.
+
+**Risks.**
+- The piecewise-linear `V` estimate is approximate: Elmore delay with no slew propagation.
+- The 1 ps tolerance could add up across sequential repairs on AES's critical cone.
+- A 3-D Pareto front can grow; the cap may prune the option that actually wins.
+- Ibex `_26153_` may still be excluded by the stock fanout cutoff. In that case the Ibex gain comes only from smaller multi-sink nets on its cones. That is honest, and it isolates the effect.
+
+**How it should show up in the path report.**
+- Ibex: fewer endpoints sharing the `_26153_` cone in the worst-10 list, and higher slack on the second through tenth endpoints.
+- JPEG: the `mult_res` endpoints behind the fanout-50 net improve while the WNS endpoint stays within ε.
+- AES: the worst endpoint `sa33_sr[3]` is unchanged within 1 ps.
+
+## Trigger estimate
+
+Stock AES inserts 481 buffers. Most of them come from rebuffering nets that have at least two sinks within the violation window. I estimate the new root choice will differ from stock on about 15–30 % of AES rebuffer calls, well above the 5 % bar.
+
+Ibex stock makes no buffer insertions, so the change acts only through `rebufferNet` calls that previously ended in "no improvement". The new rule can accept trees that lower `V` at equal `T_min`. I estimate 10–40 newly accepted rebuffers on Ibex, about 10 % of its 172 moves.
+
+The candidate must print:
+```
+RSZ_EVOLVE rebuffer calls=<n> multi_viol=<n> root_choice_changed=<n> v_reduced_sum=<ps> wns_tol_used=<n>
+```
+
+## Implementation sketch
+
+- **`src/BufferedNet.hh` / `src/BufferedNet.cc`.** Add `viol_sum` and `n_viol` fields to the buffered-net option node. Set them at sink creation (`n_viol = 1` if the sink's slack is below 0, plus a small window).
+- **`src/Rebuffer.cc`, `Rebuffer::rebufferNet` and its wire, buffer and junction helpers.**
+  - Propagate `V` and `n_viol` through wires and buffers as described above, and sum them at junctions.
+  - Extend the dominance test to (C, T_min, V).
+  - Cap the front size.
+  - Replace the root selection with the tolerance-then-lowest-`V` rule.
+  - Add the RSZ_EVOLVE counters.
+- **`src/Rebuffer.hh`.** Declare the ε constant and the cap, with a short rationale comment on each.
+- **Leave unchanged:** `BufferGenerator.cc` eligibility and fanout cutoff, `SplitLoadGenerator.cc`, the sizing generators, and policy ordering.
+
+## Success criteria
+
+- All gates pass.
+- Score vs champion is at least +0.002.
+- Ibex TNS improves by at least 5 ns (below −60.6 ns in magnitude).
+- JPEG TNS improves by at least 0.5 ns.
+- WNS on every design stays within 1 ps of stock; in particular AES WNS ≥ −0.0268.
+- Counters show `root_choice_changed` / `multi_viol` ≥ 10 % on AES and JPEG.
+- JPEG runtime is under 1.3× stock.
+
+## Fallback if it fails
+
+- **Counters show changed choices but no TNS gain:** the Elmore `V` proxy is the weak link. Next, move to `timing_model` and give `DelayEstimatorBufferTree.cc` a slew-aware branch delay; don't tune ε.
+- **AES WNS regresses despite ε:** the tolerance adds up over repeated repairs, and this tolerance idea should be retired.
+- **`multi_viol` is near zero:** rebuffering rarely sees multi-violator nets. Next, switch to a different cluster (e.g. `timing_model` or `drv`) rather than a narrower buffering variant.
+
+```json
+{"cluster": "buffering", "title": "TNS-aware van Ginneken: carry per-option total sink violation and choose the lowest-TNS tree among those within epsilon of the best worst-sink slack", "hypothesis": "Rebuffer::rebufferNet scores buffer-tree options only by (load cap, earliest required time) and picks the root option with the largest worst-sink slack, so on shared nets with many violating sinks it ignores total violation. We add a third Pareto dimension V (sum of sink violation, propagated piecewise-linearly through wires/buffers via a violating-sink count and summed at junctions) and choose, among root options within epsilon=min(1ps, 5%|S*|) of the stock-best slack, the one with the lowest V. This captures the shared-endpoint TNS benefit seen in iterations 8/9 locally per net, without the global target reordering that broke AES/JPEG, and without the eligibility expansion (iter 6) or split-partition prediction (iter 7) dead ends. With at most one violating sink it reduces exactly to stock. Expected: Ibex/JPEG TNS improves on shared-net cones while WNS stays within 1 ps.", "files": ["src/Rebuffer.cc", "src/Rebuffer.hh", "src/BufferedNet.cc", "src/BufferedNet.hh"], "evidence_iterations": [8, 9, 6, 7, 10], "success_criteria": "score >= +0.002; Ibex TNS +5 ns or better, JPEG TNS +0.5 ns or better, every design's WNS within 1 ps of stock; RSZ_EVOLVE root_choice_changed/multi_viol >= 10% on AES and JPEG; JPEG runtime < 1.3x", "risk": "Elmore-only V proxy may mis-rank trees, the 1 ps tolerance may add up on AES's critical cone, and the capped 3-D Pareto front may grow runtime or prune the true winner", "rule_updates": "Multi-objective selection changes must use a WNS tolerance band whose width is printed, and must reduce exactly to stock when at most one objective term is active."}
+```

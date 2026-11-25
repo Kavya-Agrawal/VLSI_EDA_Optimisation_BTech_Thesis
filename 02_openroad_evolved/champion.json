@@ -1,0 +1,9 @@
+{
+  "source": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0013_setup_strategy/rsz",
+  "iteration": 13,
+  "score_vs_baseline": 0.002059507285058947,
+  "aggregate_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0013_setup_strategy/aggregate.json",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0013_setup_strategy",
+  "hypothesis": "Every in-loop change so far (iters 8, 9, 12) found large Ibex TNS gains from shared-cone/TNS-aware repair but perturbed the stock trajectory and lost WNS on AES/gcd/JPEG. Instead of modifying the greedy worst-path-first loop, run it unchanged, snapshot design WNS W*, then run a separate phase that ranks driver pins by the slack-weighted count of violating paths through them (top-N=400 paths) and trials stock generator moves on the top-K drivers under a journal, keeping a move only if design WNS ",
+  "updated": "2026-11-25T14:17:59Z"
+}

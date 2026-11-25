@@ -1,0 +1,50 @@
+{
+  "clock_period_ns": 1.0,
+  "endpoints": 8355,
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "repair_ms": 129996,
+  "placement_violations": 0,
+  "pre": {
+    "wns_setup": -0.11649559424633563,
+    "tns_setup": -48.30013858914408,
+    "wns_hold": 0.008633649595173817,
+    "tns_hold": 0.0,
+    "setup_violations": 661,
+    "hold_violations": 0,
+    "instances": 59533,
+    "pins": 192965,
+    "area_um2": 89948.96205649638,
+    "util": 0.8303249806633303,
+    "buffers": 5526,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "post": {
+    "wns_setup": -0.09305267930685222,
+    "tns_setup": -36.094271704222365,
+    "wns_hold": 0.008403000755284745,
+    "tns_hold": 0.0,
+    "setup_violations": 627,
+    "hold_violations": 0,
+    "instances": 59541,
+    "pins": 192981,
+    "area_um2": 90022.6453381947,
+    "util": 0.8310051441972346,
+    "buffers": 5534,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "evolve_counters": {
+    "shared_rank_builds": 140,
+    "shared_rank_paths_expanded": 56000,
+    "shared_rank_passes": 3488,
+    "shared_rank_reordered_targets": 49828,
+    "shared_rank_changed_first": 3238
+  },
+  "repair_stats": {
+    "resized": 54,
+    "pins_swapped": 9
+  }
+}

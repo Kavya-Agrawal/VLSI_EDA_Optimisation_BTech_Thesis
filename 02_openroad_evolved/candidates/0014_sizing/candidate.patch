@@ -1,0 +1,500 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0014_sizing/rsz/HYPOTHESIS.md
+index 8c3dc61..e540d5b 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/HYPOTHESIS.md	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0014_sizing/rsz/HYPOTHESIS.md	
+@@ -1,30 +1,44 @@
+-# Two-phase setup repair: stock LEGACY loop + bottleneck TNS recovery
++# Joint path-window sizing by Viterbi DP in TNS recovery
+ 
+ ## Problem
+-In-loop TNS-aware changes found large Ibex TNS gains but perturbed the stock greedy trajectory and lost WNS on AES/gcd/JPEG. Shared trunk drivers (e.g. Ibex `_26153_` fanout 943, JPEG HA/FA drivers) are only touched when they sit on the worst path of the endpoint currently being repaired.
++Single-driver upsizing (`SizeUpGenerator::upsizeCell`) is cancelled by the extra
++input cap it puts on the upstream stage, so recovery rejects many single moves
++(77 WNS rejects on JPEG). Gains that need 2-4 stages sized together are invisible.
+ 
+ ## Current heuristic
+-`SetupLegacyPolicy::iterate` / `repairEndpoint` (src/policy/SetupLegacyPolicy.cc) walks violating endpoints worst-first and repairs each one's worst path via `SetupLegacyBase::repairPath`. Nothing ranks drivers by how many violating paths they serve.
++`src/move/SizeUpGenerator.cc:upsizeCell` picks one master per driver using
++`gateDelay + prev_drive*Cin`. `src/policy/SetupLegacyPolicy.cc:runTnsRecovery`
++tries one stock move per bottleneck driver (journaled, WNS floor, 0.5 ps TNS gain).
+ 
+ ## New approach
+-The stock loop is unchanged. After it, for the LEGACY phase only, `SetupLegacyPolicy::runTnsRecovery`:
+-1. Snapshots design WNS W* (absolute floor, never rolled).
+-2. Up to 5 rounds: re-collect violating endpoints, unroll the worst path of the top 400, and rank driver pins by sum of (-endpoint slack) over those paths.
+-3. For the top 50 drivers (resolved by name each time), open a journal, run the stock generator sequence via `tryRepairTarget` (up to 3 attempts, excluding move types already rejected for that driver), refresh parasitics/timing, then keep the move only if WNS >= W* and TNS improves by >= 0.5 ps. Otherwise `restoreJournal`.
+-4. Stops when a round keeps nothing, after 5 rounds, or at max(30, 10% of stock moves) kept moves.
++In `runTnsRecovery`, for each ranked bottleneck driver and before the stock attempts,
++build a window of up to 4 consecutive driver stages on the current worst path to the
++driver's worst endpoint. Per stage the candidates are the current master plus the
++swappable masters with drive resistance no weaker on both edges (area <= 8x, at most
++10, sorted by area/name). A Viterbi DP minimises
++sum_i gateDelay(m_i, load = side_i + Cin(m_{i+1}))
+++ prev_drive*Cin(m_0) + 0.2*R_prev*max(0,dCin)*side_fanout_prev + small area penalty.
++The result is applied as one journaled compound move (several `replaceCell` calls
++inside one `committer_.beginJournal()`). It is kept only under the unchanged
++stock-WNS floor and 0.5 ps TNS threshold, otherwise the journal is restored and the
++stock attempts run as before. Main-phase code is untouched, so stock-phase move
++counts are identical.
+ 
+ ## Why WNS/TNS should improve
+-Final WNS >= stock WNS by construction. Moves on shared trunks help many endpoints at once, so TNS rises. Moves on shared drivers of the worst cone can also raise WNS.
++Coordinated upsizing of a driver and its predecessors pays for the added input cap
++with a stronger upstream driver, a trade single moves reject. Accepted joint moves
++add TNS recovery on deep HA/FA (JPEG) and trunk (Ibex) paths.
+ 
+ ## What to look for in the path report
+-Fewer violating endpoints sharing a common upstream driver (upsized/buffered trunk); unchanged or better worst path; `RSZ_EVOLVE bottleneck_kept` > 0.
++Consecutive cells on one path moving up together (e.g. X1->X2 on 2-4 adjacent
++stages), a lower per-stage delay on the upstream cells, and fewer rejected WNS
++trials. Counters: `window_dp_*`, `window_joint_changed_vs_greedy`.
+ 
+ ## Risks
+-TNS-only gains may be under-weighted by the score. Each trial needs a timing update, which may slow JPEG (bounded by 5 rounds x 50 drivers x 3 attempts). Pass count `bottleneck_rejected_*` shows how selective the floor is.
+-
+-## Counters
+-`bottleneck_rounds`, `bottleneck_drivers_ranked`, `bottleneck_trials`, `bottleneck_kept`, `bottleneck_rejected_wns`, `bottleneck_rejected_tns` (printed as `RSZ_EVOLVE <name> fired=<n>`).
++The estimator ignores slew propagation (`gateDelay` uses default input slew), so
++wire-dominated stages can be mis-estimated. Side loads may hit the WNS floor
++(counted in `window_dp_rejected_wns`). Extra STA updates add runtime. The window
++code lives in `SetupLegacyPolicy.cc`, which is not in the editable list (see notes).
+ 
+ ## Files changed
+-- src/policy/SetupLegacyPolicy.cc: `runTnsRecovery` and its call after the stock loop, plus counters.
+-- src/policy/SetupLegacyPolicy.hh: declaration of `runTnsRecovery`.
++- `src/policy/SetupLegacyPolicy.cc`: DP window planner (lambda `planWindow`), window trial before the stock attempts in `runTnsRecovery`, `window_*` RSZ_EVOLVE counters, endpoint recorded per bottleneck driver.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0014_sizing/rsz/src/policy/SetupLegacyPolicy.cc
+index 891df17..37f39a7 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0014_sizing/rsz/src/policy/SetupLegacyPolicy.cc	
+@@ -7,6 +7,8 @@
+ #include <cmath>
+ #include <cstdint>
+ #include <cstring>
++#include <limits>
++#include <tuple>
+ #include <optional>
+ #include <string>
+ #include <unordered_map>
+@@ -24,7 +26,14 @@
+ #include "rsz/Resizer.hh"
+ #include "sta/Delay.hh"
+ #include "sta/Fuzzy.hh"
++#include "sta/Graph.hh"
+ #include "sta/GraphClass.hh"
++#include "sta/GraphDelayCalc.hh"
++#include "sta/Liberty.hh"
++#include "sta/MinMax.hh"
++#include "sta/Scene.hh"
++#include "sta/TimingArc.hh"
++#include "sta/Transition.hh"
+ #include "sta/Network.hh"
+ #include "sta/NetworkClass.hh"
+ #include "sta/Path.hh"
+@@ -473,6 +482,313 @@ void SetupLegacyPolicy::runTnsRecovery()
+   }
+   const int move_cap = std::max(30, stock_moves / 10);
+ 
++  // --- Joint path-window sizing (Viterbi DP over a window of path stages) ---
++  constexpr int kWindowStages = 4;
++  constexpr int kMaxCandsPerStage = 10;
++  constexpr float kMinWindowGain = 1.0e-12f;
++  constexpr float kSideWeight = 0.2f;
++  constexpr float kAreaPenalty = 0.2e-12f;
++  constexpr float kMaxAreaRatio = 8.0f;
++  int64_t win_examined = 0;
++  int64_t win_with_gain = 0;
++  int64_t win_joint_differs = 0;
++  int64_t win_stages_changed = 0;
++  int64_t win_trials = 0;
++  int64_t win_kept = 0;
++  int64_t win_rejected_wns = 0;
++  int64_t win_rejected_tns = 0;
++
++  struct WindowStage
++  {
++    int path_index{0};
++    const sta::Pin* pin{nullptr};
++    sta::Instance* inst{nullptr};
++    const sta::RiseFall* drvr_rf{nullptr};
++    float load{0.0f};
++    float side_load{0.0f};
++    int side_fanout{0};
++    std::vector<sta::LibertyCell*> cands;       // [0] = current master
++    std::vector<const sta::LibertyPort*> outs;  // scene output ports
++    std::vector<float> cin;                     // input cap per candidate
++    std::vector<float> area;
++  };
++
++  // Plans a joint master assignment for a window around `drvr_pin` on the
++  // current worst path to `end_pin`.  Returns true and fills `insts` /
++  // `masters` with the instances to change when the DP finds a gain.
++  auto planWindow = [&](const sta::Pin* drvr_pin,
++                        const sta::Pin* end_pin,
++                        const Target& target,
++                        std::vector<sta::Instance*>& insts,
++                        std::vector<sta::LibertyCell*>& masters) -> bool {
++    const sta::Scene* scene = target.activeScene(resizer_);
++    const sta::MinMax* min_max = target.minMax(resizer_);
++    if (scene == nullptr || min_max == nullptr || end_pin == nullptr) {
++      return false;
++    }
++    const int lib_ap = scene->libertyIndex(min_max);
++    sta::Vertex* end_vertex = sta_->graph()->pinLoadVertex(end_pin);
++    if (end_vertex == nullptr) {
++      return false;
++    }
++    sta::Path* path = endpointWorstPath(end_vertex);
++    if (path == nullptr) {
++      return false;
++    }
++    sta::PathExpanded expanded(path, sta_);
++
++    std::vector<WindowStage> all;
++    std::vector<sta::LibertyPort*> in_ports;
++    std::vector<const sta::RiseFall*> in_rfs;
++    std::vector<sta::LibertyPort*> drvr_ports;
++    int target_idx = -1;
++    for (size_t k = expanded.startIndex(); k < expanded.size(); ++k) {
++      const sta::Path* p = expanded.path(k);
++      sta::Vertex* v = p->vertex(sta_);
++      const sta::Pin* pin = p->pin(sta_);
++      if (!v->isDriver(network_) || network_->isTopLevelPort(pin)) {
++        continue;
++      }
++      const sta::TimingArc* arc = p->prevArc(sta_);
++      sta::LibertyPort* dport = network_->libertyPort(pin);
++      if (arc == nullptr || dport == nullptr || arc->from() == nullptr) {
++        continue;
++      }
++      WindowStage st;
++      st.path_index = static_cast<int>(k);
++      st.pin = pin;
++      st.inst = network_->instance(pin);
++      st.drvr_rf = arc->toEdge()->asRiseFall();
++      st.load = sta_->graphDelayCalc()->loadCap(pin, scene, min_max);
++      st.side_fanout = std::max(0, fanout(v) - 1);
++      if (pin == drvr_pin) {
++        target_idx = static_cast<int>(all.size());
++      }
++      all.push_back(std::move(st));
++      in_ports.push_back(arc->from());
++      in_rfs.push_back(arc->fromEdge()->asRiseFall());
++      drvr_ports.push_back(dport);
++    }
++    if (target_idx < 0) {
++      return false;
++    }
++    const int total = static_cast<int>(all.size());
++    auto contiguous = [&](int a) {  // stage a feeds stage a+1 directly
++      return a >= 0 && a + 1 < total
++             && all[a + 1].path_index == all[a].path_index + 2;
++    };
++    int lo = target_idx;
++    int hi = target_idx;  // inclusive
++    if (contiguous(lo - 1)) {
++      --lo;
++    }
++    while (hi - lo + 1 < kWindowStages && contiguous(hi)) {
++      ++hi;
++    }
++    while (hi - lo + 1 < kWindowStages && contiguous(lo - 1)) {
++      --lo;
++    }
++    const int n = hi - lo + 1;
++    if (n < 2) {
++      return false;
++    }
++
++    // Candidate masters per stage.
++    std::vector<WindowStage> w(all.begin() + lo, all.begin() + hi + 1);
++    for (int i = 0; i < n; ++i) {
++      WindowStage& st = w[i];
++      sta::LibertyPort* dport = drvr_ports[lo + i];
++      sta::LibertyPort* iport = in_ports[lo + i];
++      const sta::RiseFall* in_rf = in_rfs[lo + i];
++      sta::LibertyCell* cell = dport->libertyCell();
++      const sta::LibertyPort* cur_out
++          = static_cast<const sta::LibertyPort*>(dport)->scenePort(lib_ap);
++      const sta::LibertyPort* cur_in
++          = static_cast<const sta::LibertyPort*>(iport)->scenePort(lib_ap);
++      if (cur_out == nullptr || cur_in == nullptr) {
++        return false;
++      }
++      auto in_cap = [&](const sta::LibertyPort* ip) {
++        return in_rf != nullptr ? ip->capacitance(in_rf, min_max)
++                                : ip->capacitance();
++      };
++      st.cands.push_back(cell);
++      st.outs.push_back(cur_out);
++      st.cin.push_back(in_cap(cur_in));
++      st.area.push_back(std::max(cell->area(), 1e-6f));
++      if (!cell->isSequential()) {
++        const float r_rise
++            = cur_out->driveResistance(sta::RiseFall::rise(), min_max);
++        const float r_fall
++            = cur_out->driveResistance(sta::RiseFall::fall(), min_max);
++        std::vector<std::tuple<float, std::string, sta::LibertyCell*>> extra;
++        for (sta::LibertyCell* s : resizer_.getSwappableCells(cell)) {
++          if (s == cell) {
++            continue;
++          }
++          sta::LibertyCell* sc = s->sceneCell(lib_ap);
++          if (sc == nullptr || s->area() > kMaxAreaRatio * cell->area()) {
++            continue;
++          }
++          const sta::LibertyPort* so = sc->findLibertyPort(dport->name());
++          const sta::LibertyPort* si = sc->findLibertyPort(iport->name());
++          if (so == nullptr || si == nullptr
++              || so->driveResistance(sta::RiseFall::rise(), min_max) > r_rise
++              || so->driveResistance(sta::RiseFall::fall(), min_max) > r_fall) {
++            continue;
++          }
++          extra.emplace_back(s->area(), std::string(s->name()), s);
++        }
++        std::ranges::sort(extra, [](const auto& a, const auto& b) {
++          if (std::get<0>(a) != std::get<0>(b)) {
++            return std::get<0>(a) < std::get<0>(b);
++          }
++          return std::get<1>(a) < std::get<1>(b);
++        });
++        for (const auto& e : extra) {
++          if (static_cast<int>(st.cands.size()) > kMaxCandsPerStage) {
++            break;
++          }
++          sta::LibertyCell* s = std::get<2>(e);
++          sta::LibertyCell* sc = s->sceneCell(lib_ap);
++          st.cands.push_back(s);
++          st.outs.push_back(sc->findLibertyPort(dport->name()));
++          st.cin.push_back(in_cap(sc->findLibertyPort(iport->name())));
++          st.area.push_back(std::max(s->area(), 1e-6f));
++        }
++      }
++    }
++    for (int i = 0; i + 1 < n; ++i) {
++      w[i].side_load = std::max(0.0f, w[i].load - w[i + 1].cin[0]);
++    }
++    // Upstream (outside-window) stage: fixed drive resistance and side fanout.
++    float prev_drive = 0.0f;
++    int ext_side_fanout = 0;
++    if (lo > 0 && contiguous(lo - 1)) {
++      const sta::LibertyPort* pp
++          = static_cast<const sta::LibertyPort*>(drvr_ports[lo - 1])
++                ->scenePort(lib_ap);
++      if (pp != nullptr && all[lo - 1].drvr_rf != nullptr) {
++        prev_drive = pp->driveResistance(all[lo - 1].drvr_rf, min_max);
++      }
++      ext_side_fanout = all[lo - 1].side_fanout;
++    }
++
++    auto stage_delay = [&](int i, int a, float load) {
++      return w[i].drvr_rf != nullptr
++                 ? static_cast<float>(resizer_.gateDelay(
++                       w[i].outs[a], w[i].drvr_rf, load, scene, min_max))
++                 : static_cast<float>(
++                       resizer_.gateDelay(w[i].outs[a], load, scene, min_max));
++    };
++    auto drive_r = [&](int i, int a) {
++      return w[i].drvr_rf != nullptr
++                 ? w[i].outs[a]->driveResistance(w[i].drvr_rf, min_max)
++                 : w[i].outs[a]->driveResistance(sta::RiseFall::rise(),
++                                                 min_max);
++    };
++    auto area_pen = [&](int i, int a) {
++      return kAreaPenalty * (w[i].area[a] / w[i].area[0] - 1.0f);
++    };
++    // Cost of choosing master a at stage i given master b at stage i-1
++    // (i == 0: b is ignored, the upstream stage is fixed).
++    auto in_cost = [&](int i, int b, int a) {
++      const float dcin = std::max(0.0f, w[i].cin[a] - w[i].cin[0]);
++      float c = area_pen(i, a);
++      if (i == 0) {
++        c += prev_drive * w[i].cin[a]
++             + kSideWeight * prev_drive * dcin
++                   * static_cast<float>(ext_side_fanout);
++      } else {
++        c += stage_delay(i - 1, b, w[i - 1].side_load + w[i].cin[a])
++             + kSideWeight * drive_r(i - 1, b) * dcin
++                   * static_cast<float>(w[i - 1].side_fanout);
++      }
++      return c;
++    };
++    auto eval = [&](const std::vector<int>& asg) {
++      float c = 0.0f;
++      for (int i = 0; i < n; ++i) {
++        c += in_cost(i, i > 0 ? asg[i - 1] : 0, asg[i]);
++      }
++      c += stage_delay(n - 1, asg[n - 1], w[n - 1].load);
++      return c;
++    };
++
++    // Viterbi: best[i][a] = min cost of stages 0..i-1 transitions ending in a.
++    std::vector<std::vector<float>> best(n);
++    std::vector<std::vector<int>> back(n);
++    for (int i = 0; i < n; ++i) {
++      const int ka = static_cast<int>(w[i].cands.size());
++      best[i].assign(ka, 0.0f);
++      back[i].assign(ka, 0);
++      for (int a = 0; a < ka; ++a) {
++        if (i == 0) {
++          best[i][a] = in_cost(0, 0, a);
++          continue;
++        }
++        float bc = std::numeric_limits<float>::infinity();
++        int bb = 0;
++        for (int b = 0; b < static_cast<int>(w[i - 1].cands.size()); ++b) {
++          const float c = best[i - 1][b] + in_cost(i, b, a);
++          if (c < bc) {
++            bc = c;
++            bb = b;
++          }
++        }
++        best[i][a] = bc;
++        back[i][a] = bb;
++      }
++    }
++    float dp_cost = std::numeric_limits<float>::infinity();
++    int last = 0;
++    for (int a = 0; a < static_cast<int>(w[n - 1].cands.size()); ++a) {
++      const float c = best[n - 1][a] + stage_delay(n - 1, a, w[n - 1].load);
++      if (c < dp_cost) {
++        dp_cost = c;
++        last = a;
++      }
++    }
++    std::vector<int> dp_asg(n, 0);
++    dp_asg[n - 1] = last;
++    for (int i = n - 1; i > 0; --i) {
++      dp_asg[i - 1] = back[i][dp_asg[i]];
++    }
++    ++win_examined;
++    const std::vector<int> zeros(n, 0);
++    const float cur_cost = eval(zeros);
++    if (cur_cost - dp_cost < kMinWindowGain) {
++      return false;
++    }
++    ++win_with_gain;
++
++    // Greedy reference: best single-stage change with the others untouched.
++    std::vector<int> greedy_asg(n, 0);
++    float greedy_cost = cur_cost;
++    for (int i = 0; i < n; ++i) {
++      for (int a = 1; a < static_cast<int>(w[i].cands.size()); ++a) {
++        std::vector<int> t(n, 0);
++        t[i] = a;
++        const float c = eval(t);
++        if (c < greedy_cost) {
++          greedy_cost = c;
++          greedy_asg = t;
++        }
++      }
++    }
++    if (greedy_asg != dp_asg) {
++      ++win_joint_differs;
++    }
++    for (int i = 0; i < n; ++i) {
++      if (dp_asg[i] != 0) {
++        insts.push_back(w[i].inst);
++        masters.push_back(w[i].cands[dp_asg[i]]);
++      }
++    }
++    win_stages_changed += static_cast<int64_t>(insts.size());
++    return !insts.empty();
++  };
++
+   sta::Slack wns_floor = 0.0;
+   sta::Vertex* wns_vertex = nullptr;
+   target_collector_->worstSlack(wns_floor, wns_vertex);
+@@ -495,6 +811,7 @@ void SetupLegacyPolicy::runTnsRecovery()
+       {
+         std::string name;
+         double weight{0.0};
++        std::string end_name;  // worst violating endpoint through this driver
+       };
+       std::vector<Bottleneck> bottlenecks;
+       std::unordered_map<const sta::Pin*, size_t> index_of;
+@@ -516,7 +833,9 @@ void SetupLegacyPolicy::runTnsRecovery()
+           }
+           auto [it, inserted] = index_of.emplace(pin, bottlenecks.size());
+           if (inserted) {
+-            bottlenecks.push_back({network_->pathName(pin), 0.0});
++            bottlenecks.push_back({network_->pathName(pin),
++                                   0.0,
++                                   network_->pathName(ends[i].first->pin())});
+           }
+           bottlenecks[it->second].weight += weight;
+         }
+@@ -535,6 +854,54 @@ void SetupLegacyPolicy::runTnsRecovery()
+           = std::min(static_cast<int>(bottlenecks.size()), kTopDrivers);
+       for (int d = 0; d < driver_count && kept < move_cap; ++d) {
+         std::unordered_set<MoveType> rejected_types;
++        {
++          // Joint window move first; fall through to the stock attempts when
++          // it finds no gain or is rejected.
++          const sta::Pin* wpin = network_->findPin(bottlenecks[d].name.c_str());
++          const sta::Pin* wend
++              = network_->findPin(bottlenecks[d].end_name.c_str());
++          Target wtarget;
++          std::vector<sta::Instance*> winsts;
++          std::vector<sta::LibertyCell*> wmasters;
++          if (wpin != nullptr && makePinTarget(wpin, wns_floor, wtarget)
++              && planWindow(wpin, wend, wtarget, winsts, wmasters)) {
++            committer_.beginJournal();
++            ++win_trials;
++            bool applied = true;
++            for (size_t m = 0; m < winsts.size(); ++m) {
++              if (!resizer_.replaceCell(winsts[m], wmasters[m])) {
++                applied = false;
++                break;
++              }
++            }
++            resizer_.updateParasiticsAndTiming();
++            if (!applied) {
++              committer_.restoreJournal();
++              resizer_.updateParasiticsAndTiming();
++            } else {
++              sta::Slack wns = 0.0;
++              sta::Vertex* wv = nullptr;
++              target_collector_->worstSlack(wns, wv);
++              const float tns = totalNegativeSlack();
++              const bool wns_ok = sta::fuzzyGreaterEqual(wns, wns_floor);
++              if (wns_ok && tns >= cur_tns + kMinTnsGain) {
++                committer_.commitJournal();
++                cur_tns = tns;
++                ++kept;
++                ++win_kept;
++                ++round_kept;
++                continue;
++              }
++              if (wns_ok) {
++                ++win_rejected_tns;
++              } else {
++                ++win_rejected_wns;
++              }
++              committer_.restoreJournal();
++              resizer_.updateParasiticsAndTiming();
++            }
++          }
++        }
+         for (int attempt = 0; attempt < kAttemptsPerDriver; ++attempt) {
+           // Resolve by name: earlier trials may have replaced objects.
+           const sta::Pin* pin = network_->findPin(bottlenecks[d].name.c_str());
+@@ -588,6 +955,18 @@ void SetupLegacyPolicy::runTnsRecovery()
+     }
+   }
+ 
++  logger_->report("RSZ_EVOLVE window_dp_examined fired={}", win_examined);
++  logger_->report("RSZ_EVOLVE window_dp_with_gain fired={}", win_with_gain);
++  logger_->report("RSZ_EVOLVE window_joint_changed_vs_greedy fired={}",
++                  win_joint_differs);
++  logger_->report("RSZ_EVOLVE window_dp_stages_changed fired={}",
++                  win_stages_changed);
++  logger_->report("RSZ_EVOLVE window_dp_trials fired={}", win_trials);
++  logger_->report("RSZ_EVOLVE window_dp_kept fired={}", win_kept);
++  logger_->report("RSZ_EVOLVE window_dp_rejected_wns fired={}",
++                  win_rejected_wns);
++  logger_->report("RSZ_EVOLVE window_dp_rejected_tns fired={}",
++                  win_rejected_tns);
+   logger_->report("RSZ_EVOLVE bottleneck_rounds fired={}", rounds);
+   logger_->report("RSZ_EVOLVE bottleneck_drivers_ranked fired={}",
+                   drivers_ranked);

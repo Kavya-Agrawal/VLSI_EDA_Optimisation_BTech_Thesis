@@ -1,0 +1,152 @@
+{
+  "iteration": 13,
+  "tag": "0013_setup_strategy",
+  "status": "accepted",
+  "cluster": "setup_strategy",
+  "title": "Two-phase repair: unchanged stock LEGACY loop, then a bottleneck-driven TNS-recovery phase with a hard post-stock WNS floor",
+  "hypothesis": "Every in-loop change so far (iters 8, 9, 12) found large Ibex TNS gains from shared-cone/TNS-aware repair but perturbed the stock trajectory and lost WNS on AES/gcd/JPEG. Instead of modifying the greedy worst-path-first loop, run it unchanged, snapshot design WNS W*, then run a separate phase that ranks driver pins by the slack-weighted count of violating paths through them (top-N=400 paths) and trials stock generator moves on the top-K drivers under a journal, keeping a move only if design WNS >= W* (absolute, non-rolling) and measured design TNS improves by >= 0.5 ps. Rounds repeat with re-ranking until no move is kept, 5 rounds pass, or a move cap of max(30, 10% of stock moves) is hit. This makes final WNS >= stock by construction while harvesting shared-trunk TNS (e.g. the Ibex _26153_ fanout-943 trunk, the JPEG HA/FA drivers), and moves on shared drivers of the worst cone can also raise WNS.",
+  "planned_files": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh",
+    "src/policy/BottleneckAnalysis.cc",
+    "src/policy/BottleneckAnalysis.hh",
+    "src/Optimizer.cc"
+  ],
+  "evidence_iterations": [
+    8,
+    9,
+    12
+  ],
+  "files_changed": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 201,
+    "lines_deleted": 0
+  },
+  "accepted": true,
+  "score_vs_champion": 0.002059507285058947,
+  "score_vs_baseline": 0.002059507285058947,
+  "reasons": [],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.003993993520565545,
+      "wns_cand": -0.0222145086391452,
+      "wns_ref": -0.02336561565920771,
+      "tns_cand": -0.3420142599269762,
+      "tns_ref": -0.474810204593015,
+      "d_wns_ns": 0.0011511070200625091,
+      "d_tns_ns": 0.13279594466603878,
+      "d_wns_pct_period": 0.30696187201666914,
+      "d_tns_pct": 27.968216222283015,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 831.7819766290313,
+      "area_ref": 822.2060254858832,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": 0.0012377463300085256,
+      "wns_cand": -0.024127922565050468,
+      "wns_ref": -0.02584094122934333,
+      "tns_cand": -0.9988178344899452,
+      "tns_ref": -1.140958693152,
+      "d_wns_ns": 0.0017130186642928605,
+      "d_tns_ns": 0.14214085866205473,
+      "d_wns_pct_period": 0.23211635017518434,
+      "d_tns_pct": 12.45801969126314,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20584.410620472227,
+      "area_ref": 20554.617563561806,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.002271082054922129,
+      "wns_cand": -0.07423972757790741,
+      "wns_ref": -0.07941181270670272,
+      "tns_cand": -44.39935833548254,
+      "tns_ref": -65.66544827087755,
+      "d_wns_ns": 0.005172085128795315,
+      "d_tns_ns": 21.26608993539501,
+      "d_wns_pct_period": 0.261216420646228,
+      "d_tns_pct": 32.385509419915834,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28643.944105510855,
+      "area_ref": 28627.185955087953,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": 0.0007352072347395869,
+      "wns_cand": -0.08530243419735703,
+      "wns_ref": -0.08662293350019246,
+      "tns_cand": -31.15051771366437,
+      "tns_ref": -32.40305893097288,
+      "d_wns_ns": 0.0013204993028354262,
+      "d_tns_ns": 1.2525412173085115,
+      "d_wns_pct_period": 0.13204993028354262,
+      "d_tns_pct": 3.865503006912887,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90252.47038607631,
+      "area_ref": 90200.33076012623,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 13,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0013_setup_strategy",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0013_setup_strategy",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0013_setup_strategy/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "setup_strategy",
+    "dominant_cause": "high_fanout",
+    "lesson": "A separate journaled TNS recovery phase with a fixed stock-WNS floor improved WNS on all four designs and reduced Ibex TNS by 32.39%, while still permitting individual endpoint regressions.",
+    "dead_end": "Do not reintroduce shared-cone/TNS ranking inside the stock greedy loop: iterations 8, 9 and 12 traded Ibex gains for AES/gcd/JPEG WNS losses.",
+    "good_changes": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc::runTnsRecovery preserves the stock trajectory and ranks shared drivers for a separate recovery phase",
+      "Fixed stock-WNS acceptance, measured incremental TNS acceptance and journal rollback filter harmful recovery trials"
+    ],
+    "bad_changes": [
+      "Global WNS/TNS acceptance permits local losses, including Ibex instr_addr_o[22] becoming violating",
+      "Top-50 coverage, three attempts per driver and fixed within-round ranking may limit search; this is not established as the cause of endpoint regressions"
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc",
+      "src/rsz/src/policy/SetupLegacyPolicy.hh"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/policy/SetupLegacyBase.cc",
+      "src/rsz/src/move/SizeUpGenerator.cc",
+      "src/rsz/src/move/CloneGenerator.cc",
+      "src/rsz/src/Rebuffer.cc",
+      "src/rsz/src/SkewBudget.cc"
+    ]
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0013",
+  "seconds": 615,
+  "when": "2026-11-25T14:17:59Z"
+}

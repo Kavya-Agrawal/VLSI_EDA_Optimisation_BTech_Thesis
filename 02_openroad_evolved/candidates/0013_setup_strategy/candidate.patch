@@ -1,0 +1,250 @@
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0013_setup_strategy/rsz/HYPOTHESIS.md b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0013_setup_strategy/rsz/HYPOTHESIS.md
+new file mode 100644
+index 0000000..8c3dc61
+--- /dev/null
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0013_setup_strategy/rsz/HYPOTHESIS.md	
+@@ -0,0 +1,30 @@
++# Two-phase setup repair: stock LEGACY loop + bottleneck TNS recovery
++
++## Problem
++In-loop TNS-aware changes found large Ibex TNS gains but perturbed the stock greedy trajectory and lost WNS on AES/gcd/JPEG. Shared trunk drivers (e.g. Ibex `_26153_` fanout 943, JPEG HA/FA drivers) are only touched when they sit on the worst path of the endpoint currently being repaired.
++
++## Current heuristic
++`SetupLegacyPolicy::iterate` / `repairEndpoint` (src/policy/SetupLegacyPolicy.cc) walks violating endpoints worst-first and repairs each one's worst path via `SetupLegacyBase::repairPath`. Nothing ranks drivers by how many violating paths they serve.
++
++## New approach
++The stock loop is unchanged. After it, for the LEGACY phase only, `SetupLegacyPolicy::runTnsRecovery`:
++1. Snapshots design WNS W* (absolute floor, never rolled).
++2. Up to 5 rounds: re-collect violating endpoints, unroll the worst path of the top 400, and rank driver pins by sum of (-endpoint slack) over those paths.
++3. For the top 50 drivers (resolved by name each time), open a journal, run the stock generator sequence via `tryRepairTarget` (up to 3 attempts, excluding move types already rejected for that driver), refresh parasitics/timing, then keep the move only if WNS >= W* and TNS improves by >= 0.5 ps. Otherwise `restoreJournal`.
++4. Stops when a round keeps nothing, after 5 rounds, or at max(30, 10% of stock moves) kept moves.
++
++## Why WNS/TNS should improve
++Final WNS >= stock WNS by construction. Moves on shared trunks help many endpoints at once, so TNS rises. Moves on shared drivers of the worst cone can also raise WNS.
++
++## What to look for in the path report
++Fewer violating endpoints sharing a common upstream driver (upsized/buffered trunk); unchanged or better worst path; `RSZ_EVOLVE bottleneck_kept` > 0.
++
++## Risks
++TNS-only gains may be under-weighted by the score. Each trial needs a timing update, which may slow JPEG (bounded by 5 rounds x 50 drivers x 3 attempts). Pass count `bottleneck_rejected_*` shows how selective the floor is.
++
++## Counters
++`bottleneck_rounds`, `bottleneck_drivers_ranked`, `bottleneck_trials`, `bottleneck_kept`, `bottleneck_rejected_wns`, `bottleneck_rejected_tns` (printed as `RSZ_EVOLVE <name> fired=<n>`).
++
++## Files changed
++- src/policy/SetupLegacyPolicy.cc: `runTnsRecovery` and its call after the stock loop, plus counters.
++- src/policy/SetupLegacyPolicy.hh: declaration of `runTnsRecovery`.
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0013_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc
+index 7b7c254..891df17 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.cc	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0013_setup_strategy/rsz/src/policy/SetupLegacyPolicy.cc	
+@@ -5,6 +5,13 @@
+ 
+ #include <algorithm>
+ #include <cmath>
++#include <cstdint>
++#include <cstring>
++#include <optional>
++#include <string>
++#include <unordered_map>
++#include <unordered_set>
++#include <vector>
+ #include <utility>
+ 
+ #include "MoveCommitter.hh"
+@@ -21,6 +28,7 @@
+ #include "sta/Network.hh"
+ #include "sta/NetworkClass.hh"
+ #include "sta/Path.hh"
++#include "sta/PathExpanded.hh"
+ #include "utl/Logger.h"
+ #include "utl/timer.h"
+ 
+@@ -50,6 +58,10 @@ void SetupLegacyPolicy::iterate()
+     runMainRepairLoop(violating_ends, main_state);
+   }
+ 
++  if (std::strcmp(phaseName(), "LEGACY") == 0) {
++    runTnsRecovery();
++  }
++
+   committer_.printTrackerPhaseSummary(
+       phaseSummaryTitle(), phaseEndpointProfilerTitle(), true);
+ 
+@@ -430,6 +442,161 @@ void SetupLegacyPolicy::runMainRepairLoop(const ViolatingEnds& violating_ends,
+   reportPhaseComplete(phaseName(), main_state.phase_marker);
+ }
+ 
++void SetupLegacyPolicy::runTnsRecovery()
++{
++  constexpr int kTopPaths = 400;
++  constexpr int kTopDrivers = 50;
++  constexpr int kMaxRounds = 5;
++  constexpr int kAttemptsPerDriver = 3;
++  constexpr float kMinTnsGain = 0.5e-12f;
++
++  int64_t trials = 0;
++  int64_t kept = 0;
++  int64_t rounds = 0;
++  int64_t rejected_wns = 0;
++  int64_t rejected_tns = 0;
++  int64_t drivers_ranked = 0;
++
++  const MoveType all_types[] = {MoveType::kSizeUp,
++                                MoveType::kSizeUpMatch,
++                                MoveType::kSizeDownFanout,
++                                MoveType::kBuffer,
++                                MoveType::kClone,
++                                MoveType::kSwapPins,
++                                MoveType::kVtSwap,
++                                MoveType::kUnbuffer,
++                                MoveType::kSplitLoad,
++                                MoveType::kReroute};
++  int stock_moves = 0;
++  for (const MoveType type : all_types) {
++    stock_moves += committedMoves(type);
++  }
++  const int move_cap = std::max(30, stock_moves / 10);
++
++  sta::Slack wns_floor = 0.0;
++  sta::Vertex* wns_vertex = nullptr;
++  target_collector_->worstSlack(wns_floor, wns_vertex);
++  const float setup_slack_margin = config_.setup_slack_margin;
++
++  if (wns_vertex != nullptr && wns_floor < setup_slack_margin) {
++    float cur_tns = totalNegativeSlack();
++    for (int round = 0; round < kMaxRounds && kept < move_cap; ++round) {
++      if (resizer_.overMaxArea()) {
++        break;
++      }
++      ++rounds;
++      const ViolatingEnds ends = collectViolatingEndpoints(setup_slack_margin);
++      if (ends.empty()) {
++        break;
++      }
++
++      // Rank drivers by slack-weighted count of violating paths through them.
++      struct Bottleneck
++      {
++        std::string name;
++        double weight{0.0};
++      };
++      std::vector<Bottleneck> bottlenecks;
++      std::unordered_map<const sta::Pin*, size_t> index_of;
++      const int path_count
++          = std::min(static_cast<int>(ends.size()), kTopPaths);
++      for (int i = 0; i < path_count; ++i) {
++        sta::Path* path = endpointWorstPath(ends[i].first);
++        if (path == nullptr) {
++          continue;
++        }
++        sta::PathExpanded expanded(path, sta_);
++        const double weight = -static_cast<double>(ends[i].second);
++        for (size_t k = expanded.startIndex(); k < expanded.size(); ++k) {
++          const sta::Path* p = expanded.path(k);
++          sta::Vertex* v = p->vertex(sta_);
++          const sta::Pin* pin = p->pin(sta_);
++          if (!v->isDriver(network_) || network_->isTopLevelPort(pin)) {
++            continue;
++          }
++          auto [it, inserted] = index_of.emplace(pin, bottlenecks.size());
++          if (inserted) {
++            bottlenecks.push_back({network_->pathName(pin), 0.0});
++          }
++          bottlenecks[it->second].weight += weight;
++        }
++      }
++      std::ranges::stable_sort(
++          bottlenecks, [](const Bottleneck& a, const Bottleneck& b) {
++            if (a.weight != b.weight) {
++              return a.weight > b.weight;
++            }
++            return a.name < b.name;
++          });
++      drivers_ranked += static_cast<int64_t>(bottlenecks.size());
++
++      int round_kept = 0;
++      const int driver_count
++          = std::min(static_cast<int>(bottlenecks.size()), kTopDrivers);
++      for (int d = 0; d < driver_count && kept < move_cap; ++d) {
++        std::unordered_set<MoveType> rejected_types;
++        for (int attempt = 0; attempt < kAttemptsPerDriver; ++attempt) {
++          // Resolve by name: earlier trials may have replaced objects.
++          const sta::Pin* pin = network_->findPin(bottlenecks[d].name.c_str());
++          if (pin == nullptr) {
++            break;
++          }
++          Target target;
++          if (!makePinTarget(pin, wns_floor, target)) {
++            break;
++          }
++          committer_.beginJournal();
++          int changed = 0;
++          std::optional<MoveType> accepted_type;
++          ++trials;
++          const bool moved = tryRepairTarget(
++              target, 1, changed, &rejected_types, accepted_type);
++          if (!moved) {
++            committer_.restoreJournal();
++            break;
++          }
++          resizer_.updateParasiticsAndTiming();
++          sta::Slack wns = 0.0;
++          sta::Vertex* wv = nullptr;
++          target_collector_->worstSlack(wns, wv);
++          const float tns = totalNegativeSlack();
++          const bool wns_ok = sta::fuzzyGreaterEqual(wns, wns_floor);
++          if (wns_ok && tns >= cur_tns + kMinTnsGain) {
++            committer_.commitJournal();
++            cur_tns = tns;
++            ++kept;
++            ++round_kept;
++            break;
++          }
++          if (!wns_ok) {
++            ++rejected_wns;
++          } else {
++            ++rejected_tns;
++          }
++          committer_.restoreJournal();
++          resizer_.updateParasiticsAndTiming();
++          if (accepted_type) {
++            rejected_types.insert(*accepted_type);
++          } else {
++            break;
++          }
++        }
++      }
++      if (round_kept == 0) {
++        break;
++      }
++    }
++  }
++
++  logger_->report("RSZ_EVOLVE bottleneck_rounds fired={}", rounds);
++  logger_->report("RSZ_EVOLVE bottleneck_drivers_ranked fired={}",
++                  drivers_ranked);
++  logger_->report("RSZ_EVOLVE bottleneck_trials fired={}", trials);
++  logger_->report("RSZ_EVOLVE bottleneck_kept fired={}", kept);
++  logger_->report("RSZ_EVOLVE bottleneck_rejected_wns fired={}", rejected_wns);
++  logger_->report("RSZ_EVOLVE bottleneck_rejected_tns fired={}", rejected_tns);
++}
++
+ bool SetupLegacyPolicy::pathImproved(const sta::Slack end_slack,
+                                      const sta::Slack worst_slack,
+                                      const sta::Slack prev_end_slack,
+diff --git a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0013_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh
+index 1d47ea6..eeb1359 100644
+--- a/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz/src/policy/SetupLegacyPolicy.hh	
++++ b/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0013_setup_strategy/rsz/src/policy/SetupLegacyPolicy.hh	
+@@ -56,6 +56,10 @@ class SetupLegacyPolicy : public SetupLegacyBase
+   {
+     return "LEGACY Phase Endpoint Profiler";
+   }
++  // Bottleneck-driven TNS recovery run after the unchanged stock loop.  Keeps
++  // a trial move only if design WNS stays >= the post-stock WNS and design TNS
++  // improves.  Only active for the LEGACY phase.
++  void runTnsRecovery();
+   bool pathImproved(sta::Slack end_slack,
+                     sta::Slack worst_slack,
+                     sta::Slack prev_end_slack,

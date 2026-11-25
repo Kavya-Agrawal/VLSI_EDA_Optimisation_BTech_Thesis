@@ -1,0 +1,157 @@
+{
+  "iteration": 11,
+  "tag": "0011_buffering",
+  "status": "rejected",
+  "cluster": "buffering",
+  "title": "TNS-aware van Ginneken: carry per-option total sink violation and choose the lowest-TNS tree among those within epsilon of the best worst-sink slack",
+  "hypothesis": "Rebuffer::rebufferNet scores buffer-tree options only by (load cap, earliest required time) and picks the root option with the largest worst-sink slack, so on shared nets with many violating sinks it ignores total violation. We add a third Pareto dimension V (sum of sink violation, propagated piecewise-linearly through wires/buffers via a violating-sink count and summed at junctions) and choose, among root options within epsilon=min(1ps, 5%|S*|) of the stock-best slack, the one with the lowest V. This captures the shared-endpoint TNS benefit seen in iterations 8/9 locally per net, without the global target reordering that broke AES/JPEG, and without the eligibility expansion (iter 6) or split-partition prediction (iter 7) dead ends. With at most one violating sink it reduces exactly to stock. Expected: Ibex/JPEG TNS improves on shared-net cones while WNS stays within 1 ps.",
+  "planned_files": [
+    "src/Rebuffer.cc",
+    "src/Rebuffer.hh",
+    "src/BufferedNet.cc",
+    "src/BufferedNet.hh"
+  ],
+  "evidence_iterations": [
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "files_changed": [
+    "src/Rebuffer.cc",
+    "src/Rebuffer.hh",
+    "src/move/RebufferMtGenerator.cc",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 182,
+    "lines_deleted": 16
+  },
+  "accepted": false,
+  "score_vs_champion": -3.7264050891620393e-05,
+  "score_vs_baseline": -3.7264050891620393e-05,
+  "reasons": [
+    "score -0.00004 below required gain +0.00200",
+    "instrumentation missing: no RSZ_EVOLVE counter lines printed, cannot tell if the new logic ran"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": 0.0,
+      "wns_cand": -0.02336561565920771,
+      "wns_ref": -0.02336561565920771,
+      "tns_cand": -0.474810204593015,
+      "tns_ref": -0.474810204593015,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 822.2060254858832,
+      "area_ref": 822.2060254858832,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -0.00014804089096141418,
+      "wns_cand": -0.025938585347120676,
+      "wns_ref": -0.02584094122934333,
+      "tns_cand": -1.291797261279561,
+      "tns_ref": -1.140958693152,
+      "d_wns_ns": -9.76441177773478e-05,
+      "d_tns_ns": -0.15083856812756102,
+      "d_wns_pct_period": -0.013230910267933308,
+      "d_tns_pct": -13.220335585581635,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20285.957802457233,
+      "area_ref": 20554.617563561806,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": 0.0,
+      "wns_cand": -0.07941181270670272,
+      "wns_ref": -0.07941181270670272,
+      "tns_cand": -65.66544827087755,
+      "tns_ref": -65.66544827087755,
+      "d_wns_ns": 0.0,
+      "d_tns_ns": 0.0,
+      "d_wns_pct_period": 0.0,
+      "d_tns_pct": 0.0,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28624.26029537346,
+      "area_ref": 28627.185955087953,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": -1.0153126050673833e-06,
+      "wns_cand": -0.08663059403927903,
+      "wns_ref": -0.08662293350019246,
+      "tns_cand": -32.356021000535236,
+      "tns_ref": -32.40305893097288,
+      "d_wns_ns": -7.660539086573603e-06,
+      "d_tns_ns": 0.04703793043764648,
+      "d_wns_pct_period": -0.0007660539086573603,
+      "d_tns_pct": 0.14516509240022604,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90171.07061026763,
+      "area_ref": 90200.33076012623,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 0,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0011_buffering",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0011_buffering",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0011_buffering/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "buffering",
+    "dominant_cause": "deep_logic",
+    "lesson": "Root-only sink-violation reranking left Ibex unchanged and traded a 0.047038 ns JPEG TNS gain for a 0.150839 ns AES loss; verify activation and actual endpoint TNS before testing V-aware Pareto retention.",
+    "dead_end": "Do not repeat global endpoint reordering or promote uninstrumented root-only V reranking as a substitute for three-dimensional Pareto retention.",
+    "good_changes": [],
+    "bad_changes": [
+      "src/rsz/src/Rebuffer.cc: chooseLowestTnsOption reranking coincided with AES TNS regression and no Ibex timing benefit; causality is unverified.",
+      "src/rsz/src/Rebuffer.cc: V is evaluated only on surviving root options, leaving two-dimensional pruning unchanged.",
+      "src/rsz/src/move/RebufferMtGenerator.cc: added counter reporting produced no captured RSZ_EVOLVE lines."
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/Rebuffer.cc",
+      "src/rsz/src/Rebuffer.hh",
+      "src/rsz/src/BufferedNet.hh",
+      "src/rsz/src/BufferedNet.cc",
+      "src/rsz/src/move/RebufferMtGenerator.cc",
+      "src/rsz/src/move/RebufferMtCandidate.cc",
+      "src/rsz/src/move/SizeUpGenerator.cc",
+      "src/rsz/src/move/CloneGenerator.cc"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/RepairSetupAnalysisTarget.cc"
+    ]
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0011",
+  "seconds": 553,
+  "when": "2026-11-25T13:53:52Z"
+}

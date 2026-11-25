@@ -155,7 +155,7 @@ EVO_REPAIR_CMD repair_timing -setup -repair_tns 100 -verbose
 [INFO RSZ-0045] Inserted 9 buffers, 1 to split loads.
 [INFO RSZ-0051] Resized 71 instances: 71 up, 0 up match, 0 down, 0 VT
 [WARNING RSZ-0062] Unable to repair all setup violations.
-[INFO RSZ-0505] Runtime: 2.73s
+[INFO RSZ-0505] Runtime: 5.23s
 [INFO DPL-0006] Core area: 1076.77 um^2
 [INFO DPL-0007] Movable instances area: 847.48 um^2
 [INFO DPL-0008] Fixed instances area within core: 12.24 um^2
@@ -214,4 +214,4 @@ EVO_METRICS post -0.17173818409030378 -7.414839174753439 0.09129948444571948 0.0
 [WARNING STA-0101] object 'NULL' not found.
 [WARNING STA-0101] object 'NULL' not found.
 EVO_PATHS wrote 38 paths to /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0008_setup_strategy/runs/nangate45__gcd/stressed_r1/paths_post.json
-EVO_DONE wns_pre=-0.1749589966869834 wns_post=-0.17173818409030378 tns_pre=-8.003023359426166 tns_post=-7.414839174753439 repair_ms=2736
+EVO_DONE wns_pre=-0.1749589966869834 wns_post=-0.17173818409030378 tns_pre=-8.003023359426166 tns_post=-7.414839174753439 repair_ms=5253

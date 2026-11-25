@@ -1,0 +1,41 @@
+[
+  {
+    "step": "planned",
+    "t": 61.4,
+    "ts": "2026-11-25T13:45:41Z",
+    "cluster": "buffering",
+    "title": "TNS-aware van Ginneken: carry per-option total sink violation and choose the lowest-TNS tree among those within epsilon of the best worst-sink slack"
+  },
+  {
+    "step": "coded",
+    "t": 185.8,
+    "ts": "2026-11-25T13:47:45Z",
+    "files": [
+      "src/Rebuffer.cc",
+      "src/Rebuffer.hh",
+      "src/move/RebufferMtGenerator.cc",
+      "HYPOTHESIS.md"
+    ],
+    "recovered": false
+  },
+  {
+    "step": "built",
+    "t": 234.0,
+    "ts": "2026-11-25T13:48:33Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 48
+  },
+  {
+    "step": "evaluated",
+    "t": 433.7,
+    "ts": "2026-11-25T13:51:53Z",
+    "accepted": false,
+    "score": -3.7264050891620393e-05
+  },
+  {
+    "step": "feedback",
+    "t": 553.2,
+    "ts": "2026-11-25T13:53:52Z"
+  }
+]

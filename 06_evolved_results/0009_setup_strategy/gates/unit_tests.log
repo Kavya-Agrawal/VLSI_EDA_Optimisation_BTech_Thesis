@@ -1,0 +1,37 @@
+INFO: Invocation ID: 453ed149-8d86-4577-ab6c-88bd0dc79a7e
+Computing main repo mapping: 
+Loading: 
+Loading: 0 packages loaded
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+
+Analyzing: 6 targets (2 packages loaded, 0 targets configured)
+
+INFO: Analyzed 6 targets (4 packages loaded, 446 targets configured).
+[11,213 / 11,226] Linking src/rsz/test/TestSkewBudget; 0s disk-cache, remote-cache ... (6 actions, 0 running)
+[11,213 / 11,226] Compiling src/rsz/test/cpp/TestResizer.cc; 1s disk-cache, remote-cache, darwin-sandbox ... (6 actions running)
+[11,220 / 11,229] 1 / 6 tests; Compiling src/rsz/test/cpp/TestResizer.cc; 2s disk-cache, remote-cache, darwin-sandbox ... (5 actions, 3 running)
+[11,224 / 11,231] 1 / 6 tests; Compiling src/rsz/test/cpp/TestResizer.cc; 3s disk-cache, remote-cache, darwin-sandbox ... (5 actions running)
+[11,225 / 11,231] 2 / 6 tests; Compiling src/rsz/test/cpp/TestResizer.cc; 4s disk-cache, remote-cache, darwin-sandbox ... (4 actions running)
+[11,225 / 11,231] 3 / 6 tests; Compiling src/rsz/test/cpp/TestResizer.cc; 5s disk-cache, remote-cache, darwin-sandbox ... (4 actions running)
+[11,226 / 11,231] 4 / 6 tests; Compiling src/rsz/test/cpp/TestResizer.cc; 6s disk-cache, remote-cache, darwin-sandbox ... (3 actions running)
+[11,227 / 11,231] 4 / 6 tests; Compiling src/rsz/test/cpp/TestResizer.cc; 8s disk-cache, remote-cache, darwin-sandbox ... (2 actions running)
+[11,227 / 11,231] 5 / 6 tests; Compiling src/rsz/test/cpp/TestResizer.cc; 15s disk-cache, remote-cache, darwin-sandbox ... (2 actions running)
+[11,228 / 11,231] 5 / 6 tests; Compiling src/rsz/test/cpp/TestResizer.cc; 17s disk-cache, remote-cache, darwin-sandbox
+[11,229 / 11,231] 5 / 6 tests; Linking src/rsz/test/TestResizer; 0s disk-cache, remote-cache, darwin-sandbox
+[11,230 / 11,231] 5 / 6 tests; [Prepa] runfiles for //src/rsz/test:TestResizer
+[11,231 / 11,232] 5 / 6 tests; Testing //src/rsz/test:TestResizer; 1s disk-cache, remote-cache, darwin-sandbox
+[11,231 / 11,232] 6 / 6 tests; Testing //src/rsz/test:TestResizer; 4s disk-cache, remote-cache, darwin-sandbox
+INFO: Found 6 test targets...
+INFO: Elapsed time: 28.057s, Critical Path: 25.79s
+INFO: 18 processes: 148 action cache hit, 6 internal, 12 darwin-sandbox.
+INFO: Build completed successfully, 18 total actions
+//src/rsz/test:TestSkewBudget                                   (cached) PASSED in 0.8s
+//src/rsz/test:TestBufRem1                                               PASSED in 1.3s
+//src/rsz/test:TestInsertBuffer                                          PASSED in 13.2s
+//src/rsz/test:TestNestedJournal                                         PASSED in 3.1s
+//src/rsz/test:TestPreChecks                                             PASSED in 4.1s
+//src/rsz/test:TestResizer                                               PASSED in 4.8s
+
+Executed 5 out of 6 tests: 6 tests pass.
+There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.

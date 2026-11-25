@@ -1,0 +1,69 @@
+{
+  "per_design": {
+    "nangate45/gcd": {
+      "sizing_choice_differs": 0,
+      "sizing_neighbor_weighted": 548,
+      "sizing_selections": 548
+    },
+    "nangate45/aes": {
+      "sizing_choice_differs": 4,
+      "sizing_neighbor_weighted": 2117,
+      "sizing_selections": 2124
+    },
+    "nangate45/ibex": {
+      "sizing_choice_differs": 19,
+      "sizing_neighbor_weighted": 944,
+      "sizing_selections": 944
+    },
+    "nangate45/jpeg": {
+      "sizing_choice_differs": 0,
+      "sizing_neighbor_weighted": 1469,
+      "sizing_selections": 1470
+    }
+  },
+  "total_fired": 10187,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 6,
+      "buffers_inserted": 471,
+      "resized": 1368,
+      "pins_swapped": 135,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

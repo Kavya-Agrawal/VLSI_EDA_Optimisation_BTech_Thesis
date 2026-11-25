@@ -1,0 +1,157 @@
+{
+  "iteration": 12,
+  "tag": "0012_setup_strategy",
+  "status": "rejected",
+  "cluster": "setup_strategy",
+  "title": "TNS-weighted lexicographic acceptance (WNS guard band + design TNS gain) replacing endpoint-only slack acceptance in the LEGACY repair loop",
+  "hypothesis": "Stock LEGACY repair keeps a speculative move only if the targeted endpoint's slack improves, so shared-cone moves that help many violating endpoints (Ibex _26153_ trunk) are rolled back while locally-helpful moves that hurt side paths (AES regressions in iters 7/9/11) are kept. Replace this with a lexicographic rule using OpenSTA's incrementally maintained design WNS/TNS: reject if design or endpoint WNS worsens by more than 1 ps, otherwise accept when dTNS + lambda*dSlack_endpoint > 0 (lambda = violators/4), and veto stock-accepted moves whose TNS loss exceeds 2x their endpoint gain. Target ranking and move generators stay stock, which avoids the trajectory collapse of iteration 9 and the exhaustive-search timeout of iteration 8. The rule reduces exactly to stock when the TNS change equals the endpoint's own change. Expect Ibex TNS to improve by more than 10 ns, AES TNS to stop regressing, and JPEG to stay near stock.",
+  "planned_files": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh",
+    "src/policy/SetupLegacyBase.cc",
+    "src/policy/SetupLegacyBase.hh"
+  ],
+  "evidence_iterations": [
+    7,
+    8,
+    9,
+    11
+  ],
+  "files_changed": [
+    "src/policy/SetupLegacyPolicy.cc",
+    "src/policy/SetupLegacyPolicy.hh",
+    "src/policy/SetupLegacyBase.hh",
+    "HYPOTHESIS.md"
+  ],
+  "patch_stats": {
+    "files": [
+      "repos"
+    ],
+    "files_count": 1,
+    "lines_added": 108,
+    "lines_deleted": 9
+  },
+  "accepted": false,
+  "score_vs_champion": -0.004930116196459374,
+  "score_vs_baseline": -0.004930116196459374,
+  "reasons": [
+    "score -0.00493 below required gain +0.00200"
+  ],
+  "per_design": {
+    "nangate45/gcd": {
+      "score": -0.003792830354672717,
+      "wns_cand": -0.025981356690354014,
+      "wns_ref": -0.02336561565920771,
+      "tns_cand": -0.4912896895028077,
+      "tns_ref": -0.474810204593015,
+      "d_wns_ns": -0.0026157410311463056,
+      "d_tns_ns": -0.01647948490979273,
+      "d_wns_pct_period": -0.6975309416390147,
+      "d_tns_pct": -3.470752050057174,
+      "hold_cand": 0.087038809179191,
+      "hold_ref": 0.087038809179191,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 848.5400160296308,
+      "area_ref": 822.2060254858832,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/aes": {
+      "score": -0.012778786844265286,
+      "wns_cand": -0.04452593975108133,
+      "wns_ref": -0.02584094122934333,
+      "tns_cand": -1.361219286928156,
+      "tns_ref": -1.140958693152,
+      "d_wns_ns": -0.018684998521738,
+      "d_tns_ns": -0.22026059377615614,
+      "d_wns_pct_period": -2.53184261812168,
+      "d_tns_pct": -19.304870114768715,
+      "hold_cand": 0.10201455247075145,
+      "hold_ref": 0.10201455247075145,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 20922.76218945699,
+      "area_ref": 20554.617563561806,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/ibex": {
+      "score": -0.0006137441359041973,
+      "wns_cand": -0.08393153076777808,
+      "wns_ref": -0.07941181270670272,
+      "tns_cand": -54.03854228156833,
+      "tns_ref": -65.66544827087755,
+      "d_wns_ns": -0.004519718061075359,
+      "d_tns_ns": 11.626905989309215,
+      "d_wns_pct_period": -0.22826858894319993,
+      "d_tns_pct": 17.706276733765506,
+      "hold_cand": 0.044729221592639395,
+      "hold_ref": 0.044729221592639395,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 28707.51814043615,
+      "area_ref": 28627.185955087953,
+      "placement_violations": 0.0,
+      "deterministic": true
+    },
+    "nangate45/jpeg": {
+      "score": -0.0025351034509952936,
+      "wns_cand": -0.09180045872196228,
+      "wns_ref": -0.08662293350019246,
+      "tns_cand": -31.506414369217335,
+      "tns_ref": -32.40305893097288,
+      "d_wns_ns": -0.005177525221769827,
+      "d_tns_ns": 0.8966445617555472,
+      "d_wns_pct_period": -0.5177525221769828,
+      "d_tns_pct": 2.7671602352902487,
+      "hold_cand": 0.008403000755284745,
+      "hold_ref": 0.008403000755284745,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 90266.56755395379,
+      "area_ref": 90200.33076012623,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  },
+  "champion_after": 0,
+  "candidate_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/candidates/0012_setup_strategy",
+  "results_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0012_setup_strategy",
+  "feedback_path": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/0012_setup_strategy/feedback.md",
+  "evaluator": {
+    "recommended_cluster": "setup_strategy",
+    "dominant_cause": "high_fanout",
+    "lesson": "TNS-aware pass promotion improved Ibex TNS by 11.627 ns, but rolling checkpoint guards and stock-pass vetoes worsened WNS on every design and failed to protect AES.",
+    "dead_end": "Do not repeat the combined rolling 1 ps guard, violator-weighted acceptance, and 2x TNS-loss veto as a global threshold-tuning experiment.",
+    "good_changes": [
+      "Design-TNS-aware checkpoint promotion in src/rsz/src/policy/SetupLegacyPolicy.cc coincided with Ibex's 11.627 ns TNS gain; isolate its four acceptance flips before retaining it."
+    ],
+    "bad_changes": [
+      "Rolling 1 ps WNS tolerance in src/rsz/src/policy/SetupLegacyPolicy.cc does not impose a cumulative WNS budget.",
+      "Stock-pass TNS-loss veto in src/rsz/src/policy/SetupLegacyPolicy.cc fired 585 times on AES without preventing worse final WNS and TNS.",
+      "Combined acceptance changes altered repair trajectories despite unchanged target ranking and move generators."
+    ],
+    "files_to_revisit": [
+      "src/rsz/src/policy/SetupLegacyPolicy.cc",
+      "src/rsz/src/policy/SetupLegacyPolicy.hh",
+      "src/rsz/src/policy/SetupLegacyBase.cc",
+      "src/rsz/src/policy/SetupLegacyBase.hh"
+    ],
+    "files_to_avoid": [
+      "src/rsz/src/RepairTargetCollector.cc",
+      "src/rsz/src/move/SizeUpGenerator.cc",
+      "src/rsz/src/policy/SetupParallelEvalPolicy.cc"
+    ]
+  },
+  "agents": {
+    "planner": "claude",
+    "coder": "claude",
+    "evaluator": "codex"
+  },
+  "agent_data_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/11_agent_data/0012",
+  "seconds": 832,
+  "when": "2026-11-25T14:07:44Z",
+  "schema_version": 1,
+  "valid_experiment": true
+}

@@ -36,3 +36,31 @@ Before using path maximum-fanout or worst-slew tags to justify data-net repair, 
 ## proposed by planner, iteration 7
 
 For partition-search experiments, report opportunities reached, partitions selected, and finally retained topology; distinguish immediate-load slack proxies from endpoint TNS.
+
+## proposed by planner, iteration 8
+
+For measured move comparisons, verify identical restored checkpoints and regenerated STA targets; report trial, endpoint-retained, and final post-legalization gains separately.
+
+## proposed by planner, iteration 9
+
+Every candidate must print RSZ_EVOLVE counters showing how often the new decision differed from stock; candidates adding per-move trials must report per-phase runtime and finish JPEG within the timeout.
+
+## proposed by planner, iteration 10
+
+Sizing-selection changes must reduce to the stock ranking when no neighbouring arc violates, so unit-test master contracts stay intact, and must print the fraction of selections that differ from stock.
+
+## proposed by planner, iteration 11
+
+Multi-objective selection changes must use a WNS tolerance band whose width is printed, and must reduce exactly to stock when at most one objective term is active.
+
+## proposed by planner, iteration 12
+
+Acceptance-rule changes must print evaluated/flipped_to_accept/flipped_to_reject counts and the summed predicted dTNS of flipped moves, and must leave target ranking and generators stock so the effect can be attributed.
+
+## proposed by planner, iteration 13
+
+Once in-loop changes have perturbed stock trajectories in two or more iterations, prefer post-stock phases with an absolute (non-rolling) WNS floor anchored to the stock final state, and print the floor value and per-phase kept/rejected counts.
+
+## proposed by planner, iteration 14
+
+New move generators should first be introduced only inside the post-stock recovery phase, with stock-phase move counts printed to prove the stock trajectory is byte-identical.

@@ -9,7 +9,7 @@
   "evaluator_max_turns": 20,
   "repair_attempts": 3,
   "repair_timing_args": "-setup -repair_tns 100 -verbose",
-  "eval_timeout_s": 1800,
+  "eval_timeout_s": 600,
   "build_timeout_s": 7200,
   "path_count": 20,
   "sdc_variant": "stressed",

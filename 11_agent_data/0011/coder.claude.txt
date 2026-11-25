@@ -1,0 +1,15 @@
+I've made the edits, but none of it has been built, compiled or run. The brief said not to build or test, so I only did read-level checks.
+
+The change is a TNS-aware choice of the root buffer tree in `Rebuffer`. It is not the 3-D Pareto front the planner described. V is computed per root option after the DP, which adds no DP cost. It can only pick among options the (cap, slack) front already kept, so it could miss the true TNS winner if that front pruned it.
+
+- **How V is computed:** `Rebuffer::totalSinkViolation` walks each option tree. For each sink it takes the stored load slack, subtracts the path delays the DP already recorded on wire and buffer nodes, and adds the driver correction. V is the sum of the negative results, plus a count of violating sinks.
+- **How the choice is made:** `Rebuffer::chooseLowestTnsOption` starts from the stock-best option. If that option has two or more violating sinks, it looks at every root option within min(1 ps, 5% of |S*|) of the best slack and picks the one with strictly lowest V. Ties keep the stock order. With at most one violating sink it returns the stock pick unchanged.
+- **Where it applies:** both branches of `selectTimingOptions`. The single-plan branch is used by `rebufferPin` and `bufferForTiming`. The multi-plan branch moves the TNS-preferred option to the front of the ranked list.
+- **Counters:** `root_evals`, `multi_viol`, `root_choice_changed` and `tns_reduced`, each printed as `RSZ_EVOLVE <name> fired=<n>`. They are process-wide atomics, because the worker planners are separate `Rebuffer` instances. The totals are the same regardless of thread timing.
+- **Where they print:** at the end of `fullyRebuffer`, `rebufferNet` and `RebufferMtGenerator::finishPhase`. Each print clears the counters, so one repair run can emit several sets of lines that need summing. `RebufferMtGenerator.cc` is not on your suggested-files list, but it is in the editable set.
+
+`HYPOTHESIS.md` is in the tree root.
+
+```json
+{"files_changed": ["src/Rebuffer.cc", "src/Rebuffer.hh", "src/move/RebufferMtGenerator.cc", "HYPOTHESIS.md"], "summary": "Root buffer-tree selection now computes per-option total sink violation V from the DP's stored delays. Among options within min(1ps, 5%|S*|) of the best slack, it picks the lowest-V tree when the stock best has 2 or more violating sinks, in both the single-plan and multi-plan paths. RSZ_EVOLVE counters (root_evals, multi_viol, root_choice_changed, tns_reduced) are printed at the end of each rebuffer phase and call.", "new_flags": [], "determinism_notes": "Selection is per-net and pure: strict less-than on V with ties going to the stock order, with no randomness or ordering dependence. Counters are atomic sums, so totals do not depend on thread timing. No journal or netlist logic was touched, only which option is exported."}
+```

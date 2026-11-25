@@ -1,0 +1,50 @@
+{
+  "clock_period_ns": 1.0,
+  "endpoints": 8355,
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "repair_ms": 33459,
+  "placement_violations": 0,
+  "pre": {
+    "wns_setup": -0.11649559424633563,
+    "tns_setup": -48.30013858914408,
+    "wns_hold": 0.008633649595173817,
+    "tns_hold": 0.0,
+    "setup_violations": 661,
+    "hold_violations": 0,
+    "instances": 59533,
+    "pins": 192965,
+    "area_um2": 89948.96205649638,
+    "util": 0.8303249806633303,
+    "buffers": 5526,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "post": {
+    "wns_setup": -0.09180045872196228,
+    "tns_setup": -31.506414369217335,
+    "wns_hold": 0.008403000755284745,
+    "tns_hold": 0.0,
+    "setup_violations": 613,
+    "hold_violations": 0,
+    "instances": 59576,
+    "pins": 193051,
+    "area_um2": 90266.56755395379,
+    "util": 0.8332568047047801,
+    "buffers": 5569,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "evolve_counters": {
+    "tns_lex_evaluations": 1794,
+    "tns_lex_accept_flip": 6,
+    "wns_guard_band_reject": 67,
+    "tns_loss_veto": 247,
+    "tns_weighted_reject": 0
+  },
+  "repair_stats": {
+    "resized": 357,
+    "pins_swapped": 149
+  }
+}

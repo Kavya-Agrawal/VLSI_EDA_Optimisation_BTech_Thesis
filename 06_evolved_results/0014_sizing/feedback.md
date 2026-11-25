@@ -1,0 +1,141 @@
+# Feedback for iteration 14 (0014_sizing, cluster sizing)
+
+```
+vs champion:
+REJECT  score=-0.00038
+  nangate45/gcd      WNS -0.0222 -> -0.0222 ns  TNS -0.342 -> -0.339 ns  score +0.00001
+  nangate45/aes      WNS -0.0241 -> -0.0241 ns  TNS -0.999 -> -0.992 ns  score +0.00000
+  nangate45/ibex     WNS -0.0742 -> -0.0794 ns  TNS -44.399 -> -34.985 ns  score -0.00089
+  nangate45/jpeg     WNS -0.0853 -> -0.0866 ns  TNS -31.151 -> -31.095 ns  score -0.00064
+  ! score -0.00038 below required gain +0.00200
+
+vs baseline:
+ACCEPT  score=+0.00168
+  nangate45/gcd      WNS -0.0234 -> -0.0222 ns  TNS -0.475 -> -0.339 ns  score +0.00401
+  nangate45/aes      WNS -0.0258 -> -0.0241 ns  TNS -1.141 -> -0.992 ns  score +0.00124
+  nangate45/ibex     WNS -0.0794 -> -0.0794 ns  TNS -65.665 -> -34.985 ns  score +0.00138
+  nangate45/jpeg     WNS -0.0866 -> -0.0866 ns  TNS -32.403 -> -31.095 ns  score +0.00009
+```
+
+The workspace is read-only, so I could not create `feedback.md`. Its complete contents follow.
+
+# 1. Outcome
+
+**REJECT versus champion:** score **−0.000378**, below the required **+0.002000** gain by **0.002378**. Retain champion `0013_setup_strategy`.
+
+**ACCEPT versus stock baseline:** score **+0.001682**. Baseline improvement does not justify replacing champion.
+
+Deltas below are candidate minus reference; positive means improvement. Values use the verdict JSON precision.
+
+| Design | Final WNS (ns) | Final TNS (ns) | ΔWNS vs champion (ps) | ΔTNS vs champion (ns) | ΔWNS vs baseline (ps) | ΔTNS vs baseline (ns) |
+|---|---:|---:|---:|---:|---:|---:|
+| gcd | −0.022241 | −0.339386 | −0.026 | +0.002628 | +1.125 | +0.135424 |
+| aes | −0.024128 | −0.992136 | 0.000 | +0.006682 | +1.713 | +0.148823 |
+| ibex | −0.079444 | −34.984699 | −5.205 | +9.414660 | −0.033 | +30.680749 |
+| jpeg | −0.086591 | −31.094616 | −1.289 | +0.055902 | +0.032 | +1.308443 |
+
+All six unit targets and ten smoke tests passed. Functional gates do not address the timing regression.
+
+# 2. Did the hypothesis do what it predicted?
+
+**The joint search executed, but did not produce the predicted WNS recovery or higher recovery keep rate on JPEG. Ibex gained TNS while losing champion WNS.**
+
+| Design | DP examined | Predicted-gain trials | Assignments differing from greedy | DP kept | DP keep rate | WNS rejects | TNS rejects |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| gcd | 224 | 131 | 122 | 6 | 4.6% | 67 | 58 |
+| aes | 226 | 75 | 40 | 11 | 14.7% | 20 | 44 |
+| ibex | 67 | 41 | 30 | 15 | 36.6% | 14 | 12 |
+| jpeg | 80 | 75 | 68 | 14 | 18.7% | 49 | 12 |
+
+For JPEG, the estimator predicted gain in 75/80 examined windows, yet STA rejected 61/75 trials. WNS rejection accounts for 49/75 trials, or **65.3%**. Joint planning therefore did not remove the dominant acceptance barrier.
+
+`bottleneck_kept` includes DP keeps; these counters must not be added together:
+
+- JPEG kept **34 total recovery moves**, unchanged from champion; 14 were DP moves. Counted recovery trials increased from **169 to 226** including DP. Keeps per counted trial fell from **20.1% to 15.0%**. Fallback WNS rejects remained **74**, versus champion’s **77**, with another **49** DP WNS rejects.
+- Ibex kept **30 total recovery moves**, unchanged from champion; 15 were DP moves. Keeps per counted trial were approximately unchanged: **10.4% → 10.5%**. TNS magnitude decreased **21.20%** versus champion, but WNS worsened **5.205 ps**.
+- These are aggregate counters, not paired experiments proving that particular rejected single moves became accepted joint moves.
+
+The critical structures persist: Ibex’s top ten paths still share fanout-943 `AND2_X1@_26153_/ZN`; JPEG’s worst paths still contain HA_X1/FA_X1 chains. The reported 215 JPEG stage changes count proposed assignments before acceptance, not retained adjacent upsizes.
+
+The implementation explains the mismatch:
+
+- `planWindow` uses `gateDelay` without propagating actual input slew.
+- Its side-load penalty uses resistance, capacitance increment and fanout; it does **not** explicitly weight side endpoints by their violation severity as hypothesized.
+- Sequential stages receive no alternative masters, leaving shared launch-register drive unchanged.
+- The fixed pre-recovery WNS floor permits surrendering WNS gains made earlier in recovery. Preserving the stock phase does not preserve champion’s recovery trajectory.
+- Accepted DP moves skip fallback attempts for that driver and consume the shared recovery budget.
+
+# 3. Where the remaining negative slack comes from
+
+The **five worst endpoints across all four designs are all JPEG endpoints**. Their reported clock skew is zero. Deep arithmetic logic, weak arithmetic drivers and shared loading are supported causes; long-wire dominance and IO constraints are not established for these five register endpoints. Slew values below retain the report’s raw units.
+
+| Endpoint | Slack; structure | Likely cause | Applicable moves and likely limitation |
+|---|---|---|---|
+| `fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | −86.591 ps; 21 stages; max fanout 12 | Deep FA/HA chain; `HA_X1@_115901_/S` slew 35,598,000 and `FA_X1@_108721_/S` 24,679,000 | Coordinated sizing of legal surrounding cells, arithmetic input-pin reassignment where equivalent, and selective load isolation. Four-stage master swaps cannot reduce logic depth or split loads; slew propagation is omitted. `_067046_` remains INV_X1 versus champion’s INV_X2. |
+| `fdct_zigzag.dct_mod.dct_block_5.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | −85.302 ps; 22 stages; max fanout 15 | Shared launch drive plus HA delay: `ddin[8]/Q` DFFR_X2 and `HA_X1@_114238_/S` | Buffer or partition shared launch loads, then size the affected branch. DP freezes sequential masters and cannot introduce a branch buffer. Slack is unchanged versus champion. |
+| `fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res[15]$_DFFE_PP_/D` | −84.674 ps; 20 stages; max fanout 15 | `HA_X1@_115122_/S` slew 40,669,004, plus shared `ddin[8]/Q` loading | Isolate noncritical loads and evaluate critical HA input arcs with propagated slew. Master-only search cannot redistribute fanout. Slack is unchanged versus champion. |
+| `fdct_zigzag.dct_mod.dct_block_4.dct_unit_7.macu.mult_res[16]$_DFFE_PP_/D` | −84.582 ps; 21 stages; max fanout 12 | Shared launch loading and `HA_X1@_114347_/S` delay | Branch buffering/load splitting followed by local sizing. A short window optimizes one path while leaving shared topology intact; launch-cell alternatives are excluded. |
+| `fdct_zigzag.dct_mod.dct_block_7.dct_unit_2.macu.mult_res[18]$_DFFE_PP_/D` | −84.084 ps; 22 stages; max fanout 17 | Deep arithmetic cone: `FA_X1@_109354_/S` and `HA_X1@_115805_/S` | Load isolation, equivalent pin swaps and legal neighboring-cell sizing. A four-stage window covers only part of the chain and omits other inputs/outputs from its path cost. Slack is 0.190 ps worse than champion despite substantial pre-repair improvement. |
+
+Verify that stronger swappable HA/FA masters actually exist before treating arithmetic-cell upsizing as an available remedy.
+
+Ibex remains the principal cross-design fanout target: **39-stage paths**, fanout **943**, and raw slew **2,087,753,088** at `_26153_/ZN`. Buffer trees, load splitting or legal cloning directly address this structure; joint master selection leaves the topology intact.
+
+# 4. Regressions
+
+The supplied “vs reference” endpoint comparisons differ from the champion comparison. Keep those reference frames separate.
+
+**Versus champion:**
+
+- JPEG’s block-6/unit-4 `mult_res[18]` endpoint worsened **−83.447 → −86.591 ps**, a **3.144 ps** loss, and became the worst endpoint. Its common path pins show `_067046_` as **INV_X2 → INV_X1** relative to champion. This is consistent with displaced recovery sizing; it does not prove that the upsizing-only DP directly downsized the inverter.
+- Ibex `rf_reg[703]/D` worsened **−73.038 → −79.444 ps**, a **6.406 ps** loss. Common path masters are unchanged. Changed side loads or upstream arrival conditions are plausible; move-level attribution is unavailable.
+- The fixed stock floor allows both regressions while aggregate TNS improves.
+
+**Versus the supplied path reference:**
+
+| Endpoints | Observed loss | Probable mechanism |
+|---|---:|---|
+| gcd `resp_msg[9,8,5,3,2]` | 2.4, 16.9, 2.2, 3.0, 0.7 ps | Shared-cone loading or changed recovery allocation; positive-slack output losses do not contribute to TNS. |
+| aes `sa10_sr[3]/D` | approximately 1.4 ps | Critical-path migration into a slow OAI33/XNOR cone. Other endpoints’ gains can offset this loss. |
+| Ibex `rf_reg[703,607,831,799,895]/D` | Small losses in the supplied reference comparison; several hidden by rounding | Shared fanout-943 trunk remains unresolved while address-output paths improve. |
+| JPEG block-1/unit-2 bits 16 and 18, block-3/unit-3 bit 16, block-2/unit-2 bit 16 | approximately 0.1, 0.1, 0.3, 0.2 ps | Added upstream capacitance or side-path slew degradation missed by the estimator. |
+| JPEG `ddin[3]/RN` | approximately 0.1 ps; still strongly positive | Noncritical collateral change permitted by global acceptance. |
+
+# 5. Recommendation for the next iteration
+
+1. **`setup_strategy`: preserve achieved WNS during recovery.** Start from champion. Compare each trial against current committed WNS, retain the fixed stock floor as an additional guard, and evaluate final timing after legalization. Record endpoint identities for WNS losses. This directly targets the 5.205 ps Ibex and 1.289 ps JPEG losses versus champion.
+
+2. **`buffering`: repair the shared structures explicitly.** Prioritize Ibex `_26153_/ZN`; evaluate partitioned buffering, load splitting and legal cloning. For JPEG, isolate loads on the shared `ddin[8]` launch cone. Require measured WNS/TNS gains and inspect sibling endpoints. Preserve the stock phase.
+
+3. **`sizing`: replace the estimator before expanding the search.** If joint sizing is retained, propagate transition-specific slew, use the actual traversed arc, account for HA/FA secondary outputs and other inputs, and weight affected endpoints by slack. Log predicted versus measured gains and retained master assignments. The immediate target is JPEG’s **65.3% DP WNS-rejection rate**, not more windows.
+
+**Do not try again:** enabling the same default-slew, four-stage DP ahead of every fallback attempt under only the fixed stock-WNS floor. It displaced recovery moves, retained the critical structures and reduced the champion score.
+
+```json
+{
+  "recommended_cluster": "setup_strategy",
+  "dominant_cause": "high_fanout",
+  "lesson": "Joint sizing under a fixed stock-WNS floor displaced recovery moves and improved Ibex TNS by 21.20% versus champion while surrendering 5.205 ps of Ibex WNS and 1.289 ps of JPEG WNS.",
+  "dead_end": "Do not repeat default-slew four-stage master-only DP before fallback recovery under only a fixed stock-WNS floor; JPEG rejected 49 of 75 DP trials for WNS and retained the same 34 total recovery moves.",
+  "good_changes": [
+    "src/rsz/src/policy/SetupLegacyPolicy.cc compound journals and measured STA acceptance retained 15 Ibex and 14 JPEG DP trials, though their isolated TNS contribution is unmeasured",
+    "src/rsz/src/policy/SetupLegacyPolicy.cc window_dp counters expose predicted-gain failures and distinguish joint proposals from retained moves"
+  ],
+  "bad_changes": [
+    "src/rsz/src/policy/SetupLegacyPolicy.cc::planWindow omits propagated input slew and explicit endpoint-violation weighting of side loads",
+    "src/rsz/src/policy/SetupLegacyPolicy.cc::runTnsRecovery tries DP first, skips fallback after acceptance and consumes the shared recovery budget",
+    "src/rsz/src/policy/SetupLegacyPolicy.cc fixed stock-WNS acceptance permits losing WNS gains already achieved during recovery"
+  ],
+  "files_to_revisit": [
+    "src/rsz/src/policy/SetupLegacyPolicy.cc",
+    "src/rsz/src/move/BufferGenerator.cc",
+    "src/rsz/src/move/SplitLoadGenerator.cc",
+    "src/rsz/src/move/CloneGenerator.cc"
+  ],
+  "files_to_avoid": [
+    "src/rsz/src/policy/SetupLegacyBase.cc",
+    "src/rsz/src/move/SizeUpGenerator.cc",
+    "src/rsz/src/SkewBudget.cc"
+  ]
+}
+```

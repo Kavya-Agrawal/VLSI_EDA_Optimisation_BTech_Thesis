@@ -1,0 +1,120 @@
+# Feedback for iteration 9 (0009_setup_strategy, cluster setup_strategy)
+
+```
+vs champion:
+REJECT  score=-0.00276
+  nangate45/gcd      WNS -0.0234 -> -0.0255 ns  TNS -0.475 -> -0.443 ns  score -0.00232
+  nangate45/aes      WNS -0.0258 -> -0.0404 ns  TNS -1.141 -> -1.816 ns  score -0.01025
+  nangate45/ibex     WNS -0.0794 -> -0.0659 ns  TNS -65.665 -> -31.338 ns  score +0.00498
+  nangate45/jpeg     WNS -0.0866 -> -0.0931 ns  TNS -32.403 -> -36.094 ns  score -0.00344
+  ! score -0.00276 below required gain +0.00200
+
+vs baseline:
+ACCEPT  score=-0.00276
+  nangate45/gcd      WNS -0.0234 -> -0.0255 ns  TNS -0.475 -> -0.443 ns  score -0.00232
+  nangate45/aes      WNS -0.0258 -> -0.0404 ns  TNS -1.141 -> -1.816 ns  score -0.01025
+  nangate45/ibex     WNS -0.0794 -> -0.0659 ns  TNS -65.665 -> -31.338 ns  score +0.00498
+  nangate45/jpeg     WNS -0.0866 -> -0.0931 ns  TNS -32.403 -> -36.094 ns  score -0.00344
+```
+
+Cannot save `feedback.md`: this session permits read-only filesystem access. Complete content follows.
+
+## 1. Outcome
+
+**REJECT vs champion.** Score **−0.00276**, below required **+0.00200** by **0.00476**. The authoritative baseline verdict is **ACCEPT** with the same score and reference measurements; this does not satisfy champion promotion.
+
+Deltas below use unrounded verdict data; positive means improved slack.
+
+| Design | WNS reference → candidate (ns) | ΔWNS (ns) | TNS reference → candidate (ns) | ΔTNS (ns) | Change in \|TNS\| | Score |
+|---|---:|---:|---:|---:|---:|---:|
+| gcd | −0.0234 → −0.0255 | −0.002179 | −0.475 → −0.443 | +0.031492 | −6.63% | −0.00232 |
+| aes | −0.0258 → −0.0404 | −0.014585 | −1.141 → −1.816 | −0.675150 | +59.17% | −0.01025 |
+| ibex | −0.0794 → −0.0659 | +0.013540 | −65.665 → −31.338 | +34.327145 | −52.28% | +0.00498 |
+| jpeg | −0.0866 → −0.0931 | −0.006430 | −32.403 → −36.094 | −3.691213 | +11.39% | −0.00344 |
+
+All six unit gates and ten smoke gates passed. Functional gates do not resolve the QoR rejection. Evaluation used one stressed replicate.
+
+## 2. Did the hypothesis do what it predicted?
+
+**Supported on Ibex; contradicted on JPEG and AES.**
+
+| Design | Map builds | Paths expanded | First target changed / ranking passes | Observed repair-mix change vs baseline |
+|---|---:|---:|---:|---|
+| gcd | 28 | 1,126 | 279 / 678 = 41.2% | Resizes 24 → 36 |
+| aes | 153 | 22,872 | 1,894 / 3,816 = 49.6% | Resizes 1,388 → 1,084; buffer removals 7 → 139 |
+| ibex | 127 | 50,800 | 2,566 / 3,150 = 81.5% | Resizes 149 → 214; clones 9 → 21; pin swaps 14 → 47 |
+| jpeg | 140 | 56,000 | 3,238 / 3,488 = 92.8% | Resizes 282 → 54; pin swaps 117 → 9 |
+
+- **Ibex:** The predicted shared-cone benefit appears: TNS magnitude fell 52.28%, with WNS improving 13.54 ps. Register-file endpoints improved together; `rf_reg[982]` improved from −0.0784 to −0.0659 ns against reference. However, all ten reported worst paths still traverse `_26153_/ZN`, fanout 943, with 39 stages. The result supports shared-cone prioritization, but does not prove that this specific driver was repaired.
+- **JPEG:** The predicted TNS reduction failed. First-target selection changed on 92.8% of passes, while resizes fell 80.9% and pin swaps fell 92.3%. Remaining paths span multiple arithmetic cones, with weak half-adder outputs and shared buffers. Sharedness did not identify sufficiently productive repair targets.
+- **AES:** The prediction of near-stock behavior failed. Half the first targets changed; TNS magnitude increased 59.17%. `_13069_/Z` recurs across several worst `sa23_sr` paths, showing local sharing despite the diffuse-sharing premise. Keeping generators and acceptance stock did not preserve the move mix: buffer removals rose nearly 20×, while resizes fell 21.9%.
+- **GCD:** Lower TNS accompanied worse WNS. The heuristic redistributed repair effort without protecting the worst endpoint.
+
+Code inspection identifies two limitations. First, `load_delay*(1+share)` can amplify a key by up to 401×; the endpoint cap does not make the ranking perturbation small. Second, sharing measures path incidence, not achievable delay reduction or generator eligibility. The map can remain stale for 25 qualifying `repairPath` calls, which are not necessarily 25 distinct endpoints.
+
+`shared_rank_reordered_targets` counts keys multiplied, not targets proven to change position. No map-build timing counter is implemented or reported. JPEG completed in 129.996 seconds; that total cannot establish ranking overhead. Each build still scans all endpoints and sorts violators before truncating to 400.
+
+## 3. Where the remaining negative slack comes from
+
+The five most negative reported endpoints across designs are **all JPEG**. Endpoint names below share prefix `fdct_zigzag.dct_mod.`.
+
+| Endpoint suffix | Slack (ns) | Likely cause and evidence | Move types that should help | Why repair likely fell short |
+|---|---:|---|---|---|
+| `dct_block_0.dct_unit_7.macu.mult_res[18]$_DFFE_PP_/D` | −0.093053 | Deep logic: 22 stages; fanout 25; weak `HA_X1@_114235_/S`, plus `BUF_X4@place10742/Z` | SizeUpMove on eligible weak cells; BufferMove, CloneMove or SplitLoadMove on shared loads; SwapPinsMove where legal | Shared-buffer priority may displace local arithmetic repair. Endpoint improved 21.257 ps from its own pre-repair state, but remains worst. |
+| `dct_block_0.dct_unit_3.macu.mult_res[18]$_DFFE_PP_/D` | −0.092710 | Deep logic: 21 stages; fanout 25; `HA_X1@_114513_/S` and the same `place10742/Z` | Local sizing/pin swapping; buffer sizing or load partitioning | Sharing does not distinguish repairable local arcs from a shared buffer with limited useful moves. Reference comparison regressed 10.5 ps. |
+| `dct_block_6.dct_unit_6.macu.mult_res[15]$_DFFE_PP_/D` | −0.092364 | Deep logic: 21 stages; fanout 12; weak `HA_X1@_114812_/S` and `OAI21_X1@_098184_/ZN` | SizeUpMove and SwapPinsMove; buffering if load delay dominates | A separate arithmetic cone needs local attention. Broad shared-driver weighting can divert successful repair budget elsewhere. |
+| `dct_block_0.dct_unit_2.macu.mult_res[15]$_DFFE_PP_/D` | −0.091415 | 18 stages; fanout 25; weak `HA_X1@_112836_/S` and `AOI22_X1@_077658_/ZN` | Eligible sizing/pin swaps; load splitting or cloning at overloaded drivers | Ranking cannot create stronger legal equivalents. Generator availability and rejection reasons are unreported. |
+| `dct_block_7.dct_unit_3.macu.mult_res[16]$_DFFE_PP_/D` | −0.091141 | Deep logic: 23 stages; fanout 22; `AOI21_X1@_098640_/ZN` and `BUF_X4@place11023/Z` | AOI sizing/pin swapping; buffer resizing, cloning or splitting | Another shared buffer can dominate ranking while distributed logic delays remain. JPEG’s much smaller accepted move count supports reduced repair productivity. |
+
+These are mechanism hypotheses, not traced move-level causes. Failed targets alone do not consume the successful-repair budget: the loop continues until enough changes succeed. Possible mechanisms include low-value accepted moves taking budget, repeated unsuccessful attempts interacting with outer stopping rules, and changed timing trajectories. Per-target attempt/rejection logs are needed to distinguish them.
+
+Long-wire delay and clock skew are not established by these reports. The top five are register D endpoints without reported IO tags. Raw slew values have unclear scaling; use them comparatively, not as physical time measurements. JPEG reports zero electrical slew/capacitance/fanout violations despite the structural tags.
+
+## 4. Regressions
+
+Endpoint deltas here use the rounded reference path report.
+
+- **AES:** `sa23_sr[0]` worsened 16.2 ps, `[4]` 16.5 ps, `[5]` 13.7 ps, `[7]` 8.7 ps; `sa31_sr[3]` worsened 17.4 ps. Eight matched endpoints regressed and none improved; twelve entered and twelve left the worst list. Repeated `_13069_/Z` implicates a shared local cone. Increased unbuffering and reduced sizing/cloning suggest that target order changed the accepted topology and displaced local improvements. They do not prove which removal caused a regression.
+- **JPEG:** `dct_block_0.dct_unit_3...mult_res[18]` worsened 10.5 ps; `dct_block_2.dct_unit_4...mult_res[18]` worsened 4.6 ps. Two matched endpoints regressed, none improved, and fifteen entered/left the worst list. The strongest measured mechanism is loss of productive sizing and pin swapping under near-universal first-target changes.
+- **Ibex:** `instr_addr_o[28]` worsened 16.1 ps; `[22]` crossed from +0.1 to −5.8 ps. Outputs `[27]` and `[26]` lost 9.7 and 6.9 ps while remaining positive. Register-file sharing dominates the capped map, plausibly deprioritizing output cones. Nine matched endpoints regressed despite aggregate improvement.
+- **GCD:** `a_reg.out[10]` worsened 4.4 ps, `[13]` 2.7 ps, and `resp_msg[14]` 4.3 ps. Fifteen matched endpoints improved and fourteen regressed. A higher resize count did not prevent deterioration of a low-fanout NAND/INV path; aggregate sharing is insufficient protection for WNS.
+
+Worst-list entry and disappearance are sampling changes, not proof of improvement or regression. Candidate improvements from pre-repair slack must not be substituted for comparisons against the repaired reference.
+
+## 5. Recommendation for the next iteration
+
+**Recommended cluster: `setup_strategy`.** Keep the next experiment focused on limiting shared-ranking influence; leave generators, acceptance and repair budget unchanged.
+
+1. **Bound the perturbation.** In `src/rsz/src/policy/SetupLegacyBase.cc`, compare a capped multiplier such as `1 + min(0.25, share/400)` against using sharing only to break ties among drivers within 10% of the stock load-delay key. These are experimental settings. Measure first-target changes, accepted moves and QoR; reject variants that repeat JPEG’s move-count collapse.
+2. **Require structural concentration before enabling sharing.** Measure the largest driver’s weighted endpoint coverage and its concentration relative to other drivers. Use stock ranking when no dominant shared cone exists. Choose thresholds from measured distributions, without design-name special cases. This directly tests whether Ibex’s benefit can survive while AES/JPEG revert toward stock.
+3. **Discount targets after a full unsuccessful generator sweep.** Add an epoch-scoped failure cache in `SetupLegacyBase`; restore priority after relevant connectivity or timing changes. Instrument attempt, rejection and accepted-gain counts by target and move type. Add actual build-time measurement before changing refresh frequency or the 400-path cap.
+
+Do **not** repeat broad `load_delay*(1+share)` ranking on every design, or add iteration 8’s admission/trial machinery to compensate. Candidate 9 already demonstrates that stock acceptance and generators cannot prevent ranking-induced move-mix degradation.
+
+```json
+{
+  "recommended_cluster": "setup_strategy",
+  "dominant_cause": "deep_logic",
+  "lesson": "Shared-criticality ranking reduced Ibex TNS magnitude by 52.28% but changed repair trajectories enough to worsen AES and JPEG, so sharing needs bounded influence and evidence of structural concentration.",
+  "dead_end": "Applying load_delay*(1+share) broadly while keeping acceptance and generators stock does not preserve the move mix or protect QoR.",
+  "good_changes": [
+    "src/rsz/src/policy/SetupLegacyBase.cc: shared-criticality target ranking coincided with Ibex TNS improving by 34.327145 ns and increased resizing and cloning",
+    "src/rsz/src/policy/SetupLegacyBase.cc: changed-first counters establish that the new ranking executed and materially affected target selection"
+  ],
+  "bad_changes": [
+    "src/rsz/src/policy/SetupLegacyBase.cc: uncapped-influence share multiplication changed JPEG's first target on 92.8% of ranking passes while resizes fell from 282 to 54",
+    "src/rsz/src/policy/SetupLegacyBase.cc: broad shared ranking failed the AES near-stock prediction, with TNS magnitude increasing 59.17%",
+    "src/rsz/src/policy/SetupLegacyBase.hh: the 400-path cap and 25-call refresh bound path expansion but do not ensure repairability, freshness, or measured build cost"
+  ],
+  "files_to_revisit": [
+    "src/rsz/src/policy/SetupLegacyBase.cc",
+    "src/rsz/src/policy/SetupLegacyBase.hh"
+  ],
+  "files_to_avoid": [
+    "src/rsz/src/MoveCommitter.cc",
+    "src/rsz/src/move/SizeUpGenerator.cc",
+    "src/rsz/src/move/BufferGenerator.cc",
+    "src/rsz/src/move/CloneGenerator.cc"
+  ]
+}
+```

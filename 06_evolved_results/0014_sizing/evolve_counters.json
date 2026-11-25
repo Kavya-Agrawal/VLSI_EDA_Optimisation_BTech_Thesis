@@ -1,0 +1,113 @@
+{
+  "per_design": {
+    "nangate45/gcd": {
+      "window_dp_examined": 224,
+      "window_dp_with_gain": 131,
+      "window_joint_changed_vs_greedy": 122,
+      "window_dp_stages_changed": 354,
+      "window_dp_trials": 131,
+      "window_dp_kept": 6,
+      "window_dp_rejected_wns": 67,
+      "window_dp_rejected_tns": 58,
+      "bottleneck_rounds": 5,
+      "bottleneck_drivers_ranked": 873,
+      "bottleneck_trials": 325,
+      "bottleneck_kept": 17,
+      "bottleneck_rejected_wns": 27,
+      "bottleneck_rejected_tns": 54
+    },
+    "nangate45/aes": {
+      "window_dp_examined": 226,
+      "window_dp_with_gain": 75,
+      "window_joint_changed_vs_greedy": 40,
+      "window_dp_stages_changed": 138,
+      "window_dp_trials": 75,
+      "window_dp_kept": 11,
+      "window_dp_rejected_wns": 20,
+      "window_dp_rejected_tns": 44,
+      "bottleneck_rounds": 5,
+      "bottleneck_drivers_ranked": 5852,
+      "bottleneck_trials": 279,
+      "bottleneck_kept": 25,
+      "bottleneck_rejected_wns": 17,
+      "bottleneck_rejected_tns": 24
+    },
+    "nangate45/ibex": {
+      "window_dp_examined": 67,
+      "window_dp_with_gain": 41,
+      "window_joint_changed_vs_greedy": 30,
+      "window_dp_stages_changed": 89,
+      "window_dp_trials": 41,
+      "window_dp_kept": 15,
+      "window_dp_rejected_wns": 14,
+      "window_dp_rejected_tns": 12,
+      "bottleneck_rounds": 4,
+      "bottleneck_drivers_ranked": 2844,
+      "bottleneck_trials": 245,
+      "bottleneck_kept": 30,
+      "bottleneck_rejected_wns": 16,
+      "bottleneck_rejected_tns": 78
+    },
+    "nangate45/jpeg": {
+      "window_dp_examined": 80,
+      "window_dp_with_gain": 75,
+      "window_joint_changed_vs_greedy": 68,
+      "window_dp_stages_changed": 215,
+      "window_dp_trials": 75,
+      "window_dp_kept": 14,
+      "window_dp_rejected_wns": 49,
+      "window_dp_rejected_tns": 12,
+      "bottleneck_rounds": 2,
+      "bottleneck_drivers_ranked": 8437,
+      "bottleneck_trials": 151,
+      "bottleneck_kept": 34,
+      "bottleneck_rejected_wns": 74,
+      "bottleneck_rejected_tns": 13
+    }
+  },
+  "total_fired": 22050,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 31,
+      "pins_swapped": 5
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 486,
+      "resized": 1403,
+      "pins_swapped": 138,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 151,
+      "pins_swapped": 17,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 296,
+      "pins_swapped": 121
+    }
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 24,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {
+      "buffers_removed": 7,
+      "buffers_inserted": 481,
+      "resized": 1388,
+      "pins_swapped": 132,
+      "cloned": 70
+    },
+    "nangate45/ibex": {
+      "resized": 149,
+      "pins_swapped": 14,
+      "cloned": 9
+    },
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

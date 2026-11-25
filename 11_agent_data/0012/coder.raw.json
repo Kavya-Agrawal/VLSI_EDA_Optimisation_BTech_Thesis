@@ -1,0 +1,205 @@
+{
+  "duration_api_ms": 72969,
+  "stop_reason": "end_turn",
+  "session_id": "claude:a20ccde1-af7a-4fd0-a6f7-9d27da28687a",
+  "total_cost_usd": 0.3845809,
+  "usage": {
+    "input_tokens": 24,
+    "cache_creation_input_tokens": 57174,
+    "cache_read_input_tokens": 548653,
+    "output_tokens": 9993,
+    "output_tokens_details": {
+      "thinking_tokens": 1999
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 57174,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 890,
+        "cache_read_input_tokens": 68263,
+        "cache_creation_input_tokens": 1447,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1447
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 10266,
+      "outputTokens": 30,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0010416000000000002,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 0,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 0,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-sonnet-5-5": {
+      "inputTokens": 24,
+      "outputTokens": 9993,
+      "cacheReadInputTokens": 548653,
+      "cacheCreationInputTokens": 57174,
+      "webSearchRequests": 0,
+      "costUSD": 0.3835392999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 1999,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 57174,
+      "canonicalModel": "claude-sonnet-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 23,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "I replaced the LEGACY loop's endpoint-only acceptance with the TNS-weighted rule, and added the `RSZ_EVOLVE` counters and `HYPOTHESIS.md`. I haven't built or run anything, per the resource rule, so none of it is compiled or tested.\n\nThe stock test lives in `SetupLegacyPolicy::pathImproved`. It accepts a pass if design WNS improves, or if WNS is equal and the target endpoint's slack improves. The new `SetupLegacyPolicy::passAccepted` replaces it in `repairEndpoint`. It reads design TNS after each pass and applies these rules in order:\n\n1. **Guard band:** reject if design WNS or the endpoint slack worsens by more than 1 ps.\n2. **Veto:** reject a pass whose TNS loss exceeds 2\u00d7 its endpoint gain plus 1 ps.\n3. **Weighted sum:** otherwise accept only if `dTNS + \u03bb\u00b7dEndpointSlack > 0`, with \u03bb = max(1, violators/4).\n\nThe last TNS I kept is stored per endpoint, so the rule compares against the last accepted state. A rejected pass takes the existing non-improving path, so the journal restore is unchanged.\n\nFive counters print at the end of `iterate()`: `tns_lex_evaluations`, `tns_lex_accept_flip`, `wns_guard_band_reject`, `tns_loss_veto` and `tns_weighted_reject`. They print even when zero.\n\nI did not check whether any subclass overrides `pathImproved` or relies on `repairEndpoint` in a way the new rule breaks.\n\n```json\n{\"files_changed\": [\"src/policy/SetupLegacyPolicy.cc\", \"src/policy/SetupLegacyPolicy.hh\", \"src/policy/SetupLegacyBase.hh\", \"HYPOTHESIS.md\"], \"summary\": \"LEGACY per-pass acceptance now uses a lexicographic rule: reject if design WNS or endpoint slack worsens by more than 1 ps, veto passes whose TNS loss exceeds 2x endpoint gain, otherwise accept when dTNS + (violators/4)*dEndpointSlack > 0. Design TNS is read after each pass and stored per endpoint at each checkpoint. RSZ_EVOLVE counters are printed at the end of the phase.\", \"new_flags\": [], \"determinism_notes\": \"The rule depends only on STA slack/TNS values and the violator count, which are deterministic. There is no pointer-ordered or unordered-container iteration, and no threading or randomness. Rollback uses the unchanged journal.\"}\n```",
+  "ttft_ms": 3490,
+  "type": "result",
+  "duration_ms": 72847,
+  "uuid": "3fefc161-7879-42f9-9e50-3b37c852697a",
+  "ttft_stream_ms": 3448,
+  "time_to_request_ms": 586,
+  "time_to_request_phases_ms": {
+    "other": 4,
+    "system_prompt": 68,
+    "resume_other": 0,
+    "process_user_input": 3,
+    "input_attachments": 13,
+    "input_hooks": 2,
+    "conversation_append": 1,
+    "transcript_persist": 6,
+    "tool_pool_refresh": 2,
+    "init_message": 4,
+    "init_frame_send": 2,
+    "engine_pickup": 1,
+    "loop_entry": 2,
+    "message_prep": 1,
+    "model_config_wait": 1,
+    "autocompact": 2,
+    "request_announcements": 38,
+    "query_setup": 1,
+    "model_gates": 420,
+    "tool_schema_build": 6,
+    "message_normalization": 1,
+    "client_creation": 3,
+    "request_build": 5
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 43,
+  "time_to_request_cpu_ms": 253,
+  "time_to_request_major_faults": 2,
+  "input_attachments_detail": {
+    "slowest_producer": "skill_listing",
+    "slowest_producer_ms": 5,
+    "cpu_ms": 21,
+    "major_faults": 2,
+    "setup_ms": 0,
+    "prompt_producers_ms": 0,
+    "ambient_start_ms": 4,
+    "ambient_wait_ms": 5,
+    "render_ms": 1,
+    "producers": 40,
+    "token_counts": 0
+  },
+  "tool_schema_build_detail": {
+    "betas_ms": 0,
+    "waits_ms": 1,
+    "placement_ms": 3,
+    "render_ms": 2,
+    "after_ms": 0,
+    "other_ms": 0,
+    "tools": 12,
+    "new_schemas": 12
+  },
+  "message_normalization_detail": {
+    "before_ms": 0,
+    "normalize_ms": 1,
+    "images_ms": 0,
+    "post_process_ms": 0,
+    "after_ms": 0,
+    "other_ms": 0,
+    "messages": 13,
+    "wire_messages": 2
+  },
+  "request_build_detail": {
+    "records_ms": 0,
+    "system_ms": 0,
+    "headers_ms": 1,
+    "cache_break_record_ms": 0,
+    "plans_ms": 1,
+    "retry_setup_ms": 0,
+    "sent_build_ms": 1,
+    "record_attempt_ms": 1,
+    "other_ms": 1,
+    "sent_build_safety_context_ms": 0,
+    "sent_build_cache_breakpoints_ms": 0,
+    "sent_build_surrogate_scan_ms": 0
+  },
+  "first_content_frame_ms": 3448,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "credential_expires_at": "2026-12-24T23:17:24.324Z",
+  "stderr_tail": "",
+  "provider": "claude",
+  "model": "sonnet",
+  "fallback_attempts": [
+    {
+      "provider": "claude",
+      "ok": true,
+      "reason": "I replaced the LEGACY loop's endpoint-only acceptance with the TNS-weighted rule, and added the `RSZ_EVOLVE` counters and `HYPOTHESIS.md`. I haven't built or run anything, per the resource rule, so none of it is compiled or tested.\n\nThe stock test lives in `SetupLegacyPolicy::pathImproved`. It accep"
+    }
+  ]
+}

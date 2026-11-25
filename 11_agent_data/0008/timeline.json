@@ -24,5 +24,33 @@
     "ok": true,
     "attempts": 0,
     "seconds": 15
+  },
+  {
+    "step": "built",
+    "t": 5.9,
+    "ts": "2026-11-17T20:16:42Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 5
+  },
+  {
+    "step": "built",
+    "t": 39.0,
+    "ts": "2026-11-25T12:26:56Z",
+    "ok": true,
+    "attempts": 0,
+    "seconds": 38
+  },
+  {
+    "step": "evaluated",
+    "t": 3445.9,
+    "ts": "2026-11-25T13:23:43Z",
+    "accepted": false,
+    "score": 0.0006261508613998552
+  },
+  {
+    "step": "feedback",
+    "t": 3527.3,
+    "ts": "2026-11-25T13:25:05Z"
   }
 ]
