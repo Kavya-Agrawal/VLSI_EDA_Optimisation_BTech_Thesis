@@ -1,0 +1,4431 @@
+{
+  "asap7/ibex": {
+    "attribution": {
+      "paths": [
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[638]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -10.958678,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[894]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -10.868084,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[574]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -10.844769,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[862]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -10.841439,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[830]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -10.59941,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[765]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -10.114465,
+          "slack_before_repair": null,
+          "stages": 43,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_17071_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30979781558272.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_16969_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30013831249920.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_22908_/Y",
+              "cell": "OA21x2_ASAP7_75t_R",
+              "slew": 29952728629248.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx16f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[541]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.93805,
+          "slack_before_repair": null,
+          "stages": 43,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_17071_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30979781558272.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_16969_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30013831249920.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_22908_/Y",
+              "cell": "OA21x2_ASAP7_75t_R",
+              "slew": 29952728629248.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx16f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[797]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.919843,
+          "slack_before_repair": null,
+          "stages": 43,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_17071_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30979781558272.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_16969_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30013831249920.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_22908_/Y",
+              "cell": "OA21x2_ASAP7_75t_R",
+              "slew": 29952728629248.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx16f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[701]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.857337,
+          "slack_before_repair": null,
+          "stages": 43,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_17071_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30979781558272.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_16969_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30013831249920.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_22908_/Y",
+              "cell": "OA21x2_ASAP7_75t_R",
+              "slew": 29952728629248.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx16f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[925]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.670598,
+          "slack_before_repair": null,
+          "stages": 43,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_17071_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30979781558272.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_16969_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30013831249920.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_22908_/Y",
+              "cell": "OA21x2_ASAP7_75t_R",
+              "slew": 29952728629248.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx16f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[989]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.626189,
+          "slack_before_repair": null,
+          "stages": 43,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_17071_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30979781558272.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_16969_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30013831249920.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_22908_/Y",
+              "cell": "OA21x2_ASAP7_75t_R",
+              "slew": 29952728629248.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx16f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[734]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.576673,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[539]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.476309,
+          "slack_before_repair": -54.316994,
+          "stages": 41,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22978_/Y",
+              "cell": "AOI21x1_ASAP7_75t_R",
+              "slew": 65894239698944.0,
+              "fanout": 5
+            },
+            {
+              "pin": "_22969_/Y",
+              "cell": "AOI21x1_ASAP7_75t_R",
+              "slew": 32277515993088.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_310_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 28982489645056.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OA33x2_ASAP7_75t_R",
+            "AO22x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR4x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AND4x2_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[669]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.408807,
+          "slack_before_repair": null,
+          "stages": 43,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_17071_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30979781558272.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_16969_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30013831249920.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_22908_/Y",
+              "cell": "OA21x2_ASAP7_75t_R",
+              "slew": 29952728629248.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx16f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[990]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.290791,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[957]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.185986,
+          "slack_before_repair": null,
+          "stages": 43,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_17071_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30979781558272.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_16969_/SN",
+              "cell": "FAx1_ASAP7_75t_R",
+              "slew": 30013831249920.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_22908_/Y",
+              "cell": "OA21x2_ASAP7_75t_R",
+              "slew": 29952728629248.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx16f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[670]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.14413,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[702]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.061751,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[766]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.058532,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[1022]$_DFFE_PN0P_/D",
+          "startpoint": "_22158_/A",
+          "slack": -9.047429,
+          "slack_before_repair": null,
+          "stages": 44,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_22833_/Y",
+              "cell": "OAI22x1_ASAP7_75t_R",
+              "slew": 74274882715648.0,
+              "fanout": 1
+            },
+            {
+              "pin": "_17496_/_297_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 37541940035584.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5631/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 33283733716992.0,
+              "fanout": 7
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx4_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x4_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "FAx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OAI22x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[16]",
+          "startpoint": "_22158_/A",
+          "slack": 17.869984,
+          "slack_before_repair": -3.492262,
+          "stages": 36,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained",
+            "near_zero"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_342_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 55229152231424.0,
+              "fanout": 4
+            },
+            {
+              "pin": "place5293/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 47129754075136.0,
+              "fanout": 8
+            },
+            {
+              "pin": "_21860_/Y",
+              "cell": "AO21x1_ASAP7_75t_R",
+              "slew": 44324167352320.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO22x2_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO221x2_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[20]",
+          "startpoint": "_22158_/A",
+          "slack": 21.718349,
+          "slack_before_repair": 5.545009,
+          "stages": 38,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_335_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 32977264312320.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_19617_/Y",
+              "cell": "AO32x1_ASAP7_75t_R",
+              "slew": 27550554259456.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_21899_/Y",
+              "cell": "OAI21x1_ASAP7_75t_R",
+              "slew": 27120422092800.0,
+              "fanout": 3
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR4x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[28]",
+          "startpoint": "_22158_/A",
+          "slack": 27.849722,
+          "slack_before_repair": 5.465628,
+          "stages": 37,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_335_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 32977264312320.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_21966_/Y",
+              "cell": "NAND2x2_ASAP7_75t_R",
+              "slew": 31462371885056.0,
+              "fanout": 3
+            },
+            {
+              "pin": "_19617_/Y",
+              "cell": "AO32x1_ASAP7_75t_R",
+              "slew": 27550554259456.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR4x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[31]",
+          "startpoint": "_22158_/A",
+          "slack": 28.219149,
+          "slack_before_repair": 3.873457,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_342_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 55229152231424.0,
+              "fanout": 4
+            },
+            {
+              "pin": "_24352_/Y",
+              "cell": "AOI221x1_ASAP7_75t_R",
+              "slew": 49782005432320.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_24435_/Y",
+              "cell": "AOI21x1_ASAP7_75t_R",
+              "slew": 38169084952576.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO22x2_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AOI221x1_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[17]",
+          "startpoint": "_22158_/A",
+          "slack": 28.274771,
+          "slack_before_repair": -0.365041,
+          "stages": 38,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_342_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 55229152231424.0,
+              "fanout": 4
+            },
+            {
+              "pin": "_21865_/Y",
+              "cell": "OAI21x1_ASAP7_75t_R",
+              "slew": 45696107413504.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_28083_/Y",
+              "cell": "AOI21x1_ASAP7_75t_R",
+              "slew": 38772418805760.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO22x2_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OA222x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[19]",
+          "startpoint": "_22158_/A",
+          "slack": 29.077295,
+          "slack_before_repair": 13.973433,
+          "stages": 37,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "place5289/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 42104231297024.0,
+              "fanout": 8
+            },
+            {
+              "pin": "_21875_/Y",
+              "cell": "AOI21x1_ASAP7_75t_R",
+              "slew": 33936755392512.0,
+              "fanout": 4
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_335_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 32977264312320.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[26]",
+          "startpoint": "_22158_/A",
+          "slack": 29.850344,
+          "slack_before_repair": -5.828948,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "place5282/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 38336009863168.0,
+              "fanout": 8
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_338_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 34837245198336.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_21955_/Y",
+              "cell": "OAI21x1_ASAP7_75t_R",
+              "slew": 33265849204736.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO22x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR4x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[27]",
+          "startpoint": "_22158_/A",
+          "slack": 31.253555,
+          "slack_before_repair": 20.539736,
+          "stages": 34,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_325_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 57445237915648.0,
+              "fanout": 3
+            },
+            {
+              "pin": "if_stage_i.instr_rdata_id_o[6]$_DFFE_PP_/QN",
+              "cell": "DFFHQNx1_ASAP7_75t_R",
+              "slew": 40868253794304.0,
+              "fanout": 5
+            },
+            {
+              "pin": "_18905_/Y",
+              "cell": "AOI21x1_ASAP7_75t_R",
+              "slew": 38468881219584.0,
+              "fanout": 4
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "OR5x1_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AND2x4_ASAP7_75t_R",
+            "OR4x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AOI211x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[15]",
+          "startpoint": "_22158_/A",
+          "slack": 34.153736,
+          "slack_before_repair": 9.587553,
+          "stages": 33,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_342_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 55229152231424.0,
+              "fanout": 4
+            },
+            {
+              "pin": "place5316/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 47438744256512.0,
+              "fanout": 8
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_384_/Y",
+              "cell": "AO221x1_ASAP7_75t_R",
+              "slew": 27677039788032.0,
+              "fanout": 3
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO22x2_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO221x2_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[12]",
+          "startpoint": "_22158_/A",
+          "slack": 36.511848,
+          "slack_before_repair": 21.027958,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_335_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 32977264312320.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_21836_/Y",
+              "cell": "AO221x1_ASAP7_75t_R",
+              "slew": 32516486463488.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_22058_/Y",
+              "cell": "NOR2x1_ASAP7_75t_R",
+              "slew": 28988623814656.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR4x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[29]",
+          "startpoint": "_22158_/A",
+          "slack": 39.431179,
+          "slack_before_repair": 12.282287,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "place5277/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 39387609956352.0,
+              "fanout": 8
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_335_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 32977264312320.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_21974_/Y",
+              "cell": "OA211x2_ASAP7_75t_R",
+              "slew": 31909520343040.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR4x1_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[25]",
+          "startpoint": "_22158_/A",
+          "slack": 39.636738,
+          "slack_before_repair": 12.929935,
+          "stages": 37,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_21926_/Y",
+              "cell": "AOI211x1_ASAP7_75t_R",
+              "slew": 35586618425344.0,
+              "fanout": 1
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_335_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 32977264312320.0,
+              "fanout": 2
+            },
+            {
+              "pin": "place5283/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 32751522676736.0,
+              "fanout": 8
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AOI211x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[24]",
+          "startpoint": "_22158_/A",
+          "slack": 39.784065,
+          "slack_before_repair": 18.022472,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_342_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 55229152231424.0,
+              "fanout": 4
+            },
+            {
+              "pin": "place5284/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 36963910418432.0,
+              "fanout": 8
+            },
+            {
+              "pin": "_21935_/Y",
+              "cell": "AO21x2_ASAP7_75t_R",
+              "slew": 29281960853504.0,
+              "fanout": 3
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO22x2_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO221x2_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[14]",
+          "startpoint": "_22158_/A",
+          "slack": 40.574764,
+          "slack_before_repair": 9.944879,
+          "stages": 34,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "place6089/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 39880415510528.0,
+              "fanout": 13
+            },
+            {
+              "pin": "_19757_/Y",
+              "cell": "NAND2x1_ASAP7_75t_R",
+              "slew": 38859358339072.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_21848_/Y",
+              "cell": "AO221x1_ASAP7_75t_R",
+              "slew": 36960118767616.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AND3x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO22x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR2x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[18]",
+          "startpoint": "_22158_/A",
+          "slack": 41.781746,
+          "slack_before_repair": 5.967948,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "place5290/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 47183042707456.0,
+              "fanout": 8
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_338_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 34837245198336.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_21880_/Y",
+              "cell": "AO21x2_ASAP7_75t_R",
+              "slew": 29343046696960.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO22x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR4x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[23]",
+          "startpoint": "_22158_/A",
+          "slack": 43.188786,
+          "slack_before_repair": 18.307022,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "place5285/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 36356935909376.0,
+              "fanout": 8
+            },
+            {
+              "pin": "_21908_/Y",
+              "cell": "AOI21x1_ASAP7_75t_R",
+              "slew": 35484726198272.0,
+              "fanout": 4
+            },
+            {
+              "pin": "_21907_/Y",
+              "cell": "OA211x2_ASAP7_75t_R",
+              "slew": 29079529062400.0,
+              "fanout": 2
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "BUFx12f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO22x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[21]",
+          "startpoint": "_22158_/A",
+          "slack": 44.723671,
+          "slack_before_repair": 19.048651,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "place5286/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 41820637626368.0,
+              "fanout": 8
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_335_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 32977264312320.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_21888_/Y",
+              "cell": "AOI21x1_ASAP7_75t_R",
+              "slew": 31209321136128.0,
+              "fanout": 3
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OR4x1_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[11]",
+          "startpoint": "_22158_/A",
+          "slack": 45.801476,
+          "slack_before_repair": null,
+          "stages": 36,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "_28056_/Y",
+              "cell": "AOI21x1_ASAP7_75t_R",
+              "slew": 39896685215744.0,
+              "fanout": 2
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_335_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 32977264312320.0,
+              "fanout": 2
+            },
+            {
+              "pin": "_21822_/Y",
+              "cell": "AO221x1_ASAP7_75t_R",
+              "slew": 32444350726144.0,
+              "fanout": 3
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "INVx2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO33x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "AO32x1_ASAP7_75t_R",
+            "AND2x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "INVx1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO22x2_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AOI21x1_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[22]",
+          "startpoint": "_22158_/A",
+          "slack": 46.437855,
+          "slack_before_repair": 21.423973,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_342_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 55229152231424.0,
+              "fanout": 4
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_342_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 44814150139904.0,
+              "fanout": 3
+            },
+            {
+              "pin": "place5315/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 42035507625984.0,
+              "fanout": 8
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO22x2_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "instr_addr_o[30]",
+          "startpoint": "_22158_/A",
+          "slack": 47.10421,
+          "slack_before_repair": 22.759184,
+          "stages": 35,
+          "max_fanout": 944,
+          "worst_slew": 1438949469847552.0,
+          "tags": [
+            "deep_logic",
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "_22158_/Y",
+              "cell": "AND2x2_ASAP7_75t_R",
+              "slew": 1438949469847552.0,
+              "fanout": 944
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_342_/SN",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 55229152231424.0,
+              "fanout": 4
+            },
+            {
+              "pin": "alu_adder_result_ex\\\\ALU_33_0_33_0_33_unused_CO_X_Y[0]_HAN_CARLSON/_342_/CON",
+              "cell": "HAxp5_ASAP7_75t_R",
+              "slew": 44814150139904.0,
+              "fanout": 3
+            },
+            {
+              "pin": "place5276/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 42094483734528.0,
+              "fanout": 8
+            }
+          ],
+          "cells_on_path": [
+            "AND2x2_ASAP7_75t_R",
+            "DFFHQNx1_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "OA211x2_ASAP7_75t_R",
+            "OR3x2_ASAP7_75t_R",
+            "BUFx6f_ASAP7_75t_R",
+            "NAND2x2_ASAP7_75t_R",
+            "AO222x2_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO22x2_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "XOR2x2_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "HAxp5_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO21x1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "AO221x1_ASAP7_75t_R",
+            "XNOR2x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "NOR2x1_ASAP7_75t_R",
+            "OR3x1_ASAP7_75t_R",
+            "AO21x2_ASAP7_75t_R",
+            "OAI21x1_ASAP7_75t_R",
+            "OA21x2_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "_22158_/B",
+          "startpoint": "core_clock_gate_i.en_latch$_DLATCH_N_/CLK",
+          "slack": 422.744965,
+          "slack_before_repair": 422.744965,
+          "stages": 1,
+          "max_fanout": 1,
+          "worst_slew": 7620079910912.0,
+          "tags": [
+            "slow_slew"
+          ],
+          "worst_cells": [
+            {
+              "pin": "core_clock_gate_i.en_latch$_DLATCH_N_/Q",
+              "cell": "DLLx1_ASAP7_75t_R",
+              "slew": 7619950936064.0,
+              "fanout": 1
+            }
+          ],
+          "cells_on_path": [
+            "DLLx1_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[684]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.031067,
+          "slack_before_repair": 490.352814,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[748]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.052551,
+          "slack_before_repair": 490.374237,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[701]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.117065,
+          "slack_before_repair": 490.439484,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[765]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.138763,
+          "slack_before_repair": 490.461182,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[797]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.24469,
+          "slack_before_repair": 490.566711,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[925]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.327393,
+          "slack_before_repair": 490.649628,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[398]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.4021,
+          "slack_before_repair": 490.724915,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[430]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.408325,
+          "slack_before_repair": 490.731232,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[494]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.443237,
+          "slack_before_repair": 490.766205,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[541]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.443848,
+          "slack_before_repair": 490.766815,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[428]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.504578,
+          "slack_before_repair": 490.829041,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[414]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.515808,
+          "slack_before_repair": 490.843872,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[462]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.537048,
+          "slack_before_repair": 490.859528,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[396]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.54895,
+          "slack_before_repair": 490.872681,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[446]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.575256,
+          "slack_before_repair": 490.899109,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[492]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.583069,
+          "slack_before_repair": 490.906219,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[669]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.640594,
+          "slack_before_repair": 490.96167,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[510]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.643646,
+          "slack_before_repair": 490.967041,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[733]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.656586,
+          "slack_before_repair": 490.977661,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[989]$_DFFE_PN0P_/RESETN",
+          "startpoint": "rst_ni",
+          "slack": 490.710419,
+          "slack_before_repair": null,
+          "stages": 4,
+          "max_fanout": 45,
+          "worst_slew": 142355734724608.0,
+          "tags": [
+            "high_fanout",
+            "slow_slew",
+            "io_constrained"
+          ],
+          "worst_cells": [
+            {
+              "pin": "input1829/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 109853116727296.0,
+              "fanout": 29
+            },
+            {
+              "pin": "place6534/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 100310647308288.0,
+              "fanout": 45
+            },
+            {
+              "pin": "place6535/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 67678651809792.0,
+              "fanout": 30
+            },
+            {
+              "pin": "place6536/Y",
+              "cell": "BUFx3_ASAP7_75t_R",
+              "slew": 62936336826368.0,
+              "fanout": 28
+            }
+          ],
+          "cells_on_path": [
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R",
+            "BUFx3_ASAP7_75t_R"
+          ]
+        }
+      ],
+      "tag_histogram": {
+        "deep_logic": 40,
+        "high_fanout": 60,
+        "slow_slew": 61,
+        "near_zero": 21,
+        "io_constrained": 40
+      },
+      "endpoints_no_longer_in_worst_list": [
+        "gen_regfile_ff.register_file_i.rf_reg[987]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[699]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[667]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[923]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[763]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[571]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[955]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[635]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[1019]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[795]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[827]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[891]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[859]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[731]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[603]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[756]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[628]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[884]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[980]$_DFFE_PN0P_/D",
+        "instr_addr_o[10]"
+      ]
+    },
+    "diff_vs_baseline": {
+      "new_in_worst_list": [
+        "gen_regfile_ff.register_file_i.rf_reg[539]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[766]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[1022]$_DFFE_PN0P_/D"
+      ],
+      "gone_from_worst_list": [
+        "gen_regfile_ff.register_file_i.rf_reg[639]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[543]$_DFFE_PN0P_/D",
+        "gen_regfile_ff.register_file_i.rf_reg[831]$_DFFE_PN0P_/D"
+      ],
+      "improved": [
+        {
+          "endpoint": "instr_addr_o[20]",
+          "ref": 21.493807,
+          "cand": 21.718349
+        },
+        {
+          "endpoint": "instr_addr_o[26]",
+          "ref": 24.144241,
+          "cand": 29.850344
+        },
+        {
+          "endpoint": "instr_addr_o[31]",
+          "ref": 25.977386,
+          "cand": 28.219149
+        },
+        {
+          "endpoint": "instr_addr_o[27]",
+          "ref": 26.867563,
+          "cand": 31.253555
+        },
+        {
+          "endpoint": "instr_addr_o[28]",
+          "ref": 27.625179,
+          "cand": 27.849722
+        },
+        {
+          "endpoint": "instr_addr_o[17]",
+          "ref": 28.27466,
+          "cand": 28.274771
+        },
+        {
+          "endpoint": "instr_addr_o[15]",
+          "ref": 34.153625,
+          "cand": 34.153736
+        },
+        {
+          "endpoint": "instr_addr_o[18]",
+          "ref": 36.075642,
+          "cand": 41.781746
+        },
+        {
+          "endpoint": "instr_addr_o[12]",
+          "ref": 36.287251,
+          "cand": 36.511848
+        },
+        {
+          "endpoint": "instr_addr_o[25]",
+          "ref": 37.006454,
+          "cand": 39.636738
+        },
+        {
+          "endpoint": "instr_addr_o[29]",
+          "ref": 37.288284,
+          "cand": 39.431179
+        },
+        {
+          "endpoint": "instr_addr_o[24]",
+          "ref": 39.783955,
+          "cand": 39.784065
+        },
+        {
+          "endpoint": "instr_addr_o[14]",
+          "ref": 40.574211,
+          "cand": 40.574764
+        },
+        {
+          "endpoint": "instr_addr_o[21]",
+          "ref": 42.580772,
+          "cand": 44.723671
+        },
+        {
+          "endpoint": "instr_addr_o[22]",
+          "ref": 46.437744,
+          "cand": 46.437855
+        }
+      ],
+      "regressed": [
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[638]$_DFFE_PN0P_/D",
+          "ref": -10.957235,
+          "cand": -10.958678
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[894]$_DFFE_PN0P_/D",
+          "ref": -10.866641,
+          "cand": -10.868084
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[574]$_DFFE_PN0P_/D",
+          "ref": -10.843327,
+          "cand": -10.844769
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[862]$_DFFE_PN0P_/D",
+          "ref": -10.839995,
+          "cand": -10.841439
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[830]$_DFFE_PN0P_/D",
+          "ref": -10.597967,
+          "cand": -10.59941
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[734]$_DFFE_PN0P_/D",
+          "ref": -9.575007,
+          "cand": -9.576673
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[990]$_DFFE_PN0P_/D",
+          "ref": -9.289125,
+          "cand": -9.290791
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[670]$_DFFE_PN0P_/D",
+          "ref": -9.142465,
+          "cand": -9.14413
+        },
+        {
+          "endpoint": "gen_regfile_ff.register_file_i.rf_reg[702]$_DFFE_PN0P_/D",
+          "ref": -9.060086,
+          "cand": -9.061751
+        },
+        {
+          "endpoint": "instr_addr_o[16]",
+          "ref": 17.906898,
+          "cand": 17.869984
+        },
+        {
+          "endpoint": "instr_addr_o[19]",
+          "ref": 29.403368,
+          "cand": 29.077295
+        },
+        {
+          "endpoint": "instr_addr_o[11]",
+          "ref": 51.198933,
+          "cand": 45.801476
+        }
+      ]
+    }
+  }
+}

@@ -36,7 +36,7 @@ EVO_REPAIR_CMD repair_timing -setup -repair_tns 100 -verbose
 [INFO DPL-1104] NegotiationLegalizer DRC penalty: 5.
 [INFO DPL-0392] Negotiation cell height distribution (1 unique row-count(s)):
 [INFO DPL-0393]   height 1 row(s): 14533 cells
-[INFO DPL-0500] Runtime: 0.04s
+[INFO DPL-0500] Runtime: 0.03s
 Detailed Placement Analysis
 ---------------------------------
 legalizer            negotiation
@@ -71,4 +71,4 @@ EVO_METRICS post 0.02639954995998201 0.0 0.044729221592639395 0.0 inst=14533 are
 [WARNING STA-0101] object 'NULL' not found.
 [WARNING STA-0101] object 'NULL' not found.
 EVO_PATHS wrote 61 paths to /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__ibex/nominal_r1/paths_post.json
-EVO_DONE wns_pre=0.02751621230973136 wns_post=0.02639954995998201 tns_pre=0.0 tns_post=0.0 repair_ms=162
+EVO_DONE wns_pre=0.02751621230973136 wns_post=0.02639954995998201 tns_pre=0.0 tns_post=0.0 repair_ms=126

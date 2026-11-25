@@ -1,0 +1,11 @@
+{
+  "accepted": false,
+  "score": 0.0,
+  "reasons": [
+    "nangate45/gcd: candidate evaluation failed (missing)",
+    "nangate45/aes: candidate evaluation failed (missing)",
+    "nangate45/ibex: candidate evaluation failed (missing)",
+    "nangate45/jpeg: candidate evaluation failed (missing)"
+  ],
+  "per_design": {}
+}

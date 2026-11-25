@@ -1,0 +1,29 @@
+{
+  "per_design": {
+    "asap7/ibex": {
+      "bottleneck_rounds": 5,
+      "bottleneck_drivers_ranked": 4669,
+      "bottleneck_trials": 290,
+      "bottleneck_kept": 13,
+      "bottleneck_rejected_wns": 19,
+      "bottleneck_rejected_tns": 21
+    }
+  },
+  "total_fired": 5017,
+  "repair_stats": {
+    "asap7/ibex": {
+      "buffers_inserted": 84,
+      "resized": 170,
+      "pins_swapped": 162,
+      "cloned": 28
+    }
+  },
+  "baseline_repair_stats": {
+    "asap7/ibex": {
+      "buffers_inserted": 83,
+      "resized": 172,
+      "pins_swapped": 159,
+      "cloned": 28
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "per_design": {
+    "nangate45/gcd": {
+      "bottleneck_rounds": 5,
+      "bottleneck_drivers_ranked": 1234,
+      "bottleneck_trials": 340,
+      "bottleneck_kept": 24,
+      "bottleneck_rejected_wns": 43,
+      "bottleneck_rejected_tns": 51
+    },
+    "nangate45/aes": {},
+    "nangate45/ibex": {},
+    "nangate45/jpeg": {
+      "bottleneck_rounds": 2,
+      "bottleneck_drivers_ranked": 8425,
+      "bottleneck_trials": 169,
+      "bottleneck_kept": 34,
+      "bottleneck_rejected_wns": 77,
+      "bottleneck_rejected_tns": 12
+    }
+  },
+  "total_fired": 10416,
+  "repair_stats": {
+    "nangate45/gcd": {
+      "resized": 73,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {},
+    "nangate45/ibex": {},
+    "nangate45/jpeg": {
+      "resized": 308,
+      "pins_swapped": 123,
+      "cloned": 1
+    }
+  },
+  "baseline_repair_stats": {
+    "nangate45/gcd": {
+      "resized": 56,
+      "pins_swapped": 1
+    },
+    "nangate45/aes": {},
+    "nangate45/ibex": {},
+    "nangate45/jpeg": {
+      "resized": 282,
+      "pins_swapped": 117
+    }
+  }
+}

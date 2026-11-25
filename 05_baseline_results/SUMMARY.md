@@ -1,6 +1,6 @@
 # Baseline (stock OpenROAD)
 
-binary: `/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock`  commit: `6932b6296c65aebaadae64850f5a23265758ead0`  updated: 2026-11-25T12:26:08Z
+binary: `/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock`  commit: `6932b6296c65aebaadae64850f5a23265758ead0`  updated: 2026-11-25T15:41:47Z
 
 repair_timing args: `-setup -repair_tns 100 -verbose`
 
@@ -8,10 +8,26 @@ repair_timing args: `-setup -repair_tns 100 -verbose`
 
 | design | period (ns) | endpoints | WNS pre | WNS post | TNS pre | TNS post | hold WNS | area um2 | buffers | repair ms | deterministic |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| asap7/ibex | 810 | 5456 | -144.4539 | -100.9572 | -120058.971 | -78044.636 | +17.3311 | 2449 | 1986 | 40543 | yes |
 | nangate45/aes | 0.738 | 1248 | -0.0790 | -0.0258 | -8.116 | -1.141 | +0.1020 | 20555 | 3346 | 27546 | yes |
 | nangate45/gcd | 0.375 | 72 | -0.0250 | -0.0234 | -0.732 | -0.475 | +0.0870 | 822 | 156 | 1630 | yes |
 | nangate45/ibex | 1.98 | 5565 | -0.1925 | -0.0794 | -164.022 | -65.665 | +0.0447 | 28627 | 1091 | 41270 | yes |
 | nangate45/jpeg | 1 | 8355 | -0.1165 | -0.0866 | -48.300 | -32.403 | +0.0084 | 90200 | 5571 | 35942 | yes |
+
+### asap7/ibex (stressed) worst paths after stock repair
+
+| # | endpoint | slack (ns) | pre-repair | stages | max fanout | worst slew | tags | worst drivers |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `gen_regfile_ff.register_file_i.rf_reg[638]$_DFFE_PN0P_/D` | -100.957245 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 2 | `gen_regfile_ff.register_file_i.rf_reg[894]$_DFFE_PN0P_/D` | -100.866646 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 3 | `gen_regfile_ff.register_file_i.rf_reg[574]$_DFFE_PN0P_/D` | -100.84333 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 4 | `gen_regfile_ff.register_file_i.rf_reg[862]$_DFFE_PN0P_/D` | -100.840004 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 5 | `gen_regfile_ff.register_file_i.rf_reg[830]$_DFFE_PN0P_/D` | -100.597977 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 6 | `gen_regfile_ff.register_file_i.rf_reg[765]$_DFFE_PN0P_/D` | -100.114471 | None | 43 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), FAx1_ASAP7_75t_R@_17071_/SN (slew 30979781558272.0) |
+| 7 | `gen_regfile_ff.register_file_i.rf_reg[541]$_DFFE_PN0P_/D` | -99.938057 | None | 43 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), FAx1_ASAP7_75t_R@_17071_/SN (slew 30979781558272.0) |
+| 8 | `gen_regfile_ff.register_file_i.rf_reg[797]$_DFFE_PN0P_/D` | -99.919853 | None | 43 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), FAx1_ASAP7_75t_R@_17071_/SN (slew 30979781558272.0) |
+
+Tag histogram: slow_slew=61, high_fanout=60, deep_logic=40, io_constrained=40
 
 ### nangate45/aes (stressed) worst paths after stock repair
 
@@ -59,6 +75,91 @@ Tag histogram: slow_slew=38, io_constrained=18, high_fanout=9, near_zero=5
 Tag histogram: slow_slew=61, high_fanout=60, deep_logic=40, io_constrained=40, near_zero=8
 
 ### nangate45/jpeg (stressed) worst paths after stock repair
+
+| # | endpoint | slack (ns) | pre-repair | stages | max fanout | worst slew | tags | worst drivers |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | -0.086623 | None | 20 | 12 | 28983002.0 | deep_logic high_fanout slow_slew | HA_X1@_115442_/S (slew 28983002.0), FA_X1@_108721_/S (slew 24679000.0) |
+| 2 | `fdct_zigzag.dct_mod.dct_block_5.dct_unit_2.macu.mult_res[16]$_DFFE_PP_/D` | -0.085652 | None | 23 | 50 | 28272000.0 | deep_logic high_fanout slow_slew | HA_X1@_114387_/S (slew 28272000.0), OAI21_X1@_096477_/ZN (slew 26009002.0) |
+| 3 | `fdct_zigzag.dct_mod.dct_block_5.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | -0.085302 | None | 22 | 15 | 36248000.0 | deep_logic high_fanout slow_slew | DFFR_X2@fdct_zigzag.dct_mod.ddin[8]$_DFFE_PN0P_/Q (slew 36226000.0), HA_X1@_114238_/S (slew 27197000.0) |
+| 4 | `fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res[15]$_DFFE_PP_/D` | -0.084674 | None | 20 | 15 | 40669004.0 | deep_logic high_fanout slow_slew | HA_X1@_115122_/S (slew 40669004.0), DFFR_X2@fdct_zigzag.dct_mod.ddin[8]$_DFFE_PN0P_/Q (slew 36226000.0) |
+| 5 | `fdct_zigzag.dct_mod.dct_block_2.dct_unit_4.macu.mult_res[18]$_DFFE_PP_/D` | -0.084264 | None | 19 | 12 | 28754000.0 | deep_logic high_fanout slow_slew | HA_X1@_115515_/S (slew 28754000.0), NOR3_X2@_106305_/ZN (slew 28456002.0) |
+| 6 | `fdct_zigzag.dct_mod.dct_block_6.dct_unit_7.macu.mult_res[16]$_DFFE_PP_/D` | -0.083542 | None | 22 | 50 | 34711000.0 | deep_logic high_fanout slow_slew | HA_X1@_115914_/S (slew 34711000.0), OAI21_X1@_097786_/ZN (slew 33434000.0) |
+| 7 | `fdct_zigzag.dct_mod.dct_block_5.dct_unit_4.macu.mult_res[17]$_DFFE_PP_/D` | -0.08352 | None | 21 | 15 | 39442000.0 | deep_logic high_fanout slow_slew | OAI221_X1@_095447_/ZN (slew 39442000.0), DFFR_X2@fdct_zigzag.dct_mod.ddin[8]$_DFFE_PN0P_/Q (slew 36226000.0) |
+| 8 | `fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res[17]$_DFFE_PP_/D` | -0.083396 | None | 23 | 12 | 36423004.0 | deep_logic high_fanout slow_slew | OAI221_X1@_099135_/ZN (slew 36423004.0), HA_X1@_114852_/S (slew 31154000.0) |
+
+Tag histogram: slow_slew=60, high_fanout=40, io_constrained=40, deep_logic=20
+
+## SDC variant: nominal
+
+| design | period (ns) | endpoints | WNS pre | WNS post | TNS pre | TNS post | hold WNS | area um2 | buffers | repair ms | deterministic |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| asap7/ibex | 900 | 5456 | -54.4539 | -10.9572 | -23931.962 | -1163.875 | +17.3311 | 2448 | 1986 | 49073 | yes |
+| nangate45/aes | 0.82 | 1248 | +0.0030 | +0.0022 | +0.000 | +0.000 | +0.1020 | 18802 | 2839 | 146 | yes |
+| nangate45/gcd | 0.25 | 72 | -0.1500 | -0.1492 | -6.680 | -6.327 | +0.0870 | 845 | 157 | 1778 | yes |
+| nangate45/ibex | 2.2 | 5565 | +0.0275 | +0.0264 | +0.000 | +0.000 | +0.0447 | 28364 | 1020 | 123 | yes |
+| nangate45/jpeg | 1 | 8355 | -0.1165 | -0.0866 | -48.300 | -32.403 | +0.0084 | 90200 | 5571 | 30412 | yes |
+
+### asap7/ibex (nominal) worst paths after stock repair
+
+| # | endpoint | slack (ns) | pre-repair | stages | max fanout | worst slew | tags | worst drivers |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `gen_regfile_ff.register_file_i.rf_reg[638]$_DFFE_PN0P_/D` | -10.957235 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew near_zero | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 2 | `gen_regfile_ff.register_file_i.rf_reg[894]$_DFFE_PN0P_/D` | -10.866641 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew near_zero | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 3 | `gen_regfile_ff.register_file_i.rf_reg[574]$_DFFE_PN0P_/D` | -10.843327 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew near_zero | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 4 | `gen_regfile_ff.register_file_i.rf_reg[862]$_DFFE_PN0P_/D` | -10.839995 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew near_zero | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 5 | `gen_regfile_ff.register_file_i.rf_reg[830]$_DFFE_PN0P_/D` | -10.597967 | None | 44 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew near_zero | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), OAI22x1_ASAP7_75t_R@_22833_/Y (slew 74274882715648.0) |
+| 6 | `gen_regfile_ff.register_file_i.rf_reg[765]$_DFFE_PN0P_/D` | -10.114465 | None | 43 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew near_zero | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), FAx1_ASAP7_75t_R@_17071_/SN (slew 30979781558272.0) |
+| 7 | `gen_regfile_ff.register_file_i.rf_reg[541]$_DFFE_PN0P_/D` | -9.93805 | None | 43 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew near_zero | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), FAx1_ASAP7_75t_R@_17071_/SN (slew 30979781558272.0) |
+| 8 | `gen_regfile_ff.register_file_i.rf_reg[797]$_DFFE_PN0P_/D` | -9.919843 | None | 43 | 944 | 1438949469847552.0 | deep_logic high_fanout slow_slew near_zero | AND2x2_ASAP7_75t_R@_22158_/Y (slew 1438949469847552.0), FAx1_ASAP7_75t_R@_17071_/SN (slew 30979781558272.0) |
+
+Tag histogram: slow_slew=61, high_fanout=60, deep_logic=40, io_constrained=40, near_zero=21
+
+### nangate45/aes (nominal) worst paths after stock repair
+
+| # | endpoint | slack (ns) | pre-repair | stages | max fanout | worst slew | tags | worst drivers |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `sa31_sr[6]$_DFF_P_/D` | 0.002248 | 0.003017 | 16 | 15 | 90875000.0 | high_fanout slow_slew near_zero | XOR2_X2@_11995_/Z (slew 90869008.0), XNOR2_X1@_11992_/ZN (slew 59428000.0) |
+| 2 | `sa31_sr[3]$_DFF_P_/D` | 0.004172 | 0.005074 | 14 | 15 | 90875000.0 | high_fanout slow_slew near_zero | XOR2_X2@_11995_/Z (slew 90869008.0), XNOR2_X1@_11992_/ZN (slew 59428000.0) |
+| 3 | `sa31_sr[5]$_DFF_P_/D` | 0.008358 | 0.009445 | 15 | 15 | 90873008.0 | high_fanout slow_slew near_zero | XOR2_X2@_11995_/Z (slew 90869008.0), XNOR2_X1@_11992_/ZN (slew 59428000.0) |
+| 4 | `u0.u3.d[3]$_DFF_P_/D` | 0.010006 | 0.012525 | 15 | 7 | 78933000.0 | slow_slew near_zero | XNOR2_X1@_21083_/ZN (slew 78917000.0), XNOR2_X1@_21055_/ZN (slew 65456004.0) |
+| 5 | `sa31_sr[0]$_DFF_P_/D` | 0.011683 | 0.01221 | 15 | 15 | 90879000.0 | high_fanout slow_slew near_zero | XOR2_X2@_11995_/Z (slew 90869008.0), XNOR2_X1@_11992_/ZN (slew 59428000.0) |
+| 6 | `sa23_sr[4]$_DFF_P_/D` | 0.011754 | 0.014699 | 13 | 16 | 50108004.0 | high_fanout slow_slew near_zero | XNOR2_X1@_13044_/ZN (slew 50108004.0), XNOR2_X1@_13066_/ZN (slew 45603000.0) |
+| 7 | `u0.u3.d[0]$_DFF_P_/D` | 0.012124 | 0.013765 | 15 | 11 | 78933000.0 | high_fanout slow_slew near_zero | XNOR2_X1@_21083_/ZN (slew 78917000.0), XNOR2_X1@_21055_/ZN (slew 65456004.0) |
+| 8 | `sa31_sr[4]$_DFF_P_/D` | 0.012952 | 0.014279 | 14 | 15 | 90870000.0 | high_fanout slow_slew near_zero | XOR2_X2@_11995_/Z (slew 90869008.0), NOR2_X1@_12045_/ZN (slew 66166000.0) |
+
+Tag histogram: slow_slew=40, io_constrained=20, high_fanout=18, near_zero=14
+
+### nangate45/gcd (nominal) worst paths after stock repair
+
+| # | endpoint | slack (ns) | pre-repair | stages | max fanout | worst slew | tags | worst drivers |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `dpath.a_reg.out[4]$_DFFE_PP_/D` | -0.149175 | -0.149712 | 16 | 8 | 21531002.0 | high_fanout slow_slew | AOI21_X4@_604_/ZN (slew 21531002.0), DFF_X1@dpath.a_reg.out[3]$_DFFE_PP_/Q (slew 18275000.0) |
+| 2 | `dpath.a_reg.out[12]$_DFFE_PP_/D` | -0.148529 | -0.147143 | 14 | 3 | 31418000.0 | slow_slew | NOR2_X2@_950_/ZN (slew 31417002.0), INV_X1@_977_/ZN (slew 20363000.0) |
+| 3 | `dpath.a_reg.out[5]$_DFFE_PP_/D` | -0.148366 | -0.148594 | 13 | 7 | 31418000.0 | slow_slew | NOR2_X2@_950_/ZN (slew 31417002.0), INV_X1@_977_/ZN (slew 20363000.0) |
+| 4 | `dpath.a_reg.out[6]$_DFFE_PP_/D` | -0.148335 | -0.148613 | 13 | 7 | 31418000.0 | slow_slew | NOR2_X2@_950_/ZN (slew 31417002.0), INV_X1@_977_/ZN (slew 20363000.0) |
+| 5 | `dpath.a_reg.out[10]$_DFFE_PP_/D` | -0.147897 | None | 13 | 4 | 23333000.0 | slow_slew | XNOR2_X2@_763_/ZN (slew 23333000.0), DFF_X1@dpath.a_reg.out[4]$_DFFE_PP_/Q (slew 22566000.0) |
+| 6 | `dpath.a_reg.out[9]$_DFFE_PP_/D` | -0.146188 | -0.147439 | 16 | 5 | 21531002.0 | slow_slew | AOI21_X4@_604_/ZN (slew 21531002.0), DFF_X1@dpath.a_reg.out[3]$_DFFE_PP_/Q (slew 18275000.0) |
+| 7 | `dpath.a_reg.out[8]$_DFFE_PP_/D` | -0.145942 | -0.147223 | 16 | 8 | 21531002.0 | high_fanout slow_slew | AOI21_X4@_604_/ZN (slew 21531002.0), DFF_X1@dpath.a_reg.out[3]$_DFFE_PP_/Q (slew 18275000.0) |
+| 8 | `dpath.a_reg.out[1]$_DFFE_PP_/D` | -0.145938 | -0.146732 | 13 | 7 | 31418000.0 | slow_slew | NOR2_X2@_950_/ZN (slew 31417002.0), INV_X1@_977_/ZN (slew 20363000.0) |
+
+Tag histogram: slow_slew=38, io_constrained=18, high_fanout=8, near_zero=2
+
+### nangate45/ibex (nominal) worst paths after stock repair
+
+| # | endpoint | slack (ns) | pre-repair | stages | max fanout | worst slew | tags | worst drivers |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `gen_regfile_ff.register_file_i.rf_reg[982]$_DFFE_PN0P_/D` | 0.0264 | 0.027516 | 41 | 943 | 2087928064.0 | deep_logic high_fanout slow_slew near_zero | AND2_X1@_26153_/ZN (slew 2087928064.0), AOI221_X2@_19754_/ZN (slew 65262000.0) |
+| 2 | `gen_regfile_ff.register_file_i.rf_reg[854]$_DFFE_PN0P_/D` | 0.026951 | 0.028997 | 41 | 943 | 2087928064.0 | deep_logic high_fanout slow_slew near_zero | AND2_X1@_26153_/ZN (slew 2087928064.0), AOI221_X2@_19754_/ZN (slew 65262000.0) |
+| 3 | `gen_regfile_ff.register_file_i.rf_reg[662]$_DFFE_PN0P_/D` | 0.027031 | 0.029083 | 41 | 943 | 2087928064.0 | deep_logic high_fanout slow_slew near_zero | AND2_X1@_26153_/ZN (slew 2087928064.0), AOI221_X2@_19754_/ZN (slew 65262000.0) |
+| 4 | `gen_regfile_ff.register_file_i.rf_reg[566]$_DFFE_PN0P_/D` | 0.027037 | 0.028805 | 41 | 943 | 2087928064.0 | deep_logic high_fanout slow_slew near_zero | AND2_X1@_26153_/ZN (slew 2087928064.0), AOI221_X2@_19754_/ZN (slew 65262000.0) |
+| 5 | `gen_regfile_ff.register_file_i.rf_reg[694]$_DFFE_PN0P_/D` | 0.027123 | 0.029033 | 41 | 943 | 2087928064.0 | deep_logic high_fanout slow_slew near_zero | AND2_X1@_26153_/ZN (slew 2087928064.0), AOI221_X2@_19754_/ZN (slew 65262000.0) |
+| 6 | `gen_regfile_ff.register_file_i.rf_reg[790]$_DFFE_PN0P_/D` | 0.027389 | 0.029097 | 41 | 943 | 2087928064.0 | deep_logic high_fanout slow_slew near_zero | AND2_X1@_26153_/ZN (slew 2087928064.0), AOI221_X2@_19754_/ZN (slew 65262000.0) |
+| 7 | `gen_regfile_ff.register_file_i.rf_reg[918]$_DFFE_PN0P_/D` | 0.027429 | 0.029447 | 41 | 943 | 2087928064.0 | deep_logic high_fanout slow_slew near_zero | AND2_X1@_26153_/ZN (slew 2087928064.0), AOI221_X2@_19754_/ZN (slew 65262000.0) |
+| 8 | `gen_regfile_ff.register_file_i.rf_reg[758]$_DFFE_PN0P_/D` | 0.02749 | 0.029257 | 41 | 943 | 2087928064.0 | deep_logic high_fanout slow_slew near_zero | AND2_X1@_26153_/ZN (slew 2087928064.0), AOI221_X2@_19754_/ZN (slew 65262000.0) |
+
+Tag histogram: slow_slew=61, high_fanout=60, deep_logic=40, io_constrained=40, near_zero=20
+
+### nangate45/jpeg (nominal) worst paths after stock repair
 
 | # | endpoint | slack (ns) | pre-repair | stages | max fanout | worst slew | tags | worst drivers |
 |---|---|---|---|---|---|---|---|---|

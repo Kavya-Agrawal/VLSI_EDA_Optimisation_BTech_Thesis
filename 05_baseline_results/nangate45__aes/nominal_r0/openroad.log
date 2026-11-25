@@ -24,7 +24,7 @@ EVO_PATHS wrote 40 paths to /Users/kavyaagrawal/Desktop/Github repos and Project
 EVO_REPAIR_CMD repair_timing -setup -repair_tns 100 -verbose
 [INFO RSZ-0100] Repair move sequence: UnbufferMove SizeUpMove SwapPinsMove BufferMove CloneMove SplitLoadMove 
 [INFO RSZ-0098] No setup violations found
-[INFO RSZ-0505] Runtime: 0.05s
+[INFO RSZ-0505] Runtime: 0.04s
 [INFO DPL-0006] Core area: 52785.04 um^2
 [INFO DPL-0007] Movable instances area: 18692.35 um^2
 [INFO DPL-0008] Fixed instances area within core: 109.33 um^2
@@ -37,7 +37,7 @@ EVO_REPAIR_CMD repair_timing -setup -repair_tns 100 -verbose
 [INFO DPL-1104] NegotiationLegalizer DRC penalty: 5.
 [INFO DPL-0392] Negotiation cell height distribution (1 unique row-count(s)):
 [INFO DPL-0393]   height 1 row(s): 14790 cells
-[INFO DPL-0500] Runtime: 0.04s
+[INFO DPL-0500] Runtime: 0.03s
 Detailed Placement Analysis
 ---------------------------------
 legalizer            negotiation
@@ -72,4 +72,4 @@ EVO_METRICS post 0.0022475355546158135 0.0 0.10201455247075145 0.0 inst=14790 ar
 [WARNING STA-0101] object 'NULL' not found.
 [WARNING STA-0101] object 'NULL' not found.
 EVO_PATHS wrote 40 paths to /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__aes/nominal_r0/paths_post.json
-EVO_DONE wns_pre=0.003016698087829524 wns_post=0.0022475355546158135 tns_pre=0.0 tns_post=0.0 repair_ms=203
+EVO_DONE wns_pre=0.003016698087829524 wns_post=0.0022475355546158135 tns_pre=0.0 tns_post=0.0 repair_ms=152

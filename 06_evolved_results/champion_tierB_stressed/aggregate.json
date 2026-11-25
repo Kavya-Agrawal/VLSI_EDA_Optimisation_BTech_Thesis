@@ -1,0 +1,98 @@
+{
+  "stressed": {
+    "asap7/ibex": {
+      "ok": true,
+      "replicates": 2,
+      "failed": 0,
+      "period_ns": 810.0,
+      "endpoints": 5456,
+      "pre": {
+        "wns_setup": -144.45389386874996,
+        "tns_setup": -120058.97124478986,
+        "setup_violations": 1219
+      },
+      "post": {
+        "wns_setup": {
+          "mean": -100.11447266791365,
+          "min": -100.11447266791365,
+          "max": -100.11447266791365
+        },
+        "tns_setup": {
+          "mean": -77830.2652105976,
+          "min": -77830.2652105976,
+          "max": -77830.2652105976
+        },
+        "wns_hold": {
+          "mean": 17.33108108401136,
+          "min": 17.33108108401136,
+          "max": 17.33108108401136
+        },
+        "tns_hold": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "setup_violations": {
+          "mean": 1165.0,
+          "min": 1165.0,
+          "max": 1165.0
+        },
+        "hold_violations": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "area_um2": {
+          "mean": 2449.046299091151,
+          "min": 2449.046299091151,
+          "max": 2449.046299091151
+        },
+        "util": {
+          "mean": 0.46565001885087337,
+          "min": 0.46565001885087337,
+          "max": 0.46565001885087337
+        },
+        "instances": {
+          "mean": 21385.0,
+          "min": 21385.0,
+          "max": 21385.0
+        },
+        "buffers": {
+          "mean": 1987.0,
+          "min": 1987.0,
+          "max": 1987.0
+        },
+        "drv": 0.0,
+        "placement_violations": 0.0
+      },
+      "repair_ms": {
+        "mean": 57776.5,
+        "min": 56880.0,
+        "max": 58673.0
+      },
+      "deterministic": true,
+      "evolve_counters": {
+        "bottleneck_rounds": 5,
+        "bottleneck_drivers_ranked": 4669,
+        "bottleneck_trials": 290,
+        "bottleneck_kept": 13,
+        "bottleneck_rejected_wns": 19,
+        "bottleneck_rejected_tns": 21
+      },
+      "repair_stats": {
+        "buffers_inserted": 84,
+        "resized": 170,
+        "pins_swapped": 162,
+        "cloned": 28
+      },
+      "dirs": [
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/champion_tierB_stressed/runs/asap7__ibex/stressed_r0",
+        "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/06_evolved_results/champion_tierB_stressed/runs/asap7__ibex/stressed_r1"
+      ]
+    }
+  },
+  "tier": "B",
+  "replicates": 2,
+  "when": "2026-11-25T15:37:07Z",
+  "rsz_dir": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/02_openroad_evolved/champion/rsz"
+}

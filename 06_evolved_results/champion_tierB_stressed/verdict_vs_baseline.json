@@ -1,0 +1,26 @@
+{
+  "accepted": true,
+  "score": 0.000544,
+  "reasons": [],
+  "per_design": {
+    "asap7/ibex": {
+      "score": 0.0005444821771091638,
+      "wns_cand": -100.11447266791365,
+      "wns_ref": -100.95724296927415,
+      "tns_cand": -77830.2652105976,
+      "tns_ref": -78044.63595483301,
+      "d_wns_ns": 0.8427703013605026,
+      "d_tns_ns": 214.37074423540616,
+      "d_wns_pct_period": 0.104045716217346,
+      "d_tns_pct": 0.2746771019080281,
+      "hold_cand": 17.33108108401136,
+      "hold_ref": 17.33108108401136,
+      "drv_cand": 0.0,
+      "drv_ref": 0.0,
+      "area_cand": 2449.046299091151,
+      "area_ref": 2449.060954035076,
+      "placement_violations": 0.0,
+      "deterministic": true
+    }
+  }
+}

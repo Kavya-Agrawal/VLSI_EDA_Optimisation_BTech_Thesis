@@ -1,0 +1,53 @@
+{
+  "clock_period_ns": 810.0,
+  "endpoints": 5456,
+  "repair_args": "-setup -repair_tns 100 -verbose",
+  "repair_ms": 58673,
+  "placement_violations": 0,
+  "pre": {
+    "wns_setup": -144.45389386874996,
+    "tns_setup": -120058.97124478986,
+    "wns_hold": 17.33108108401136,
+    "tns_hold": 0.0,
+    "setup_violations": 1219,
+    "hold_violations": 0,
+    "instances": 21273,
+    "pins": 69458,
+    "area_um2": 2428.473866444847,
+    "util": 0.46173848439832144,
+    "buffers": 1877,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "post": {
+    "wns_setup": -100.11447266791365,
+    "tns_setup": -77830.2652105976,
+    "wns_hold": 17.33108108401136,
+    "tns_hold": 0.0,
+    "setup_violations": 1165,
+    "hold_violations": 0,
+    "instances": 21385,
+    "pins": 69688,
+    "area_um2": 2449.046299091151,
+    "util": 0.46565001885087337,
+    "buffers": 1987,
+    "drv_slew": 0,
+    "drv_cap": 0,
+    "drv_fanout": 0
+  },
+  "evolve_counters": {
+    "bottleneck_rounds": 5,
+    "bottleneck_drivers_ranked": 4669,
+    "bottleneck_trials": 290,
+    "bottleneck_kept": 13,
+    "bottleneck_rejected_wns": 19,
+    "bottleneck_rejected_tns": 21
+  },
+  "repair_stats": {
+    "buffers_inserted": 84,
+    "resized": 170,
+    "pins_swapped": 162,
+    "cloned": 28
+  }
+}

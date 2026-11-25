@@ -1,0 +1,23 @@
+INFO: Invocation ID: 8532fb71-a457-4c76-8ec0-a56dbf0382f9
+Computing main repo mapping: 
+Loading: 
+Loading: 0 packages loaded
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+Analyzing: 6 targets (1 packages loaded, 0 targets configured)
+
+Analyzing: 6 targets (2 packages loaded, 0 targets configured)
+
+INFO: Analyzed 6 targets (4 packages loaded, 446 targets configured).
+INFO: Found 6 test targets...
+INFO: Elapsed time: 2.098s, Critical Path: 0.09s
+INFO: 19 processes: 147 action cache hit, 12 disk cache hit, 7 internal.
+INFO: Build completed successfully, 19 total actions
+//src/rsz/test:TestBufRem1                                      (cached) PASSED in 1.1s
+//src/rsz/test:TestInsertBuffer                                 (cached) PASSED in 4.7s
+//src/rsz/test:TestNestedJournal                                (cached) PASSED in 1.7s
+//src/rsz/test:TestPreChecks                                    (cached) PASSED in 2.1s
+//src/rsz/test:TestResizer                                      (cached) PASSED in 4.7s
+//src/rsz/test:TestSkewBudget                                   (cached) PASSED in 0.8s
+
+Executed 0 out of 6 tests: 6 tests pass.
+There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.
