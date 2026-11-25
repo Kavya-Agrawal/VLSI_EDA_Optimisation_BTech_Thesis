@@ -43,6 +43,22 @@ def _code_map(clusters: dict[str, Any]) -> str:
     return "\n\n".join(sections)
 
 
+def _repair_stats(knobs: Knobs, designs: list[str]) -> str:
+    """Stock move counts + WNS/TNS per design, so the planner sizes its idea against what repair actually does."""
+    from ..eval.baseline import load_baseline
+    base = load_baseline().get("variants", {}).get(knobs.sdc_variant, {})
+    lines = []
+    for d in designs:
+        a = base.get(d) or {}
+        if not a.get("ok"):
+            continue
+        st = a.get("repair_stats") or {}
+        lines.append(f"- {d}: period {a['period_ns']:.4g} ns, endpoints {a['endpoints']}, WNS {a['pre']['wns_setup']:+.4f} -> "
+                     f"{a['post']['wns_setup']['mean']:+.4f}, TNS {a['pre']['tns_setup']:+.2f} -> {a['post']['tns_setup']['mean']:+.2f}, "
+                     f"stock moves {st or '(re-run make baseline to record)'}")
+    return "\n".join(lines) or "(no baseline)"
+
+
 def hypothesis_from_text(text: str, *, forced_cluster: str | None = None) -> Hypothesis:
     """Reconstruct a plan from its durable agent output (used after terminal/IDE crashes)."""
     clusters = {k: v for k, v in _clusters().items() if not k.startswith("_")}
@@ -78,7 +94,8 @@ def plan(iteration: int, knobs: Knobs, *, feedback: str, tier: str, designs: lis
                  "BUDGET": budget_summary, "CLUSTERS": ", ".join(f"`{c}` ({v['question'][:60]}...)" for c, v in clusters.items()),
                  "FEEDBACK": feedback or "(first iteration: no candidate feedback yet; use 05_baseline_results/SUMMARY.md)",
                  "KNOWLEDGE": "\n\n".join(f"--- {k}.md ---\n{v[:6000]}" for k, v in know.items() if k in ("rulebase", "lessons", "dead_ends")),
-                 "LEDGER": ledger_tail, "EXPERIENCE": experience, "CODE_MAP": _code_map(clusters)}.items():
+                 "LEDGER": ledger_tail, "EXPERIENCE": experience, "CODE_MAP": _code_map(clusters),
+                 "REPAIR_STATS": _repair_stats(knobs, designs)}.items():
         prompt = prompt.replace("{{" + k + "}}", v)
     if forced_cluster:
         prompt += f"\n\nThe operator requires cluster `{forced_cluster}` for this iteration.\n"

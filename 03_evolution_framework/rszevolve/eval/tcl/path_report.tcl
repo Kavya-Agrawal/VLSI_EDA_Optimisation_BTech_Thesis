@@ -19,7 +19,16 @@ proc evo_net_fanout { pin } {
   return [llength $loads]
 }
 
+proc evo_clock_source_names {} {
+  set names {}
+  foreach clk [all_clocks] {
+    foreach src [get_property $clk sources] { lappend names [get_full_name $src] }
+  }
+  return $names
+}
+
 proc evo_write_paths { filename count } {
+  set ::evo_clock_src_names [evo_clock_source_names]
   set ends [find_timing_paths -path_delay max -sort_by_slack -group_path_count $count]
   set f [open $filename w]
   puts $f "\["
@@ -32,6 +41,13 @@ proc evo_write_paths { filename count } {
     set pins [$path pins]
     # OpenSTA returns pins endpoint-first; present them startpoint-first
     if { [llength $pins] > 0 && [get_full_name [lindex $pins 0]] eq $endname } { set pins [lreverse $pins] }
+    # Ideal (pre-CTS) clocks: a reg->reg path starts at the clock port, then the launching CK pin.
+    # Report the launching register pin as startpoint so only true port paths look IO-constrained.
+    set launch_clock ""
+    if { [llength $pins] > 1 && [lsearch -exact $::evo_clock_src_names [get_full_name [lindex $pins 0]]] >= 0 } {
+      set launch_clock [get_full_name [lindex $pins 0]]
+      set pins [lrange $pins 1 end]
+    }
     set startname ""
     if { [llength $pins] > 0 } { set startname [get_full_name [lindex $pins 0]] }
     # convert internal seconds to the user time unit (ns) like the reports do
@@ -67,6 +83,7 @@ proc evo_write_paths { filename count } {
     puts $f "\{"
     puts $f "  \"endpoint\": [evo_json_str $endname],"
     puts $f "  \"startpoint\": [evo_json_str $startname],"
+    puts $f "  \"launch_clock\": [evo_json_str $launch_clock],"
     puts $f "  \"slack\": $slack,"
     puts $f "  \"arrival\": $arrival,"
     puts $f "  \"required\": $required,"

@@ -15,6 +15,21 @@ Hard rules:
 - Use the durable cross-iteration memory, not only the latest feedback. Once two valid experiments exist, cite at
   least two iteration numbers: one supporting the new direction and one failure/dead end the plan avoids. Records
   marked infrastructure/no-code are not algorithmic evidence.
+- **Novelty requirement.** The hypothesis must replace or restructure a *decision procedure* (how targets are ranked,
+  how a move is chosen, how cost/delay is estimated, how the search proceeds, when to stop) with a named different
+  paradigm: e.g. global slack-budgeting instead of greedy worst-path-first; Lagrangian-relaxation / sensitivity-based
+  sizing instead of one-cell-at-a-time upsizing; multi-endpoint path-sharing (fix the cell that sits on the most
+  violating paths) instead of per-endpoint repair; lookahead or beam search over move sequences instead of first
+  improving move; TNS-weighted acceptance instead of WNS-only acceptance; buffer-tree construction with slack-aware
+  cost instead of the current fixed recipe. Corner-case guards, API tidying and "recover a rejected runner-up"
+  fixes are NOT acceptable.
+- **Trigger estimate.** Using the stock repair statistics below (how many resizes / buffers / clones / swaps the
+  stock run makes per design), state how many decisions per design your change will alter. If the estimate is
+  under ~5 % of the relevant moves on aes and ibex, choose a bigger idea.
+- **No retreat.** After a rejection, do not propose a narrower variant of the same idea. Either change paradigm or
+  change cluster. Rotate clusters: do not choose the same cluster more than twice in a row.
+- Worst paths are tagged by structure (deep_logic, high_fanout, slow_slew, io_constrained); `launch_clock` paths are
+  register-to-register, not IO paths.
 - Be concrete: name files and functions from the cluster dossier; say what decision the algorithm makes today and
   what it should make instead; predict the observable effect in the path report.
 
@@ -24,6 +39,8 @@ Available material (read them; cwd is 09_agent_context):
 - 10_agent_knowledge/iterations/*.json and EXPERIENCE.md (durable quantitative experiment memory)
 - Latest evaluator feedback (below) and 05_baseline_results/SUMMARY.md
 
+=== Stock repair statistics per design (baseline) ===
+{{REPAIR_STATS}}
 === Latest evaluator feedback ===
 {{FEEDBACK}}
 === Knowledge ===

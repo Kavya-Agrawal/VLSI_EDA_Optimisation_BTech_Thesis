@@ -98,7 +98,7 @@ def code(iteration: int, h: Hypothesis, knobs: Knobs, *, log_dir: Path, budget_c
         prompt = prompt.replace("{{" + k + "}}", v)
     call = AgentCall(role=f"coder:{h.cluster}", prompt=prompt, cwd=rsz, model=knobs.coder_model, max_turns=knobs.coder_max_turns,
                      allowed_tools=list(EDIT_TOOLS), add_dirs=[PATHS.context, PATHS.original], max_budget_usd=budget_cap_usd,
-                     bash_allow=["Bash(grep *)", "Bash(rg *)", "Bash(ls *)", "Bash(cat *)", "Bash(head *)", "Bash(wc *)", "Bash(diff *)"])
+                     bash_allow=["Bash(grep *)", "Bash(rg *)", "Bash(ls *)", "Bash(cat *)", "Bash(head *)", "Bash(wc *)", "Bash(diff *)", "Bash(graphify *)"])
     res = run_agent(call, log_dir=log_dir, tag="coder")
     js = extract_json_block(res.text) or {}
     patch = make_patch(rsz)

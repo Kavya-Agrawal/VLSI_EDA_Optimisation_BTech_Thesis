@@ -96,12 +96,29 @@ def evaluate(rsz_dir: Path, knobs: Knobs, *, tier: str = "A", replicates: int = 
     vs_base = judge(agg, base, knobs, require_gain=False)
     champ = champion_aggregate(variant) or base
     vs_champ = judge(agg, champ, knobs, require_gain=True)
+    # Was the new logic exercised at all? (coder is required to print RSZ_EVOLVE <name> fired=<n>)
+    counters = {k: a.get("evolve_counters", {}) for k, a in agg.items() if a.get("ok")}
+    total_fired = sum(sum(c.values()) for c in counters.values())
+    if counters and not any(counters.values()):
+        note = "instrumentation missing: no RSZ_EVOLVE counter lines printed, cannot tell if the new logic ran"
+    elif counters and total_fired == 0:
+        note = "new logic never fired on any design (all RSZ_EVOLVE counters are 0): hypothesis is inapplicable here"
+    else:
+        note = ""
+    if note:
+        vs_champ.reasons.append(note); vs_champ.accepted = False
+        vs_base.reasons.append(note)
+    write_json(out / "evolve_counters.json", {"per_design": counters, "total_fired": total_fired,
+                                               "repair_stats": {k: a.get("repair_stats", {}) for k, a in agg.items()},
+                                               "baseline_repair_stats": {k: (b.get("repair_stats") or {}) for k, b in base.items()}})
     write_json(out / "verdict_vs_baseline.json", vs_base.as_dict())
     write_json(out / "verdict_vs_champion.json", vs_champ.as_dict())
 
     attribution: dict[str, Any] = {}
     md = [f"# Candidate `{tag}`", "", f"tier {tier}, variant `{variant}`, replicates {replicates}, evaluated {now_iso()}", "",
           "## Verdict vs champion", "", "```", summarize(vs_champ), "```", "", "## Verdict vs baseline (stock OpenROAD)", "", "```", summarize(vs_base), "```", "",
+          "## Did the new logic run? (RSZ_EVOLVE counters per design)", "",
+          *[f"- {k}: {c or 'no counter lines'}  | moves {agg[k].get('repair_stats', {})} vs baseline {(base.get(k) or {}).get('repair_stats', {})}" for k, c in counters.items()], "",
           "## Worst paths after repair (candidate)", ""]
     for key, a in agg.items():
         if not a.get("ok"):

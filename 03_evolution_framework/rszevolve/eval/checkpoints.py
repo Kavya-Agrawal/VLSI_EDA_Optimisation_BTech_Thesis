@@ -18,7 +18,7 @@ from ..config import PATHS, Knobs, designs_for_tier
 from ..util import log, now_iso, read_json, run, write_json, write_text
 from .run_eval import Design, run_one
 
-STRESS_RATIOS = [1.00, 0.90, 0.80, 0.70, 0.60, 0.50, 0.40]
+STRESS_RATIOS = [2.00, 1.60, 1.30, 1.15, 1.00, 0.90, 0.80, 0.70, 0.60, 0.50]
 
 
 def orfs_env(flow_dir: Path) -> dict[str, str]:
@@ -182,26 +182,26 @@ def calibrate_stress(design_key: str, knobs: Knobs) -> dict[str, Any]:
     meta = read_json(ddir / "design.json")
     d = Design(design_key, ddir, meta)
     cal_dir = ddir / "calibration"
-    chosen: dict[str, Any] | None = None
     table: list[dict[str, Any]] = []
-    for ratio in STRESS_RATIOS:
+    target = knobs.stressed_wns_target_ratio            # e.g. -0.08: stock repair leaves WNS ~ -8% of the period
+    for ratio in STRESS_RATIOS:                          # loosest first; stop once we pass the target
         tmp = cal_dir / f"stress_{ratio:.2f}.sdc"
         period = scale_sdc(ddir / "nominal.sdc", tmp, ratio)
         r = run_one(PATHS.openroad_stock, d, "nominal", cal_dir / f"r{ratio:.2f}", knobs, sdc_override=tmp)
         if not r.ok:
             table.append({"ratio": ratio, "period": period, "ok": False, "error": r.error}); continue
         wns_post, tns_post = float(r.post["wns_setup"]), float(r.post["tns_setup"])
-        wns_pre = float(r.pre["wns_setup"])
-        row = {"ratio": ratio, "period": period, "ok": True, "wns_pre": wns_pre, "wns_post": wns_post, "tns_post": tns_post,
-               "wns_post_pct_period": 100.0 * wns_post / period if period else 0.0}
+        row = {"ratio": ratio, "period": period, "ok": True, "wns_pre": float(r.pre["wns_setup"]), "wns_post": wns_post,
+               "tns_post": tns_post, "wns_post_pct_period": 100.0 * wns_post / period if period else 0.0}
         table.append(row)
-        log(f"{design_key}: ratio {ratio:.2f} period {period:.4g}: WNS {wns_pre:+.4f} -> {wns_post:+.4f} ({row['wns_post_pct_period']:+.1f}% of period)")
-        if period and wns_post <= knobs.stressed_wns_target_ratio * period:
-            chosen = row
+        log(f"{design_key}: ratio {ratio:.2f} period {period:.4g}: WNS {row['wns_pre']:+.4f} -> {wns_post:+.4f} ({row['wns_post_pct_period']:+.1f}% of period)")
+        if period and wns_post / period <= target:
             break
-    if chosen is None:
-        ok_rows = [t for t in table if t.get("ok")]
-        chosen = min(ok_rows, key=lambda t: t["wns_post"]) if ok_rows else None
+    ok_rows = [t for t in table if t.get("ok") and t["period"]]
+    # closest to the target fraction, preferring rows that are actually negative
+    neg = [t for t in ok_rows if t["wns_post"] < 0]
+    pool = neg or ok_rows
+    chosen = min(pool, key=lambda t: abs(t["wns_post"] / t["period"] - target)) if pool else None
     if chosen is None:
         raise RuntimeError(f"{design_key}: could not calibrate a stressed SDC; see {cal_dir}")
     scale_sdc(ddir / "nominal.sdc", ddir / "stressed.sdc", chosen["ratio"])

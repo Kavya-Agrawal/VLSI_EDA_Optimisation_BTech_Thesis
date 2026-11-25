@@ -12,8 +12,25 @@ Resource rule: do **not** run Bazel, OpenROAD, unit tests, builds, long commands
 the external OpenROAD tree. The parent orchestrator owns building and testing after you return. You may only make
 the scoped source edits and perform lightweight read/diff checks in this candidate tree, then return immediately.
 
+Instrumentation (mandatory, the evaluator rejects candidates without it): every place where your NEW logic makes
+a decision that differs from the stock algorithm must increment a counter, and at the end of the repair call print
+it once per counter through the existing logger, exactly in this form (one line each, plain integer):
+    RSZ_EVOLVE <short_snake_name> fired=<count>
+e.g. `logger_->report("RSZ_EVOLVE slack_budget_reorder fired={}", n);`. Print even when the count is 0. The
+evaluator uses these lines to tell "new logic never ran" apart from "ran and was neutral".
+
+Make the change big enough to matter: it must alter decisions on a large share of the moves listed under
+"Stock repair statistics" in the hypothesis (thousands of sizing moves, hundreds of buffers on aes/ibex). A guard
+that only triggers in a rare corner case is not an acceptable implementation of an algorithmic hypothesis.
+
+Code graph (Graphify, offline, cheap): before editing, use it to find every caller/callee your change affects
+instead of reading whole files, e.g.
+    graphify explain "SizeUpGenerator" --graph "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/08_graphify/rsz_focus/graphify-out/graph.json"
+    graphify affected "BufferedNet" --graph "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/08_graphify/rsz_focus/graphify-out/graph.json"
+    graphify path "RepairSetup" "Rebuffer" --graph "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/08_graphify/rsz_focus/graphify-out/graph.json"
+
 Mandatory outputs:
-1. Code edits in the editable files.
+1. Code edits in the editable files, including the RSZ_EVOLVE counters.
 2. `HYPOTHESIS.md` in the tree root with: Problem; Current heuristic (file:function); New approach; Why WNS/TNS
    should improve; What to look for in the path report; Risks; Files changed (with a 1-line summary each).
 3. End your final message with a JSON block:

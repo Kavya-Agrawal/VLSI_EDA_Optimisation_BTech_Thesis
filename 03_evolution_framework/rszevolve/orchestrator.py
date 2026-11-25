@@ -113,7 +113,7 @@ def run_iteration(iteration: int, tier: str, designs: list[str], knobs: Knobs, b
     # 3. build with repair loop
     build = build_candidate(cr.rsz_dir, knobs, tag=tag)
     attempt = 0
-    while not build.ok and attempt < knobs.repair_attempts and not budget.exhausted():
+    while not build.ok and attempt < knobs.repair_attempts:
         attempt += 1
         log(f"build failed; asking coder to fix (attempt {attempt}/{knobs.repair_attempts})")
         cr = coder_mod.fix(cr, build.diagnostics(), knobs, log_dir=log_dir, attempt=attempt)
@@ -190,8 +190,16 @@ def evolve(*, iterations: int, budget_usd: float, max_tokens: int, tier: str, re
     for i in range(start, start + iterations):
         why = budget.exhausted()
         if why:
-            log(f"stopping before iteration {i}: {why}")
-            break
+            # The budget only meters Claude (fallback CLIs report $0). Once Claude credit is used up, keep
+            # evolving on the fallback providers instead of stopping, unless the operator asked to stop.
+            import os
+            if os.environ.get("STOP_WHEN_CLAUDE_BUDGET_SPENT", "0") == "1":
+                log(f"stopping before iteration {i}: {why}")
+                break
+            if os.environ.get("AGENT_PROVIDERS_PLANNER", "").startswith("claude"):
+                log(f"{why}; switching planner and coder to codex -> antigravity for the remaining iterations")
+                for role in ("PLANNER", "CODER", "FIX", "EVALUATOR", "CONTEXT"):
+                    os.environ[f"AGENT_PROVIDERS_{role}"] = "codex,antigravity"
         try:
             run_iteration(i, tier, designs, knobs, budget, replicates=replicates, forced_cluster=cluster if done == 0 else None)
         except KeyboardInterrupt:

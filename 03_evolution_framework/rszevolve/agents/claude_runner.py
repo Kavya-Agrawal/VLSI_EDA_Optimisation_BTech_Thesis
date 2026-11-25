@@ -68,8 +68,18 @@ class _Attempt:
     command: list[str]
 
 
+def _role_key(role: str) -> str:
+    """planner -> PLANNER, coder:sizing -> CODER, coder:fix -> FIX, evaluator -> EVALUATOR, context:* -> CONTEXT."""
+    head, _, tail = role.partition(":")
+    if head == "coder" and tail == "fix":
+        return "FIX"
+    return head.upper()
+
+
 def _provider_order(call: AgentCall) -> list[str]:
-    configured = [p.strip().lower() for p in os.environ.get("AGENT_PROVIDERS", ",".join(KNOWN_PROVIDERS)).split(",")]
+    # Per-role override first (e.g. AGENT_PROVIDERS_EVALUATOR=codex,antigravity,claude), then the global chain.
+    role_env = os.environ.get(f"AGENT_PROVIDERS_{_role_key(call.role)}")
+    configured = [p.strip().lower() for p in (role_env or os.environ.get("AGENT_PROVIDERS", ",".join(KNOWN_PROVIDERS))).split(",")]
     providers = [p for p in configured if p in KNOWN_PROVIDERS]
     if not providers:
         providers = list(KNOWN_PROVIDERS)
@@ -160,8 +170,12 @@ def _run_claude(call: AgentCall) -> _Attempt:
         cmd += ["--append-system-prompt-file", str(call.system_prompt_file)]
     if session := _session_for(call, "claude"):
         cmd += ["--resume", session]
-    if call.max_budget_usd:
-        cmd += ["--max-budget-usd", f"{call.max_budget_usd:.2f}"]
+    cap = call.max_budget_usd
+    role_cap = os.environ.get(f"CLAUDE_MAX_USD_{_role_key(call.role)}")
+    if role_cap:
+        cap = min(cap, float(role_cap)) if cap else float(role_cap)
+    if cap:
+        cmd += ["--max-budget-usd", f"{cap:.2f}"]
     out, err, rc, secs = _run_process(cmd, call, "claude", stdin_text=call.prompt)
     raw = _last_json_object(out)
     if not raw:

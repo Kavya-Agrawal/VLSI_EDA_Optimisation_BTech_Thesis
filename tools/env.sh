@@ -30,6 +30,15 @@ export CLAUDE_BIN="${CLAUDE_BIN:-claude}"
 # Headless-agent fallback chain. Each CLI uses its own existing login; credentials are never copied
 # between providers. Override the order or models before invoking make when required.
 export AGENT_PROVIDERS="${AGENT_PROVIDERS:-claude,codex,antigravity}"
+# Spend scarce Claude credits only where quality matters most: planning and the main coding pass.
+export AGENT_PROVIDERS_PLANNER="${AGENT_PROVIDERS_PLANNER:-claude,codex,antigravity}"
+export AGENT_PROVIDERS_CODER="${AGENT_PROVIDERS_CODER:-claude,codex,antigravity}"
+export AGENT_PROVIDERS_FIX="${AGENT_PROVIDERS_FIX:-codex,antigravity,claude}"
+export AGENT_PROVIDERS_EVALUATOR="${AGENT_PROVIDERS_EVALUATOR:-codex,antigravity,claude}"
+export AGENT_PROVIDERS_CONTEXT="${AGENT_PROVIDERS_CONTEXT:-codex,antigravity,claude}"
+# Hard per-call Claude caps (USD). A capped call that runs out falls through to the next provider.
+export CLAUDE_MAX_USD_PLANNER="${CLAUDE_MAX_USD_PLANNER:-0.80}"
+export CLAUDE_MAX_USD_CODER="${CLAUDE_MAX_USD_CODER:-1.50}"
 if [ -z "${CODEX_BIN:-}" ]; then
   CODEX_BIN="$(command -v codex 2>/dev/null || ls -d "$HOME"/.vscode/extensions/openai.chatgpt-*/bin/macos-*/codex 2>/dev/null | sort -V | tail -1)"
 fi

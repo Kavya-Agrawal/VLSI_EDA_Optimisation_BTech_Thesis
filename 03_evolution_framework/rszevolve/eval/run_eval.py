@@ -54,6 +54,35 @@ class Design:
         return self.odb.exists() and self.sdc(variant).exists()
 
 
+COUNTER_RE = __import__("re").compile(r"RSZ_EVOLVE\s+([A-Za-z0-9_.:-]+)\s+fired=(\d+)")
+STAT_RES = {
+    "buffers_removed": r"RSZ-0059\] Removed (\d+) buffers",
+    "buffers_inserted": r"RSZ-0045\] Inserted (\d+) buffers",
+    "resized": r"RSZ-0051\] Resized (\d+) instances",
+    "pins_swapped": r"RSZ-0043\] Swapped pins on (\d+) instances",
+    "cloned": r"RSZ-0049\] Cloned (\d+) instances",
+}
+
+
+def parse_counters(log_text: str) -> dict[str, int]:
+    """Sum `RSZ_EVOLVE <name> fired=<n>` lines that candidate code prints, so we can tell
+    'new logic never ran' apart from 'new logic ran and was neutral'."""
+    out: dict[str, int] = {}
+    for name, n in COUNTER_RE.findall(log_text):
+        out[name] = out.get(name, 0) + int(n)
+    return out
+
+
+def parse_repair_stats(log_text: str) -> dict[str, int]:
+    import re
+    out: dict[str, int] = {}
+    for key, rx in STAT_RES.items():
+        m = re.findall(rx, log_text)
+        if m:
+            out[key] = int(m[-1])
+    return out
+
+
 def load_design(key: str) -> Design:
     d = PATHS.designs / key
     meta = read_json(d / "design.json")
@@ -105,6 +134,10 @@ def run_one(binary: Path, design: Design, variant: str, out_dir: Path, knobs: Kn
     cmd = [binary, "-no_splash", "-exit", "-metrics", out_dir / "or_metrics.json", PATHS.tcl / "eval_repair_timing.tcl"]
     res = run(cmd, env=env, timeout=timeout or knobs.eval_timeout_s, log_file=out_dir / "openroad.log")
     metrics = read_json(out_dir / "metrics.json", {}) or {}
+    if metrics:
+        metrics["evolve_counters"] = parse_counters(res.stdout)
+        metrics["repair_stats"] = parse_repair_stats(res.stdout)
+        write_json(out_dir / "metrics.json", metrics)
     ok = res.ok and bool(metrics.get("post"))
     err = ""
     if not ok:
@@ -168,6 +201,8 @@ def aggregate(runs: list[EvalRun]) -> dict[str, dict[str, Any]]:
             },
             "repair_ms": stat("repair_ms", "metrics") if all("repair_ms" in r.metrics for r in good) else None,
             "deterministic": (wns["max"] - wns["min"] < 1e-6) and (tns["max"] - tns["min"] < 1e-6),
+            "evolve_counters": good[0].metrics.get("evolve_counters", {}),
+            "repair_stats": good[0].metrics.get("repair_stats", {}),
             "dirs": [str(r.out_dir) for r in good],
         }
     return out
