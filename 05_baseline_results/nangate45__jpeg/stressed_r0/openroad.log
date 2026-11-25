@@ -1,0 +1,477 @@
+EVO_METRICS pre -0.11649559424633563 -48.30013858914408 0.008633649595173817 0.0 inst=59533 area=89948.96205649638 buf=5526 drv=0/0/0
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+EVO_PATHS wrote 60 paths to /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__jpeg/stressed_r0/paths_pre.json
+EVO_REPAIR_CMD repair_timing -setup -repair_tns 100 -verbose
+[INFO RSZ-0100] Repair move sequence: UnbufferMove SizeUpMove SwapPinsMove BufferMove CloneMove SplitLoadMove 
+[INFO RSZ-0094] Found 661 endpoints with setup violations.
+[INFO RSZ-0099] Repairing 661 out of 661 (100.00%) violating endpoints...
+   Iter   | Removed | Resized | Inserted | Cloned |  Pin  |   Area   |    WNS   |    TNS     |  Viol  |  Worst
+          | Buffers |  Gates  | Buffers  |  Gates | Swaps |          |          |            | Endpts | Endpoint
+------------------------------------------------------------------------------------------------------------------------------
+       0* |       0 |       0 |        0 |      0 |     0 |    +0.0% |   -0.116 |      -48.3 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_6.macu.mult_res\[17\]$_DFFE_PP_/D
+      10* |       0 |       5 |        2 |      0 |     3 |    +0.0% |   -0.099 |      -37.8 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_1.macu.mult_res\[16\]$_DFFE_PP_/D
+      20* |       0 |      13 |        4 |      0 |     4 |    +0.0% |   -0.097 |      -36.9 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[16\]$_DFFE_PP_/D
+      30* |       0 |      20 |        6 |      0 |     6 |    +0.0% |   -0.094 |      -36.6 |    661 | fdct_zigzag.dct_mod.dct_block_2.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+      40* |       0 |      23 |       12 |      0 |     8 |    +0.0% |   -0.095 |      -37.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[16\]$_DFFE_PP_/D
+      50* |       0 |      30 |       14 |      0 |    10 |    +0.0% |   -0.088 |      -34.1 |    661 | fdct_zigzag.dct_mod.dct_block_2.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+      60* |       0 |      36 |       15 |      0 |    13 |    +0.0% |   -0.087 |      -33.8 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_2.macu.mult_res\[16\]$_DFFE_PP_/D
+      70* |       0 |      42 |       16 |      0 |    16 |    +0.1% |   -0.092 |      -34.4 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[16\]$_DFFE_PP_/D
+      80* |       0 |      50 |       17 |      0 |    17 |    +0.1% |   -0.089 |      -34.3 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[16\]$_DFFE_PP_/D
+      90* |       0 |      56 |       18 |      0 |    20 |    +0.1% |   -0.087 |      -34.2 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     100* |       0 |      63 |       18 |      0 |    23 |    +0.1% |   -0.084 |      -34.1 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_5.macu.mult_res\[15\]$_DFFE_PP_/D
+     110* |       0 |      71 |       18 |      0 |    25 |    +0.1% |   -0.095 |      -33.9 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[16\]$_DFFE_PP_/D
+     120* |       0 |      77 |       20 |      0 |    28 |    +0.1% |   -0.085 |      -34.0 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     130* |       0 |      83 |       20 |      0 |    32 |    +0.1% |   -0.084 |      -33.9 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_6.macu.mult_res\[18\]$_DFFE_PP_/D
+     140* |       0 |      89 |       22 |      0 |    34 |    +0.1% |   -0.083 |      -33.7 |    661 | fdct_zigzag.dct_mod.dct_block_5.dct_unit_7.macu.mult_res\[18\]$_DFFE_PP_/D
+     150* |       0 |      95 |       22 |      0 |    38 |    +0.1% |   -0.083 |      -33.7 |    661 | fdct_zigzag.dct_mod.dct_block_5.dct_unit_4.macu.mult_res\[16\]$_DFFE_PP_/D
+     160* |       0 |     102 |       23 |      0 |    40 |    +0.1% |   -0.082 |      -33.6 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_5.macu.mult_res\[16\]$_DFFE_PP_/D
+     170* |       0 |     110 |       23 |      0 |    42 |    +0.1% |   -0.082 |      -33.5 |    661 | fdct_zigzag.dct_mod.dct_block_5.dct_unit_7.macu.mult_res\[18\]$_DFFE_PP_/D
+     180* |       0 |     115 |       24 |      0 |    46 |    +0.1% |   -0.083 |      -33.5 |    661 | fdct_zigzag.dct_mod.dct_block_5.dct_unit_7.macu.mult_res\[18\]$_DFFE_PP_/D
+     190* |       0 |     121 |       24 |      0 |    50 |    +0.1% |   -0.082 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     200* |       0 |     125 |       25 |      0 |    55 |    +0.1% |   -0.088 |      -34.9 |    661 | fdct_zigzag.dct_mod.dct_block_1.dct_unit_3.macu.mult_res\[16\]$_DFFE_PP_/D
+     210* |       0 |     131 |       26 |      0 |    58 |    +0.1% |   -0.091 |      -34.7 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[16\]$_DFFE_PP_/D
+     220* |       0 |     136 |       29 |      0 |    60 |    +0.2% |   -0.092 |      -35.7 |    661 | fdct_zigzag.dct_mod.dct_block_2.dct_unit_2.macu.mult_res\[15\]$_DFFE_PP_/D
+     230* |       0 |     142 |       29 |      0 |    64 |    +0.2% |   -0.090 |      -35.7 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_4.macu.mult_res\[16\]$_DFFE_PP_/D
+     239* |       0 |     121 |       24 |      0 |    49 |    +0.1% |   -0.081 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     240* |       0 |     121 |       24 |      0 |    49 |    +0.1% |   -0.081 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     250* |       0 |     124 |       26 |      0 |    54 |    +0.1% |   -0.085 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     260* |       0 |     129 |       27 |      0 |    58 |    +0.1% |   -0.085 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     270* |       0 |     133 |       29 |      0 |    62 |    +0.1% |   -0.084 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     280* |       0 |     141 |       36 |      0 |    62 |    +0.2% |   -0.096 |      -37.9 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_3.macu.mult_res\[16\]$_DFFE_PP_/D
+     290* |       0 |     147 |       37 |      0 |    65 |    +0.2% |   -0.096 |      -37.9 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_3.macu.mult_res\[16\]$_DFFE_PP_/D
+     298* |       0 |     123 |       26 |      0 |    53 |    +0.1% |   -0.081 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     300* |       0 |     124 |       26 |      0 |    53 |    +0.1% |   -0.081 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     310* |       0 |     132 |       26 |      0 |    55 |    +0.1% |   -0.089 |      -34.8 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     320* |       0 |     136 |       27 |      0 |    60 |    +0.1% |   -0.089 |      -34.7 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     330* |       0 |     144 |       27 |      0 |    62 |    +0.2% |   -0.089 |      -34.9 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     340* |       0 |     151 |       29 |      0 |    63 |    +0.2% |   -0.089 |      -34.8 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     350* |       0 |     158 |       30 |      0 |    65 |    +0.2% |   -0.089 |      -35.1 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     350* |       0 |     124 |       26 |      0 |    53 |    +0.1% |   -0.081 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     360* |       0 |     128 |       26 |      0 |    58 |    +0.1% |   -0.085 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     370* |       0 |     138 |       26 |      0 |    58 |    +0.2% |   -0.085 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     380* |       0 |     142 |       27 |      0 |    63 |    +0.2% |   -0.085 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     390* |       0 |     147 |       29 |      0 |    67 |    +0.2% |   -0.085 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     400* |       1 |     153 |       32 |      0 |    67 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     408* |       0 |     126 |       26 |      0 |    58 |    +0.1% |   -0.081 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     410* |       0 |     127 |       26 |      0 |    58 |    +0.1% |   -0.081 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     420* |       0 |     133 |       27 |      0 |    61 |    +0.1% |   -0.089 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     430* |       0 |     141 |       27 |      0 |    63 |    +0.2% |   -0.089 |      -34.7 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     440* |       0 |     149 |       28 |      0 |    64 |    +0.2% |   -0.089 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     450* |       0 |     153 |       32 |      0 |    66 |    +0.2% |   -0.089 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     460* |       0 |     163 |       32 |      0 |    66 |    +0.2% |   -0.089 |      -35.0 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     460* |       0 |     127 |       26 |      0 |    58 |    +0.1% |   -0.081 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     470* |       0 |     131 |       28 |      0 |    62 |    +0.1% |   -0.082 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_5.macu.mult_res\[16\]$_DFFE_PP_/D
+     480* |       0 |     136 |       29 |      0 |    66 |    +0.1% |   -0.082 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_5.macu.mult_res\[16\]$_DFFE_PP_/D
+     490* |       0 |     143 |       29 |      0 |    69 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     500* |       0 |     148 |       29 |      0 |    74 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     510* |       0 |     155 |       30 |      1 |    75 |    +0.2% |   -0.085 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     517* |       0 |     129 |       28 |      0 |    61 |    +0.1% |   -0.081 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     520* |       0 |     131 |       28 |      0 |    61 |    +0.1% |   -0.082 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_7.macu.mult_res\[16\]$_DFFE_PP_/D
+     530* |       0 |     140 |       28 |      0 |    62 |    +0.2% |   -0.085 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     540* |       0 |     146 |       29 |      1 |    64 |    +0.2% |   -0.095 |      -34.7 |    661 | fdct_zigzag.dct_mod.dct_block_5.dct_unit_1.macu.mult_res\[15\]$_DFFE_PP_/D
+     550* |       0 |     155 |       29 |      1 |    65 |    +0.2% |   -0.095 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_5.dct_unit_1.macu.mult_res\[15\]$_DFFE_PP_/D
+     560* |       0 |     165 |       29 |      1 |    65 |    +0.2% |   -0.095 |      -34.7 |    661 | fdct_zigzag.dct_mod.dct_block_5.dct_unit_1.macu.mult_res\[15\]$_DFFE_PP_/D
+     568* |       0 |     129 |       28 |      0 |    61 |    +0.1% |   -0.081 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     570* |       0 |     130 |       28 |      0 |    61 |    +0.1% |   -0.089 |      -34.9 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     580* |       0 |     134 |       29 |      0 |    66 |    +0.1% |   -0.089 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     590* |       0 |     139 |       30 |      0 |    70 |    +0.2% |   -0.089 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     600* |       0 |     145 |       31 |      0 |    73 |    +0.2% |   -0.089 |      -34.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     610* |       0 |     152 |       31 |      0 |    76 |    +0.2% |   -0.089 |      -34.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     619* |       0 |     129 |       28 |      0 |    61 |    +0.1% |   -0.081 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     620* |       0 |     129 |       28 |      0 |    61 |    +0.1% |   -0.081 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     630* |       0 |     137 |       30 |      0 |    61 |    +0.2% |   -0.085 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_2.dct_unit_0.macu.mult_res\[16\]$_DFFE_PP_/D
+     640* |       0 |     143 |       32 |      0 |    63 |    +0.2% |   -0.085 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     650* |       0 |     150 |       32 |      1 |    65 |    +0.2% |   -0.085 |      -33.5 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     660* |       0 |     156 |       33 |      2 |    67 |    +0.2% |   -0.089 |      -34.1 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[15\]$_DFFE_PP_/D
+     670* |       0 |     159 |       36 |      4 |    69 |    +0.2% |   -0.090 |      -34.4 |    661 | fdct_zigzag.dct_mod.dct_block_2.dct_unit_1.macu.mult_res\[17\]$_DFFE_PP_/D
+     670* |       0 |     129 |       28 |      0 |    61 |    +0.1% |   -0.081 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     680* |       0 |     135 |       29 |      0 |    63 |    +0.1% |   -0.081 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     690* |       0 |     141 |       30 |      0 |    66 |    +0.2% |   -0.089 |      -34.8 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     700* |       0 |     149 |       30 |      0 |    68 |    +0.2% |   -0.089 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     710* |       0 |     158 |       30 |      0 |    69 |    +0.2% |   -0.089 |      -34.8 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     720* |       0 |     160 |       30 |      0 |    77 |    +0.2% |   -0.089 |      -34.8 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     730* |       0 |     167 |       31 |      0 |    79 |    +0.2% |   -0.089 |      -34.8 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     733* |       0 |     137 |       30 |      0 |    63 |    +0.1% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     740* |       0 |     142 |       30 |      0 |    64 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     750* |       0 |     145 |       33 |      0 |    68 |    +0.2% |   -0.085 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     760* |       0 |     149 |       33 |      0 |    74 |    +0.2% |   -0.085 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     770* |       0 |     155 |       33 |      0 |    78 |    +0.2% |   -0.085 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     780* |       0 |     162 |       33 |      1 |    80 |    +0.2% |   -0.085 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     784* |       0 |     137 |       30 |      0 |    63 |    +0.1% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     790* |       0 |     139 |       31 |      0 |    65 |    +0.2% |   -0.082 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     800* |       0 |     146 |       32 |      0 |    67 |    +0.2% |   -0.089 |      -34.8 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     810* |       0 |     151 |       34 |      1 |    69 |    +0.2% |   -0.091 |      -35.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     820* |       0 |     160 |       35 |      1 |    69 |    +0.2% |   -0.091 |      -35.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     830* |       0 |     166 |       36 |      1 |    72 |    +0.2% |   -0.091 |      -35.4 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+     835* |       0 |     137 |       30 |      0 |    63 |    +0.1% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     840* |       0 |     140 |       30 |      0 |    64 |    +0.2% |   -0.087 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_6.macu.mult_res\[18\]$_DFFE_PP_/D
+     850* |       0 |     146 |       30 |      0 |    68 |    +0.2% |   -0.089 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     860* |       0 |     152 |       30 |      0 |    72 |    +0.2% |   -0.089 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     870* |       0 |     158 |       30 |      0 |    76 |    +0.2% |   -0.089 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     880* |       0 |     166 |       32 |      0 |    76 |    +0.2% |   -0.089 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     886* |       0 |     137 |       30 |      0 |    63 |    +0.1% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     890* |       0 |     138 |       31 |      0 |    64 |    +0.2% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     900* |       0 |     143 |       32 |      0 |    68 |    +0.2% |   -0.082 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_2.macu.mult_res\[18\]$_DFFE_PP_/D
+     910* |       0 |     148 |       33 |      0 |    72 |    +0.2% |   -0.085 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     920* |       0 |     156 |       33 |      0 |    74 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     930* |       0 |     164 |       33 |      0 |    76 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     940* |       0 |     174 |       33 |      0 |    76 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     950* |       0 |     184 |       33 |      0 |    76 |    +0.2% |   -0.085 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     953* |       0 |     144 |       32 |      0 |    70 |    +0.2% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+     960* |       0 |     149 |       32 |      0 |    71 |    +0.2% |   -0.085 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     970* |       0 |     158 |       32 |      0 |    72 |    +0.2% |   -0.085 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     980* |       0 |     165 |       33 |      0 |    74 |    +0.2% |   -0.085 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+     990* |       0 |     172 |       34 |      0 |    76 |    +0.2% |   -0.085 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1000* |       1 |     176 |       36 |      0 |    79 |    +0.2% |   -0.085 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1006* |       0 |     146 |       32 |      0 |    70 |    +0.2% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1010* |       0 |     148 |       33 |      0 |    70 |    +0.2% |   -0.088 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[17\]$_DFFE_PP_/D
+    1020* |       0 |     153 |       34 |      0 |    74 |    +0.2% |   -0.083 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1030* |       0 |     160 |       34 |      0 |    77 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1040* |       0 |     165 |       36 |      0 |    81 |    +0.2% |   -0.085 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1050* |       0 |     171 |       37 |      1 |    83 |    +0.2% |   -0.095 |      -34.2 |    661 | fdct_zigzag.dct_mod.dct_block_5.dct_unit_1.macu.mult_res\[15\]$_DFFE_PP_/D
+    1059* |       0 |     147 |       33 |      0 |    70 |    +0.2% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1060* |       0 |     147 |       33 |      0 |    70 |    +0.2% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1070* |       0 |     154 |       35 |      0 |    71 |    +0.2% |   -0.089 |      -34.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1080* |       0 |     162 |       35 |      0 |    73 |    +0.2% |   -0.089 |      -34.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1090* |       0 |     169 |       36 |      0 |    75 |    +0.2% |   -0.089 |      -34.4 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1100* |       0 |     177 |       36 |      0 |    77 |    +0.2% |   -0.089 |      -34.4 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1100* |       0 |     147 |       33 |      0 |    70 |    +0.2% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1110* |       0 |     155 |       33 |      0 |    71 |    +0.2% |   -0.081 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1120* |       0 |     162 |       34 |      0 |    73 |    +0.2% |   -0.082 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1130* |       0 |     166 |       36 |      0 |    77 |    +0.2% |   -0.082 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1140* |       0 |     172 |       36 |      0 |    81 |    +0.2% |   -0.082 |      -32.8 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1150* |       0 |     178 |       38 |      0 |    83 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[15\]$_DFFE_PP_/D
+    1160* |       0 |     183 |       42 |      0 |    85 |    +0.2% |   -0.097 |      -35.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_5.macu.mult_res\[16\]$_DFFE_PP_/D
+    1165* |       0 |     158 |       34 |      0 |    72 |    +0.2% |   -0.081 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1170* |       0 |     161 |       34 |      0 |    73 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1180* |       0 |     169 |       35 |      0 |    74 |    +0.2% |   -0.085 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1190* |       0 |     176 |       37 |      0 |    75 |    +0.2% |   -0.085 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1200* |       0 |     179 |       40 |      0 |    80 |    +0.2% |   -0.085 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1210* |       0 |     184 |       45 |      0 |    82 |    +0.2% |   -0.085 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1216* |       0 |     158 |       34 |      0 |    72 |    +0.2% |   -0.081 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1220* |       0 |     160 |       35 |      0 |    72 |    +0.2% |   -0.083 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1230* |       0 |     167 |       35 |      0 |    75 |    +0.2% |   -0.089 |      -34.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1240* |       0 |     174 |       35 |      0 |    78 |    +0.2% |   -0.089 |      -34.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1250* |       0 |     179 |       36 |      0 |    82 |    +0.2% |   -0.089 |      -34.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1260* |       0 |     184 |       39 |      0 |    84 |    +0.2% |   -0.094 |      -35.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_5.macu.mult_res\[16\]$_DFFE_PP_/D
+    1269* |       0 |     159 |       35 |      0 |    72 |    +0.2% |   -0.081 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1270* |       0 |     159 |       35 |      0 |    72 |    +0.2% |   -0.081 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1280* |       0 |     165 |       36 |      0 |    75 |    +0.2% |   -0.089 |      -34.4 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1290* |       0 |     174 |       36 |      0 |    76 |    +0.2% |   -0.089 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1300* |       0 |     179 |       38 |      0 |    79 |    +0.2% |   -0.089 |      -34.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1300* |       0 |     160 |       35 |      0 |    72 |    +0.2% |   -0.081 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1310* |       0 |     164 |       37 |      0 |    75 |    +0.2% |   -0.081 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1320* |       0 |     171 |       37 |      0 |    78 |    +0.2% |   -0.089 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1330* |       0 |     176 |       38 |      0 |    82 |    +0.2% |   -0.089 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1340* |       0 |     181 |       42 |      0 |    83 |    +0.2% |   -0.089 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1350* |       0 |     183 |       42 |      0 |    91 |    +0.2% |   -0.089 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1360* |       0 |     188 |       43 |      0 |    95 |    +0.2% |   -0.089 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_4.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1364* |       0 |     165 |       37 |      0 |    78 |    +0.2% |   -0.081 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1370* |       0 |     169 |       37 |      0 |    79 |    +0.2% |   -0.082 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[15\]$_DFFE_PP_/D
+    1380* |       0 |     176 |       37 |      0 |    82 |    +0.2% |   -0.082 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1390* |       0 |     183 |       37 |      0 |    85 |    +0.2% |   -0.084 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1400* |       0 |     186 |       37 |      0 |    92 |    +0.2% |   -0.084 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1410* |       0 |     192 |       37 |      0 |    96 |    +0.2% |   -0.087 |      -33.4 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[15\]$_DFFE_PP_/D
+    1418* |       0 |     167 |       37 |      0 |    79 |    +0.2% |   -0.081 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1420* |       0 |     168 |       37 |      0 |    79 |    +0.2% |   -0.081 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1430* |       0 |     177 |       38 |      0 |    79 |    +0.2% |   -0.085 |      -32.8 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1440* |       1 |     182 |       40 |      0 |    81 |    +0.2% |   -0.085 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1450* |       1 |     189 |       40 |      1 |    83 |    +0.2% |   -0.085 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1460* |       1 |     198 |       41 |      1 |    83 |    +0.3% |   -0.085 |      -33.3 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1470* |       1 |     202 |       43 |      3 |    85 |    +0.3% |   -0.086 |      -34.0 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[17\]$_DFFE_PP_/D
+    1471* |       0 |     169 |       37 |      0 |    79 |    +0.2% |   -0.081 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1480* |       0 |     175 |       38 |      0 |    80 |    +0.2% |   -0.082 |      -32.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_7.macu.mult_res\[16\]$_DFFE_PP_/D
+    1490* |       0 |     181 |       38 |      0 |    84 |    +0.2% |   -0.087 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_2.dct_unit_1.macu.mult_res\[17\]$_DFFE_PP_/D
+    1500* |       0 |     187 |       38 |      0 |    88 |    +0.2% |   -0.085 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1510* |       0 |     195 |       38 |      0 |    90 |    +0.2% |   -0.085 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1520* |       0 |     203 |       38 |      1 |    91 |    +0.2% |   -0.085 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1522* |       0 |     169 |       37 |      0 |    79 |    +0.2% |   -0.081 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1530* |       0 |     174 |       37 |      0 |    81 |    +0.2% |   -0.088 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_5.macu.mult_res\[15\]$_DFFE_PP_/D
+    1540* |       0 |     181 |       38 |      0 |    83 |    +0.2% |   -0.085 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1550* |       0 |     187 |       40 |      0 |    85 |    +0.2% |   -0.085 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1560* |       0 |     193 |       42 |      0 |    88 |    +0.2% |   -0.085 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1570* |       0 |     198 |       44 |      1 |    91 |    +0.2% |   -0.085 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1580* |       0 |     205 |       44 |      1 |    94 |    +0.2% |   -0.085 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1586* |       0 |     177 |       38 |      0 |    83 |    +0.2% |   -0.081 |      -32.6 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1590* |       0 |     179 |       39 |      0 |    83 |    +0.2% |   -0.081 |      -32.6 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1600* |       0 |     186 |       41 |      1 |    84 |    +0.2% |   -0.084 |      -32.6 |    661 | fdct_zigzag.dct_mod.dct_block_2.dct_unit_2.macu.mult_res\[18\]$_DFFE_PP_/D
+    1610* |       0 |     192 |       42 |      1 |    87 |    +0.2% |   -0.086 |      -32.8 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[15\]$_DFFE_PP_/D
+    1620* |       0 |     200 |       43 |      1 |    88 |    +0.2% |   -0.086 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[15\]$_DFFE_PP_/D
+    1630* |       0 |     206 |       47 |      1 |    89 |    +0.3% |   -0.098 |      -35.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_5.macu.mult_res\[15\]$_DFFE_PP_/D
+    1640* |       0 |     214 |       47 |      2 |    90 |    +0.3% |   -0.099 |      -35.5 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[15\]$_DFFE_PP_/D
+    1641* |       0 |     180 |       39 |      0 |    83 |    +0.2% |   -0.081 |      -32.6 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1650* |       0 |     186 |       41 |      0 |    83 |    +0.2% |   -0.086 |      -32.8 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[17\]$_DFFE_PP_/D
+    1660* |       0 |     192 |       45 |      0 |    85 |    +0.2% |   -0.093 |      -35.7 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1670* |       0 |     201 |       46 |      0 |    85 |    +0.2% |   -0.093 |      -36.0 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1680* |       0 |     205 |       47 |      0 |    90 |    +0.2% |   -0.093 |      -35.5 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1690* |       0 |     214 |       48 |      0 |    90 |    +0.3% |   -0.093 |      -35.8 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1692* |       0 |     180 |       39 |      0 |    83 |    +0.2% |   -0.081 |      -32.6 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1700* |       0 |     185 |       39 |      0 |    85 |    +0.2% |   -0.085 |      -32.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[13\]$_DFFE_PP_/D
+    1710* |       0 |     190 |       39 |      0 |    90 |    +0.2% |   -0.085 |      -32.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[13\]$_DFFE_PP_/D
+    1720* |       0 |     193 |       39 |      0 |    97 |    +0.2% |   -0.085 |      -32.4 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[13\]$_DFFE_PP_/D
+    1730* |       0 |     203 |       39 |      0 |    97 |    +0.2% |   -0.089 |      -33.2 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_5.macu.mult_res\[15\]$_DFFE_PP_/D
+    1740* |       0 |     209 |       39 |      0 |   101 |    +0.2% |   -0.089 |      -33.1 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_5.macu.mult_res\[15\]$_DFFE_PP_/D
+    1747* |       0 |     183 |       39 |      0 |    84 |    +0.2% |   -0.081 |      -32.5 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1750* |       0 |     185 |       39 |      0 |    84 |    +0.2% |   -0.081 |      -32.5 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1760* |       0 |     193 |       39 |      0 |    86 |    +0.2% |   -0.085 |      -32.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[13\]$_DFFE_PP_/D
+    1770* |       0 |     202 |       39 |      0 |    87 |    +0.2% |   -0.085 |      -32.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[13\]$_DFFE_PP_/D
+    1780* |       0 |     212 |       39 |      0 |    87 |    +0.2% |   -0.089 |      -34.4 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1790* |       0 |     218 |       40 |      0 |    90 |    +0.2% |   -0.089 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1800* |       0 |     226 |       41 |      0 |    91 |    +0.3% |   -0.089 |      -34.8 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1800* |       0 |     188 |       39 |      0 |    85 |    +0.2% |   -0.081 |      -32.5 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1810* |       0 |     192 |       40 |      0 |    89 |    +0.2% |   -0.082 |      -32.4 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[17\]$_DFFE_PP_/D
+    1820* |       0 |     197 |       41 |      0 |    93 |    +0.2% |   -0.089 |      -34.3 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1830* |       0 |     203 |       42 |      0 |    96 |    +0.2% |   -0.089 |      -34.3 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1840* |       0 |     209 |       42 |      0 |   100 |    +0.2% |   -0.089 |      -34.1 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[15\]$_DFFE_PP_/D
+    1850* |       0 |     214 |       44 |      0 |   103 |    +0.2% |   -0.089 |      -34.1 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[15\]$_DFFE_PP_/D
+    1858* |       0 |     191 |       40 |      0 |    88 |    +0.2% |   -0.081 |      -32.5 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1860* |       0 |     192 |       40 |      0 |    88 |    +0.2% |   -0.081 |      -32.4 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1870* |       0 |     195 |       41 |      0 |    94 |    +0.2% |   -0.081 |      -32.4 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1880* |       0 |     201 |       42 |      0 |    97 |    +0.2% |   -0.081 |      -32.4 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1890* |       0 |     206 |       45 |      0 |   100 |    +0.2% |   -0.085 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1900* |       0 |     209 |       48 |      0 |   104 |    +0.2% |   -0.085 |      -33.0 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1910* |       0 |     214 |       48 |      0 |   109 |    +0.2% |   -0.085 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1920* |       0 |     223 |       48 |      0 |   110 |    +0.3% |   -0.085 |      -32.8 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1930* |       0 |     231 |       48 |      0 |   112 |    +0.3% |   -0.085 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_6.dct_unit_4.macu.mult_res\[18\]$_DFFE_PP_/D
+    1933* |       0 |     202 |       44 |      0 |    98 |    +0.2% |   -0.081 |      -32.4 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1940* |       0 |     206 |       45 |      0 |    99 |    +0.2% |   -0.089 |      -34.0 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1950* |       0 |     213 |       46 |      0 |   101 |    +0.2% |   -0.089 |      -34.0 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1960* |       0 |     220 |       49 |      0 |   103 |    +0.2% |   -0.089 |      -34.0 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1970* |       0 |     223 |       51 |      0 |   108 |    +0.2% |   -0.089 |      -33.9 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1980* |       0 |     231 |       53 |      0 |   109 |    +0.3% |   -0.089 |      -34.1 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    1984* |       0 |     202 |       44 |      0 |    98 |    +0.2% |   -0.081 |      -32.4 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    1990* |       0 |     206 |       45 |      0 |    98 |    +0.2% |   -0.082 |      -32.4 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[17\]$_DFFE_PP_/D
+    2000* |       0 |     214 |       45 |      0 |   100 |    +0.2% |   -0.089 |      -34.2 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    2000* |       0 |     202 |       45 |      0 |    98 |    +0.2% |   -0.081 |      -32.4 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2010* |       0 |     209 |       45 |      0 |   100 |    +0.2% |   -0.082 |      -32.3 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[17\]$_DFFE_PP_/D
+    2020* |       0 |     215 |       46 |      0 |   103 |    +0.2% |   -0.085 |      -32.5 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_2.macu.mult_res\[13\]$_DFFE_PP_/D
+    2030* |       0 |     221 |       46 |      0 |   107 |    +0.2% |   -0.089 |      -34.2 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    2040* |       1 |     223 |       51 |      1 |   109 |    +0.3% |   -0.089 |      -34.2 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    2050* |       4 |     225 |       56 |      1 |   109 |    +0.3% |   -0.089 |      -34.2 |    661 | fdct_zigzag.dct_mod.dct_block_3.dct_unit_6.macu.mult_res\[16\]$_DFFE_PP_/D
+    2052* |       0 |     203 |       45 |      0 |    98 |    +0.2% |   -0.081 |      -32.3 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2060* |       0 |     209 |       45 |      0 |    99 |    +0.2% |   -0.088 |      -32.7 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[17\]$_DFFE_PP_/D
+    2070* |       0 |     214 |       46 |      0 |   103 |    +0.2% |   -0.088 |      -32.9 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[17\]$_DFFE_PP_/D
+    2080* |       0 |     221 |       46 |      0 |   106 |    +0.3% |   -0.088 |      -32.8 |    661 | fdct_zigzag.dct_mod.dct_block_7.dct_unit_4.macu.mult_res\[17\]$_DFFE_PP_/D
+    2090* |       0 |     228 |       50 |      0 |   106 |    +0.3% |   -0.097 |      -34.6 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2100* |       0 |     237 |       51 |      0 |   106 |    +0.3% |   -0.097 |      -34.9 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2100* |       0 |     205 |       45 |      0 |    98 |    +0.2% |   -0.081 |      -32.3 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2100* |       0 |     205 |       45 |      0 |    98 |    +0.2% |   -0.081 |      -32.3 |    661 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2100+ |       0 |     205 |       45 |      0 |    98 |    +0.2% |   -0.081 |      -32.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2101+ |       0 |     205 |       45 |      0 |    98 |    +0.2% |   -0.081 |      -32.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2102+ |       0 |     205 |       45 |      0 |    98 |    +0.2% |   -0.081 |      -32.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2105+ |       0 |     206 |       45 |      0 |    99 |    +0.2% |   -0.081 |      -32.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2106+ |       0 |     206 |       45 |      0 |    99 |    +0.2% |   -0.081 |      -32.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2110+ |       0 |     208 |       45 |      0 |   100 |    +0.2% |   -0.081 |      -32.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2110+ |       0 |     208 |       45 |      0 |   100 |    +0.2% |   -0.081 |      -32.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2112+ |       0 |     209 |       45 |      0 |   100 |    +0.2% |   -0.081 |      -32.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2114+ |       0 |     210 |       45 |      0 |   100 |    +0.2% |   -0.081 |      -32.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2117+ |       0 |     212 |       45 |      0 |   100 |    +0.2% |   -0.081 |      -32.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2118+ |       0 |     212 |       45 |      0 |   100 |    +0.2% |   -0.081 |      -32.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2120+ |       0 |     213 |       45 |      0 |   100 |    +0.2% |   -0.081 |      -32.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2122+ |       0 |     214 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2125+ |       0 |     216 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2126+ |       0 |     216 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2127+ |       0 |     216 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2129+ |       0 |     217 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2130+ |       0 |     217 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2131+ |       0 |     218 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2133+ |       0 |     219 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2135+ |       0 |     220 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2136+ |       0 |     220 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2140+ |       0 |     223 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2140+ |       0 |     223 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2141+ |       0 |     223 |       45 |      0 |   101 |    +0.2% |   -0.081 |      -32.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2147+ |       0 |     226 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2150+ |       0 |     228 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2150+ |       0 |     228 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2151+ |       0 |     228 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2152+ |       0 |     228 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2153+ |       0 |     228 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2154+ |       0 |     228 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2155+ |       0 |     228 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2157+ |       0 |     229 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2158+ |       0 |     229 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2159+ |       0 |     229 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2160+ |       0 |     229 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2160+ |       0 |     229 |       45 |      0 |   103 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2163+ |       0 |     230 |       45 |      0 |   104 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2166+ |       0 |     232 |       45 |      0 |   104 |    +0.2% |   -0.081 |      -31.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2170+ |       0 |     235 |       45 |      0 |   104 |    +0.2% |   -0.081 |      -31.8 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2171+ |       0 |     235 |       45 |      0 |   105 |    +0.2% |   -0.081 |      -31.7 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2172+ |       0 |     235 |       45 |      0 |   105 |    +0.2% |   -0.081 |      -31.7 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2174+ |       0 |     236 |       45 |      0 |   105 |    +0.2% |   -0.081 |      -31.7 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2178+ |       0 |     238 |       45 |      0 |   106 |    +0.2% |   -0.081 |      -31.6 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2180+ |       0 |     239 |       45 |      0 |   106 |    +0.2% |   -0.081 |      -31.6 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2180+ |       0 |     239 |       45 |      0 |   106 |    +0.2% |   -0.081 |      -31.6 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2182+ |       0 |     240 |       45 |      0 |   106 |    +0.2% |   -0.081 |      -31.5 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2183+ |       0 |     240 |       45 |      0 |   106 |    +0.2% |   -0.081 |      -31.5 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2185+ |       0 |     240 |       45 |      0 |   107 |    +0.2% |   -0.081 |      -31.5 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2187+ |       0 |     241 |       45 |      0 |   107 |    +0.2% |   -0.081 |      -31.5 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2190+ |       0 |     243 |       45 |      0 |   107 |    +0.2% |   -0.081 |      -31.5 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2190+ |       0 |     243 |       45 |      0 |   107 |    +0.2% |   -0.081 |      -31.5 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2191+ |       0 |     243 |       45 |      0 |   107 |    +0.2% |   -0.081 |      -31.5 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2192+ |       0 |     243 |       45 |      0 |   107 |    +0.2% |   -0.081 |      -31.5 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2193+ |       0 |     243 |       45 |      0 |   107 |    +0.2% |   -0.081 |      -31.5 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2197+ |       0 |     244 |       45 |      0 |   109 |    +0.2% |   -0.081 |      -31.4 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2200+ |       0 |     246 |       45 |      0 |   109 |    +0.3% |   -0.081 |      -31.4 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2201+ |       0 |     246 |       45 |      0 |   109 |    +0.3% |   -0.081 |      -31.4 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2202+ |       0 |     246 |       45 |      0 |   109 |    +0.3% |   -0.081 |      -31.4 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2204+ |       0 |     247 |       45 |      0 |   109 |    +0.3% |   -0.081 |      -31.4 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2205+ |       0 |     247 |       45 |      0 |   109 |    +0.3% |   -0.081 |      -31.4 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2209+ |       0 |     248 |       45 |      0 |   111 |    +0.3% |   -0.081 |      -31.4 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2210+ |       0 |     248 |       45 |      0 |   111 |    +0.3% |   -0.081 |      -31.4 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2212+ |       0 |     250 |       45 |      0 |   111 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2213+ |       0 |     250 |       45 |      0 |   111 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2216+ |       0 |     250 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2217+ |       0 |     250 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2219+ |       0 |     251 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2220+ |       0 |     251 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2220+ |       0 |     251 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2221+ |       0 |     251 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2223+ |       0 |     252 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2224+ |       0 |     252 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.3 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2226+ |       0 |     253 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2227+ |       0 |     253 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2230+ |       0 |     255 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2230+ |       0 |     255 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2231+ |       0 |     255 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2234+ |       0 |     257 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2236+ |       0 |     258 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2238+ |       0 |     259 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2240+ |       0 |     260 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2241+ |       0 |     261 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2242+ |       0 |     261 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2243+ |       0 |     261 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2244+ |       0 |     261 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2247+ |       0 |     263 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2248+ |       0 |     263 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2250+ |       0 |     264 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2250+ |       0 |     264 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2252+ |       0 |     265 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2253+ |       0 |     265 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2255+ |       0 |     266 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.2 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2257+ |       0 |     267 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2258+ |       0 |     267 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2260+ |       0 |     268 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2260+ |       0 |     268 |       45 |      0 |   113 |    +0.3% |   -0.081 |      -31.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2263+ |       0 |     269 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2264+ |       0 |     269 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2266+ |       0 |     270 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.1 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2268+ |       0 |     271 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2269+ |       0 |     271 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2270+ |       0 |     271 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2272+ |       0 |     273 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2274+ |       0 |     274 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2276+ |       0 |     275 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2278+ |       0 |     276 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2279+ |       0 |     276 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2280+ |       0 |     276 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2281+ |       0 |     277 |       45 |      0 |   114 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2286+ |       0 |     278 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2287+ |       0 |     278 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2288+ |       0 |     278 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2289+ |       0 |     278 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2290+ |       0 |     278 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2290+ |       0 |     278 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -31.0 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2293+ |       0 |     280 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -30.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2294+ |       0 |     280 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -30.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2297+ |       0 |     282 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -30.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2298+ |       0 |     282 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -30.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2299+ |       0 |     282 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -30.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    2300+ |       0 |     282 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -30.9 |    613 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+    final |       0 |     282 |       45 |      0 |   117 |    +0.3% |   -0.081 |      -30.9 |    609 | fdct_zigzag.dct_mod.dct_block_0.dct_unit_3.macu.mult_res\[18\]$_DFFE_PP_/D
+------------------------------------------------------------------------------------------------------------------------------
+[INFO RSZ-0040] Inserted 45 buffers.
+[INFO RSZ-0051] Resized 282 instances: 282 up, 0 up match, 0 down, 0 VT
+[INFO RSZ-0043] Swapped pins on 117 instances.
+[WARNING RSZ-0062] Unable to repair all setup violations.
+[INFO RSZ-0505] Runtime: 33.11s
+[INFO DPL-0006] Core area: 108329.83 um^2
+[INFO DPL-0007] Movable instances area: 90012.27 um^2
+[INFO DPL-0008] Fixed instances area within core: 188.06 um^2
+[INFO DPL-0009] Utilization: 83.3%
+[INFO DPL-0005] Diamond search max displacement: +/- 500 sites horizontally, +/- 100 rows vertically.
+[INFO DPL-1102] Legalizing using negotiation legalizer.
+[INFO DPL-1103] Negotiation base search window: +/-20 sites horizontally, +/-5 rows vertically 
+	Automatic search window extension enabled.
+	Search window extendable up to the max displacement cap of +/-500 sites, +/-100 rows near walls.
+[INFO DPL-1104] NegotiationLegalizer DRC penalty: 5.
+[INFO DPL-0392] Negotiation cell height distribution (1 unique row-count(s)):
+[INFO DPL-0393]   height 1 row(s): 59578 cells
+          |      Total |  Illegal |  Illegal
+Iteration | Violations |    Cells |    Sites
+---------------------------------------------
+        0 |       1817 |       495 |      1301
+        1 |       1308 |       344 |       961
+        2 |       1193 |       257 |       933
+        3 |        849 |       163 |       686
+        4 |        624 |       112 |       512
+        5 |        550 |        96 |       454
+        6 |        526 |        89 |       437
+        7 |        411 |        69 |       342
+        8 |        475 |        69 |       400
+        9 |        321 |        48 |       273
+       10 |        339 |        40 |       299
+       20 |        157 |        20 |       137
+       30 |         93 |        12 |        81
+       40 |         39 |         5 |        34
+       50 |         70 |        10 |        60
+       60 |         35 |         3 |        32
+       70 |         52 |         6 |        46
+       74 |          0 |         0 |         0
+Negotiation phase 1 converged at iteration 74.
+[INFO DPL-0500] Runtime: 1.37s
+Detailed Placement Analysis
+---------------------------------
+legalizer            negotiation
+total moves               15535
+total displacement      24266.1 u
+average displacement        0.4 u
+max displacement           12.0 u
+original HPWL          477091.6 u
+legalized HPWL         491841.0 u
+delta HPWL                    3 %
+
+EVO_PLACEMENT_VIOLATIONS 0
+EVO_METRICS post -0.08662293350019246 -32.40305893097288 0.008403000755284745 0.0 inst=59578 area=90200.33076012623 buf=5571 drv=0/0/0
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+[WARNING STA-0101] object 'NULL' not found.
+EVO_PATHS wrote 60 paths to /Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/05_baseline_results/nangate45__jpeg/stressed_r0/paths_post.json
+EVO_DONE wns_pre=-0.11649559424633563 wns_post=-0.08662293350019246 tns_pre=-48.30013858914408 tns_post=-32.40305893097288 repair_ms=34844

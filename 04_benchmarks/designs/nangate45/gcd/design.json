@@ -14,7 +14,7 @@
   "dont_use": "TAPCELL_X1 FILLCELL_X1 AOI211_X1 OAI211_X1",
   "clock_period_ns": {
     "nominal": 0.25,
-    "stressed": 0.225
+    "stressed": 0.375
   },
   "provenance": {
     "orfs_config": "/Users/kavyaagrawal/pv_rsz_evolve_work/orfs/flow/designs/nangate45/gcd/config.mk",
@@ -25,20 +25,29 @@
     "instances": null
   },
   "stress_calibration": {
-    "chosen_ratio": 0.9,
+    "chosen_ratio": 1.5,
     "target_wns_ratio": -0.08,
     "table": [
       {
-        "ratio": 0.9,
-        "period": 0.225,
+        "ratio": 1.5,
+        "period": 0.375,
         "ok": true,
-        "wns_pre": -0.1749589966869834,
-        "wns_post": -0.17417545676519416,
-        "tns_post": -7.62617102164613,
-        "wns_post_pct_period": -77.41131411786408
+        "wns_pre": -0.02495898003363754,
+        "wns_post": -0.02336561565920771,
+        "tns_post": -0.474810204593015,
+        "wns_post_pct_period": -6.230830842455389
+      },
+      {
+        "ratio": 1.45,
+        "period": 0.3625,
+        "ok": true,
+        "wns_pre": -0.037458981421416356,
+        "wns_post": -0.03733222170399477,
+        "tns_post": -0.9929808367728968,
+        "wns_post_pct_period": -10.298543918343386
       }
     ],
     "binary": "/Users/kavyaagrawal/Desktop/Github repos and Projects/VLSI_EDA_Optimisation_BTech_Thesis/build/bin/openroad_stock",
-    "when": "2026-11-12T21:25:57Z"
+    "when": "2026-11-25T12:22:13Z"
   }
 }

@@ -1,4 +1,4 @@
-# derived from nominal.sdc with clock periods scaled by 0.8
+# derived from nominal.sdc with clock periods scaled by 0.9
 ###############################################################################
 # Created by write_sdc
 ###############################################################################
@@ -6,8 +6,8 @@ current_design aes_cipher_top
 ###############################################################################
 # Timing Constraints
 ###############################################################################
-create_clock -name clk -period 0.656 [get_ports {clk}]
-create_clock -name vclk_clk -period 0.656 
+create_clock -name clk -period 0.738 [get_ports {clk}]
+create_clock -name vclk_clk -period 0.738 
 set_clock_latency 0.2100 [get_clocks {clk}]
 set_clock_latency 0.2100 [get_clocks {vclk_clk}]
 set_input_delay 0.1640 -clock [get_clocks {vclk_clk}] -add_delay [get_ports {key[0]}]

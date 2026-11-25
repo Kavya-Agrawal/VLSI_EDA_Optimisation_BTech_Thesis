@@ -1,4 +1,4 @@
-# derived from nominal.sdc with clock periods scaled by 0.9
+# derived from nominal.sdc with clock periods scaled by 1.5
 ###############################################################################
 # Created by write_sdc
 ###############################################################################
@@ -6,8 +6,8 @@ current_design gcd
 ###############################################################################
 # Timing Constraints
 ###############################################################################
-create_clock -name core_clock -period 0.225 [get_ports {clk}]
-create_clock -name vclk_core_clock -period 0.225 
+create_clock -name core_clock -period 0.375 [get_ports {clk}]
+create_clock -name vclk_core_clock -period 0.375 
 set_clock_latency 0.0700 [get_clocks {core_clock}]
 set_clock_latency 0.0700 [get_clocks {vclk_core_clock}]
 set_input_delay 0.0500 -clock [get_clocks {vclk_core_clock}] -add_delay [get_ports {req_msg[0]}]

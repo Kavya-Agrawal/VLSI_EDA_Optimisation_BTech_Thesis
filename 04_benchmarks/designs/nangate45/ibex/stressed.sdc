@@ -1,4 +1,4 @@
-# derived from nominal.sdc with clock periods scaled by 0.8
+# derived from nominal.sdc with clock periods scaled by 0.9
 ###############################################################################
 # Created by write_sdc
 ###############################################################################
@@ -6,8 +6,8 @@ current_design ibex_core
 ###############################################################################
 # Timing Constraints
 ###############################################################################
-create_clock -name core_clock -period 1.76 [get_ports {clk_i}]
-create_clock -name vclk_core_clock -period 1.76 
+create_clock -name core_clock -period 1.98 [get_ports {clk_i}]
+create_clock -name vclk_core_clock -period 1.98 
 set_clock_latency 0.2850 [get_clocks {core_clock}]
 set_clock_latency 0.2850 [get_clocks {vclk_core_clock}]
 set_input_delay 0.4400 -clock [get_clocks {vclk_core_clock}] -add_delay [get_ports {boot_addr_i[0]}]
